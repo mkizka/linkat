@@ -17,7 +17,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Meta />
         <Links />
       </head>
-      <body>
+      <body className="h-screen w-screen bg-base-200">
         {children}
         <ScrollRestoration />
         <Scripts />
@@ -28,7 +28,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
 export default function App() {
   return (
-    <main className="container mx-auto px-8">
+    <main className="mx-auto max-w-screen-sm px-4">
       <Outlet />
     </main>
   );
