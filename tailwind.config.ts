@@ -1,3 +1,4 @@
+import daisyui from "daisyui";
 import type { Config } from "tailwindcss";
 
 export default {
@@ -7,5 +8,5 @@ export default {
       murecho: ["murecho", "sans-serif"],
     },
   },
-  plugins: [require("daisyui")],
+  plugins: [daisyui],
 } satisfies Config;
