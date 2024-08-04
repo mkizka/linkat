@@ -1,0 +1,24 @@
+{
+  "lexicon": 1,
+  "id": "dev.mkizka.test.profile.card",
+  "defs": {
+    "main": {
+      "type": "record",
+      "description": "A card with a link or text.",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "URL of the card."
+          },
+          "text": {
+            "type": "string",
+            "description": "Text of the card."
+          }
+        }
+      }
+    }
+  }
+}

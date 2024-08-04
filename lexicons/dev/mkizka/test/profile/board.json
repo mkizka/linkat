@@ -18,27 +18,10 @@
             "type": "array",
             "description": "List of cards in the board.",
             "items": {
-              "type": "union",
-              "refs": ["#card"]
+              "type": "ref",
+              "ref": "com.atproto.repo.strongRef"
             }
           }
-        }
-      }
-    },
-    "card": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "description": "ID of the card"
-        },
-        "url": {
-          "type": "string",
-          "description": "URL of the link"
-        },
-        "text": {
-          "type": "string",
-          "description": "Text of the card"
         }
       }
     }
