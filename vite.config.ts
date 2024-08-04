@@ -18,7 +18,11 @@ export default defineConfig({
     include: ["app/**/*.spec.ts"],
     coverage: {
       include: ["app/**/*.ts"],
-      exclude: ["app/generated"],
+      exclude: [
+        "app/mocks",
+        "app/.server/**/generated",
+        "app/.client/**/generated",
+      ],
     },
     // vitest-environment-vprisma
     globals: true,
