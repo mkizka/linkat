@@ -48,7 +48,7 @@ app.all("*", createRequestHandler({ build }));
 //   // eslint-disable-next-line
 //   .catch(console.error);
 
-app.listen(3000, () => {
+app.listen(3000, "0.0.0.0", () => {
   // eslint-disable-next-line no-console
   console.log(`App listening on http://localhost:3000`);
 });
