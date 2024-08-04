@@ -22,6 +22,7 @@
     "typecheck": "tsc"
   },
   "dependencies": {
+    "@heroicons/react": "^2.1.5",
     "@prisma/client": "^5.17.0",
     "@remix-run/express": "^2.11.0",
     "@remix-run/node": "^2.11.0",
@@ -43,6 +44,7 @@
     "@types/react-dom": "^18.2.7",
     "@vitest/coverage-v8": "^2.0.5",
     "autoprefixer": "^10.4.19",
+    "daisyui": "^4.12.10",
     "dotenv-cli": "^7.4.2",
     "eslint": "^8.38.0",
     "eslint-config-flat-gitignore": "^0.1.8",
