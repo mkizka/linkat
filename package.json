@@ -1,16 +1,22 @@
 {
   "name": "linkat",
-  "private": true,
-  "sideEffects": false,
   "type": "module",
+  "private": true,
+  "packageManager": "pnpm@8.15.7+sha256.50783dd0fa303852de2dd1557cd4b9f07cb5b018154a6e76d0f40635d6cee019",
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "scripts": {
+    "_eslint": "eslint --cache --cache-location ./node_modules/.cache/eslint .",
     "build": "remix vite:build",
-    "test": "vitest run",
     "dev": "remix vite:dev",
-    "lint": "eslint --ignore-path .gitignore --cache --cache-location ./node_modules/.cache/eslint .",
+    "format": "pnpm _eslint --fix && prettier . --write",
+    "lint": "pnpm _eslint && prettier . --check",
+    "postinstall": "./scripts/postinstall.sh",
+    "prepare": "husky",
     "start": "remix-serve ./build/server/index.js",
-    "typecheck": "tsc",
-    "postinstall": "./scripts/postinstall.sh"
+    "test": "vitest run",
+    "typecheck": "tsc"
   },
   "dependencies": {
     "@prisma/client": "^5.17.0",
@@ -23,6 +29,7 @@
   },
   "devDependencies": {
     "@atproto/lex-cli": "0.3.2",
+    "@mkizka/eslint-config": "^5.2.1",
     "@quramy/prisma-fabbrica": "^2.2.1",
     "@remix-run/dev": "^2.11.0",
     "@types/react": "^18.2.20",
@@ -31,14 +38,19 @@
     "@typescript-eslint/parser": "^6.7.4",
     "autoprefixer": "^10.4.19",
     "eslint": "^8.38.0",
+    "eslint-config-flat-gitignore": "^0.1.8",
     "eslint-import-resolver-typescript": "^3.6.1",
     "eslint-plugin-import": "^2.28.1",
     "eslint-plugin-jsx-a11y": "^6.7.1",
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^4.6.0",
     "giget": "^1.2.3",
+    "husky": "^9.1.4",
+    "lint-staged": "^15.2.8",
     "msw": "^2.3.5",
     "postcss": "^8.4.38",
+    "prettier": "^3.3.3",
+    "prettier-plugin-pkg": "^0.18.1",
     "prisma": "^5.17.0",
     "tailwindcss": "^3.4.4",
     "typescript": "^5.1.6",
@@ -47,8 +59,14 @@
     "vitest": "^2.0.5",
     "vitest-environment-vprisma": "^1.3.0"
   },
-  "engines": {
-    "node": ">=20.0.0"
+  "sideEffects": false,
+  "lint-staged": {
+    "*.{js,mjs,ts,tsx}": "eslint --fix",
+    "*": "prettier --ignore-unknown --write"
   },
-  "packageManager": "pnpm@8.15.7+sha256.50783dd0fa303852de2dd1557cd4b9f07cb5b018154a6e76d0f40635d6cee019"
+  "prettier": {
+    "plugins": [
+      "prettier-plugin-pkg"
+    ]
+  }
 }
