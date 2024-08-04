@@ -1,5 +1,6 @@
-node_modules
-
-/.cache
-/build
+node_modules/
+build/
+generated/
+atproto/
+coverage/
 .env
