@@ -10,4 +10,4 @@ fi
 
 docker compose up -d --wait
 pnpm prisma db push
-pnpm run-p -l 'dev:*'
+pnpm run-p -l '_dev:*'
