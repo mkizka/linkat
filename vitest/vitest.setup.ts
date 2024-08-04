@@ -1,6 +1,6 @@
 import { server } from "~/mocks/server";
 
-import { initialize, resetSequence } from "../app/generated/fabbrica";
+import { initialize, resetSequence } from "../app/.server/generated/fabbrica";
 
 // prisma
 vi.mock("~/.server/db/prisma", () => ({
