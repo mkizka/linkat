@@ -27,11 +27,13 @@
     "@remix-run/express": "^2.11.0",
     "@remix-run/node": "^2.11.0",
     "@remix-run/react": "^2.11.0",
+    "array-move": "^4.0.0",
     "clsx": "^2.1.1",
     "express": "^4.19.2",
     "isbot": "^4.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-easy-sort": "^1.6.0",
     "tailwind-merge": "^2.4.0",
     "zod": "^3.23.8"
   },
