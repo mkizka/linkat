@@ -7,10 +7,6 @@
 import { RemixBrowser } from "@remix-run/react";
 import { startTransition, StrictMode } from "react";
 import { hydrateRoot } from "react-dom/client";
-import { cacheAssets } from "remix-utils/cache-assets";
-
-// eslint-disable-next-line @typescript-eslint/use-unknown-in-catch-callback-variable, no-console
-cacheAssets().catch(console.error);
 
 startTransition(() => {
   hydrateRoot(
