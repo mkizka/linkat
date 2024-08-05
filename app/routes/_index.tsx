@@ -1,11 +1,5 @@
-import { ClientOnly } from "remix-utils/client-only";
-
-import { Sortable } from "~/components/sortable";
+import React from "react";
 
 export default function Index() {
-  return (
-    <ClientOnly fallback={<div>Loading...</div>}>
-      {() => <Sortable />}
-    </ClientOnly>
-  );
+  return <p>home</p>;
 }
