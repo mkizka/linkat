@@ -2,6 +2,7 @@
   "$schema": "https://railway.app/railway.schema.json",
   "build": {
     "builder": "NIXPACKS",
-    "buildCommand": "pnpm prisma db push --skip-generate && pnpm build"
+    "buildCommand": "pnpm prisma db push --skip-generate && pnpm build",
+    "buildEnvironment": "V2"
   }
 }
