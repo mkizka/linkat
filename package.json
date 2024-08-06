@@ -11,7 +11,7 @@
     "_dev:prisma": "prisma studio",
     "_dev:remix": "NODE_ENV=development dotenv -- tsx watch --ignore vite.config.ts.* ./app/server.ts",
     "_eslint": "eslint --cache --cache-location ./node_modules/.cache/eslint .",
-    "build": "remix vite:build",
+    "build": "pnpm typecheck && remix vite:build",
     "dev": "./scripts/dev.sh",
     "format": "pnpm _eslint --fix && prettier . --write",
     "lint": "pnpm _eslint && prettier . --check",
@@ -22,6 +22,8 @@
     "typecheck": "tsc"
   },
   "dependencies": {
+    "@atproto/api": "^0.12.28",
+    "@atproto/common-web": "^0.3.0",
     "@heroicons/react": "^2.1.5",
     "@prisma/client": "^5.17.0",
     "@remix-run/express": "^2.11.0",
@@ -40,6 +42,9 @@
   },
   "devDependencies": {
     "@atproto/lex-cli": "0.3.2",
+    "@atproto/lexicon": "^0.4.0",
+    "@atproto/xrpc": "^0.5.0",
+    "@atproto/xrpc-server": "^0.6.0",
     "@mkizka/eslint-config": "^5.2.1",
     "@quramy/prisma-fabbrica": "^2.2.1",
     "@remix-run/dev": "^2.11.0",
