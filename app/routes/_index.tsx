@@ -1,29 +1,33 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import { useAtom } from "jotai";
+import type { ClientLoaderFunction } from "@remix-run/react";
+import { createStore } from "jotai";
 
-import { loginAtom, resumeSessionAtom } from "~/atoms/userAtom";
+import { useLogin } from "~/atoms/userAtom/hooks";
+import { resumeSessionAtom } from "~/atoms/userAtom/write-only";
+
+export const clientLoader: ClientLoaderFunction = async () => {
+  const store = createStore();
+  await store.set(resumeSessionAtom);
+  return null;
+};
+
+export { HydrateFallback } from "~/components/hydate-fallback";
 
 export default function Index() {
-  const [, login] = useAtom(loginAtom);
-  const [, resume] = useAtom(resumeSessionAtom);
+  const login = useLogin();
 
   return (
-    <div className="flex">
-      <button
-        className="btn btn-primary"
-        onClick={() =>
-          login({
-            service: import.meta.env.VITE_BSKY_URL,
-            identifier: import.meta.env.VITE_BSKY_USERNAME,
-            password: import.meta.env.VITE_BSKY_PASSWORD,
-          })
-        }
-      >
-        Login
-      </button>
-      <button className="btn btn-secondary" onClick={() => resume()}>
-        Resume
-      </button>
-    </div>
+    <button
+      className="btn btn-primary"
+      onClick={() =>
+        login({
+          service: import.meta.env.VITE_BSKY_URL,
+          identifier: import.meta.env.VITE_BSKY_USERNAME,
+          password: import.meta.env.VITE_BSKY_PASSWORD,
+        })
+      }
+    >
+      Login
+    </button>
   );
 }

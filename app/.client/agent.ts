@@ -11,20 +11,31 @@ import { AtpBaseClient } from "~/.client/generated/api";
 import type { ValidBoard } from "~/models/board";
 import type { ValidCard } from "~/models/card";
 
+export type LinkatAgentOptions = {
+  service: string;
+  session?: AtpSessionData;
+};
+
 export class LinkatAgent {
   readonly client: AtpServiceClient;
   readonly bskyAgent: BskyAgent;
 
-  constructor({ service }: { service: string }) {
+  constructor({ service, session }: LinkatAgentOptions) {
     this.client = new AtpBaseClient().service(service);
     this.bskyAgent = new BskyAgent({
       service,
-      persistSession: (event, session) => {
-        if (session) {
-          this.client.setHeader("Authorization", `Bearer ${session.accessJwt}`);
-        }
+      persistSession: (_, newSession) => {
+        if (newSession) this._updateAccessJwt(newSession);
       },
     });
+    if (session) {
+      this.bskyAgent.session = session;
+      this._updateAccessJwt(session);
+    }
+  }
+
+  protected _updateAccessJwt(session: AtpSessionData) {
+    this.client.setHeader("Authorization", `Bearer ${session.accessJwt}`);
   }
 
   get dev() {
