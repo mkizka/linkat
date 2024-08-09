@@ -2,7 +2,7 @@ import { LoginForm } from "~/components/login-form";
 
 export default function Index() {
   return (
-    <div className="grid h-svh place-items-center">
+    <div className="fixed inset-0 flex items-center justify-center p-4">
       <LoginForm />
     </div>
   );

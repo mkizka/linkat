@@ -73,7 +73,7 @@ export function LoginForm() {
   });
 
   return (
-    <Card className="flex w-full flex-row justify-center p-4 pb-12">
+    <Card className="flex w-full max-w-screen-sm flex-row justify-center p-4 pb-12">
       <Form
         method="post"
         className="flex w-full max-w-sm flex-col gap-2"
