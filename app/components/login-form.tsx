@@ -67,7 +67,6 @@ export function LoginForm() {
         navigate(`/edit`);
       } catch (e) {
         alert("ログインに失敗しました");
-      } finally {
         setIsSubmitting(false);
       }
     },
