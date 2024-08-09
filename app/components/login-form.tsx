@@ -55,11 +55,11 @@ export function LoginForm() {
     constraint: getZodConstraint(schema),
     defaultValue: { service: lastLoginService },
     onValidate({ formData }) {
-      setIsSubmitting(true);
       return parseWithZod(formData, { schema });
     },
     onSubmit: async (event, { submission }) => {
       event.preventDefault();
+      setIsSubmitting(true);
       const payload = submission?.payload as Schema;
       try {
         await login(payload);
