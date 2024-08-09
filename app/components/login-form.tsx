@@ -4,7 +4,7 @@ import { Form, useNavigate } from "@remix-run/react";
 import type { ComponentProps } from "react";
 import { z } from "zod";
 
-import { useLogin } from "~/atoms/userAtom/hooks";
+import { useLogin } from "~/atoms/user/hooks";
 import { createLogger } from "~/utils/logger";
 
 import { Card } from "./card";

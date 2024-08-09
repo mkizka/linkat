@@ -1,7 +1,7 @@
 import type { ClientLoaderFunction } from "@remix-run/react";
 import { createStore } from "jotai";
 
-import { resumeSessionAtom } from "~/atoms/userAtom/write-only";
+import { resumeSessionAtom } from "~/atoms/user/write-only";
 import { LoginForm } from "~/components/login-form";
 
 export const clientLoader: ClientLoaderFunction = async () => {
