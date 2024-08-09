@@ -1,12 +1,13 @@
 import { getFormProps, getInputProps, useForm } from "@conform-to/react";
 import { getZodConstraint, parseWithZod } from "@conform-to/zod";
 import { Form, useNavigate } from "@remix-run/react";
-import type { ComponentProps } from "react";
+import { type ComponentProps, useState } from "react";
 import { z } from "zod";
 
 import { useLastLoginService } from "~/atoms/service/hooks";
 import { useLogin } from "~/atoms/user/hooks";
 
+import { Button } from "./button";
 import { Card } from "./card";
 
 const schema = z.object({
@@ -45,13 +46,16 @@ function Input({ label, errors, ...props }: Props) {
 export function LoginForm() {
   const login = useLogin();
   const navigate = useNavigate();
+
   const [lastLoginService, setLastLoginService] = useLastLoginService();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [form, fields] = useForm({
     id: "login-form",
     constraint: getZodConstraint(schema),
     defaultValue: { service: lastLoginService },
     onValidate({ formData }) {
+      setIsSubmitting(true);
       return parseWithZod(formData, { schema });
     },
     onSubmit: async (event, { submission }) => {
@@ -63,6 +67,8 @@ export function LoginForm() {
         navigate(`/edit`);
       } catch (e) {
         alert("ログインに失敗しました");
+      } finally {
+        setIsSubmitting(false);
       }
     },
   });
@@ -99,9 +105,9 @@ export function LoginForm() {
           placeholder="xxxx-xxxx-xxxx-xxxx"
           autoComplete="current-password"
         />
-        <button type="submit" className="btn btn-primary mt-4">
+        <Button type="submit" className="mt-4" loading={isSubmitting}>
           ログイン
-        </button>
+        </Button>
       </Form>
     </Card>
   );
