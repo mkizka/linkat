@@ -4,8 +4,8 @@ import { Form, useNavigate } from "@remix-run/react";
 import type { ComponentProps } from "react";
 import { z } from "zod";
 
+import { useLastLoginService } from "~/atoms/service/hooks";
 import { useLogin } from "~/atoms/user/hooks";
-import { createLogger } from "~/utils/logger";
 
 import { Card } from "./card";
 
@@ -42,23 +42,24 @@ function Input({ label, errors, ...props }: Props) {
   );
 }
 
-const logger = createLogger("login-form");
-
 export function LoginForm() {
   const login = useLogin();
   const navigate = useNavigate();
+  const [lastLoginService, setLastLoginService] = useLastLoginService();
 
   const [form, fields] = useForm({
     id: "login-form",
     constraint: getZodConstraint(schema),
-    defaultValue: { service: "https://bsky.social" },
+    defaultValue: { service: lastLoginService ?? "https://bsky.social" },
     onValidate({ formData }) {
       return parseWithZod(formData, { schema });
     },
     onSubmit: async (event, { submission }) => {
       event.preventDefault();
+      const payload = submission?.payload as Schema;
       try {
-        await login(submission?.payload as Schema);
+        await login(payload);
+        setLastLoginService(payload.service);
         navigate(`/edit`);
       } catch (e) {
         alert("ログインに失敗しました");
