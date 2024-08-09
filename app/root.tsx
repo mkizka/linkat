@@ -1,5 +1,6 @@
 import "./tailwind.css";
 
+import type { ClientLoaderFunction } from "@remix-run/react";
 import {
   Links,
   Meta,
@@ -7,6 +8,17 @@ import {
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
+import { createStore } from "jotai";
+
+import { resumeSessionAtom } from "./atoms/user/write-only";
+
+export { HydrateFallback } from "~/components/hydate-fallback";
+
+export const clientLoader: ClientLoaderFunction = async () => {
+  const store = createStore();
+  await store.set(resumeSessionAtom);
+  return null;
+};
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (

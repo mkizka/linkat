@@ -54,7 +54,7 @@ export const resumeSessionAtom = atom(null, async (get, set) => {
       session: agent.session,
     });
   } catch (e) {
-    logger.info("セッションの再開に失敗しました", { e });
+    logger.debug("セッションの再開に失敗しました", { e });
     set(userAtom, null);
   }
 });
