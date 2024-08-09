@@ -50,7 +50,7 @@ export function LoginForm() {
   const [form, fields] = useForm({
     id: "login-form",
     constraint: getZodConstraint(schema),
-    defaultValue: { service: lastLoginService ?? "https://bsky.social" },
+    defaultValue: { service: lastLoginService },
     onValidate({ formData }) {
       return parseWithZod(formData, { schema });
     },
