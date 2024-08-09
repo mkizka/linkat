@@ -47,9 +47,14 @@ export const resumeSessionAtom = atom(null, async (get, set) => {
     return;
   }
   const agent = new LinkatAgent(user);
-  await agent.resumeSession(user.session);
-  await set(updateUserAtom, {
-    service: user.service,
-    session: agent.session,
-  });
+  try {
+    await agent.resumeSession(user.session);
+    await set(updateUserAtom, {
+      service: user.service,
+      session: agent.session,
+    });
+  } catch (e) {
+    logger.info("セッションの再開に失敗しました", { e });
+    set(userAtom, null);
+  }
 });
