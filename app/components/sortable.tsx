@@ -1,3 +1,4 @@
+import { LinkIcon } from "@heroicons/react/24/solid";
 import { arrayMoveImmutable } from "array-move";
 import { useState } from "react";
 import SortableList, { SortableItem } from "react-easy-sort";
@@ -29,7 +30,14 @@ export function Sortable() {
     <SortableList onSortEnd={onSortEnd} className={containerClass}>
       {items.map((item) => (
         <SortableItem key={item}>
-          <Card className="pointer-events-none select-none"></Card>
+          <Card className="pointer-events-none select-none">
+            <div className="card-body flex-row items-center gap-4">
+              <LinkIcon className="size-8" />
+              <p className="flex-1 truncate">
+                テキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキスト
+              </p>
+            </div>
+          </Card>
         </SortableItem>
       ))}
     </SortableList>

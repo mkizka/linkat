@@ -24,6 +24,8 @@
   "dependencies": {
     "@atproto/api": "^0.12.28",
     "@atproto/common-web": "^0.3.0",
+    "@conform-to/react": "^1.1.5",
+    "@conform-to/zod": "^1.1.5",
     "@heroicons/react": "^2.1.5",
     "@prisma/client": "^5.17.0",
     "@remix-run/express": "^2.11.0",

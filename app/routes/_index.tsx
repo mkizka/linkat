@@ -1,9 +1,8 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import type { ClientLoaderFunction } from "@remix-run/react";
 import { createStore } from "jotai";
 
-import { useLogin } from "~/atoms/userAtom/hooks";
 import { resumeSessionAtom } from "~/atoms/userAtom/write-only";
+import { LoginForm } from "~/components/login-form";
 
 export const clientLoader: ClientLoaderFunction = async () => {
   const store = createStore();
@@ -14,20 +13,9 @@ export const clientLoader: ClientLoaderFunction = async () => {
 export { HydrateFallback } from "~/components/hydate-fallback";
 
 export default function Index() {
-  const login = useLogin();
-
   return (
-    <button
-      className="btn btn-primary"
-      onClick={() =>
-        login({
-          service: import.meta.env.VITE_BSKY_URL,
-          identifier: import.meta.env.VITE_BSKY_USERNAME,
-          password: import.meta.env.VITE_BSKY_PASSWORD,
-        })
-      }
-    >
-      Login
-    </button>
+    <div className="grid h-screen place-items-center">
+      <LoginForm />
+    </div>
   );
 }
