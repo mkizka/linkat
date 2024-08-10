@@ -7,6 +7,8 @@ type StructuredLog = {
   [key: string]: string | number | boolean | object | null;
 };
 
+type NamedStructuredLog = StructuredLog & { name: string };
+
 // const logLevelsOrder = {
 //   debug: 0,
 //   info: 1,
@@ -23,6 +25,9 @@ type StructuredLog = {
 // };
 
 const writeLog = (log: StructuredLog & { name: string }) => {
+  if (process.env.NODE_ENV === "test") {
+    return;
+  }
   if (typeof window !== "undefined") {
     const { message, level, name, ...data } = log;
     const text = `[${name}] ${message}`;
