@@ -24,4 +24,14 @@ model User {
   description String?
   displayName String?
   handle      String  @unique
+  board       Board?
+}
+
+model Board {
+  id        Int      @id @default(autoincrement())
+  userDid   String   @unique
+  user      User     @relation(fields: [userDid], references: [did])
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

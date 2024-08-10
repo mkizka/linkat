@@ -1,15 +1,12 @@
 import type { AtpAgentLoginOpts, AtpSessionData } from "@atproto/api";
 import { BskyAgent } from "@atproto/api";
-import { TID } from "@atproto/common-web";
 
 import type {
   AtpServiceClient,
   DevMkizkaTestProfileBoard,
-  DevMkizkaTestProfileCard,
 } from "~/.client/generated/api";
 import { AtpBaseClient } from "~/.client/generated/api";
 import type { ValidBoard } from "~/models/board";
-import type { ValidCard } from "~/models/card";
 
 export type LinkatAgentOptions = {
   service: string;
@@ -84,22 +81,6 @@ export class LinkatAgent {
     });
   }
 
-  async updateCard(card: ValidCard) {
-    if (!this.bskyAgent.session) {
-      throw new Error("Not logged in");
-    }
-    return await this.bskyAgent.com.atproto.repo.putRecord({
-      repo: this.bskyAgent.session.did,
-      validate: false,
-      collection: "dev.mkizka.test.profile.card",
-      rkey: TID.next().str,
-      record: {
-        url: card.url,
-        text: card.text,
-      } satisfies DevMkizkaTestProfileCard.Record,
-    });
-  }
-
   async updateBoard(board: ValidBoard) {
     if (!this.bskyAgent.session) {
       throw new Error("Not logged in");
@@ -112,10 +93,7 @@ export class LinkatAgent {
       rkey: "self",
       record: {
         ...board,
-        cards: board.cards.map((card) => ({
-          cid: "",
-          uri: "",
-        })),
+        cards: JSON.stringify(board.cards),
       } satisfies DevMkizkaTestProfileBoard.Record,
     });
   }
