@@ -16,10 +16,10 @@ const schema = z.object({
     .url("URLを入力してください"),
   identifier: z
     .string({ required_error: "入力してください" })
-    .regex(/\./, "example.bsky.socialのように指定してください"),
+    .regex(/\./, "example.bsky.socialのように入力してください"),
   password: z
     .string({ required_error: "入力してください" })
-    .regex(/^[a-z0-9-]+$/, "パスワードはアプリパスワードしか使用できません"),
+    .regex(/^[a-z0-9-]+$/, "アプリパスワードしか使用できません"),
 });
 
 type Schema = z.infer<typeof schema>;
@@ -73,7 +73,7 @@ export function LoginForm() {
   });
 
   return (
-    <Card className="flex w-full max-w-screen-sm flex-row justify-center p-4 pb-12">
+    <Card className="flex w-full max-w-screen-sm flex-row justify-center p-4 pb-8">
       <Form
         method="post"
         className="flex w-full max-w-sm flex-col gap-2"
