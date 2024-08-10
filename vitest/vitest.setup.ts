@@ -1,6 +1,5 @@
+import { initialize, resetSequence } from "~/.server/generated/fabbrica";
 import { server } from "~/mocks/server";
-
-import { initialize, resetSequence } from "../app/.server/generated/fabbrica";
 
 // env
 vi.mock("~/.server/server-env", () => ({

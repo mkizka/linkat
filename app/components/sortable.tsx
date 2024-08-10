@@ -4,7 +4,7 @@ import { useState } from "react";
 import SortableList, { SortableItem } from "react-easy-sort";
 import { useHydrated } from "remix-utils/use-hydrated";
 
-import { Card } from "~/components/card";
+import { Card } from "./card";
 
 const containerClass = "grid grid-cols-1 gap-2 md:grid-cols-2";
 
