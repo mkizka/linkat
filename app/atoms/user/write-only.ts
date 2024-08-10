@@ -1,7 +1,7 @@
 import { atom } from "jotai";
 
-import type { LinkatAgentOptions } from "~/.client/agent";
-import { LinkatAgent } from "~/.client/agent";
+import type { LinkatAgentOptions } from "~/libs/agent";
+import { LinkatAgent } from "~/libs/agent";
 import { createLogger } from "~/utils/logger";
 import { required } from "~/utils/required";
 

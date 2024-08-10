@@ -4,8 +4,8 @@ import { BskyAgent } from "@atproto/api";
 import type {
   AtpServiceClient,
   DevMkizkaTestProfileBoard,
-} from "~/.client/generated/api";
-import { AtpBaseClient } from "~/.client/generated/api";
+} from "~/generated/api";
+import { AtpBaseClient } from "~/generated/api";
 import type { ValidBoard } from "~/models/board";
 
 export type LinkatAgentOptions = {
@@ -93,7 +93,7 @@ export class LinkatAgent {
       rkey: "self",
       record: {
         ...board,
-        cards: JSON.stringify(board.cards),
+        content: JSON.stringify(board.cards),
       } satisfies DevMkizkaTestProfileBoard.Record,
     });
   }
