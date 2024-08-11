@@ -18,6 +18,7 @@ jobs:
           cache: pnpm
       - run: pnpm i
       - run: pnpm playwright install --with-deps
+      - run: cp .env.example .env
       - run: pnpm e2e
       - uses: actions/upload-artifact@v4
         if: always()
