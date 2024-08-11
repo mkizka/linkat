@@ -9,7 +9,7 @@
   "scripts": {
     "_dev:atproto": "cd atproto && make run-dev-env",
     "_dev:prisma": "prisma studio",
-    "_dev:remix": "NODE_ENV=development dotenv -- tsx watch --ignore vite.config.ts.* ./app/server.ts",
+    "_dev:remix": "NODE_ENV=development tsx watch --ignore vite.config.ts.* --env-file .env ./app/server.ts",
     "_eslint": "eslint --cache --cache-location ./node_modules/.cache/eslint .",
     "build": "pnpm typecheck && remix vite:build",
     "dev": "./scripts/dev.sh",
@@ -60,7 +60,6 @@
     "@vitest/coverage-v8": "^2.0.5",
     "autoprefixer": "^10.4.19",
     "daisyui": "^4.12.10",
-    "dotenv-cli": "^7.4.2",
     "eslint": "^9.9.0",
     "giget": "^1.2.3",
     "husky": "^9.1.4",
