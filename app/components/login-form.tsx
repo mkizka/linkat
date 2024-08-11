@@ -89,6 +89,7 @@ export function LoginForm() {
           label="サービスURL(分かる人向け)"
           errors={fields.service.errors}
           placeholder="https://bsky.social"
+          data-testid="login-form__service"
         />
         <Input
           {...getInputProps(fields.identifier, { type: "text" })}
@@ -96,6 +97,7 @@ export function LoginForm() {
           errors={fields.identifier.errors}
           placeholder="example.bsky.social"
           autoComplete="username"
+          data-testid="login-form__identifier"
         />
         <Input
           {...getInputProps(fields.password, { type: "password" })}
@@ -103,8 +105,14 @@ export function LoginForm() {
           errors={fields.password.errors}
           placeholder="xxxx-xxxx-xxxx-xxxx"
           autoComplete="current-password"
+          data-testid="login-form__password"
         />
-        <Button type="submit" className="mt-4" loading={isSubmitting}>
+        <Button
+          type="submit"
+          className="mt-4"
+          loading={isSubmitting}
+          data-testid="login-form__submit"
+        >
           ログイン
         </Button>
       </Form>

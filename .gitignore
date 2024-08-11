@@ -1,6 +1,13 @@
 node_modules/
 build/
+.env
+
+# vitest
+coverage/
+
+# atproto
 generated/
 atproto/
-coverage/
-.env
+
+# playwright
+playwright-report/
