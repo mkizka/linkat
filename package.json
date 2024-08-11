@@ -8,8 +8,8 @@
   },
   "scripts": {
     "_dev:atproto": "cd atproto && make run-dev-env",
-    "_dev:prisma": "prisma studio",
-    "_dev:remix": "NODE_ENV=development tsx watch --ignore vite.config.ts.* --env-file .env ./app/server.ts",
+    "_dev:prisma": "prisma studio --browser none",
+    "_dev:remix": "wait-on http://localhost:2583 && NODE_ENV=development tsx watch --ignore vite.config.ts.* --env-file .env ./app/server.ts",
     "_eslint": "eslint --cache --cache-location ./node_modules/.cache/eslint .",
     "build": "pnpm typecheck && remix vite:build",
     "dev": "./scripts/dev.sh",
@@ -76,7 +76,8 @@
     "vite": "^5.1.0",
     "vite-tsconfig-paths": "^4.2.1",
     "vitest": "^2.0.5",
-    "vitest-environment-vprisma": "^1.3.0"
+    "vitest-environment-vprisma": "^1.3.0",
+    "wait-on": "^7.2.0"
   },
   "sideEffects": false,
   "lint-staged": {
