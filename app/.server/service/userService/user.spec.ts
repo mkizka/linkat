@@ -47,8 +47,9 @@ describe("userService", () => {
     test("DBにユーザーがいないとき、Blueskyから取得して作成できる", async () => {
       // arrange
       server.use(
-        http.get("http://localhost:2584/xrpc/app.bsky.actor.getProfile", () =>
-          HttpResponse.json(dummyBlueskyProfile),
+        http.get(
+          "https://public.api.example.com/xrpc/app.bsky.actor.getProfile",
+          () => HttpResponse.json(dummyBlueskyProfile),
         ),
       );
       // act
@@ -67,8 +68,9 @@ describe("userService", () => {
     test("DBにユーザーがなく、Blueskyから取得できないときnullを返す", async () => {
       // arrange
       server.use(
-        http.get("http://localhost:2584/xrpc/app.bsky.actor.getProfile", () =>
-          HttpResponse.json("", { status: 500 }),
+        http.get(
+          "https://public.api.example.com/xrpc/app.bsky.actor.getProfile",
+          () => HttpResponse.json("", { status: 500 }),
         ),
       );
       // act

@@ -1,8 +1,8 @@
 import type { Prisma } from "@prisma/client";
 
 import { prisma } from "~/.server/service/prisma";
-import { serverEnv } from "~/.server/service/server-env";
 import { userService } from "~/.server/service/userService";
+import { serverEnv } from "~/.server/utils/server-env";
 import { LinkatAgent } from "~/libs/agent";
 import { boardScheme, type ValidBoard } from "~/models/board";
 import { createLogger } from "~/utils/logger";
