@@ -6,7 +6,7 @@ import { useHydrated } from "remix-utils/use-hydrated";
 
 import { Card } from "./card";
 
-const containerClass = "grid grid-cols-1 gap-2 md:grid-cols-2";
+const containerClass = "grid grid-cols-1 gap-2";
 
 export function Sortable() {
   const hydrated = useHydrated();
@@ -27,7 +27,7 @@ export function Sortable() {
   }
 
   return (
-    <SortableList onSortEnd={onSortEnd} className={containerClass}>
+    <SortableList lockAxis="y" onSortEnd={onSortEnd} className={containerClass}>
       {items.map((item) => (
         <SortableItem key={item}>
           <Card className="pointer-events-none select-none">
