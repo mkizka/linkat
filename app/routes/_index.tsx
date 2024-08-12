@@ -1,4 +1,4 @@
-import { LoginForm } from "~/components/login-form";
+import { LoginForm } from "~/features/login/login-form";
 
 export default function Index() {
   return (

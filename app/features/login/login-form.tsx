@@ -4,11 +4,11 @@ import { Form, useNavigate } from "@remix-run/react";
 import { type ComponentProps, useState } from "react";
 import { z } from "zod";
 
-import { useLastLoginService } from "~/atoms/service/hooks";
 import { useLogin } from "~/atoms/user/hooks";
+import { Button } from "~/components/button";
+import { Card } from "~/components/card";
 
-import { Button } from "./button";
-import { Card } from "./card";
+import { useLastLoginService } from "./use-last-login-service";
 
 const schema = z.object({
   service: z
