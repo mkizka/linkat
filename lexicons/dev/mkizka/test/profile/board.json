@@ -8,16 +8,37 @@
       "key": "literal:self",
       "record": {
         "type": "object",
-        "required": ["content"],
+        "required": ["cards"],
         "properties": {
           "description": {
             "type": "string",
             "description": "Description of the board."
           },
-          "content": {
-            "type": "string",
-            "description": "JSON string of the cards."
+          "cards": {
+            "type": "array",
+            "description": "List of cards in the board.",
+            "items": {
+              "type": "ref",
+              "ref": "#card"
+            }
           }
+        }
+      }
+    },
+    "card": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "ID of the card"
+        },
+        "url": {
+          "type": "string",
+          "description": "URL of the link"
+        },
+        "text": {
+          "type": "string",
+          "description": "Text of the card"
         }
       }
     }
