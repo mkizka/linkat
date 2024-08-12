@@ -28,10 +28,6 @@
     "card": {
       "type": "object",
       "properties": {
-        "id": {
-          "type": "string",
-          "description": "ID of the card"
-        },
         "url": {
           "type": "string",
           "description": "URL of the link"
