@@ -37,7 +37,12 @@ export function Sortable({ cards, setCards }: Props) {
   }
 
   return (
-    <SortableList lockAxis="y" onSortEnd={onSortEnd} className={containerClass}>
+    <SortableList
+      lockAxis="y"
+      onSortEnd={onSortEnd}
+      draggedItemClassName="ring ring-primary"
+      className={containerClass}
+    >
       {cards.map((card) => (
         <SortableItem key={card.id}>
           <SortableCard card={card} sortable />
