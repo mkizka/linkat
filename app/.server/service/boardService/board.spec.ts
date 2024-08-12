@@ -6,10 +6,9 @@ import { boardService } from ".";
 vi.mock("../userService");
 
 const dummyBoard = {
-  id: "dummy-board",
+  id: "self",
   cards: [
     {
-      id: "dummy-card",
       url: "https://example.com",
       text: "テキスト",
     },
