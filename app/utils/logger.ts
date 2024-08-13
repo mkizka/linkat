@@ -7,8 +7,6 @@ type StructuredLog = {
   [key: string]: string | number | boolean | object | null;
 };
 
-type NamedStructuredLog = StructuredLog & { name: string };
-
 // const logLevelsOrder = {
 //   debug: 0,
 //   info: 1,
