@@ -31,7 +31,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: "pnpm dev",
+    command: "pnpm start:e2e",
     port: 3000,
     stdout: "pipe",
     reuseExistingServer: !process.env.CI,

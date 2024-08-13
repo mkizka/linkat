@@ -20,7 +20,7 @@
     "prepare": "husky",
     "setup-dev": "./scripts/setup-dev.sh",
     "start": "NODE_ENV=production tsx ./app/server.ts",
-    "start:e2e": "pnpm setup-dev && pnpm run-p -l dev:atproto start",
+    "start:e2e": "pnpm run-p -l dev:atproto start",
     "test": "vitest run --coverage",
     "typecheck": "tsc"
   },
