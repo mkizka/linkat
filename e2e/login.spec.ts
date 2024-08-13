@@ -7,7 +7,7 @@ test.describe("ログイン", () => {
     await page.getByTestId("login-form__identifier").fill("alice.test");
     await page.getByTestId("login-form__password").fill("hunter2");
     await page.getByTestId("login-form__submit").click();
-    await page.waitForURL("**/edit");
+    await page.waitForURL((url) => url.pathname === "/edit");
     await page.waitForTimeout(2000);
   });
 });

@@ -5,7 +5,10 @@ export default defineConfig({
   outputDir: "./node_modules/.cache/playwright",
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  reporter: "html",
+  reporter: [
+    ["list", { printSteps: true }],
+    ["html", { open: "always" }],
+  ],
   use: {
     baseURL: "http://localhost:3000",
     video: "on",
