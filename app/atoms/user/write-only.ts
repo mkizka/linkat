@@ -15,7 +15,7 @@ const updateUserAtom = atom(
     set(userAtom, {
       profile: response.data,
       session: required(agent.session),
-      service: options.service,
+      service: options.service.toString(),
     });
   },
 );

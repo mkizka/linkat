@@ -23,7 +23,7 @@
     "typecheck": "tsc"
   },
   "dependencies": {
-    "@atproto/api": "^0.12.28",
+    "@atproto/api": "^0.13.1",
     "@conform-to/react": "^1.1.5",
     "@conform-to/zod": "^1.1.5",
     "@heroicons/react": "^2.1.5",
@@ -45,10 +45,10 @@
     "zod-validation-error": "^3.3.1"
   },
   "devDependencies": {
-    "@atproto/lex-cli": "0.3.2",
-    "@atproto/lexicon": "^0.4.0",
-    "@atproto/xrpc": "^0.5.0",
-    "@atproto/xrpc-server": "^0.6.0",
+    "@atproto/lex-cli": "^0.5.0",
+    "@atproto/lexicon": "^0.4.1",
+    "@atproto/xrpc": "^0.6.0",
+    "@atproto/xrpc-server": "^0.6.1",
     "@mkizka/eslint-config": "^5.3.1",
     "@playwright/test": "^1.46.0",
     "@quramy/prisma-fabbrica": "^2.2.1",

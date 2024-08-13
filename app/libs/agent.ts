@@ -1,11 +1,7 @@
-import type { AtpAgentLoginOpts, AtpSessionData } from "@atproto/api";
-import { BskyAgent } from "@atproto/api";
+import type { AtpSessionData } from "@atproto/api";
+import { AtpAgent } from "@atproto/api";
 
-import type {
-  AtpServiceClient,
-  DevMkizkaTestProfileBoard,
-} from "~/generated/api";
-import { AtpBaseClient } from "~/generated/api";
+import { DevNS } from "~/generated/api";
 import type { ValidBoard } from "~/models/board";
 
 export type LinkatAgentOptions = {
@@ -13,98 +9,48 @@ export type LinkatAgentOptions = {
   session?: AtpSessionData;
 };
 
-export class LinkatAgent {
-  readonly client: AtpServiceClient;
-  readonly bskyAgent: BskyAgent;
+export class LinkatAgent extends AtpAgent {
+  dev: DevNS;
 
-  constructor({ service, session }: LinkatAgentOptions) {
-    this.client = new AtpBaseClient().service(service);
-    this.bskyAgent = new BskyAgent({
-      service,
-      persistSession: (_, newSession) => {
-        if (newSession) this._updateAccessJwt(newSession);
-      },
-    });
-    if (session) {
-      this.bskyAgent.session = session;
-      this._updateAccessJwt(session);
-    }
-  }
-
-  protected _updateAccessJwt(session: AtpSessionData) {
-    this.client.setHeader("Authorization", `Bearer ${session.accessJwt}`);
-  }
-
-  get dev() {
-    return this.client.dev;
-  }
-
-  hasSession() {
-    return this.bskyAgent.hasSession;
-  }
-
-  get session() {
-    return this.bskyAgent.session;
-  }
-
-  async resumeSession(session: AtpSessionData) {
-    return await this.bskyAgent.resumeSession(session);
-  }
-
-  async login(options: AtpAgentLoginOpts) {
-    return await this.bskyAgent.login(options);
+  constructor(options: LinkatAgentOptions) {
+    super(options);
+    this.dev = new DevNS(this);
   }
 
   async getSessionProfile() {
-    if (!this.bskyAgent.session) {
-      throw new Error("Not logged in");
-    }
-    return await this.bskyAgent.getProfile({
-      actor: this.bskyAgent.session.did,
+    return await this.getProfile({ actor: this.accountDid });
+  }
+
+  async getBoard(
+    params: Omit<
+      Parameters<typeof this.dev.mkizka.test.profile.board.get>[0],
+      "rkey"
+    >,
+  ) {
+    return await this.dev.mkizka.test.profile.board.get({
+      ...params,
+      rkey: "self",
     });
   }
 
   async getSessionBoard() {
-    if (!this.bskyAgent.session) {
-      throw new Error("Not logged in");
-    }
-    return await this.dev.mkizka.test.profile.board.get({
-      repo: this.bskyAgent.session.did,
-      rkey: "self",
-    });
-  }
-
-  async getBoard({ repo }: { repo: string }) {
-    return await this.dev.mkizka.test.profile.board.get({
-      repo,
-      rkey: "self",
-    });
+    return await this.getBoard({ repo: this.accountDid });
   }
 
   async updateBoard(board: ValidBoard) {
-    if (!this.bskyAgent.session) {
-      throw new Error("Not logged in");
-    }
     // dev.mkizka.test.profile.boardにはなぜかputがないので、com.atproto.repoを使う
-    return await this.bskyAgent.com.atproto.repo.putRecord({
-      repo: this.bskyAgent.session.did,
+    return await this.com.atproto.repo.putRecord({
+      repo: this.accountDid,
       validate: false,
       collection: "dev.mkizka.test.profile.board",
       rkey: "self",
-      record: {
-        ...board,
-        content: JSON.stringify(board.cards),
-      } satisfies DevMkizkaTestProfileBoard.Record,
+      record: board,
     });
   }
 
   async deleteBoard() {
-    if (!this.bskyAgent.session) {
-      throw new Error("Not logged in");
-    }
-    await this.dev.mkizka.test.profile.board.delete({
-      repo: this.bskyAgent.session.did,
-      validate: false,
+    return await this.dev.mkizka.test.profile.board.delete({
+      repo: this.accountDid,
       rkey: "self",
     });
   }
