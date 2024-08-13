@@ -15,6 +15,9 @@ export class LinkatAgent extends AtpAgent {
   constructor(options: LinkatAgentOptions) {
     super(options);
     this.dev = new DevNS(this);
+    if (options.session) {
+      this.sessionManager.session = options.session;
+    }
   }
 
   async getSessionProfile() {

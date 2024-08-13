@@ -7,6 +7,7 @@ import { z } from "zod";
 import { useLogin } from "~/atoms/user/hooks";
 import { Button } from "~/components/button";
 import { Card } from "~/components/card";
+import { createLogger } from "~/utils/logger";
 
 import { useLastLoginService } from "./use-last-login-service";
 
@@ -43,6 +44,8 @@ function Input({ label, errors, ...props }: Props) {
   );
 }
 
+const logger = createLogger("login-form");
+
 export function LoginForm() {
   const login = useLogin();
   const navigate = useNavigate();
@@ -66,6 +69,7 @@ export function LoginForm() {
         setLastLoginService(payload.service);
         navigate(`/edit`);
       } catch (e) {
+        logger.error("ログインに失敗しました", { e });
         alert("ログインに失敗しました");
         setIsSubmitting(false);
       }
