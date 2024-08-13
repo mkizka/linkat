@@ -9,5 +9,4 @@ if [ ! -d ./atproto/node_modules ]; then
 fi
 
 docker compose up -d --wait
-pnpm prisma db push
-pnpm run-p -l '_dev:*'
+pnpm prisma db push --skip-generate
