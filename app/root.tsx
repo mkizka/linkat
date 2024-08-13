@@ -8,14 +8,14 @@ import {
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
-import { createStore } from "jotai";
+import { getDefaultStore } from "jotai";
 
 import { resumeSessionAtom } from "./atoms/user/write-only";
 
 export { HydrateFallback } from "~/components/hydate-fallback";
 
 export const clientLoader: ClientLoaderFunction = async () => {
-  const store = createStore();
+  const store = getDefaultStore();
   await store.set(resumeSessionAtom);
   return null;
 };
