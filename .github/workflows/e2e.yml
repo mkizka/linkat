@@ -18,8 +18,8 @@ jobs:
           cache: pnpm
       - run: pnpm i
       - run: pnpm playwright install --with-deps
-      - run: pnpm setup-dev
       - run: cp .env.example .env
+      - run: pnpm setup-dev
       - run: pnpm build
       - run: pnpm e2e
       - uses: actions/upload-artifact@v4
