@@ -1,6 +1,13 @@
 import { initialize, resetSequence } from "~/.server/generated/fabbrica";
 import { server } from "~/mocks/server";
 
+// env
+vi.mock("~/.server/utils/server-env", () => ({
+  serverEnv: {
+    PUBLIC_BSKY_URL: "https://public.api.example.com",
+  },
+}));
+
 // prisma
 vi.mock("~/.server/service/prisma", () => ({
   prisma: vPrisma.client,
