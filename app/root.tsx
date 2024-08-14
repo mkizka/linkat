@@ -5,18 +5,27 @@ import {
   Links,
   Meta,
   Outlet,
+  redirect,
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
 import { getDefaultStore } from "jotai";
 
+import { userAtom } from "./atoms/user/base";
 import { resumeSessionAtom } from "./atoms/user/write-only";
 
 export { HydrateFallback } from "~/components/hydate-fallback";
 
-export const clientLoader: ClientLoaderFunction = async () => {
+const LOGIN_REQUIRED_PATHS = ["/edit"];
+
+export const clientLoader: ClientLoaderFunction = async ({ request }) => {
   const store = getDefaultStore();
   await store.set(resumeSessionAtom);
+  const user = store.get(userAtom);
+  const pathname = new URL(request.url).pathname;
+  if (!user && LOGIN_REQUIRED_PATHS.includes(pathname)) {
+    return redirect("/");
+  }
   return null;
 };
 
