@@ -2,6 +2,9 @@ import { createRequestHandler } from "@remix-run/express";
 import type { ServerBuild } from "@remix-run/node";
 import express from "express";
 
+import { startFirehoseSubscription } from "./.server/firehose/subscription.js";
+import { createLogger } from "./utils/logger.js";
+
 // import { createServer } from "./generated/server/index.js";
 
 const viteDevServer =
@@ -40,15 +43,9 @@ const build = viteDevServer
 
 app.all("*", createRequestHandler({ build }));
 
-// const subscription = new FirehoseSubscription({
-//   service: "http://localhost:2583",
-// });
-// subscription
-//   .run({ reconnectDelay: 1000 })
-//   // eslint-disable-next-line
-//   .catch(console.error);
+const logger = createLogger("server");
 
 app.listen(3000, "0.0.0.0", () => {
-  // eslint-disable-next-line no-console
-  console.log(`App listening on http://localhost:3000`);
+  logger.info(`App listening on http://localhost:3000`);
+  startFirehoseSubscription();
 });

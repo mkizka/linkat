@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "@atproto/api": "^0.13.1",
+    "@atproto/repo": "^0.4.2",
     "@conform-to/react": "^1.1.5",
     "@conform-to/zod": "^1.1.5",
     "@heroicons/react": "^2.1.5",

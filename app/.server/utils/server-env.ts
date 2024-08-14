@@ -10,6 +10,7 @@ const envSchema = z.object({
   //   .default(process.env.NODE_ENV === "production" ? "info" : "debug"),
   DATABASE_URL: z.string(),
   PUBLIC_BSKY_URL: z.string().url(),
+  BSKY_FIREHOSE_URL: z.string().url(),
 });
 
 export type EnvScheme = z.infer<typeof envSchema>;
