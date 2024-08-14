@@ -21,7 +21,7 @@ test.describe("編集", () => {
     await page.waitForTimeout(2000);
   });
   test("ログインが無効な時はトップにリダイレクト", async ({ page }) => {
-    await page.goto("/dummy");
+    await page.goto("/");
     await page.evaluate((user) => {
       localStorage.setItem("user", user);
     }, DUMMY_EXPIRED_USER);
