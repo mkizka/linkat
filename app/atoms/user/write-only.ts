@@ -1,29 +1,31 @@
+import type { AtpAgentLoginOpts } from "@atproto/api";
 import { atom } from "jotai";
 
-import type { LinkatAgentOptions } from "~/libs/agent";
+import { linkatAgentAtom } from "~/atoms/agent/base";
 import { LinkatAgent } from "~/libs/agent";
 import { createLogger } from "~/utils/logger";
 import { required } from "~/utils/required";
 
 import { userAtom } from "./base";
 
-const updateUserAtom = atom(
-  null,
-  async (_, set, options: LinkatAgentOptions) => {
-    const agent = new LinkatAgent(options);
-    const response = await agent.getSessionProfile();
-    set(userAtom, {
-      profile: response.data,
-      session: required(agent.session),
-      service: options.service.toString(),
-    });
-  },
-);
+const logger = createLogger("userAtom");
 
-type LoginOptions = {
+const updateUserAtom = atom(null, async (_, set, agent: LinkatAgent) => {
+  set(linkatAgentAtom, agent);
+  const response = await agent.getSessionProfile();
+  set(userAtom, {
+    profile: response.data,
+    session: required(agent.session),
+    service: agent.serviceUrl.toString(),
+  });
+});
+
+const resetUserAtom = atom(null, (_, set) => {
+  set(userAtom, null);
+});
+
+type LoginOptions = AtpAgentLoginOpts & {
   service: string;
-  identifier: string;
-  password: string;
 };
 
 export const loginAtom = atom(
@@ -31,14 +33,9 @@ export const loginAtom = atom(
   async (_, set, { service, ...loginOptions }: LoginOptions) => {
     const agent = new LinkatAgent({ service });
     await agent.login(loginOptions);
-    await set(updateUserAtom, {
-      service,
-      session: agent.session,
-    });
+    await set(updateUserAtom, agent);
   },
 );
-
-const logger = createLogger("resumeSessionAtom");
 
 export const resumeSessionAtom = atom(null, async (get, set) => {
   const user = get(userAtom);
@@ -46,15 +43,12 @@ export const resumeSessionAtom = atom(null, async (get, set) => {
     logger.debug("保存されたユーザーがありませんでした");
     return;
   }
-  const agent = new LinkatAgent(user);
+  const agent = new LinkatAgent({ service: user.service });
   try {
     await agent.resumeSession(user.session);
-    await set(updateUserAtom, {
-      service: user.service,
-      session: agent.session,
-    });
+    await set(updateUserAtom, agent);
   } catch (e) {
     logger.debug("セッションの再開に失敗しました", { e });
-    set(userAtom, null);
+    set(resetUserAtom);
   }
 });

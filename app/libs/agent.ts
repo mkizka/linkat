@@ -1,4 +1,3 @@
-import type { AtpSessionData } from "@atproto/api";
 import { AtpAgent } from "@atproto/api";
 
 import { DevNS } from "~/generated/api";
@@ -6,7 +5,6 @@ import type { ValidBoard } from "~/models/board";
 
 export type LinkatAgentOptions = {
   service: string;
-  session?: AtpSessionData;
 };
 
 export class LinkatAgent extends AtpAgent {
@@ -15,9 +13,6 @@ export class LinkatAgent extends AtpAgent {
   constructor(options: LinkatAgentOptions) {
     super(options);
     this.dev = new DevNS(this);
-    if (options.session) {
-      this.sessionManager.session = options.session;
-    }
   }
 
   async getSessionProfile() {

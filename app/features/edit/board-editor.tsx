@@ -1,7 +1,7 @@
 import { PencilSquareIcon } from "@heroicons/react/24/solid";
 import { useState } from "react";
 
-import { useLinkatAgent } from "~/atoms/user/hooks";
+import { useLinkatAgent } from "~/atoms/agent/hooks";
 import { Button } from "~/components/button";
 
 import { Sortable } from "./sortable";
