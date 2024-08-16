@@ -64,9 +64,9 @@ export function LoginForm() {
       event.preventDefault();
       setIsSubmitting(true);
       const payload = submission?.payload as Schema;
+      setLastLoginService(payload.service);
       try {
         await login(payload);
-        setLastLoginService(payload.service);
         navigate(`/edit`);
       } catch (e) {
         logger.error("ログインに失敗しました", { e });
