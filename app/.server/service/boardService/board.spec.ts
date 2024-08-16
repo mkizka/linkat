@@ -1,4 +1,5 @@
 import { UserFactory } from "~/.server/factories/user";
+import { prisma } from "~/.server/service/prisma";
 import type { ValidBoard } from "~/models/board";
 
 import { boardService } from ".";
@@ -20,9 +21,13 @@ describe("boardService", () => {
       // arrange
       const user = await UserFactory.create(); // findOrFetchUserが作成するユーザー
       // act
-      const actual = await boardService.createBoard(user.did, dummyBoard);
+      const actual = await boardService.createOrUpdateBoard(
+        user.did,
+        dummyBoard,
+      );
       // assert
-      expect(actual.userDid).toBe(user.did);
+      expect(await prisma.user.findFirst()).toEqual(user);
+      expect(actual).toEqual(dummyBoard);
     });
   });
 });

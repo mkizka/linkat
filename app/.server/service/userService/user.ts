@@ -1,4 +1,5 @@
-import { type AppBskyActorDefs, BskyAgent } from "@atproto/api";
+import type { AppBskyActorDefs } from "@atproto/api";
+import { AtpAgent } from "@atproto/api";
 import type { Prisma } from "@prisma/client";
 
 import { prisma } from "~/.server/service/prisma";
@@ -42,7 +43,7 @@ const createUser = async ({
 
 const fetchBlueskyProfile = async (handleOrDid: string) => {
   logger.info("プロフィールを取得します", { actor: handleOrDid });
-  const publicAgent = new BskyAgent({
+  const publicAgent = new AtpAgent({
     service: serverEnv.PUBLIC_BSKY_URL,
   });
   const response = await publicAgent.getProfile({
@@ -64,7 +65,9 @@ export const findOrFetchUser = async ({
   }
   const blueskyProfile = await tryCatch(fetchBlueskyProfile)(handleOrDid);
   if (blueskyProfile instanceof Error) {
-    logger.warn("プロフィールの取得に失敗しました", { error: blueskyProfile });
+    logger.warn("プロフィールの取得に失敗しました", {
+      error: blueskyProfile.message,
+    });
     return null;
   }
   return await createUser({

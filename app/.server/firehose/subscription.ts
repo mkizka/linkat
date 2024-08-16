@@ -1,7 +1,8 @@
 import type { ComAtprotoSyncSubscribeRepos } from "@atproto/api";
 
+import { boardService } from "~/.server/service/boardService";
 import { serverEnv } from "~/.server/utils/server-env";
-import { DevMkizkaTestProfileBoard } from "~/generated/api";
+import { boardScheme } from "~/models/board";
 import { createLogger } from "~/utils/logger";
 
 import type { FirehoseOperation } from "./subscription-base";
@@ -10,13 +11,18 @@ import { FirehoseSubscriptionBase } from "./subscription-base";
 const logger = createLogger("firehose");
 
 class FirehoseSubscription extends FirehoseSubscriptionBase {
-  handle(
+  async handle(
     operations: FirehoseOperation[],
     _: ComAtprotoSyncSubscribeRepos.Commit,
-  ): Promise<void> | void {
+  ) {
     for (const operation of operations) {
-      if (!DevMkizkaTestProfileBoard.isRecord(operation.record)) continue;
-      logger.info("Firehose operation", operation);
+      const parsed = boardScheme.safeParse(operation.record);
+      if (!parsed.success) continue;
+      const board = await boardService.createOrUpdateBoard(
+        operation.repo,
+        parsed.data,
+      );
+      logger.info("ボードを更新しました", { board });
     }
   }
 }

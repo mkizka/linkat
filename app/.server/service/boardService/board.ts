@@ -25,33 +25,45 @@ const upsertBoard = async ({
     user: {
       connect,
     },
-    content: JSON.stringify(board.cards),
+    content: JSON.stringify(board),
   } satisfies Prisma.BoardUpsertArgs["create"];
-  return await tx.board.upsert({
+  const newBoard = await tx.board.upsert({
     where: {
       userDid: handleOrDid,
     },
     update: data,
     create: data,
   });
+  // 保存前にバリデーションをかけているのでエラーが起きるのは異常
+  return boardScheme.parse(JSON.parse(newBoard.content));
 };
 
-export const createBoard = async (handleOrDid: string, board: ValidBoard) => {
+export const createOrUpdateBoard = async (
+  handleOrDid: string,
+  board: ValidBoard,
+) => {
   return await prisma.$transaction(async (tx) => {
-    await userService.findOrFetchUser({ tx, handleOrDid });
+    const user = await userService.findOrFetchUser({ tx, handleOrDid });
+    if (!user) {
+      throw new Error("ユーザー作成に失敗しました");
+    }
     return await upsertBoard({ tx, handleOrDid, board });
   });
 };
 
-const findBoard = async ({ handleOrDid }: { handleOrDid: string }) => {
+const findBoard = async (handleOrDid: string) => {
   const user = handleOrDid.startsWith("did:")
     ? { did: handleOrDid }
     : { handle: handleOrDid };
-  return await prisma.board.findFirst({
+  const board = await prisma.board.findFirst({
     where: {
       user,
     },
   });
+  if (!board) {
+    return null;
+  }
+  return boardScheme.parse(JSON.parse(board.content));
 };
 
 const fetchBoardInPDS = async (handleOrDid: string) => {
@@ -69,12 +81,9 @@ const fetchBoardInPDS = async (handleOrDid: string) => {
   return parsed.data;
 };
 
-export const findOrFetchBoard = async ({
-  handleOrDid,
-}: {
-  handleOrDid: string;
-}) => {
-  const board = await findBoard({ handleOrDid });
+// TODO: 全部の処理を一つのトランザクションで行う
+export const findOrFetchBoard = async (handleOrDid: string) => {
+  const board = await findBoard(handleOrDid);
   if (board) {
     return board;
   }
@@ -82,9 +91,5 @@ export const findOrFetchBoard = async ({
   if (!boardInPDS) {
     return null;
   }
-  const newBoard = await createBoard(handleOrDid, boardInPDS);
-  return {
-    ...newBoard,
-    cards: [],
-  };
+  return createOrUpdateBoard(handleOrDid, boardInPDS);
 };
