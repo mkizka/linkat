@@ -83,6 +83,13 @@ export abstract class FirehoseSubscriptionBase {
         try {
           await this.handleEvent(evt);
         } catch (e) {
+          // https://github.com/bluesky-social/atproto/issues/2484
+          if (
+            e instanceof RangeError &&
+            e.message === "Could not decode varint"
+          ) {
+            continue;
+          }
           console.error(e);
         }
         if (ComAtprotoSyncSubscribeRepos.isCommit(evt)) {
