@@ -12,4 +12,8 @@ export default {
     },
   },
   plugins: [daisyui],
+  // https://daisyui.com/docs/config/
+  daisyui: {
+    logs: false,
+  },
 } satisfies Config;
