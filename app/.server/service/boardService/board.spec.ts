@@ -4,8 +4,6 @@ import type { ValidBoard } from "~/models/board";
 
 import { boardService } from ".";
 
-vi.mock("../userService");
-
 const dummyBoard = {
   cards: [
     {
