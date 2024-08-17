@@ -87,6 +87,9 @@ importers:
       '@mkizka/eslint-config':
         specifier: ^5.3.1
         version: 5.3.1(@typescript-eslint/eslint-plugin@7.18.0(@typescript-eslint/parser@7.18.0(eslint@9.9.0(jiti@1.21.6))(typescript@5.5.4))(eslint@9.9.0(jiti@1.21.6))(typescript@5.5.4))(eslint@9.9.0(jiti@1.21.6))(tailwindcss@3.4.9)(typescript@5.5.4)
+      '@mkizka/eslint-plugin-aaa':
+        specifier: ^1.0.0
+        version: 1.0.0
       '@playwright/test':
         specifier: ^1.46.0
         version: 1.46.0
@@ -1080,6 +1083,9 @@ packages:
     resolution: {integrity: sha512-3Y2HnWmc9Dxfy+npm+5PfyA9dnukH8t9bRQD35xbPcRuXpzuENyop1CjtWS/0onsXqtEfQBHPphzPIGyl0VmIg==}
     peerDependencies:
       eslint: '>= 9'
+
+  '@mkizka/eslint-plugin-aaa@1.0.0':
+    resolution: {integrity: sha512-r4iBrioTjrsjjhW+J9/+IOqXYkNolxfWsE+x6o2Xf3d04/Bw475r7H8gF1LBINuPSAfoVyWupBkeAxpuu0ncRg==}
 
   '@mswjs/interceptors@0.29.1':
     resolution: {integrity: sha512-3rDakgJZ77+RiQUuSK69t1F0m8BQKA8Vh5DCS5V0DWvNY67zob2JhhQrhCO0AKLGINTRSFd1tBaHcJTkhefoSw==}
@@ -6225,6 +6231,8 @@ snapshots:
       - supports-color
       - tailwindcss
       - typescript
+
+  '@mkizka/eslint-plugin-aaa@1.0.0': {}
 
   '@mswjs/interceptors@0.29.1':
     dependencies:

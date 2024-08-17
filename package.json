@@ -54,6 +54,7 @@
     "@atproto/xrpc": "^0.6.0",
     "@atproto/xrpc-server": "^0.6.1",
     "@mkizka/eslint-config": "^5.3.1",
+    "@mkizka/eslint-plugin-aaa": "^1.0.0",
     "@playwright/test": "^1.46.0",
     "@quramy/prisma-fabbrica": "^2.2.1",
     "@remix-run/dev": "^2.11.1",
