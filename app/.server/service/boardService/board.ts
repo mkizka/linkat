@@ -25,7 +25,7 @@ const upsertBoard = async ({
     user: {
       connect,
     },
-    content: JSON.stringify(board),
+    record: JSON.stringify(board),
   } satisfies Prisma.BoardUpsertArgs["create"];
   const newBoard = await tx.board.upsert({
     where: {
@@ -35,7 +35,7 @@ const upsertBoard = async ({
     create: data,
   });
   // 保存前にバリデーションをかけているのでエラーが起きるのは異常
-  return boardScheme.parse(JSON.parse(newBoard.content));
+  return boardScheme.parse(JSON.parse(newBoard.record));
 };
 
 export const createOrUpdateBoard = async (
@@ -63,7 +63,7 @@ const findBoard = async (handleOrDid: string) => {
   if (!board) {
     return null;
   }
-  return boardScheme.parse(JSON.parse(board.content));
+  return boardScheme.parse(JSON.parse(board.record));
 };
 
 const fetchBoardInPDS = async (handleOrDid: string) => {

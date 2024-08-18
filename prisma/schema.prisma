@@ -10,7 +10,7 @@ generator client {
 
 generator fabbrica {
   provider = "prisma-fabbrica"
-  output      = "../app/.server/generated/fabbrica"
+  output   = "../app/.server/generated/fabbrica"
 }
 
 datasource db {
@@ -31,7 +31,7 @@ model Board {
   id        Int      @id @default(autoincrement())
   userDid   String   @unique
   user      User     @relation(fields: [userDid], references: [did])
-  content   String
+  record    String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
