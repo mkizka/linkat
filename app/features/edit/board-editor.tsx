@@ -3,35 +3,21 @@ import { useState } from "react";
 
 import { useLinkatAgent } from "~/atoms/agent/hooks";
 import { Button } from "~/components/button";
+import type { ValidBoard } from "~/models/board";
 
 import { Sortable } from "./sortable";
 
-// TODO: Card型を整理する
-type Card = {
-  id: string;
-  text: string;
-  url?: string;
+type Props = {
+  initialBoard: ValidBoard;
 };
 
-const sampleCards: Card[] = [
-  {
-    id: "1",
-    text: "1. URLあり",
-    url: "https://example.com/1",
-  },
-  {
-    id: "2",
-    text: "2. URLなし",
-  },
-  {
-    id: "3",
-    text: "https://example.com/3",
-    url: "https://example.com/3",
-  },
-];
-
-export function BoardEditor() {
-  const [cards, setCards] = useState(sampleCards);
+export function BoardEditor({ initialBoard }: Props) {
+  const [cards, setCards] = useState(
+    initialBoard.cards.map((card) => ({
+      ...card,
+      id: crypto.randomUUID().toString(),
+    })),
+  );
   const agent = useLinkatAgent();
 
   return (

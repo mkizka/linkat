@@ -6,6 +6,7 @@ import { serverEnv } from "~/.server/utils/server-env";
 import { LinkatAgent } from "~/libs/agent";
 import { boardScheme, type ValidBoard } from "~/models/board";
 import { createLogger } from "~/utils/logger";
+import { tryCatch } from "~/utils/tryCatch";
 
 const logger = createLogger("boardService");
 
@@ -71,11 +72,17 @@ const fetchBoardInPDS = async (handleOrDid: string) => {
   const agent = new LinkatAgent({
     service: serverEnv.PUBLIC_BSKY_URL,
   });
-  const response = await agent.getBoard({
+  // eslint-disable-next-line @typescript-eslint/unbound-method
+  const response = await tryCatch(agent.getBoard)({
     repo: handleOrDid,
   });
+  if (response instanceof Error) {
+    logger.error("boardの取得に失敗しました", { handleOrDid, response });
+    return null;
+  }
   const parsed = boardScheme.safeParse(response.value);
   if (!parsed.success) {
+    logger.error("boardの取得に失敗しました", { handleOrDid, parsed });
     return null;
   }
   return parsed.data;

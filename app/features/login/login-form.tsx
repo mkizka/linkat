@@ -67,7 +67,7 @@ export function LoginForm() {
       setLastLoginService(payload.service);
       try {
         await login(payload);
-        navigate(`/edit`);
+        navigate(`/edit?base=${payload.identifier}`);
       } catch (e) {
         logger.error("ログインに失敗しました", { e });
         alert("ログインに失敗しました");

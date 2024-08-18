@@ -3,20 +3,16 @@ import type { Dispatch, SetStateAction } from "react";
 import SortableList, { SortableItem } from "react-easy-sort";
 import { useHydrated } from "remix-utils/use-hydrated";
 
+import type { SortableCardProps } from "./sortable-card";
 import { SortableCard } from "./sortable-card";
 
 const containerClass = "grid grid-cols-1 gap-2";
 
-// TODO: Card型を整理する
-type Card = {
-  id: string;
-  text: string;
-  url?: string;
-};
+type CardStateValue = SortableCardProps["card"][];
 
 type Props = {
-  cards: Card[];
-  setCards: Dispatch<SetStateAction<Card[]>>;
+  cards: CardStateValue;
+  setCards: Dispatch<SetStateAction<CardStateValue>>;
 };
 
 export function Sortable({ cards, setCards }: Props) {
