@@ -1,12 +1,13 @@
 import { getFormProps, getInputProps, useForm } from "@conform-to/react";
 import { getZodConstraint, parseWithZod } from "@conform-to/zod";
 import { Form, useNavigate } from "@remix-run/react";
-import { type ComponentProps, useState } from "react";
+import { useState } from "react";
 import { z } from "zod";
 
 import { useLogin } from "~/atoms/user/hooks";
 import { Button } from "~/components/button";
 import { Card } from "~/components/card";
+import { Input } from "~/components/input";
 import { createLogger } from "~/utils/logger";
 
 import { useLastLoginService } from "./use-last-login-service";
@@ -24,25 +25,6 @@ const schema = z.object({
 });
 
 type Schema = z.infer<typeof schema>;
-
-type Props = ComponentProps<"input"> & {
-  label: string;
-  errors?: string[];
-};
-
-function Input({ label, errors, ...props }: Props) {
-  return (
-    <div>
-      <label className="form-control">
-        <div className="label">
-          <span className="label-text">{label}</span>
-        </div>
-        <input className="input input-bordered" {...props} />
-      </label>
-      {errors && <p className="p-1 text-sm text-error">{errors}</p>}
-    </div>
-  );
-}
 
 const logger = createLogger("login-form");
 

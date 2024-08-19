@@ -19,7 +19,7 @@ export const SortableCard = forwardRef<HTMLDivElement, SortableCardProps>(
       >
         <div className="card-body flex-row items-center gap-4">
           <LinkIcon className="size-8" />
-          <p className="flex-1 truncate">{card.text}</p>
+          <p className="flex-1 truncate">{card.text || card.url}</p>
         </div>
       </Card>
     );
