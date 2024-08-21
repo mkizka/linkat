@@ -28,6 +28,7 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "baseUrl": ".",
+    "noUncheckedIndexedAccess": true,
     "paths": {
       "~/*": ["./app/*"]
     },

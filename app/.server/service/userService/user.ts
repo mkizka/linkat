@@ -19,8 +19,11 @@ const findUser = async ({
   const where = handleOrDid.startsWith("did:")
     ? { did: handleOrDid }
     : { handle: handleOrDid };
-  return await tx.user.findUnique({
+  return await tx.user.findFirst({
     where,
+    orderBy: {
+      createdAt: "desc",
+    },
   });
 };
 

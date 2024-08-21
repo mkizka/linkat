@@ -1,4 +1,4 @@
-import type { Prisma } from "@prisma/client";
+import type { Prisma, User } from "@prisma/client";
 
 import { prisma } from "~/.server/service/prisma";
 import { userService } from "~/.server/service/userService";
@@ -12,25 +12,22 @@ const logger = createLogger("boardService");
 
 const upsertBoard = async ({
   tx,
-  handleOrDid,
+  user,
   board,
 }: {
   tx: Prisma.TransactionClient;
-  handleOrDid: string;
+  user: User;
   board: ValidBoard;
 }) => {
-  const connect = handleOrDid.startsWith("did:")
-    ? { did: handleOrDid }
-    : { handle: handleOrDid };
   const data = {
     user: {
-      connect,
+      connect: user,
     },
     record: JSON.stringify(board),
   } satisfies Prisma.BoardUpsertArgs["create"];
   const newBoard = await tx.board.upsert({
     where: {
-      userDid: handleOrDid,
+      userDid: user.did,
     },
     update: data,
     create: data,
@@ -48,7 +45,7 @@ export const createOrUpdateBoard = async (
     if (!user) {
       throw new Error("ユーザー作成に失敗しました");
     }
-    return await upsertBoard({ tx, handleOrDid, board });
+    return await upsertBoard({ tx, user, board });
   });
 };
 

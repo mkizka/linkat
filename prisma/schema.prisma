@@ -23,8 +23,10 @@ model User {
   avatar      String?
   description String?
   displayName String?
-  handle      String  @unique
+  handle      String
   board       Board?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model Board {

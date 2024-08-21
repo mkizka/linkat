@@ -3,6 +3,8 @@ import { ComAtprotoSyncSubscribeRepos, lexicons } from "@atproto/api";
 import { cborToLexRecord, readCar } from "@atproto/repo";
 import { Subscription } from "@atproto/xrpc-server";
 
+import { required } from "~/utils/required";
+
 export type FirehoseOperation = {
   action: string;
   uri: string;
@@ -69,7 +71,7 @@ export abstract class FirehoseSubscriptionBase {
         action: op.action,
         cid: `${op.cid}`,
         uri: `at://${event.repo}/${op.path}`,
-        collection: op.path.split("/")[0],
+        collection: required(op.path.split("/")[0]),
         repo: event.repo,
         record: cborToLexRecord(recordBytes),
       });

@@ -44,6 +44,24 @@ describe("userService", () => {
       // assert
       expect(actual).toEqual(user);
     });
+    test("handleが同じユーザーが複数DBにある場合は、最後の方を取得する", async () => {
+      // arrange
+      const user1 = await UserFactory.create({
+        handle: "example.com",
+        createdAt: new Date("2024-01-01T00:00:00.000Z"),
+      });
+      const user2 = await UserFactory.create({
+        handle: "example.com",
+        createdAt: new Date("2024-01-02T00:00:00.000Z"),
+      });
+      // act
+      const actual = await userService.findOrFetchUser({
+        handleOrDid: "example.com",
+      });
+      // assert
+      expect(user1.did).not.toEqual(user2.did);
+      expect(actual).toEqual(user2);
+    });
     test("DBにユーザーがいないとき、Blueskyから取得して作成できる", async () => {
       // arrange
       server.use(
@@ -63,6 +81,8 @@ describe("userService", () => {
         did: "did:plc:dfbe2uvzisfdxwscnwcxdta6",
         displayName: "Alice",
         handle: "example.com",
+        createdAt: expect.any(Date),
+        updatedAt: expect.any(Date),
       });
     });
     test("DBにユーザーがなく、Blueskyから取得できないときnullを返す", async () => {
