@@ -1,3 +1,4 @@
+import type { AppBskyActorDefs } from "@atproto/api";
 import { http, HttpResponse } from "msw";
 
 import { UserFactory } from "~/.server/factories/user";
@@ -20,7 +21,7 @@ const dummyBlueskyProfile = {
   followersCount: 2,
   followsCount: 2,
   postsCount: 42,
-};
+} satisfies AppBskyActorDefs.ProfileViewDetailed;
 
 describe("userService", () => {
   describe("findUser", () => {

@@ -1,4 +1,3 @@
-/// <reference types="vitest" />
 import { vitePlugin as remix } from "@remix-run/dev";
 import { defineConfig } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
@@ -18,7 +17,11 @@ export default defineConfig({
     include: ["app/**/*.spec.ts"],
     coverage: {
       include: ["app/.server/**/*.ts"],
-      exclude: ["**/generated/**"],
+      exclude: [
+        "app/**/*.spec.ts",
+        "app/.server/**/*.spec.ts",
+        "**/generated/**",
+      ],
     },
     // vitest-environment-vprisma
     globals: true,

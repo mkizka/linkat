@@ -69,8 +69,7 @@ const fetchBoardInPDS = async (handleOrDid: string) => {
   const agent = new LinkatAgent({
     service: serverEnv.PUBLIC_BSKY_URL,
   });
-  // eslint-disable-next-line @typescript-eslint/unbound-method
-  const response = await tryCatch(agent.getBoard)({
+  const response = await tryCatch(agent.getBoard.bind(agent))({
     repo: handleOrDid,
   });
   if (response instanceof Error) {
