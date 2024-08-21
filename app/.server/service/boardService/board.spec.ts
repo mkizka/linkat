@@ -4,6 +4,7 @@ import { http, HttpResponse } from "msw";
 import { BoardFactory, cardsFromFactory } from "~/.server/factories/board";
 import { UserFactory } from "~/.server/factories/user";
 import { prisma } from "~/.server/service/prisma";
+import { mockedLogger } from "~/mocks/logger";
 import { server } from "~/mocks/server";
 import type { ValidBoard } from "~/models/board";
 
@@ -83,7 +84,7 @@ describe("boardService", () => {
       // assert
       expect(actual).toEqual({ cards: cardsFromFactory });
     });
-    test("ボードがなくてもPDSから取得できればDBに保存して返す", async () => {
+    test("DBにボードがなくてもPDSから取得できればDBに保存して返す", async () => {
       // arrange
       server.use(
         http.get(
@@ -99,6 +100,61 @@ describe("boardService", () => {
       const actual = await boardService.findOrFetchBoard("example.com");
       // assert
       expect(actual).toEqual(dummyBoard);
+    });
+    test("DBにボードがなくPDSから取得したボードが不正ならnullを返す", async () => {
+      // arrange
+      server.use(
+        http.get(
+          "https://public.api.example.com/xrpc/com.atproto.repo.getRecord",
+          () =>
+            HttpResponse.json({
+              ...dummyBoardRecord,
+              value: { $type: "invalid" },
+            }),
+        ),
+      );
+      // act
+      const actual = await boardService.findOrFetchBoard("example.com");
+      // assert
+      expect(mockedLogger.error).toHaveBeenCalledWith(
+        "boardの取得に失敗しました",
+        expect.anything(),
+      );
+      expect(actual).toBeNull();
+    });
+    test("DBにもPDSにもボードが無いときはnullを返す", async () => {
+      // arrange
+      server.use(
+        http.get(
+          "https://public.api.example.com/xrpc/com.atproto.repo.getRecord",
+          () => HttpResponse.json({}, { status: 400 }),
+        ),
+      );
+      // act
+      const actual = await boardService.findOrFetchBoard("example.com");
+      // assert
+      expect(mockedLogger.error).toHaveBeenCalledWith(
+        "boardの取得に失敗しました",
+        expect.anything(),
+      );
+      expect(actual).toBeNull();
+    });
+    test("ボードが取得できたのにユーザーを取得できなかった場合は異常なのでエラーを投げる", async () => {
+      // arrange
+      server.use(
+        http.get(
+          "https://public.api.example.com/xrpc/com.atproto.repo.getRecord",
+          () => HttpResponse.json(dummyBoardRecord),
+        ),
+        http.get(
+          "https://public.api.example.com/xrpc/app.bsky.actor.getProfile",
+          () => HttpResponse.json({}, { status: 404 }),
+        ),
+      );
+      // act
+      const promise = boardService.findOrFetchBoard("example.com");
+      // assert
+      await expect(promise).rejects.toThrow("ユーザー作成に失敗しました");
     });
   });
 });

@@ -43,6 +43,7 @@ export const createOrUpdateBoard = async (
   return await prisma.$transaction(async (tx) => {
     const user = await userService.findOrFetchUser({ tx, handleOrDid });
     if (!user) {
+      // ボードが与えられているのにユーザーが見つからないのは異常
       throw new Error("ユーザー作成に失敗しました");
     }
     return await upsertBoard({ tx, user, board });
