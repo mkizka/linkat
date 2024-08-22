@@ -30,15 +30,17 @@ jobs:
           node-version-file: .tool-versions
           cache: pnpm
       - run: pnpm i
-      # https://dev.to/ayomiku222/how-to-cache-playwright-browser-on-github-actions-51o6
-      - run: echo "PLAYWRIGHT_VERSION=$(pnpm ls @playwright/test --json | jq -r '.[0].devDependencies["@playwright/test"].version')" >> $GITHUB_ENV
+      - run: |
+          PLAYWRIGHT_VERSION=$(pnpm ls @playwright/test --json | jq -r '.[0].devDependencies["@playwright/test"].version')
+          echo "PLAYWRIGHT_VERSION=$PLAYWRIGHT_VERSION" >> $GITHUB_ENV
         id: playwright-version
       - uses: actions/cache@v3
         id: playwright-cache
         with:
           path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-playwright-${{ env.PLAYWRIGHT_VERSION }}
+          key: playwright@${{ env.PLAYWRIGHT_VERSION }}-${{ runner.os }}
       - run: pnpm playwright install --with-deps
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
       - run: cp .env.example .env
       - run: pnpm setup-dev
       - run: pnpm build
