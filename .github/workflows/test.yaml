@@ -29,6 +29,13 @@ jobs:
         with:
           node-version-file: .tool-versions
           cache: pnpm
+      - run: |
+          ATPROTO_COMMIT=$(cat ./scripts/postinstall.sh | grep ATPROTO_COMMIT= | awk -F'=' '{print $2}')
+          echo "ATPROTO_COMMIT=$ATPROTO_COMMIT" >> $GITHUB_ENV
+      - uses: actions/cache@v4
+        with:
+          path: atproto
+          key: atproto-${{ env.ATPROTO_COMMIT }}
       - run: pnpm i
       - run: pnpm playwright install --with-deps
       - run: cp .env.example .env
