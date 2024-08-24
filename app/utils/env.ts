@@ -15,7 +15,7 @@ const server = {
 
 export const env = createEnv({
   server,
-  runtimeEnv: import.meta.env,
+  runtimeEnv: typeof process !== "undefined" ? process.env : import.meta.env,
   emptyStringAsUndefined: true,
   skipValidation: true,
 });
