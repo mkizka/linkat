@@ -2,6 +2,7 @@ import type { ComAtprotoSyncSubscribeRepos } from "@atproto/api";
 import { fromZodError } from "zod-validation-error";
 
 import { boardService } from "~/.server/service/boardService";
+import { DevMkizkaTestProfileBoard } from "~/generated/api";
 import { boardScheme } from "~/models/board";
 import { env } from "~/utils/env";
 import { createLogger } from "~/utils/logger";
@@ -17,6 +18,9 @@ class FirehoseSubscription extends FirehoseSubscriptionBase {
     _: ComAtprotoSyncSubscribeRepos.Commit,
   ) {
     for (const operation of operations) {
+      if (!DevMkizkaTestProfileBoard.isRecord(operation.record)) {
+        continue;
+      }
       const parsed = boardScheme.safeParse(operation.record);
       if (!parsed.success) {
         logger.warn("ボードのパースに失敗しました", {
