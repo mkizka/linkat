@@ -2,9 +2,9 @@ import type { Prisma, User } from "@prisma/client";
 
 import { prisma } from "~/.server/service/prisma";
 import { userService } from "~/.server/service/userService";
-import { serverEnv } from "~/.server/utils/server-env";
 import { LinkatAgent } from "~/libs/agent";
 import { boardScheme, type ValidBoard } from "~/models/board";
+import { env } from "~/utils/env";
 import { createLogger } from "~/utils/logger";
 import { tryCatch } from "~/utils/tryCatch";
 
@@ -68,7 +68,7 @@ const findBoard = async (handleOrDid: string) => {
 const fetchBoardInPDS = async (handleOrDid: string) => {
   logger.info("boardを取得します", { handleOrDid });
   const agent = new LinkatAgent({
-    service: serverEnv.PUBLIC_BSKY_URL,
+    service: env.BSKY_PUBLIC_API_URL,
   });
   const response = await tryCatch(agent.getBoard.bind(agent))({
     repo: handleOrDid,

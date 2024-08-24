@@ -36,6 +36,7 @@
     "@remix-run/express": "^2.11.2",
     "@remix-run/node": "^2.11.2",
     "@remix-run/react": "^2.11.2",
+    "@t3-oss/env-core": "^0.11.0",
     "array-move": "^4.0.0",
     "clsx": "^2.1.1",
     "express": "^4.19.2",

@@ -3,7 +3,7 @@ import { AtpAgent } from "@atproto/api";
 import type { Prisma } from "@prisma/client";
 
 import { prisma } from "~/.server/service/prisma";
-import { serverEnv } from "~/.server/utils/server-env";
+import { env } from "~/utils/env";
 import { createLogger } from "~/utils/logger";
 import { tryCatch } from "~/utils/tryCatch";
 
@@ -47,7 +47,7 @@ const createUser = async ({
 const fetchBlueskyProfile = async (handleOrDid: string) => {
   logger.info("プロフィールを取得します", { actor: handleOrDid });
   const publicAgent = new AtpAgent({
-    service: serverEnv.PUBLIC_BSKY_URL,
+    service: env.BSKY_PUBLIC_API_URL,
   });
   const response = await publicAgent.getProfile({
     actor: handleOrDid,

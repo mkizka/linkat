@@ -1,8 +1,8 @@
 import type { ComAtprotoSyncSubscribeRepos } from "@atproto/api";
 
 import { boardService } from "~/.server/service/boardService";
-import { serverEnv } from "~/.server/utils/server-env";
 import { boardScheme } from "~/models/board";
+import { env } from "~/utils/env";
 import { createLogger } from "~/utils/logger";
 
 import type { FirehoseOperation } from "./subscription-base";
@@ -28,11 +28,9 @@ class FirehoseSubscription extends FirehoseSubscriptionBase {
 }
 
 export const startFirehoseSubscription = () => {
-  logger.info(
-    `Firehose subscription started to ${serverEnv.BSKY_FIREHOSE_URL}`,
-  );
+  logger.info(`Firehose subscription started to ${env.BSKY_FIREHOSE_URL}`);
   const subscription = new FirehoseSubscription({
-    service: serverEnv.BSKY_FIREHOSE_URL,
+    service: env.BSKY_FIREHOSE_URL,
   });
   void subscription.run({ reconnectDelay: 1000 });
 };
