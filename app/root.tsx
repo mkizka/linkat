@@ -14,6 +14,7 @@ import { getDefaultStore } from "jotai";
 import { userAtom } from "./atoms/user/base";
 import { resumeSessionAtom } from "./atoms/user/write-only";
 
+export { ErrorBoundary } from "~/components/error-boundary";
 export { HydrateFallback } from "~/components/hydate-fallback";
 
 const LOGIN_REQUIRED_PATHS = ["/edit"];
