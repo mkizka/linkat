@@ -74,6 +74,8 @@ const fetchBoardInPDS = async (handleOrDid: string) => {
     repo: handleOrDid,
   });
   if (response instanceof Error) {
+    // eslint-disable-next-line no-console
+    console.error(response);
     logger.debug("boardの取得に失敗しました", { handleOrDid, response });
     return null;
   }
