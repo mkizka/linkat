@@ -11,3 +11,4 @@ atproto/
 
 # playwright
 playwright-report/
+e2e/state.json

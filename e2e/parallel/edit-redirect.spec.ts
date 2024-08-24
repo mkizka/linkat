@@ -14,7 +14,7 @@ const DUMMY_EXPIRED_USER = JSON.stringify({
   service: "http://localhost:2583/",
 });
 
-test.describe("編集", () => {
+test.describe("編集(リダイレクト)", () => {
   test("非ログイン時はトップにリダイレクト", async ({ page }) => {
     await page.goto("/edit");
     await page.waitForURL((url) => url.pathname === "/");

@@ -8,6 +8,6 @@ test.describe("ログイン", () => {
     await page.getByTestId("login-form__password").fill("hunter2");
     await page.getByTestId("login-form__submit").click();
     await page.waitForURL((url) => url.pathname === "/edit");
-    await page.waitForTimeout(2000);
+    await page.context().storageState({ path: "./e2e/state.json" });
   });
 });
