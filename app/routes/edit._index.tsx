@@ -7,19 +7,7 @@ import { BoardEditor } from "~/features/edit/board-editor";
 import type { ValidBoard } from "~/models/board";
 
 const defaultBoard: ValidBoard = {
-  cards: [
-    {
-      text: "1. URLあり",
-      url: "https://example.com/1",
-    },
-    {
-      text: "2. URLなし",
-    },
-    {
-      text: "https://example.com/3",
-      url: "https://example.com/3",
-    },
-  ],
+  cards: [],
 };
 
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -34,5 +22,5 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export default function Index() {
   const { board } = useLoaderData<typeof loader>();
-  return <BoardEditor initialBoard={board} />;
+  return <BoardEditor board={board} editable />;
 }

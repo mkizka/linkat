@@ -10,12 +10,13 @@ import { AddCardModal } from "./add-card-modal";
 import { Sortable } from "./sortable";
 
 type Props = {
-  initialBoard: ValidBoard;
+  board: ValidBoard;
+  editable?: boolean;
 };
 
-export function BoardEditor({ initialBoard }: Props) {
+export function BoardEditor({ board, editable }: Props) {
   const [cards, setCards] = useState(
-    initialBoard.cards.map((card) => ({
+    board.cards.map((card) => ({
       ...card,
       id: crypto.randomUUID().toString(),
     })),
@@ -31,15 +32,19 @@ export function BoardEditor({ initialBoard }: Props) {
 
   return (
     <div className="py-4">
-      <Sortable cards={cards} setCards={setCards} />
-      <AddCardModal onSubmit={handleSubmit} />
-      <Button
-        className="btn-circle btn-lg fixed bottom-4 right-4 w-32 shadow"
-        onClick={() => agent.updateBoard({ cards })}
-      >
-        <PencilSquareIcon className="size-8" />
-        保存
-      </Button>
+      <Sortable cards={cards} setCards={setCards} sortable={editable} />
+      {editable && (
+        <>
+          <AddCardModal onSubmit={handleSubmit} />
+          <Button
+            className="btn-circle btn-lg fixed bottom-4 right-4 w-32 shadow"
+            onClick={() => agent.updateBoard({ cards })}
+          >
+            <PencilSquareIcon className="size-8" />
+            保存
+          </Button>
+        </>
+      )}
     </div>
   );
 }

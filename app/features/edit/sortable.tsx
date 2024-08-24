@@ -13,9 +13,10 @@ type CardStateValue = SortableCardProps["card"][];
 type Props = {
   cards: CardStateValue;
   setCards: Dispatch<SetStateAction<CardStateValue>>;
+  sortable?: boolean;
 };
 
-export function Sortable({ cards, setCards }: Props) {
+export function Sortable({ cards, setCards, sortable }: Props) {
   const hydrated = useHydrated();
 
   const onSortEnd = (oldIndex: number, newIndex: number) => {
@@ -38,10 +39,11 @@ export function Sortable({ cards, setCards }: Props) {
       onSortEnd={onSortEnd}
       draggedItemClassName="ring ring-primary"
       className={containerClass}
+      allowDrag={sortable}
     >
       {cards.map((card) => (
         <SortableItem key={card.id}>
-          <SortableCard card={card} />
+          <SortableCard card={card} sortable={sortable} />
         </SortableItem>
       ))}
     </SortableList>
