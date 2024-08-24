@@ -116,8 +116,8 @@ describe("boardService", () => {
       // act
       const actual = await boardService.findOrFetchBoard("example.com");
       // assert
-      expect(mockedLogger.error).toHaveBeenCalledWith(
-        "boardの取得に失敗しました",
+      expect(mockedLogger.debug).toHaveBeenCalledWith(
+        "boardの形式が不正でした",
         expect.anything(),
       );
       expect(actual).toBeNull();
@@ -133,7 +133,7 @@ describe("boardService", () => {
       // act
       const actual = await boardService.findOrFetchBoard("example.com");
       // assert
-      expect(mockedLogger.error).toHaveBeenCalledWith(
+      expect(mockedLogger.debug).toHaveBeenCalledWith(
         "boardの取得に失敗しました",
         expect.anything(),
       );

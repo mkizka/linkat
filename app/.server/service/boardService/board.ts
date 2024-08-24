@@ -74,12 +74,12 @@ const fetchBoardInPDS = async (handleOrDid: string) => {
     repo: handleOrDid,
   });
   if (response instanceof Error) {
-    logger.error("boardの取得に失敗しました", { handleOrDid, response });
+    logger.debug("boardの取得に失敗しました", { handleOrDid, response });
     return null;
   }
   const parsed = boardScheme.safeParse(response.value);
   if (!parsed.success) {
-    logger.error("boardの取得に失敗しました", { handleOrDid, parsed });
+    logger.debug("boardの形式が不正でした", { handleOrDid, parsed });
     return null;
   }
   return parsed.data;
