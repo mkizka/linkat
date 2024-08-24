@@ -41,7 +41,7 @@ export function Sortable({ cards, setCards }: Props) {
     >
       {cards.map((card) => (
         <SortableItem key={card.id}>
-          <SortableCard card={card} sortable />
+          <SortableCard card={card} />
         </SortableItem>
       ))}
     </SortableList>
