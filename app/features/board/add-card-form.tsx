@@ -61,7 +61,7 @@ export function AddCardForm({ onSubmit }: AddCardProps) {
         {...getInputProps(fields.text, { type: "text" })}
         label="テキスト"
         errors={fields.text.errors}
-        placeholder="リンクカードのテキスト"
+        placeholder="カードに表示される文字"
         // https://github.com/edmundhung/conform/issues/600
         key={fields.text.key}
       />
@@ -79,7 +79,7 @@ export function AddCardForm({ onSubmit }: AddCardProps) {
         loading={isSubmitting}
         data-testid="login-form__submit"
       >
-        カードを追加
+        追加
       </Button>
       <p className="pl-1 text-end text-sm text-gray-400">
         URLかテキストはどちらか空欄でもOKです

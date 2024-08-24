@@ -28,15 +28,15 @@ export function AddCardModal({ onSubmit }: Props) {
           document.getElementById("add-card-modal").showModal();
         }}
       >
-        <div className="card-body items-center justify-center">
+        <div className="card-body flex-row items-center justify-center">
           <PlusCircleIcon className="size-8" />
+          カードを追加
         </div>
       </Card>
       <dialog id="add-card-modal" className="modal">
         <div className="modal-box">
           <AddCardForm onSubmit={handleSubmit} />
           <form method="dialog">
-            {/* if there is a button in form, it will close the modal */}
             <button className="btn btn-circle btn-ghost btn-sm absolute right-2 top-2">
               ✕
             </button>
