@@ -27,6 +27,7 @@ export function AddCardModal({ onSubmit }: Props) {
           // eslint-disable-next-line @typescript-eslint/no-unsafe-call
           document.getElementById("add-card-modal").showModal();
         }}
+        data-testid="add-card-modal__button"
       >
         <div className="card-body flex-row items-center justify-center">
           <PlusCircleIcon className="size-8" />

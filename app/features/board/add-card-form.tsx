@@ -64,6 +64,7 @@ export function AddCardForm({ onSubmit }: AddCardProps) {
         placeholder="カードに表示される文字"
         // https://github.com/edmundhung/conform/issues/600
         key={fields.text.key}
+        data-testid="add-card-form__text"
       />
       <Input
         {...getInputProps(fields.url, { type: "url" })}
@@ -72,12 +73,13 @@ export function AddCardForm({ onSubmit }: AddCardProps) {
         placeholder="https://example.com"
         // https://github.com/edmundhung/conform/issues/600
         key={fields.url.key}
+        data-testid="add-card-form__url"
       />
       <Button
         type="submit"
         className="mt-4"
         loading={isSubmitting}
-        data-testid="login-form__submit"
+        data-testid="add-card-form__submit"
       >
         追加
       </Button>

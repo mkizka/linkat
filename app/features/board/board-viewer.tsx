@@ -39,6 +39,7 @@ export function BoardViewer({ board, editable }: Props) {
           <Button
             className="btn-circle btn-lg fixed bottom-4 right-4 w-32 shadow"
             onClick={() => agent.updateBoard({ cards })}
+            data-testid="board-viewer__submit"
           >
             <PencilSquareIcon className="size-8" />
             保存

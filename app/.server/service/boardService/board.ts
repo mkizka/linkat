@@ -58,6 +58,12 @@ const findBoard = async (handleOrDid: string) => {
     where: {
       user,
     },
+    orderBy: {
+      // ユーザーはハンドルの変更などで複数存在する可能性があるので、後から作成されたものを優先する
+      user: {
+        createdAt: "desc",
+      },
+    },
   });
   if (!board) {
     return null;
