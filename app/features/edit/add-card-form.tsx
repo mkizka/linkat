@@ -37,7 +37,6 @@ export function AddCardForm({ onSubmit }: AddCardProps) {
       setIsSubmitting(true);
 
       // submit
-
       const payload = submission?.payload as Schema;
       onSubmit(payload);
 
@@ -54,13 +53,13 @@ export function AddCardForm({ onSubmit }: AddCardProps) {
       {...getFormProps(form)}
     >
       {form.errors && (
-        <div id={form.errorId} className="p-1 text-error">
+        <p id={form.errorId} className="pl-1 text-error">
           {form.errors}
-        </div>
+        </p>
       )}
       <Input
         {...getInputProps(fields.text, { type: "text" })}
-        label="テキスト(なくてもいい)"
+        label="テキスト"
         errors={fields.text.errors}
         placeholder="リンクカードのテキスト"
         // https://github.com/edmundhung/conform/issues/600
@@ -82,6 +81,9 @@ export function AddCardForm({ onSubmit }: AddCardProps) {
       >
         カードを追加
       </Button>
+      <p className="pl-1 text-end text-sm text-gray-400">
+        URLかテキストはどちらか空欄でもOKです
+      </p>
     </Form>
   );
 }

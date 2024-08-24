@@ -32,10 +32,7 @@ export function AddCardModal({ onSubmit }: Props) {
           <PlusCircleIcon className="size-8" />
         </div>
       </Card>
-      <dialog
-        id="add-card-modal"
-        className="modal modal-bottom sm:modal-middle"
-      >
+      <dialog id="add-card-modal" className="modal">
         <div className="modal-box">
           <AddCardForm onSubmit={handleSubmit} />
           <form method="dialog">
