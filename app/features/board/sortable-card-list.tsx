@@ -16,7 +16,7 @@ type Props = {
   sortable?: boolean;
 };
 
-export function Sortable({ cards, setCards, sortable }: Props) {
+export function SortableCardList({ cards, setCards, sortable }: Props) {
   const hydrated = useHydrated();
 
   const onSortEnd = (oldIndex: number, newIndex: number) => {

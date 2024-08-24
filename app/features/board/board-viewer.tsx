@@ -7,14 +7,14 @@ import type { ValidBoard } from "~/models/board";
 import type { ValidCard } from "~/models/card";
 
 import { AddCardModal } from "./add-card-modal";
-import { Sortable } from "./sortable";
+import { SortableCardList } from "./sortable-card-list";
 
 type Props = {
   board: ValidBoard;
   editable?: boolean;
 };
 
-export function BoardEditor({ board, editable }: Props) {
+export function BoardViewer({ board, editable }: Props) {
   const [cards, setCards] = useState(
     board.cards.map((card) => ({
       ...card,
@@ -32,7 +32,7 @@ export function BoardEditor({ board, editable }: Props) {
 
   return (
     <div className="py-4">
-      <Sortable cards={cards} setCards={setCards} sortable={editable} />
+      <SortableCardList cards={cards} setCards={setCards} sortable={editable} />
       {editable && (
         <>
           <AddCardModal onSubmit={handleSubmit} />

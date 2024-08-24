@@ -3,7 +3,7 @@ import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 
 import { boardService } from "~/.server/service/boardService";
-import { BoardEditor } from "~/features/edit/board-editor";
+import { BoardViewer } from "~/features/board/board-viewer";
 
 export async function loader({ params }: LoaderFunctionArgs) {
   const board = await boardService.findOrFetchBoard(params.handle!);
@@ -16,5 +16,5 @@ export async function loader({ params }: LoaderFunctionArgs) {
 
 export default function Index() {
   const { board } = useLoaderData<typeof loader>();
-  return <BoardEditor board={board} />;
+  return <BoardViewer board={board} />;
 }

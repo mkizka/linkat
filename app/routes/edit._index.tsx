@@ -3,7 +3,7 @@ import { json, redirect } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 
 import { boardService } from "~/.server/service/boardService";
-import { BoardEditor } from "~/features/edit/board-editor";
+import { BoardViewer } from "~/features/board/board-viewer";
 import type { ValidBoard } from "~/models/board";
 
 const defaultBoard: ValidBoard = {
@@ -22,5 +22,5 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export default function Index() {
   const { board } = useLoaderData<typeof loader>();
-  return <BoardEditor board={board} editable />;
+  return <BoardViewer board={board} editable />;
 }
