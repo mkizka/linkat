@@ -1,4 +1,5 @@
 import type { ComAtprotoSyncSubscribeRepos } from "@atproto/api";
+import { fromZodError } from "zod-validation-error";
 
 import { boardService } from "~/.server/service/boardService";
 import { boardScheme } from "~/models/board";
@@ -17,7 +18,13 @@ class FirehoseSubscription extends FirehoseSubscriptionBase {
   ) {
     for (const operation of operations) {
       const parsed = boardScheme.safeParse(operation.record);
-      if (!parsed.success) continue;
+      if (!parsed.success) {
+        logger.warn("ボードのパースに失敗しました", {
+          operation,
+          error: fromZodError(parsed.error),
+        });
+        continue;
+      }
       const board = await boardService.createOrUpdateBoard(
         operation.repo,
         parsed.data,

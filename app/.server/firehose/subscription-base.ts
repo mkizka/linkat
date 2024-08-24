@@ -1,8 +1,8 @@
-/* eslint-disable no-console */
 import { ComAtprotoSyncSubscribeRepos, lexicons } from "@atproto/api";
 import { cborToLexRecord, readCar } from "@atproto/repo";
 import { Subscription } from "@atproto/xrpc-server";
 
+import { createLogger } from "~/utils/logger";
 import { required } from "~/utils/required";
 
 export type FirehoseOperation = {
@@ -22,6 +22,8 @@ type FirehoseRunOptions = {
   reconnectDelay: number;
 };
 
+const logger = createLogger("firehose");
+
 const SUBSCRIPTION_METHOD = "com.atproto.sync.subscribeRepos";
 
 // 参考: https://github.com/bluesky-social/feed-generator/pull/90/files
@@ -40,8 +42,8 @@ export abstract class FirehoseSubscriptionBase {
             SUBSCRIPTION_METHOD,
             value,
           );
-        } catch (err) {
-          console.error("repo subscription skipped invalid message", err);
+        } catch (error) {
+          logger.error("repo subscription skipped invalid message", { error });
         }
       },
     });
@@ -84,22 +86,22 @@ export abstract class FirehoseSubscriptionBase {
       for await (const evt of this.sub) {
         try {
           await this.handleEvent(evt);
-        } catch (e) {
+        } catch (error) {
           // https://github.com/bluesky-social/atproto/issues/2484
           if (
-            e instanceof RangeError &&
-            e.message === "Could not decode varint"
+            error instanceof RangeError &&
+            error.message === "Could not decode varint"
           ) {
             continue;
           }
-          console.error(e);
+          logger.error("handleEventでエラーが発生しました", { error });
         }
         if (ComAtprotoSyncSubscribeRepos.isCommit(evt)) {
           this.cursor = evt.seq;
         }
       }
-    } catch (err) {
-      console.error("repo subscription errored", err);
+    } catch (error) {
+      logger.error("repo subscription errored", { error });
       setTimeout(() => this.run(options), options.reconnectDelay);
     }
   }
