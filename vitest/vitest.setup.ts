@@ -2,9 +2,9 @@ import { initialize, resetSequence } from "~/.server/generated/fabbrica";
 import { server } from "~/mocks/server";
 
 // env
-vi.mock("~/.server/utils/server-env", () => ({
-  serverEnv: {
-    PUBLIC_BSKY_URL: "https://public.api.example.com",
+vi.mock("~/utils/env", () => ({
+  env: {
+    BSKY_PUBLIC_API_URL: "https://public.api.example.com",
   },
 }));
 
