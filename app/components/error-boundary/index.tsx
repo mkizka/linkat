@@ -10,7 +10,7 @@ const logger = createLogger("error-boundary");
 
 function ErrorPage(props: { title: string; text: string }) {
   return (
-    <div className="flex min-h-screen items-center justify-center">
+    <div className="utils--center">
       <Card>
         <figure>
           <img src={errorImage} alt="悲しい表情をした犬の画像" />

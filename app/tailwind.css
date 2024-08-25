@@ -3,3 +3,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.utils--center {
+  @apply flex min-h-svh items-center justify-center;
+}
