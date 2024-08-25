@@ -15,7 +15,7 @@ export const SortableCard = forwardRef<HTMLDivElement, SortableCardProps>(
       <Card
         className="pointer-events-none select-none"
         ref={ref}
-        data-testid={`sortable-card__${card.id}`}
+        data-testid={`sortable-card`}
       >
         <div className="card-body flex-row items-center gap-4">
           <LinkIcon className="size-8" />
