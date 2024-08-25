@@ -1,4 +1,3 @@
-import type { AppBskyActorDefs } from "@atproto/api";
 import { http, HttpResponse } from "msw";
 
 import { BoardFactory, cardsFromFactory } from "~/.server/factories/board";
@@ -28,33 +27,16 @@ const dummyBoardRecord = {
   },
 };
 
-const dummyBlueskyProfile = {
-  did: "did:plc:dfbe2uvzisfdxwscnwcxdta6",
-  handle: "example.com",
-  displayName: "Alice",
-  associated: {
-    lists: 1,
-    feedgens: 1,
-    labeler: false,
-  },
-  labels: [],
-  description: "Test user 1",
-  indexedAt: "2024-07-21T08:19:48.394Z",
-  followersCount: 2,
-  followsCount: 2,
-  postsCount: 42,
-} satisfies AppBskyActorDefs.ProfileViewDetailed;
-
 describe("boardService", () => {
   describe("createBoard", () => {
     test("ボードがない場合は新規作成する", async () => {
       // arrange
       const user = await UserFactory.create(); // findOrFetchUserが作成するユーザー
       // act
-      const actual = await boardService.createOrUpdateBoard(
-        user.did,
-        dummyBoard,
-      );
+      const actual = await boardService.createOrUpdateBoard({
+        userDid: user.did,
+        board: dummyBoard,
+      });
       // assert
       expect(await prisma.user.findFirst()).toEqual(user);
       expect(actual).toEqual(dummyBoard);
@@ -63,10 +45,10 @@ describe("boardService", () => {
       // arrange
       const board = await BoardFactory.create();
       // act
-      const actual = await boardService.createOrUpdateBoard(
-        board.userDid,
-        dummyBoard,
-      );
+      const actual = await boardService.createOrUpdateBoard({
+        userDid: board.userDid,
+        board: dummyBoard,
+      });
       // assert
       expect(await prisma.user.findFirst()).toMatchObject({
         did: board.userDid,
@@ -86,18 +68,15 @@ describe("boardService", () => {
     });
     test("DBにボードがなくてもPDSから取得できればDBに保存して返す", async () => {
       // arrange
+      const user = await UserFactory.create();
       server.use(
         http.get(
           "https://public.api.example.com/xrpc/com.atproto.repo.getRecord",
           () => HttpResponse.json(dummyBoardRecord),
         ),
-        http.get(
-          "https://public.api.example.com/xrpc/app.bsky.actor.getProfile",
-          () => HttpResponse.json(dummyBlueskyProfile),
-        ),
       );
       // act
-      const actual = await boardService.findOrFetchBoard("example.com");
+      const actual = await boardService.findOrFetchBoard(user.did);
       // assert
       expect(actual).toEqual(dummyBoard);
     });
@@ -114,7 +93,7 @@ describe("boardService", () => {
         ),
       );
       // act
-      const actual = await boardService.findOrFetchBoard("example.com");
+      const actual = await boardService.findOrFetchBoard("did:plc:example");
       // assert
       expect(mockedLogger.debug).toHaveBeenCalledWith(
         "boardの形式が不正でした",
@@ -131,30 +110,13 @@ describe("boardService", () => {
         ),
       );
       // act
-      const actual = await boardService.findOrFetchBoard("example.com");
+      const actual = await boardService.findOrFetchBoard("did:plc:example");
       // assert
       expect(mockedLogger.debug).toHaveBeenCalledWith(
         "boardの取得に失敗しました",
         expect.anything(),
       );
       expect(actual).toBeNull();
-    });
-    test("ボードが取得できたのにユーザーを取得できなかった場合は異常なのでエラーを投げる", async () => {
-      // arrange
-      server.use(
-        http.get(
-          "https://public.api.example.com/xrpc/com.atproto.repo.getRecord",
-          () => HttpResponse.json(dummyBoardRecord),
-        ),
-        http.get(
-          "https://public.api.example.com/xrpc/app.bsky.actor.getProfile",
-          () => HttpResponse.json({}, { status: 404 }),
-        ),
-      );
-      // act
-      const promise = boardService.findOrFetchBoard("example.com");
-      // assert
-      await expect(promise).rejects.toThrow("ユーザー作成に失敗しました");
     });
   });
 });

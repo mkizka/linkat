@@ -7,9 +7,12 @@ import type { ValidBoard } from "~/models/board";
 import type { ValidCard } from "~/models/card";
 
 import { AddCardModal } from "./add-card-modal";
+import type { ProfileCardProps } from "./profile-card";
+import { ProfileCard } from "./profile-card";
 import { SortableCardList } from "./sortable-card-list";
 
 type Props = {
+  user: ProfileCardProps["user"];
   board: ValidBoard;
   editable?: boolean;
 };
@@ -19,7 +22,7 @@ const withId = (card: ValidCard) => ({
   ...card,
 });
 
-export function BoardViewer({ board, editable }: Props) {
+export function BoardViewer({ user, board, editable }: Props) {
   const [cards, setCards] = useState(board.cards.map(withId));
   const agent = useLinkatAgent();
 
@@ -28,7 +31,8 @@ export function BoardViewer({ board, editable }: Props) {
   };
 
   return (
-    <div className="py-4">
+    <div className="flex flex-col gap-2 py-4">
+      <ProfileCard user={user} />
       <SortableCardList cards={cards} setCards={setCards} sortable={editable} />
       {editable && (
         <>

@@ -2,6 +2,7 @@ import type { ComAtprotoSyncSubscribeRepos } from "@atproto/api";
 import { fromZodError } from "zod-validation-error";
 
 import { boardService } from "~/.server/service/boardService";
+import { userService } from "~/.server/service/userService";
 import { DevMkizkaTestProfileBoard } from "~/generated/api";
 import { boardScheme } from "~/models/board";
 import { env } from "~/utils/env";
@@ -29,11 +30,14 @@ class FirehoseSubscription extends FirehoseSubscriptionBase {
         });
         continue;
       }
-      const board = await boardService.createOrUpdateBoard(
-        operation.repo,
-        parsed.data,
-      );
-      logger.info("ボードを更新しました", { board });
+      const user = await userService.findOrFetchUser({
+        handleOrDid: operation.repo,
+      });
+      const board = await boardService.createOrUpdateBoard({
+        userDid: operation.repo,
+        board: parsed.data,
+      });
+      logger.info("ボードを更新しました", { user, board });
     }
   }
 }

@@ -1,7 +1,6 @@
-import type { Prisma, User } from "@prisma/client";
+import type { Prisma } from "@prisma/client";
 
 import { prisma } from "~/.server/service/prisma";
-import { userService } from "~/.server/service/userService";
 import { LinkatAgent } from "~/libs/agent";
 import { boardScheme, type ValidBoard } from "~/models/board";
 import { env } from "~/utils/env";
@@ -10,24 +9,24 @@ import { tryCatch } from "~/utils/tryCatch";
 
 const logger = createLogger("boardService");
 
-const upsertBoard = async ({
-  tx,
-  user,
+export const createOrUpdateBoard = async ({
+  userDid,
   board,
 }: {
-  tx: Prisma.TransactionClient;
-  user: User;
+  userDid: string;
   board: ValidBoard;
 }) => {
   const data = {
     user: {
-      connect: user,
+      connect: {
+        did: userDid,
+      },
     },
     record: JSON.stringify(board),
   } satisfies Prisma.BoardUpsertArgs["create"];
-  const newBoard = await tx.board.upsert({
+  const newBoard = await prisma.board.upsert({
     where: {
-      userDid: user.did,
+      userDid,
     },
     update: data,
     create: data,
@@ -36,27 +35,12 @@ const upsertBoard = async ({
   return boardScheme.parse(JSON.parse(newBoard.record));
 };
 
-export const createOrUpdateBoard = async (
-  handleOrDid: string,
-  board: ValidBoard,
-) => {
-  return await prisma.$transaction(async (tx) => {
-    const user = await userService.findOrFetchUser({ tx, handleOrDid });
-    if (!user) {
-      // ボードが与えられているのにユーザーが見つからないのは異常
-      throw new Error("ユーザー作成に失敗しました");
-    }
-    return await upsertBoard({ tx, user, board });
-  });
-};
-
-const findBoard = async (handleOrDid: string) => {
-  const user = handleOrDid.startsWith("did:")
-    ? { did: handleOrDid }
-    : { handle: handleOrDid };
+const findBoard = async (userDid: string) => {
   const board = await prisma.board.findFirst({
     where: {
-      user,
+      user: {
+        did: userDid,
+      },
     },
     orderBy: {
       // ユーザーはハンドルの変更などで複数存在する可能性があるので、後から作成されたものを優先する
@@ -71,35 +55,38 @@ const findBoard = async (handleOrDid: string) => {
   return boardScheme.parse(JSON.parse(board.record));
 };
 
-const fetchBoardInPDS = async (handleOrDid: string) => {
-  logger.info("boardを取得します", { handleOrDid });
+const fetchBoardInPDS = async (userDid: string) => {
+  logger.info("boardを取得します", { userDid });
   const agent = new LinkatAgent({
     service: env.BSKY_PUBLIC_API_URL,
   });
   const response = await tryCatch(agent.getBoard.bind(agent))({
-    repo: handleOrDid,
+    repo: userDid,
   });
   if (response instanceof Error) {
-    logger.debug("boardの取得に失敗しました", { handleOrDid, response });
+    logger.debug("boardの取得に失敗しました", { userDid, response });
     return null;
   }
   const parsed = boardScheme.safeParse(response.value);
   if (!parsed.success) {
-    logger.debug("boardの形式が不正でした", { handleOrDid, parsed });
+    logger.debug("boardの形式が不正でした", { userDid, parsed });
     return null;
   }
   return parsed.data;
 };
 
 // TODO: 全部の処理を一つのトランザクションで行う
-export const findOrFetchBoard = async (handleOrDid: string) => {
-  const board = await findBoard(handleOrDid);
+export const findOrFetchBoard = async (userDid: string) => {
+  const board = await findBoard(userDid);
   if (board) {
     return board;
   }
-  const boardInPDS = await fetchBoardInPDS(handleOrDid);
+  const boardInPDS = await fetchBoardInPDS(userDid);
   if (!boardInPDS) {
     return null;
   }
-  return createOrUpdateBoard(handleOrDid, boardInPDS);
+  return createOrUpdateBoard({
+    userDid,
+    board: boardInPDS,
+  });
 };
