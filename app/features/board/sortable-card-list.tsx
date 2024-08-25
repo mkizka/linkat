@@ -1,11 +1,7 @@
-import { arrayMoveImmutable } from "array-move";
 import type { Dispatch, SetStateAction } from "react";
-import SortableList, { SortableItem } from "react-easy-sort";
+import { arrayMove, List } from "react-movable";
 
-import type { SortableCardProps } from "./sortable-card";
-import { SortableCard } from "./sortable-card";
-
-const containerClass = "grid grid-cols-1 gap-2";
+import { SortableCard, type SortableCardProps } from "./sortable-card";
 
 type CardStateValue = SortableCardProps["card"][];
 
@@ -16,23 +12,28 @@ type Props = {
 };
 
 export function SortableCardList({ cards, setCards, sortable }: Props) {
-  const onSortEnd = (oldIndex: number, newIndex: number) => {
-    setCards((cards) => arrayMoveImmutable(cards, oldIndex, newIndex));
-  };
-
   return (
-    <SortableList
-      lockAxis="y"
-      onSortEnd={onSortEnd}
-      draggedItemClassName="ring ring-primary"
-      className={containerClass}
-      allowDrag={sortable}
-    >
-      {cards.map((card) => (
-        <SortableItem key={card.id}>
-          <SortableCard card={card} sortable={sortable} />
-        </SortableItem>
-      ))}
-    </SortableList>
+    <List
+      values={cards}
+      lockVertically
+      disabled={!sortable}
+      onChange={({ oldIndex, newIndex }) =>
+        setCards(arrayMove(cards, oldIndex, newIndex))
+      }
+      renderList={({ children, props }) => (
+        <ul {...props} className="grid grid-cols-1 gap-2">
+          {children}
+        </ul>
+      )}
+      renderItem={({ value, props, isDragged }) => (
+        <li {...props} key={props.key} className="list-none">
+          <SortableCard
+            card={value}
+            isDragging={isDragged}
+            sortable={sortable}
+          />
+        </li>
+      )}
+    />
   );
 }

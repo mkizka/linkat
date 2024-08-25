@@ -3,18 +3,22 @@ import { forwardRef } from "react";
 
 import { Card } from "~/components/card";
 import type { ValidCard } from "~/models/card";
+import { cn } from "~/utils/cn";
 
 export type SortableCardProps = {
   card: ValidCard & { id: string };
+  isDragging?: boolean;
   sortable?: boolean;
 };
 
 export const SortableCard = forwardRef<HTMLDivElement, SortableCardProps>(
-  ({ card, sortable }, ref) => {
+  ({ card, sortable, isDragging }, ref) => {
     const component = (
       <Card
-        className="pointer-events-none select-none"
         ref={ref}
+        className={cn({
+          "ring ring-primary": isDragging,
+        })}
         data-testid={`sortable-card`}
       >
         <div className="card-body flex-row items-center gap-4">
