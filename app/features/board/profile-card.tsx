@@ -24,7 +24,7 @@ function AvatarPlaceholder() {
 }
 
 export type ProfileCardProps = {
-  user: Pick<User, "avatar" | "displayName" | "handle" | "description">;
+  user: Pick<User, "avatar" | "displayName" | "handle">;
 };
 
 export function ProfileCard({ user }: ProfileCardProps) {
