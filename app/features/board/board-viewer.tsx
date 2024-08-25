@@ -14,20 +14,17 @@ type Props = {
   editable?: boolean;
 };
 
+const withId = (card: ValidCard) => ({
+  id: crypto.randomUUID().toString(),
+  ...card,
+});
+
 export function BoardViewer({ board, editable }: Props) {
-  const [cards, setCards] = useState(
-    board.cards.map((card) => ({
-      ...card,
-      id: crypto.randomUUID().toString(),
-    })),
-  );
+  const [cards, setCards] = useState(board.cards.map(withId));
   const agent = useLinkatAgent();
 
   const handleSubmit = (newCard: ValidCard) => {
-    setCards((cards) => [
-      ...cards,
-      { ...newCard, id: crypto.randomUUID().toString() },
-    ]);
+    setCards((cards) => [...cards, withId(newCard)]);
   };
 
   return (

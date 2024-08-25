@@ -1,7 +1,7 @@
 import { AtpAgent } from "@atproto/api";
 
 import { DevNS } from "~/generated/api";
-import type { ValidBoard } from "~/models/board";
+import { boardScheme } from "~/models/board";
 
 export type LinkatAgentOptions = {
   service: string;
@@ -35,14 +35,14 @@ export class LinkatAgent extends AtpAgent {
     return await this.getBoard({ repo: this.accountDid });
   }
 
-  async updateBoard(board: ValidBoard) {
+  async updateBoard(board: unknown) {
     // dev.mkizka.test.profile.boardにはなぜかputがないので、com.atproto.repoを使う
     return await this.com.atproto.repo.putRecord({
       repo: this.accountDid,
       validate: false,
       collection: "dev.mkizka.test.profile.board",
       rkey: "self",
-      record: board,
+      record: boardScheme.parse(board),
     });
   }
 
