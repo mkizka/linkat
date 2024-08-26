@@ -26,8 +26,17 @@ export function BoardViewer({ user, board, editable }: Props) {
   const [cards, setCards] = useState(board.cards.map(withId));
   const agent = useLinkatAgent();
 
-  const handleSubmit = (newCard: ValidCard) => {
+  const handleAddCard = (newCard: ValidCard) => {
     setCards((cards) => [...cards, withId(newCard)]);
+  };
+
+  const handleSaveBoard = async () => {
+    if (!agent) {
+      alert("予期しないエラーが発生しました。リロードします");
+      location.reload();
+      return;
+    }
+    await agent.updateBoard({ cards });
   };
 
   return (
@@ -36,10 +45,10 @@ export function BoardViewer({ user, board, editable }: Props) {
       <SortableCardList cards={cards} setCards={setCards} sortable={editable} />
       {editable && (
         <>
-          <AddCardModal onSubmit={handleSubmit} />
+          <AddCardModal onSubmit={handleAddCard} />
           <Button
             className="btn-circle btn-lg fixed bottom-4 right-4 w-32 shadow"
-            onClick={() => agent.updateBoard({ cards })}
+            onClick={handleSaveBoard}
             data-testid="board-viewer__submit"
           >
             <PencilSquareIcon className="size-8" />
