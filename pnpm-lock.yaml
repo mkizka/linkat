@@ -120,6 +120,9 @@ importers:
       daisyui:
         specifier: ^4.12.10
         version: 4.12.10(postcss@8.4.41)
+      esbuild:
+        specifier: ^0.23.1
+        version: 0.23.1
       eslint:
         specifier: ^9.9.0
         version: 9.9.0(jiti@1.21.6)
