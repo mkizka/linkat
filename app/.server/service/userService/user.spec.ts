@@ -10,6 +10,7 @@ const dummyBlueskyProfile = {
   did: "did:plc:dfbe2uvzisfdxwscnwcxdta6",
   handle: "example.com",
   displayName: "Alice",
+  avatar: "https://example.com/avatar.png",
   associated: {
     lists: 1,
     feedgens: 1,
@@ -77,12 +78,42 @@ describe("userService", () => {
       });
       // assert
       expect(actual).toEqual({
-        avatar: null,
+        avatar: "https://example.com/avatar.png",
         description: "Test user 1",
         did: "did:plc:dfbe2uvzisfdxwscnwcxdta6",
         displayName: "Alice",
         handle: "example.com",
         createdAt: expect.any(Date),
+        updatedAt: expect.any(Date),
+      });
+    });
+    test("DBにユーザーがいても更新時刻が10分前なら、Blueskyから取得して作成する", async () => {
+      // arrange
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date("2024-01-01T00:10:00.000Z"));
+      await UserFactory.create({
+        did: "did:plc:dfbe2uvzisfdxwscnwcxdta6",
+        createdAt: new Date("2024-01-01T00:00:00.000Z"),
+        updatedAt: new Date("2024-01-01T00:00:00.000Z"),
+      });
+      server.use(
+        http.get(
+          "https://public.api.example.com/xrpc/app.bsky.actor.getProfile",
+          () => HttpResponse.json(dummyBlueskyProfile),
+        ),
+      );
+      // act
+      const actual = await userService.findOrFetchUser({
+        handleOrDid: "did:plc:dfbe2uvzisfdxwscnwcxdta6",
+      });
+      // assert
+      expect(actual).toEqual({
+        avatar: "https://example.com/avatar.png",
+        description: "Test user 1",
+        did: "did:plc:dfbe2uvzisfdxwscnwcxdta6",
+        displayName: "Alice",
+        handle: "example.com",
+        createdAt: new Date("2024-01-01T00:00:00.000Z"),
         updatedAt: expect.any(Date),
       });
     });

@@ -1,6 +1,6 @@
 import type { AppBskyActorDefs } from "@atproto/api";
 import { AtpAgent } from "@atproto/api";
-import type { Prisma } from "@prisma/client";
+import type { Prisma, User } from "@prisma/client";
 
 import { prisma } from "~/.server/service/prisma";
 import { env } from "~/utils/env";
@@ -8,6 +8,11 @@ import { createLogger } from "~/utils/logger";
 import { tryCatch } from "~/utils/tryCatch";
 
 const logger = createLogger("userService");
+
+// 最後の取得から10分以上経過していたら再取得する
+const shouldReFetch = (user: User) => {
+  return user.updatedAt <= new Date(Date.now() - 10 * 60 * 1000);
+};
 
 const findUser = async ({
   tx,
@@ -19,28 +24,38 @@ const findUser = async ({
   const where = handleOrDid.startsWith("did:")
     ? { did: handleOrDid }
     : { handle: handleOrDid };
-  return await tx.user.findFirst({
+  const user = await tx.user.findFirst({
     where,
     orderBy: {
       createdAt: "desc",
     },
   });
+  if (!user || shouldReFetch(user)) {
+    return null;
+  }
+  return user;
 };
 
-const createUser = async ({
+const createOrUpdateUser = async ({
   tx,
   blueskyProfile,
 }: {
   tx: Prisma.TransactionClient;
   blueskyProfile: AppBskyActorDefs.ProfileViewDetailed;
 }) => {
-  return await tx.user.create({
-    data: {
+  const data = {
+    did: blueskyProfile.did,
+    avatar: blueskyProfile.avatar,
+    description: blueskyProfile.description,
+    displayName: blueskyProfile.displayName,
+    handle: blueskyProfile.handle,
+  } satisfies Prisma.UserUpsertArgs["create"];
+  return await tx.user.upsert({
+    where: {
       did: blueskyProfile.did,
-      description: blueskyProfile.description,
-      displayName: blueskyProfile.displayName,
-      handle: blueskyProfile.handle,
     },
+    create: data,
+    update: data,
   });
 };
 
@@ -73,7 +88,7 @@ export const findOrFetchUser = async ({
     });
     return null;
   }
-  return await createUser({
+  return await createOrUpdateUser({
     tx,
     blueskyProfile,
   });
