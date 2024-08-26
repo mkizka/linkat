@@ -11,9 +11,18 @@ importers:
       '@atproto/api':
         specifier: ^0.13.1
         version: 0.13.1
+      '@atproto/lexicon':
+        specifier: ^0.4.1
+        version: 0.4.1
       '@atproto/repo':
         specifier: ^0.4.2
         version: 0.4.2
+      '@atproto/xrpc':
+        specifier: ^0.6.0
+        version: 0.6.0
+      '@atproto/xrpc-server':
+        specifier: ^0.6.2
+        version: 0.6.2
       '@conform-to/react':
         specifier: ^1.1.5
         version: 1.1.5(react@18.3.1)
@@ -75,15 +84,6 @@ importers:
       '@atproto/lex-cli':
         specifier: ^0.5.0
         version: 0.5.0
-      '@atproto/lexicon':
-        specifier: ^0.4.1
-        version: 0.4.1
-      '@atproto/xrpc':
-        specifier: ^0.6.0
-        version: 0.6.0
-      '@atproto/xrpc-server':
-        specifier: ^0.6.2
-        version: 0.6.2
       '@mkizka/eslint-config':
         specifier: ^5.3.1
         version: 5.3.1(@typescript-eslint/eslint-plugin@7.18.0(@typescript-eslint/parser@7.18.0(eslint@9.9.0(jiti@1.21.6))(typescript@5.5.4))(eslint@9.9.0(jiti@1.21.6))(typescript@5.5.4))(eslint@9.9.0(jiti@1.21.6))(tailwindcss@3.4.10)(typescript@5.5.4)

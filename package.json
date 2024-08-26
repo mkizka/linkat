@@ -28,7 +28,10 @@
   },
   "dependencies": {
     "@atproto/api": "^0.13.1",
+    "@atproto/lexicon": "^0.4.1",
     "@atproto/repo": "^0.4.2",
+    "@atproto/xrpc": "^0.6.0",
+    "@atproto/xrpc-server": "^0.6.2",
     "@conform-to/react": "^1.1.5",
     "@conform-to/zod": "^1.1.5",
     "@heroicons/react": "^2.1.5",
@@ -51,9 +54,6 @@
   },
   "devDependencies": {
     "@atproto/lex-cli": "^0.5.0",
-    "@atproto/lexicon": "^0.4.1",
-    "@atproto/xrpc": "^0.6.0",
-    "@atproto/xrpc-server": "^0.6.2",
     "@mkizka/eslint-config": "^5.3.1",
     "@mkizka/eslint-plugin-aaa": "^1.0.2",
     "@playwright/test": "^1.46.1",
