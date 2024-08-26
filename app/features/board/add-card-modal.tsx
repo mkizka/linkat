@@ -20,7 +20,7 @@ export function AddCardModal({ onSubmit }: Props) {
   return (
     <>
       <Card
-        className="mt-2 bg-neutral text-neutral-content hover:bg-neutral/80"
+        className="bg-neutral text-neutral-content hover:bg-neutral/80"
         onClick={() => {
           // https://daisyui.com/components/modal/
           // @ts-expect-error
