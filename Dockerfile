@@ -17,8 +17,10 @@ RUN pnpm prune --prod --ignore-scripts
 
 FROM base AS build
 COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /app/app/generated ./app/generated
+COPY --from=deps /app/app/.server/generated ./app/.server/generated
 COPY . .
-RUN pnpm build
+RUN pnpm build && pnpm prisma db push --skip-generate
 
 FROM base AS runner
 COPY --from=deps-prod /app/node_modules ./node_modules
