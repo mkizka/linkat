@@ -13,6 +13,7 @@ import { getDefaultStore } from "jotai";
 
 import { userAtom } from "./atoms/user/base";
 import { resumeSessionAtom } from "./atoms/user/write-only";
+import { Toaster } from "./features/toast/toaster";
 
 export { ErrorBoundary } from "~/components/error-boundary";
 export { HydrateFallback } from "~/components/hydate-fallback";
@@ -43,6 +44,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <main className="mx-auto min-h-svh max-w-screen-sm px-4">
           {children}
         </main>
+        <Toaster />
         <ScrollRestoration />
         <Scripts />
       </body>
