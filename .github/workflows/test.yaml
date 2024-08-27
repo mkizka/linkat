@@ -19,7 +19,7 @@ jobs:
       - run: pnpm i
       - run: pnpm build
       - run: pnpm lint
-      - run: pnpm test --coverage
+      - run: pnpm test -- --coverage
   e2e-test:
     runs-on: ubuntu-latest
     steps:
