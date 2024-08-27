@@ -29,4 +29,5 @@ COPY --from=build /app/dist ./dist
 COPY --from=build /app/build ./build
 COPY --from=build /app/package.json ./
 
+ENV NODE_ENV=production
 CMD ["node", "dist/server.js"]
