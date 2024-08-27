@@ -25,7 +25,7 @@
     "start": "NODE_ENV=production node ./dist/server.js",
     "start:e2e": "pnpm run-p -l dev:atproto start:local",
     "start:local": "wait-on http-get://localhost:2583 && NODE_ENV=production tsx --env-file .env ./app/server.ts",
-    "test": "vitest run --coverage",
+    "test": "vitest",
     "typecheck": "tsc"
   },
   "dependencies": {
