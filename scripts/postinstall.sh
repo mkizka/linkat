@@ -13,6 +13,6 @@ cp -r ./atproto/lexicons/com/atproto/repo ./lexicons/com/atproto
 
 LEXICONS=$(find ./lexicons -name '*.json' -type f)
 echo y | pnpm lex gen-api ./app/generated/api $LEXICONS
-echo y | pnpm lex gen-server ./app/.server/generated/server $LEXICONS
+echo y | pnpm lex gen-server ./app/generated/server $LEXICONS
 
 pnpm prisma generate

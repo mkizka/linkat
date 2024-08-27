@@ -1,4 +1,4 @@
-import { defineUserFactory } from "~/.server/generated/fabbrica";
+import { defineUserFactory } from "~/generated/fabbrica";
 
 export const UserFactory = defineUserFactory({
   defaultData: ({ seq }) => ({

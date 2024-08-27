@@ -1,4 +1,4 @@
-import { defineBoardFactory } from "~/.server/generated/fabbrica";
+import { defineBoardFactory } from "~/generated/fabbrica";
 
 import { UserFactory } from "./user";
 

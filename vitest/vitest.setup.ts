@@ -1,4 +1,4 @@
-import { initialize, resetSequence } from "~/.server/generated/fabbrica";
+import { initialize, resetSequence } from "~/generated/fabbrica";
 import { server } from "~/mocks/server";
 
 // common
