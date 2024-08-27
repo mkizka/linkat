@@ -2,7 +2,7 @@ import type { AppBskyActorDefs } from "@atproto/api";
 import { AtpAgent } from "@atproto/api";
 import type { Prisma, User } from "@prisma/client";
 
-import { prisma } from "~/.server/service/prisma";
+import { prisma } from "~/server/service/prisma";
 import { env } from "~/utils/env";
 import { createLogger } from "~/utils/logger";
 import { tryCatch } from "~/utils/tryCatch";

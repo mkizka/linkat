@@ -1,10 +1,10 @@
 import type { ComAtprotoSyncSubscribeRepos } from "@atproto/api";
 import { fromZodError } from "zod-validation-error";
 
-import { boardService } from "~/.server/service/boardService";
-import { userService } from "~/.server/service/userService";
 import { DevMkizkaTestProfileBoard } from "~/generated/api";
 import { boardScheme } from "~/models/board";
+import { boardService } from "~/server/service/boardService";
+import { userService } from "~/server/service/userService";
 import { env } from "~/utils/env";
 import { createLogger } from "~/utils/logger";
 

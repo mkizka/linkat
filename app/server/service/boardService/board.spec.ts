@@ -1,11 +1,11 @@
 import { http, HttpResponse } from "msw";
 
-import { BoardFactory, cardsFromFactory } from "~/.server/factories/board";
-import { UserFactory } from "~/.server/factories/user";
-import { prisma } from "~/.server/service/prisma";
 import { mockedLogger } from "~/mocks/logger";
 import { server } from "~/mocks/server";
 import type { ValidBoard } from "~/models/board";
+import { BoardFactory, cardsFromFactory } from "~/server/factories/board";
+import { UserFactory } from "~/server/factories/user";
+import { prisma } from "~/server/service/prisma";
 
 import { boardService } from ".";
 

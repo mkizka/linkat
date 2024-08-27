@@ -12,7 +12,7 @@ vi.mock("~/utils/env", () => ({
 }));
 
 // prisma
-vi.mock("~/.server/service/prisma", () => ({
+vi.mock("~/server/service/prisma", () => ({
   prisma: vPrisma.client,
 }));
 beforeAll(() => {

@@ -2,10 +2,10 @@ import type { LoaderFunctionArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 
-import { boardService } from "~/.server/service/boardService";
-import { userService } from "~/.server/service/userService";
 import { BoardViewer } from "~/features/board/board-viewer";
 import type { ValidBoard } from "~/models/board";
+import { boardService } from "~/server/service/boardService";
+import { userService } from "~/server/service/userService";
 import { createLogger } from "~/utils/logger";
 
 const defaultBoard: ValidBoard = {

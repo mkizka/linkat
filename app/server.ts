@@ -2,7 +2,7 @@ import { createRequestHandler } from "@remix-run/express";
 import type { ServerBuild } from "@remix-run/node";
 import express from "express";
 
-import { startFirehoseSubscription } from "./.server/firehose/subscription.js";
+import { startFirehoseSubscription } from "./server/firehose/subscription.js";
 import { createLogger } from "./utils/logger.js";
 
 // import { createServer } from "./generated/server/index.js";

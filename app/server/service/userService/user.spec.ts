@@ -1,8 +1,8 @@
 import type { AppBskyActorDefs } from "@atproto/api";
 import { http, HttpResponse } from "msw";
 
-import { UserFactory } from "~/.server/factories/user";
 import { server } from "~/mocks/server";
+import { UserFactory } from "~/server/factories/user";
 
 import { userService } from ".";
 
