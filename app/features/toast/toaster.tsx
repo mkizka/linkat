@@ -4,7 +4,7 @@ import { cn } from "~/utils/cn";
 export function Toaster() {
   const toasts = useToasts();
   return (
-    <div className="toast">
+    <div className="toast toast-center toast-bottom w-full opacity-90">
       {toasts.map((toast) => (
         <div
           key={toast.id}

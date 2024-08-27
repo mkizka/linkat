@@ -4,6 +4,7 @@ import { Form, useNavigate } from "@remix-run/react";
 import { useState } from "react";
 import { z } from "zod";
 
+import { useToast } from "~/atoms/toast/hooks";
 import { useLogin } from "~/atoms/user/hooks";
 import { Button } from "~/components/button";
 import { Card } from "~/components/card";
@@ -31,6 +32,7 @@ const logger = createLogger("login-form");
 export function LoginForm() {
   const login = useLogin();
   const navigate = useNavigate();
+  const toast = useToast();
 
   const [lastLoginService, setLastLoginService] = useLastLoginService();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -49,10 +51,11 @@ export function LoginForm() {
       setLastLoginService(payload.service);
       try {
         await login(payload);
+        toast.success("ログインに成功しました");
         navigate(`/edit?base=${payload.identifier}`);
       } catch (e) {
         logger.error("ログインに失敗しました", { e });
-        alert("ログインに失敗しました");
+        toast.error("ログインに失敗しました");
         setIsSubmitting(false);
       }
     },

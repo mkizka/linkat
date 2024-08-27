@@ -4,7 +4,7 @@ import type { Toast } from "./base";
 import { toastsAtom } from "./base";
 
 const MAX_TOAST_COUNT = 3;
-const REMOVE_DELAY = 3000;
+const REMOVE_DELAY = 2000;
 
 export const pushToastAtom = atom(
   null,
