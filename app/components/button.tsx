@@ -14,7 +14,10 @@ export function Button({
 }: Props) {
   return (
     <button
-      className={cn("btn btn-primary relative", className)}
+      className={cn("btn btn-primary relative", className, {
+        "btn-disabled": loading,
+      })}
+      disabled={loading}
       {...buttonProps}
     >
       {loading && <div className="loading loading-spinner absolute h-1/2" />}
