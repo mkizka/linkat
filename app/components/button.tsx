@@ -14,9 +14,7 @@ export function Button({
 }: Props) {
   return (
     <button
-      className={cn("btn btn-primary relative", className, {
-        "btn-disabled": loading,
-      })}
+      className={cn("btn btn-primary relative", className)}
       disabled={loading}
       {...buttonProps}
     >
