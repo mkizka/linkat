@@ -19,6 +19,7 @@ class FirehoseSubscription extends FirehoseSubscriptionBase {
     _: ComAtprotoSyncSubscribeRepos.Commit,
   ) {
     for (const operation of operations) {
+      logger.debug("Firehoseからデータを取得しました", { operations });
       if (!DevMkizkaTestProfileBoard.isRecord(operation.record)) {
         continue;
       }

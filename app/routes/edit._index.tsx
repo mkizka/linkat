@@ -1,16 +1,11 @@
 import type { LoaderFunctionArgs } from "@remix-run/node";
-import { json, redirect } from "@remix-run/node";
+import { redirect } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 
 import { BoardViewer } from "~/features/board/board-viewer";
-import type { ValidBoard } from "~/models/board";
 import { boardService } from "~/server/service/boardService";
 import { userService } from "~/server/service/userService";
 import { createLogger } from "~/utils/logger";
-
-const defaultBoard: ValidBoard = {
-  cards: [],
-};
 
 const logger = createLogger("edit");
 
@@ -30,7 +25,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
     return redirect("/");
   }
   const board = await boardService.findOrFetchBoard(user.did);
-  return json({ user, board: board ?? defaultBoard });
+  return { user, board };
 }
 
 export default function Index() {
