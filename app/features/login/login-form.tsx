@@ -1,3 +1,4 @@
+import { XRPCError } from "@atproto/xrpc";
 import { getFormProps, getInputProps, useForm } from "@conform-to/react";
 import { getZodConstraint, parseWithZod } from "@conform-to/zod";
 import { Form, useNavigate } from "@remix-run/react";
@@ -9,7 +10,6 @@ import { useLogin } from "~/atoms/user/hooks";
 import { Button } from "~/components/button";
 import { Card } from "~/components/card";
 import { Input } from "~/components/input";
-import { createLogger } from "~/utils/logger";
 
 import { useLastLoginService } from "./use-last-login-service";
 
@@ -27,8 +27,6 @@ const schema = z.object({
 
 type Schema = z.infer<typeof schema>;
 
-const logger = createLogger("login-form");
-
 export function LoginForm() {
   const login = useLogin();
   const navigate = useNavigate();
@@ -36,6 +34,21 @@ export function LoginForm() {
 
   const [lastLoginService, setLastLoginService] = useLastLoginService();
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const getErrorMessage = (e: unknown) => {
+    if (e instanceof XRPCError) {
+      if (e.message === "Invalid identifier or password") {
+        return "ハンドルかパスワードが間違っています";
+      }
+      if (e.message === "Failed to fetch") {
+        return "サービスURLが間違っているかもしれません";
+      }
+    }
+    if (e instanceof Error) {
+      return e.message;
+    }
+    return "";
+  };
 
   const [form, fields] = useForm({
     id: "login-form",
@@ -54,8 +67,7 @@ export function LoginForm() {
         toast.success("ログインに成功しました");
         navigate(`/edit?base=${payload.identifier}`);
       } catch (e) {
-        logger.error("ログインに失敗しました", { e });
-        toast.error("ログインに失敗しました");
+        toast.error(`ログインに失敗しました。${getErrorMessage(e)}`);
         setIsSubmitting(false);
       }
     },
