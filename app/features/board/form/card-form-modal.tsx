@@ -40,7 +40,7 @@ export function CardFormModal() {
           カードを追加
         </div>
       </Card>
-      <dialog id={EDIT_CARD_MODAL_ID} className="modal">
+      <dialog id={EDIT_CARD_MODAL_ID} className="modal top-8 items-start">
         <div className="modal-box">
           <CardForm />
           <form method="dialog">
