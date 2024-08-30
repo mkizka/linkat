@@ -5,6 +5,8 @@ import { Link } from "@remix-run/react";
 
 import { Card } from "~/components/card";
 
+import { BlueskyIcon } from "./icons/bluesky";
+
 function Avatar({ avatar }: { avatar: string }) {
   return (
     <div className="avatar">
@@ -31,27 +33,29 @@ export type ProfileCardProps = {
 };
 
 export function ProfileCard({ user, button }: ProfileCardProps) {
-  const rightMenu = {
+  const buttons = {
     edit: (
-      <Link className="btn btn-accent" to={`/edit?base=${user.handle}`}>
+      <Link className="btn btn-primary" to={`/edit?base=${user.handle}`}>
         <PencilSquareIcon className="size-6" />
         編集
       </Link>
     ),
     preview: (
       <Link
-        className="btn btn-accent animate-bounce repeat-0"
+        className="btn btn-primary animate-bounce repeat-0"
         to={`/board/${user.handle}`}
       >
         <EyeIcon className="size-6" />
-        プレビュー
+        ページを見る
       </Link>
     ),
     link: (
-      // TODO: 整える
-      <a className="btn btn-link" href={`https://bsky.app/profile/${user.did}`}>
-        link
-      </a>
+      <Link
+        className="btn bg-[#0285FF] text-base-100"
+        to={`https://bsky.app/profile/${user.did}`}
+      >
+        <BlueskyIcon className="size-6" />@{user.handle}
+      </Link>
     ),
     none: null,
   };
@@ -59,17 +63,17 @@ export function ProfileCard({ user, button }: ProfileCardProps) {
   return (
     <Card>
       <div className="card-body">
-        <div className="flex items-center gap-4">
+        <div className="flex items-center">
           {user.avatar ? (
             <Avatar avatar={user.avatar} />
           ) : (
             <AvatarPlaceholder />
           )}
-          <div>
-            <h1 className="text-xl font-bold">{user.displayName}</h1>
-            <p className="text-lg">@{user.handle}</p>
-          </div>
-          <div className="flex flex-1 justify-end">{rightMenu[button]}</div>
+          <div className="flex flex-1 justify-end">{buttons[button]}</div>
+        </div>
+        <div>
+          <h2 className="text-xl font-bold">{user.displayName}</h2>
+          <p className="text-gray-500">@{user.handle}</p>
         </div>
       </div>
     </Card>
