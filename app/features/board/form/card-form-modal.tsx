@@ -24,8 +24,7 @@ export function CardFormModal() {
   const form = useFormMetadata();
 
   const handleOpen = () => {
-    form.update({ name: "text", value: "" });
-    form.update({ name: "url", value: "" });
+    form.reset();
     cardModal.open();
   };
 

@@ -20,6 +20,7 @@ export const SortableCard = forwardRef<HTMLDivElement, SortableCardProps>(
     const handleOpen = () => {
       form.update({ name: "text", value: card.text });
       form.update({ name: "url", value: card.url });
+      form.update({ name: "id", value: card.id });
       cardModal.open();
     };
 

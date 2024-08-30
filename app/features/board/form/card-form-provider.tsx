@@ -6,6 +6,7 @@ const schema = z
   .object({
     text: z.string().optional(),
     url: z.string().url().optional(),
+    id: z.string().optional(),
   })
   .refine((value) => value.text || value.url, {
     message: "どちらかは入力してください",

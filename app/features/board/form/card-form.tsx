@@ -42,6 +42,10 @@ export function CardForm() {
         key={fields.url.key}
         data-testid="add-card-form__url"
       />
+      <input
+        {...getInputProps(fields.id, { type: "hidden" })}
+        key={fields.id.key}
+      />
       <Button
         type="submit"
         className="mt-4"
