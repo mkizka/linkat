@@ -3,10 +3,9 @@ import { ArrowsUpDownIcon, LinkIcon } from "@heroicons/react/24/outline";
 import { forwardRef } from "react";
 
 import { Card } from "~/components/card";
+import { cardModal } from "~/features/board/form/card-form-modal";
 import type { ValidCard } from "~/models/card";
 import { cn } from "~/utils/cn";
-
-import { cardModal } from "./card-form-modal";
 
 export type SortableCardProps = {
   card: ValidCard & { id: string };

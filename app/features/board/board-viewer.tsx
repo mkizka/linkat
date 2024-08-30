@@ -8,11 +8,11 @@ import { Button } from "~/components/button";
 import type { ValidBoard } from "~/models/board";
 import type { ValidCard } from "~/models/card";
 
-import { CardFormModal } from "./card-form-modal";
-import { CardFormProvider } from "./card-form-provider";
-import type { ProfileCardProps } from "./profile-card";
-import { ProfileCard } from "./profile-card";
-import { SortableCardList } from "./sortable-card-list";
+import type { ProfileCardProps } from "./card/profile-card";
+import { ProfileCard } from "./card/profile-card";
+import { SortableCardList } from "./card/sortable-card-list";
+import { CardFormModal } from "./form/card-form-modal";
+import { CardFormProvider } from "./form/card-form-provider";
 
 type Props = {
   user: ProfileCardProps["user"];

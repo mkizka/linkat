@@ -4,8 +4,7 @@ import type { User } from "@prisma/client";
 import { Link } from "@remix-run/react";
 
 import { Card } from "~/components/card";
-
-import { BlueskyIcon } from "./icons/bluesky";
+import { BlueskyIcon } from "~/features/board/icons/bluesky";
 
 function Avatar({ avatar }: { avatar: string }) {
   return (
