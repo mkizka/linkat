@@ -8,10 +8,10 @@ import { Form } from "@remix-run/react";
 import { Button } from "~/components/button";
 import { Input } from "~/components/input";
 
-import type { AddCardFormSchema } from "./add-card-form-provider";
+import type { CardFormSchema } from "./card-form-provider";
 
-export function AddCardForm() {
-  const form = useFormMetadata<AddCardFormSchema>();
+export function CardForm() {
+  const form = useFormMetadata<CardFormSchema>();
   const fields = form.getFieldset();
   return (
     <Form

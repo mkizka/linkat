@@ -8,8 +8,8 @@ import { Button } from "~/components/button";
 import type { ValidBoard } from "~/models/board";
 import type { ValidCard } from "~/models/card";
 
-import { AddCardFormProvider } from "./add-card-form-provider";
-import { AddCardModal } from "./add-card-modal";
+import { CardFormModal } from "./card-form-modal";
+import { CardFormProvider } from "./card-form-provider";
 import type { ProfileCardProps } from "./profile-card";
 import { ProfileCard } from "./profile-card";
 import { SortableCardList } from "./sortable-card-list";
@@ -32,7 +32,7 @@ export function BoardViewer({ user, board, editable }: Props) {
   const [isSaved, setIsSaved] = useState(false);
   const isLoginUser = useUser()?.profile.did === user.did;
 
-  const handleAddCard = (newCard: ValidCard) => {
+  const handleSubmitCardForm = (newCard: ValidCard) => {
     setCards((cards) => [...cards, withId(newCard)]);
   };
 
@@ -59,7 +59,7 @@ export function BoardViewer({ user, board, editable }: Props) {
   })();
 
   return (
-    <AddCardFormProvider onSubmit={handleAddCard}>
+    <CardFormProvider onSubmit={handleSubmitCardForm}>
       <div className="flex flex-col gap-2 py-4">
         <ProfileCard user={user} button={profileCardButton} />
         <SortableCardList
@@ -67,7 +67,7 @@ export function BoardViewer({ user, board, editable }: Props) {
           setCards={setCards}
           sortable={editable}
         />
-        {editable && <AddCardModal />}
+        {editable && <CardFormModal />}
         {editable && (
           <Button
             className="btn-circle btn-lg fixed bottom-4 right-4 w-32 shadow"
@@ -79,6 +79,6 @@ export function BoardViewer({ user, board, editable }: Props) {
           </Button>
         )}
       </div>
-    </AddCardFormProvider>
+    </CardFormProvider>
   );
 }

@@ -3,31 +3,30 @@ import { PlusCircleIcon } from "@heroicons/react/24/solid";
 
 import { Card } from "~/components/card";
 
-import { AddCardForm } from "./add-card-form";
+import { CardForm } from "./card-form";
 
 const EDIT_CARD_MODAL_ID = "add-card-modal";
 
-export const openModal = () => {
-  // https://daisyui.com/components/modal/
-  // @ts-expect-error
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-  document.getElementById(EDIT_CARD_MODAL_ID).showModal();
+export const cardModal = {
+  open: () => {
+    // @ts-expect-error
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    document.getElementById(EDIT_CARD_MODAL_ID).showModal();
+  },
+  close: () => {
+    // @ts-expect-error
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    document.getElementById(EDIT_CARD_MODAL_ID).close();
+  },
 };
 
-export const closeModal = () => {
-  // https://daisyui.com/components/modal/
-  // @ts-expect-error
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-  document.getElementById(EDIT_CARD_MODAL_ID).close();
-};
-
-export function AddCardModal() {
+export function CardFormModal() {
   const form = useFormMetadata();
 
   const handleOpen = () => {
     form.update({ name: "text", value: "" });
     form.update({ name: "url", value: "" });
-    openModal();
+    cardModal.open();
   };
 
   return (
@@ -44,7 +43,7 @@ export function AddCardModal() {
       </Card>
       <dialog id={EDIT_CARD_MODAL_ID} className="modal">
         <div className="modal-box">
-          <AddCardForm />
+          <CardForm />
           <form method="dialog">
             <button className="btn btn-circle btn-ghost btn-sm absolute right-2 top-2">
               ✕

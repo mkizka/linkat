@@ -6,7 +6,7 @@ import { Card } from "~/components/card";
 import type { ValidCard } from "~/models/card";
 import { cn } from "~/utils/cn";
 
-import { openModal } from "./add-card-modal";
+import { cardModal } from "./card-form-modal";
 
 export type SortableCardProps = {
   card: ValidCard & { id: string };
@@ -21,7 +21,7 @@ export const SortableCard = forwardRef<HTMLDivElement, SortableCardProps>(
     const handleOpen = () => {
       form.update({ name: "text", value: card.text });
       form.update({ name: "url", value: card.url });
-      openModal();
+      cardModal.open();
     };
 
     const component = (

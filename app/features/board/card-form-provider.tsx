@@ -11,14 +11,14 @@ const schema = z
     message: "どちらかは入力してください",
   });
 
-export type AddCardFormSchema = z.infer<typeof schema>;
+export type CardFormSchema = z.infer<typeof schema>;
 
-export type AddCardProps = {
-  onSubmit: (payload: AddCardFormSchema) => void;
+type CardFormProps = {
+  onSubmit: (payload: CardFormSchema) => void;
   children: React.ReactNode;
 };
 
-export function AddCardFormProvider({ onSubmit, children }: AddCardProps) {
+export function CardFormProvider({ onSubmit, children }: CardFormProps) {
   const [form] = useForm({
     id: "add-card-form",
     constraint: getZodConstraint(schema),
@@ -30,7 +30,7 @@ export function AddCardFormProvider({ onSubmit, children }: AddCardProps) {
       event.preventDefault();
 
       // submit
-      const payload = submission?.payload as AddCardFormSchema;
+      const payload = submission?.payload as CardFormSchema;
       onSubmit(payload);
 
       // cleanup
