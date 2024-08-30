@@ -1,32 +1,40 @@
+import { useFormMetadata } from "@conform-to/react";
 import { PlusCircleIcon } from "@heroicons/react/24/solid";
 
 import { Card } from "~/components/card";
 
-import type { AddCardProps } from "./add-card-form";
 import { AddCardForm } from "./add-card-form";
 
-type Props = {
-  onSubmit: AddCardProps["onSubmit"];
+const EDIT_CARD_MODAL_ID = "add-card-modal";
+
+export const openModal = () => {
+  // https://daisyui.com/components/modal/
+  // @ts-expect-error
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+  document.getElementById(EDIT_CARD_MODAL_ID).showModal();
 };
 
-export function AddCardModal({ onSubmit }: Props) {
-  const handleSubmit: AddCardProps["onSubmit"] = (...args) => {
-    onSubmit(...args);
-    // https://daisyui.com/components/modal/
-    // @ts-expect-error
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-    document.getElementById("add-card-modal").close();
+export const closeModal = () => {
+  // https://daisyui.com/components/modal/
+  // @ts-expect-error
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+  document.getElementById(EDIT_CARD_MODAL_ID).close();
+};
+
+export function AddCardModal() {
+  const form = useFormMetadata();
+
+  const handleOpen = () => {
+    form.update({ name: "text", value: "" });
+    form.update({ name: "url", value: "" });
+    openModal();
   };
+
   return (
     <>
       <Card
         className="bg-neutral text-neutral-content hover:bg-neutral/80"
-        onClick={() => {
-          // https://daisyui.com/components/modal/
-          // @ts-expect-error
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-          document.getElementById("add-card-modal").showModal();
-        }}
+        onClick={handleOpen}
         data-testid="add-card-modal__button"
       >
         <div className="card-body flex-row items-center justify-center">
@@ -34,9 +42,9 @@ export function AddCardModal({ onSubmit }: Props) {
           カードを追加
         </div>
       </Card>
-      <dialog id="add-card-modal" className="modal">
+      <dialog id={EDIT_CARD_MODAL_ID} className="modal">
         <div className="modal-box">
-          <AddCardForm onSubmit={handleSubmit} />
+          <AddCardForm />
           <form method="dialog">
             <button className="btn btn-circle btn-ghost btn-sm absolute right-2 top-2">
               ✕

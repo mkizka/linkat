@@ -1,51 +1,18 @@
-import { getFormProps, getInputProps, useForm } from "@conform-to/react";
-import { getZodConstraint, parseWithZod } from "@conform-to/zod";
+import {
+  getFormProps,
+  getInputProps,
+  useFormMetadata,
+} from "@conform-to/react";
 import { Form } from "@remix-run/react";
-import { useState } from "react";
-import { z } from "zod";
 
 import { Button } from "~/components/button";
 import { Input } from "~/components/input";
 
-const schema = z
-  .object({
-    text: z.string().optional(),
-    url: z.string().url().optional(),
-  })
-  .refine((value) => value.text || value.url, {
-    message: "どちらかは入力してください",
-  });
+import type { AddCardFormSchema } from "./add-card-form-provider";
 
-type Schema = z.infer<typeof schema>;
-
-export type AddCardProps = {
-  onSubmit: (payload: Schema) => void;
-};
-
-export function AddCardForm({ onSubmit }: AddCardProps) {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const [form, fields] = useForm({
-    id: "add-card-form",
-    constraint: getZodConstraint(schema),
-    onValidate({ formData }) {
-      return parseWithZod(formData, { schema });
-    },
-    onSubmit: (event, { submission }) => {
-      // prepare
-      event.preventDefault();
-      setIsSubmitting(true);
-
-      // submit
-      const payload = submission?.payload as Schema;
-      onSubmit(payload);
-
-      // cleanup
-      (event.target as HTMLFormElement).reset();
-      setIsSubmitting(false);
-    },
-  });
-
+export function AddCardForm() {
+  const form = useFormMetadata<AddCardFormSchema>();
+  const fields = form.getFieldset();
   return (
     <Form
       method="post"
@@ -78,7 +45,6 @@ export function AddCardForm({ onSubmit }: AddCardProps) {
       <Button
         type="submit"
         className="mt-4"
-        loading={isSubmitting}
         data-testid="add-card-form__submit"
       >
         追加

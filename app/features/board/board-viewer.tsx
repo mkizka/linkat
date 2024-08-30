@@ -8,6 +8,7 @@ import { Button } from "~/components/button";
 import type { ValidBoard } from "~/models/board";
 import type { ValidCard } from "~/models/card";
 
+import { AddCardFormProvider } from "./add-card-form-provider";
 import { AddCardModal } from "./add-card-modal";
 import type { ProfileCardProps } from "./profile-card";
 import { ProfileCard } from "./profile-card";
@@ -58,20 +59,26 @@ export function BoardViewer({ user, board, editable }: Props) {
   })();
 
   return (
-    <div className="flex flex-col gap-2 py-4">
-      <ProfileCard user={user} button={profileCardButton} />
-      <SortableCardList cards={cards} setCards={setCards} sortable={editable} />
-      {editable && <AddCardModal onSubmit={handleAddCard} />}
-      {editable && (
-        <Button
-          className="btn-circle btn-lg fixed bottom-4 right-4 w-32 shadow"
-          onClick={handleSaveBoard}
-          data-testid="board-viewer__submit"
-        >
-          <PencilSquareIcon className="size-8" />
-          保存
-        </Button>
-      )}
-    </div>
+    <AddCardFormProvider onSubmit={handleAddCard}>
+      <div className="flex flex-col gap-2 py-4">
+        <ProfileCard user={user} button={profileCardButton} />
+        <SortableCardList
+          cards={cards}
+          setCards={setCards}
+          sortable={editable}
+        />
+        {editable && <AddCardModal />}
+        {editable && (
+          <Button
+            className="btn-circle btn-lg fixed bottom-4 right-4 w-32 shadow"
+            onClick={handleSaveBoard}
+            data-testid="board-viewer__submit"
+          >
+            <PencilSquareIcon className="size-8" />
+            保存
+          </Button>
+        )}
+      </div>
+    </AddCardFormProvider>
   );
 }
