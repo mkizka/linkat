@@ -40,6 +40,7 @@ export const SortableCard = forwardRef<HTMLDivElement, SortableCardProps>(
             className="btn btn-square btn-outline"
             tabIndex={-1}
             data-movable-handle
+            data-testid={`sortable-card__handle`}
           >
             <ArrowsUpDownIcon className="size-6" />
           </button>

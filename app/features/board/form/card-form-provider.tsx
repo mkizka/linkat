@@ -2,6 +2,8 @@ import { FormProvider, useForm } from "@conform-to/react";
 import { getZodConstraint, parseWithZod } from "@conform-to/zod";
 import { z } from "zod";
 
+import { cardModal } from "./card-form-modal";
+
 const schema = z
   .object({
     text: z.string().optional(),
@@ -36,6 +38,7 @@ export function CardFormProvider({ onSubmit, children }: CardFormProps) {
 
       // cleanup
       (event.target as HTMLFormElement).reset();
+      cardModal.close();
     },
   });
   return <FormProvider context={form.context}>{children}</FormProvider>;

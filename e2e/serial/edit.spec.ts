@@ -33,7 +33,15 @@ test.describe("編集", () => {
 
     // カードを並べ替える
     await page.goto("/edit?base=alice.test");
-    await page.dragAndDrop(`text=${card1}`, `text=${card2}`);
+    const card1Locator = page.locator('[data-testid="sortable-card"]', {
+      hasText: card1,
+    });
+    const card2Locator = page.locator('[data-testid="sortable-card"]', {
+      hasText: card2,
+    });
+    await card1Locator
+      .getByTestId("sortable-card__handle")
+      .dragTo(card2Locator);
 
     // 保存ボタン押下、Firehose反映待ち
     await page.getByTestId("board-viewer__submit").click();
