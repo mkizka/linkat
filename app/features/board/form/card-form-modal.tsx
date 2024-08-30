@@ -5,7 +5,7 @@ import { Card } from "~/components/card";
 
 import { CardForm } from "./card-form";
 
-const EDIT_CARD_MODAL_ID = "add-card-modal";
+const EDIT_CARD_MODAL_ID = "card-form-modal";
 
 export const cardModal = {
   open: () => {
@@ -33,14 +33,14 @@ export function CardFormModal() {
       <Card
         className="bg-neutral text-neutral-content hover:bg-neutral/80"
         onClick={handleOpen}
-        data-testid="add-card-modal__button"
+        data-testid="card-form-modal__button"
       >
         <div className="card-body flex-row items-center justify-center">
           <PlusCircleIcon className="size-8" />
           カードを追加
         </div>
       </Card>
-      <dialog id={EDIT_CARD_MODAL_ID} className="modal modal-bottom">
+      <dialog id={EDIT_CARD_MODAL_ID} className="modal">
         <div className="modal-box">
           <CardForm />
           <form method="dialog">

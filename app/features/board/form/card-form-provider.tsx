@@ -23,7 +23,7 @@ type CardFormProps = {
 
 export function CardFormProvider({ onSubmit, children }: CardFormProps) {
   const [form] = useForm({
-    id: "add-card-form",
+    id: "card-form",
     constraint: getZodConstraint(schema),
     onValidate({ formData }) {
       return parseWithZod(formData, { schema });

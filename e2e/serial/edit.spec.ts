@@ -13,17 +13,17 @@ test.describe("編集", () => {
     await page.goto("/edit?base=alice.test");
 
     // カードを追加
-    await page.getByTestId("add-card-modal__button").click();
-    await page.getByTestId("add-card-form__text").fill(text1);
-    await page.getByTestId("add-card-form__url").fill("https://example.com");
-    await page.getByTestId("add-card-form__submit").click();
+    await page.getByTestId("card-form-modal__button").click();
+    await page.getByTestId("card-form__text").fill(text1);
+    await page.getByTestId("card-form__url").fill("https://example.com");
+    await page.getByTestId("card-form__submit").click();
     await expect(card1).toBeVisible();
 
     // カードを追加(2回目)
-    await page.getByTestId("add-card-modal__button").click();
-    await page.getByTestId("add-card-form__text").fill(text2);
-    await page.getByTestId("add-card-form__url").fill("https://example.com");
-    await page.getByTestId("add-card-form__submit").click();
+    await page.getByTestId("card-form-modal__button").click();
+    await page.getByTestId("card-form__text").fill(text2);
+    await page.getByTestId("card-form__url").fill("https://example.com");
+    await page.getByTestId("card-form__submit").click();
     await expect(card2).toBeVisible();
 
     // 保存ボタン押下、Firehose反映待ち
