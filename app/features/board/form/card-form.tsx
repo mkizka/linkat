@@ -32,6 +32,7 @@ export function CardForm() {
         // https://github.com/edmundhung/conform/issues/600
         key={fields.text.key}
         data-testid="add-card-form__text"
+        autoFocus
       />
       <Input
         {...getInputProps(fields.url, { type: "url" })}
