@@ -43,7 +43,9 @@ export abstract class FirehoseSubscriptionBase {
             value,
           );
         } catch (error) {
-          logger.error("repo subscription skipped invalid message", { error });
+          logger.error("repo subscription skipped invalid message", {
+            error: String(error),
+          });
         }
       },
     });
