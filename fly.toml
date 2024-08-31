@@ -22,7 +22,7 @@ swap_size_mb = 512
   processes = ['app']
 
 [[http_service.checks]]
-  grace_period = "1s"
+  grace_period = "5s"
   interval = "2s"
   method = "GET"
   timeout = "2s"
