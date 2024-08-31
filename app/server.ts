@@ -21,7 +21,11 @@ const viteDevServer = isProduction
 const app = express();
 
 if (isProduction) {
-  app.use(morgan("combined"));
+  app.use(
+    morgan("combined", {
+      skip: (req) => req.get("User-Agent") === "Consul Health Check",
+    }),
+  );
 }
 
 app.use(
