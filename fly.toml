@@ -5,7 +5,6 @@
 
 app = 'linkat'
 primary_region = 'nrt'
-swap_size_mb = 512
 
 [build]
 
@@ -15,7 +14,7 @@ swap_size_mb = 512
 [http_service]
   internal_port = 3000
   force_https = true
-  auto_stop_machines = 'stop'
+  auto_stop_machines = 'off'
   auto_start_machines = true
   min_machines_running = 0
   processes = ['app']
@@ -25,10 +24,10 @@ swap_size_mb = 512
   interval = "2s"
   method = "GET"
   timeout = "2s"
-  path = "/"
+  path = "/health"
 
 [[vm]]
-  memory = '512mb'
+  memory = '1gb'
   cpu_kind = 'shared'
   cpus = 1
 

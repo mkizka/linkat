@@ -1,6 +1,7 @@
 import { createRequestHandler } from "@remix-run/express";
 import type { ServerBuild } from "@remix-run/node";
 import express from "express";
+import morgan from "morgan";
 
 import { startFirehoseSubscription } from "./server/firehose/subscription.js";
 import { createLogger } from "./utils/logger.js";
@@ -17,6 +18,9 @@ const viteDevServer =
       );
 
 const app = express();
+
+app.use(morgan("combined"));
+
 app.use(
   viteDevServer ? viteDevServer.middlewares : express.static("build/client"),
 );
