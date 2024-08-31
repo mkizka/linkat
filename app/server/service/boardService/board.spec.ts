@@ -95,8 +95,8 @@ describe("boardService", () => {
       // act
       const actual = await boardService.findOrFetchBoard("did:plc:example");
       // assert
-      expect(mockedLogger.debug).toHaveBeenCalledWith(
-        "boardの形式が不正でした",
+      expect(mockedLogger.warn).toHaveBeenCalledWith(
+        "PDSからのboardの形式が不正でした",
         expect.anything(),
       );
       expect(actual).toBeNull();
@@ -112,8 +112,8 @@ describe("boardService", () => {
       // act
       const actual = await boardService.findOrFetchBoard("did:plc:example");
       // assert
-      expect(mockedLogger.debug).toHaveBeenCalledWith(
-        "boardの取得に失敗しました",
+      expect(mockedLogger.warn).toHaveBeenCalledWith(
+        "PDSからのboardの取得に失敗しました",
         expect.anything(),
       );
       expect(actual).toBeNull();

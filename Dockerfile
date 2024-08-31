@@ -28,6 +28,7 @@ RUN apt-get update -qq && \
 COPY --link package.json pnpm-lock.yaml ./
 COPY --link scripts ./scripts
 COPY --link prisma ./prisma
+COPY --link lexicons ./lexicons
 RUN pnpm install --frozen-lockfile --prod=false
 
 # Copy application code
