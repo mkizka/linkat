@@ -24,6 +24,7 @@ export const createOrUpdateBoard = async ({
     },
     record: JSON.stringify(board),
   } satisfies Prisma.BoardUpsertArgs["create"];
+  logger.info("boardを保存します", { userDid });
   const newBoard = await prisma.board.upsert({
     where: {
       userDid,
@@ -56,7 +57,7 @@ const findBoard = async (userDid: string) => {
 };
 
 const fetchBoardInPDS = async (userDid: string) => {
-  logger.info("boardを取得します", { userDid });
+  logger.info("PDSからboardを取得します", { userDid });
   const agent = new LinkatAgent({
     service: env.BSKY_PUBLIC_API_URL,
   });
@@ -64,12 +65,12 @@ const fetchBoardInPDS = async (userDid: string) => {
     repo: userDid,
   });
   if (response instanceof Error) {
-    logger.debug("boardの取得に失敗しました", { userDid, response });
+    logger.warn("PDSからのboardの取得に失敗しました", { userDid, response });
     return null;
   }
   const parsed = boardScheme.safeParse(response.value);
   if (!parsed.success) {
-    logger.debug("boardの形式が不正でした", { userDid, parsed });
+    logger.warn("PDSからのboardの形式が不正でした", { userDid, parsed });
     return null;
   }
   return parsed.data;
