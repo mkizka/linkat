@@ -13,19 +13,19 @@ const server = {
   BSKY_FIREHOSE_URL: z.string().url(),
 };
 
-export const env = createEnv({
-  server,
-  runtimeEnv: typeof process !== "undefined" ? process.env : import.meta.env,
-  emptyStringAsUndefined: true,
-  skipValidation: true,
-});
-
-// ↑でバリデーションを行うとこのファイルがブラウザでも使用するファイルにimportされたときに
-// エラーになってしまうため、以下でサーバー側でのみバリデーションを行う
-if (typeof window === "undefined") {
-  createEnv({
-    server,
-    runtimeEnv: process.env,
-    emptyStringAsUndefined: true,
-  });
-}
+export const env = (() => {
+  try {
+    return createEnv({
+      server,
+      runtimeEnv: process.env,
+      emptyStringAsUndefined: true,
+    });
+  } catch (e) {
+    // logger.tsなどを通してブラウザでも使用するファイルにimportされた時は
+    // バリデーションが通らないので、ブラウザ環境では無視する
+    if (typeof window !== "undefined") {
+      return import.meta.env as never;
+    }
+    throw e;
+  }
+})();
