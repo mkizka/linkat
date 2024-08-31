@@ -1,3 +1,4 @@
+ 
 import { createRequestHandler } from "@remix-run/express";
 import type { ServerBuild } from "@remix-run/node";
 import express from "express";
@@ -8,18 +9,21 @@ import { createLogger } from "./utils/logger.js";
 
 // import { createServer } from "./generated/server/index.js";
 
-const viteDevServer =
-  process.env.NODE_ENV === "production"
-    ? null
-    : await import("vite").then((vite) =>
-        vite.createServer({
-          server: { middlewareMode: true },
-        }),
-      );
+const isProduction = process.env.NODE_ENV === "production";
+
+const viteDevServer = isProduction
+  ? null
+  : await import("vite").then((vite) =>
+      vite.createServer({
+        server: { middlewareMode: true },
+      }),
+    );
 
 const app = express();
 
-app.use(morgan("combined"));
+if (isProduction) {
+  app.use(morgan("combined"));
+}
 
 app.use(
   viteDevServer ? viteDevServer.middlewares : express.static("build/client"),
