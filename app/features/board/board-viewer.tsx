@@ -12,6 +12,7 @@ import type { ProfileCardProps } from "./card/profile-card";
 import { ProfileCard } from "./card/profile-card";
 import { SortableCardList } from "./card/sortable-card-list";
 import { CardFormModal } from "./form/card-form-modal";
+import type { CardFormPayload } from "./form/card-form-provider";
 import { CardFormProvider } from "./form/card-form-provider";
 
 type Props = {
@@ -21,8 +22,8 @@ type Props = {
 };
 
 const withId = (card: ValidCard) => ({
-  id: crypto.randomUUID().toString(),
   ...card,
+  id: crypto.randomUUID().toString(),
 });
 
 export function BoardViewer({ user, board, editable }: Props) {
@@ -32,8 +33,23 @@ export function BoardViewer({ user, board, editable }: Props) {
   const [isSaved, setIsSaved] = useState(false);
   const isLoginUser = useUser()?.profile.did === user.did;
 
-  const handleSubmitCardForm = (newCard: ValidCard) => {
-    setCards((cards) => [...cards, withId(newCard)]);
+  const handleSubmitCardForm = (payload: CardFormPayload) => {
+    if (payload.id) {
+      setCards((cards) =>
+        cards.map((card) => {
+          if (card.id === payload.id) {
+            return {
+              id: payload.id,
+              text: payload.text,
+              url: payload.url,
+            };
+          }
+          return card;
+        }),
+      );
+    } else {
+      setCards((cards) => [...cards, withId(payload)]);
+    }
   };
 
   const handleSaveBoard = async () => {

@@ -8,10 +8,10 @@ import { Form } from "@remix-run/react";
 import { Button } from "~/components/button";
 import { Input } from "~/components/input";
 
-import type { CardFormSchema } from "./card-form-provider";
+import type { CardFormPayload } from "./card-form-provider";
 
 export function CardForm() {
-  const form = useFormMetadata<CardFormSchema>();
+  const form = useFormMetadata<CardFormPayload>();
   const fields = form.getFieldset();
   return (
     <Form
@@ -48,7 +48,7 @@ export function CardForm() {
         key={fields.id.key}
       />
       <Button type="submit" className="mt-4" data-testid="card-form__submit">
-        追加
+        {fields.id.value ? "変更" : "追加"}
       </Button>
       <p className="pl-1 text-end text-sm text-gray-400">
         URLかテキストはどちらか空欄でもOKです

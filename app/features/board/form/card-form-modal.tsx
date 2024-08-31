@@ -31,7 +31,7 @@ export function CardFormModal() {
   return (
     <>
       <Card
-        className="bg-neutral text-neutral-content hover:bg-neutral/80"
+        className="bg-primary text-primary-content hover:bg-primary/80"
         onClick={handleOpen}
         data-testid="card-form-modal__button"
       >

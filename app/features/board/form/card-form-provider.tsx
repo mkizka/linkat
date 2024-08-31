@@ -14,10 +14,10 @@ const schema = z
     message: "どちらかは入力してください",
   });
 
-export type CardFormSchema = z.infer<typeof schema>;
+export type CardFormPayload = z.infer<typeof schema>;
 
 type CardFormProps = {
-  onSubmit: (payload: CardFormSchema) => void;
+  onSubmit: (payload: CardFormPayload) => void;
   children: React.ReactNode;
 };
 
@@ -29,15 +29,8 @@ export function CardFormProvider({ onSubmit, children }: CardFormProps) {
       return parseWithZod(formData, { schema });
     },
     onSubmit: (event, { submission }) => {
-      // prepare
       event.preventDefault();
-
-      // submit
-      const payload = submission?.payload as CardFormSchema;
-      onSubmit(payload);
-
-      // cleanup
-      (event.target as HTMLFormElement).reset();
+      onSubmit(submission?.payload as CardFormPayload);
       cardModal.close();
     },
   });
