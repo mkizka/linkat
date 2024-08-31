@@ -1,5 +1,9 @@
 import { expect, test } from "@playwright/test";
 
+import { restoreStorageState } from "./utils";
+
+restoreStorageState();
+
 test.describe("編集", () => {
   test("カードを追加して保存すると閲覧ページに反映される", async ({ page }) => {
     const text1 = `1. ${crypto.randomUUID()}`;
