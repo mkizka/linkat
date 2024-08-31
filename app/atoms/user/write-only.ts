@@ -40,7 +40,12 @@ export const loginAtom = atom(
 export const resumeSessionAtom = atom(null, async (get, set) => {
   const user = get(userAtom);
   if (!user) {
-    logger.debug("保存されたユーザーがありませんでした");
+    logger.debug("セッション情報がないため再開をスキップ");
+    return;
+  }
+  const currentAgent = get(linkatAgentAtom);
+  if (currentAgent) {
+    logger.debug("セッション再開済みなので再開をスキップ");
     return;
   }
   const agent = new LinkatAgent({ service: user.service });
