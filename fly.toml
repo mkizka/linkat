@@ -11,7 +11,6 @@ swap_size_mb = 512
 
 [deploy]
   release_command = 'npx prisma db push --skip-generate'
-  strategy = "bluegreen"
 
 [http_service]
   internal_port = 3000
