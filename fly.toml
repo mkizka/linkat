@@ -20,6 +20,13 @@ swap_size_mb = 512
   min_machines_running = 0
   processes = ['app']
 
+[[http_service.checks]]
+  grace_period = "1s"
+  interval = "2s"
+  method = "GET"
+  timeout = "2s"
+  path = "/"
+
 [[vm]]
   memory = '512mb'
   cpu_kind = 'shared'
