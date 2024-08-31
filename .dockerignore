@@ -1,0 +1,15 @@
+node_modules/
+dist/
+build/
+.env
+
+# vitest
+coverage/
+
+# atproto
+generated/
+atproto/
+
+# playwright
+playwright-report/
+e2e/state.json

@@ -1,0 +1,31 @@
+# fly.toml app configuration file generated for linkat on 2024-08-31T14:04:32+09:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'linkat'
+primary_region = 'nrt'
+swap_size_mb = 512
+
+[build]
+
+[deploy]
+  release_command = 'npx prisma db push --skip-generate'
+
+[http_service]
+  internal_port = 3000
+  force_https = true
+  auto_stop_machines = 'stop'
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ['app']
+
+[[vm]]
+  memory = '512mb'
+  cpu_kind = 'shared'
+  cpus = 1
+
+[env]
+  BSKY_FIREHOSE_URL = 'wss://bsky.network'
+  BSKY_PUBLIC_API_URL = 'https://public.api.bsky.app'
+  LOG_LEVEL = 'info'
