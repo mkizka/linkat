@@ -35,7 +35,7 @@ export default defineConfig({
         ...devices["iPhone 15 Pro"],
         locale: "ja-JP",
       },
-      dependencies: ["setup"],
+      dependencies: ["chromium"],
     },
   ],
   webServer: {
