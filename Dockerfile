@@ -1,57 +1,28 @@
 # syntax = docker/dockerfile:1
-
-# Adjust NODE_VERSION as desired
-ARG NODE_VERSION=20.13.0
-FROM node:${NODE_VERSION}-slim as base
-
+FROM node:20.13-slim AS base
 LABEL fly_launch_runtime="Remix/Prisma"
-
-# Remix/Prisma app lives here
 WORKDIR /app
-
-# Set production environment
-ENV NODE_ENV="production"
-
-# Install pnpm
-ARG PNPM_VERSION=9.6.0
-RUN npm install -g pnpm@$PNPM_VERSION
-
-
-# Throw-away build stage to reduce size of final image
-FROM base as build
-
-# Install packages needed to build node modules
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y build-essential node-gyp openssl pkg-config python-is-python3
+    apt-get install --no-install-recommends -y openssl && \
+    rm -rf /var/lib/apt/lists /var/cache/apt/archives
+RUN corepack enable pnpm
 
-# Install node modules
+FROM base AS build
 COPY --link package.json pnpm-lock.yaml ./
 COPY --link scripts ./scripts
 COPY --link prisma ./prisma
 COPY --link lexicons ./lexicons
-RUN pnpm install --frozen-lockfile --prod=false
-
-# Copy application code
+RUN pnpm install --frozen-lockfile
 COPY --link . .
-
-# Build application
-RUN pnpm run build
-
-# Remove development dependencies
+RUN pnpm build
 RUN pnpm prune --prod --ignore-scripts
 
+FROM base AS runner
+ENV NODE_ENV="production"
+COPY --from=build /app/node_modules /app/node_modules
+COPY --from=build /app/dist /app/dist
+COPY --from=build /app/prisma /app/prisma
+COPY --from=build /app/package.json /app/
 
-# Final stage for app image
-FROM base
-
-# Install packages needed for deployment
-RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y openssl && \
-    rm -rf /var/lib/apt/lists /var/cache/apt/archives
-
-# Copy built application
-COPY --from=build /app /app
-
-# Start the server by default, this can be overwritten at runtime
 EXPOSE 3000
-CMD [ "pnpm", "run", "start" ]
+CMD [ "node", "./dist/server.js" ]
