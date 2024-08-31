@@ -7,7 +7,7 @@
     "node": ">=20.0.0"
   },
   "scripts": {
-    "_eslint": "eslint --cache --cache-location ./node_modules/.cache/eslint .",
+    "_eslint": "eslint --cache --cache-location ./node_modules/.cache/eslint",
     "all": "run-s build format test",
     "build": "pnpm -s typecheck && run-p -s build:*",
     "build:remix": "remix vite:build",
@@ -95,7 +95,7 @@
   },
   "sideEffects": false,
   "lint-staged": {
-    "*.{js,mjs,ts,tsx}": "eslint --fix",
+    "*.{js,mjs,ts,tsx}": "pnpm _eslint --fix",
     "*": "prettier --ignore-unknown --write"
   },
   "prettier": {
