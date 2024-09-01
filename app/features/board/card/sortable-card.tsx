@@ -28,7 +28,7 @@ export const SortableCard = forwardRef<HTMLDivElement, SortableCardProps>(
       <Card
         ref={ref}
         className={cn({
-          "ring ring-primary animate-in zoom-in-100 scale-[103%]": isDragging,
+          "ring ring-neutral animate-in zoom-in-100 scale-[103%]": isDragging,
         })}
         data-testid={`sortable-card`}
       >
@@ -39,7 +39,7 @@ export const SortableCard = forwardRef<HTMLDivElement, SortableCardProps>(
             <div className="relative size-8">
               <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
                 <button
-                  className="btn btn-square btn-primary"
+                  className="btn btn-square"
                   data-testid={`sortable-card__edit`}
                   onClick={handleOpen}
                 >

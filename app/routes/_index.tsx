@@ -9,7 +9,7 @@ export default function Index() {
     <div className="utils--center">
       {user ? (
         <Link
-          className="btn btn-primary"
+          className="btn btn-neutral"
           to={`/edit?base=${user.profile.handle}`}
           data-testid="index__edit-link"
         >

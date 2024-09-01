@@ -31,7 +31,7 @@ function ErrorPage(props: { title: string; text: string }) {
               </a>
               より
             </p>
-            <Link to="/" className="btn btn-primary btn-md">
+            <Link to="/" className="btn btn-neutral btn-md">
               トップページに戻る
             </Link>
           </div>

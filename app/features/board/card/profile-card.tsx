@@ -35,7 +35,7 @@ export function ProfileCard({ user, button }: ProfileCardProps) {
   const buttons = {
     edit: (
       <Link
-        className="btn btn-primary"
+        className="btn btn-neutral"
         to={`/edit?base=${user.handle}`}
         data-testid="profile-card__edit"
       >
@@ -45,7 +45,7 @@ export function ProfileCard({ user, button }: ProfileCardProps) {
     ),
     preview: (
       <Link
-        className="btn btn-primary"
+        className="btn btn-neutral"
         to={`/board/${user.handle}`}
         data-testid="profile-card__preview"
       >
