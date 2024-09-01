@@ -22,20 +22,20 @@ export default defineConfig({
       testMatch: "global.setup.ts",
     },
     {
-      name: "chromium",
-      use: {
-        ...devices["Desktop Chrome"],
-        locale: "ja-JP",
-        storageState: "./e2e/states/alice.test.json",
-      },
-      dependencies: ["setup"],
-    },
-    {
       name: "safari",
       use: {
         ...devices["iPhone 15 Pro"],
         locale: "ja-JP",
         storageState: "./e2e/states/bob.test.json",
+      },
+      dependencies: ["setup"],
+    },
+    {
+      name: "chromium",
+      use: {
+        ...devices["Desktop Chrome"],
+        locale: "ja-JP",
+        storageState: "./e2e/states/alice.test.json",
       },
       dependencies: ["setup"],
     },
