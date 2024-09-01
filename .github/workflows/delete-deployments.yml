@@ -22,7 +22,7 @@ jobs:
       #     private-key: ${{ secrets.GH_APP_PRIVATE_KEY }}
 
       - name: 🗑 Delete deployment environment
-        uses: strumwolf/delete-deployment-environment@v2.2.3
+        uses: strumwolf/delete-deployment-environment@v3.0.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           environment: production
