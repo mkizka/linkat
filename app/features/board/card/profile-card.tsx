@@ -45,7 +45,7 @@ export function ProfileCard({ user, button }: ProfileCardProps) {
     ),
     preview: (
       <Link
-        className="btn btn-primary animate-bounce repeat-0"
+        className="btn btn-primary"
         to={`/board/${user.handle}`}
         data-testid="profile-card__preview"
       >

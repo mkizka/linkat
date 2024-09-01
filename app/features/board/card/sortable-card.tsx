@@ -35,13 +35,19 @@ export const SortableCard = forwardRef<HTMLDivElement, SortableCardProps>(
         <div className="card-body flex-row items-center gap-4">
           <LinkIcon className="size-8" />
           <p className="flex-1 truncate">{card.text || card.url}</p>
-          <button
-            className="btn btn-square btn-primary"
-            data-testid={`sortable-card__edit`}
-            onClick={handleOpen}
-          >
-            <PencilSquareIcon className="size-6" />
-          </button>
+          {sortable && (
+            <div className="relative size-8">
+              <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+                <button
+                  className="btn btn-square btn-primary"
+                  data-testid={`sortable-card__edit`}
+                  onClick={handleOpen}
+                >
+                  <PencilSquareIcon className="size-6" />
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </Card>
     );
