@@ -14,11 +14,14 @@ import { getDefaultStore } from "jotai";
 import { userAtom } from "./atoms/user/base";
 import { resumeSessionAtom } from "./atoms/user/write-only";
 import { Toaster } from "./features/toast/toaster";
+import { createLogger } from "./utils/logger";
 
 export { ErrorBoundary } from "~/components/error-boundary";
 export { HydrateFallback } from "~/components/hydate-fallback";
 
 const LOGIN_REQUIRED_PATHS = ["/edit"];
+
+const logger = createLogger("root.tsx");
 
 export const clientLoader: ClientLoaderFunction = async ({ request }) => {
   const store = getDefaultStore();
@@ -26,6 +29,7 @@ export const clientLoader: ClientLoaderFunction = async ({ request }) => {
   const user = store.get(userAtom);
   const pathname = new URL(request.url).pathname;
   if (!user && LOGIN_REQUIRED_PATHS.includes(pathname)) {
+    logger.debug("未ログインのためリダイレクトしました");
     return redirect("/");
   }
   return null;

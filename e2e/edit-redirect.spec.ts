@@ -1,5 +1,7 @@
 import { test } from "@playwright/test";
 
+import { resetStorageState } from "./utils";
+
 const DUMMY_EXPIRED_USER = JSON.stringify({
   profile: {},
   session: {
@@ -14,8 +16,15 @@ const DUMMY_EXPIRED_USER = JSON.stringify({
   service: "http://localhost:2583/",
 });
 
+resetStorageState();
+
 test.describe("編集(リダイレクト)", () => {
   test("非ログイン時はトップにリダイレクト", async ({ page }) => {
+    await page.goto("/edit?base=alice.test");
+    await page.waitForURL((url) => url.pathname === "/");
+    await page.waitForTimeout(2000);
+  });
+  test("baseパラメータが無いときはトップにリダイレクト", async ({ page }) => {
     await page.goto("/edit");
     await page.waitForURL((url) => url.pathname === "/");
     await page.waitForTimeout(2000);

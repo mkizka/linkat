@@ -26,6 +26,7 @@ export default defineConfig({
       use: {
         ...devices["Desktop Chrome"],
         locale: "ja-JP",
+        storageState: "./e2e/states/alice.test.json",
       },
       dependencies: ["setup"],
     },
@@ -34,8 +35,9 @@ export default defineConfig({
       use: {
         ...devices["iPhone 15 Pro"],
         locale: "ja-JP",
+        storageState: "./e2e/states/bob.test.json",
       },
-      dependencies: ["chromium"],
+      dependencies: ["setup"],
     },
   ],
   webServer: {

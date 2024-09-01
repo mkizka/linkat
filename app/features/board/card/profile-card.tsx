@@ -34,7 +34,11 @@ export type ProfileCardProps = {
 export function ProfileCard({ user, button }: ProfileCardProps) {
   const buttons = {
     edit: (
-      <Link className="btn btn-primary" to={`/edit?base=${user.handle}`}>
+      <Link
+        className="btn btn-primary"
+        to={`/edit?base=${user.handle}`}
+        data-testid="profile-card__edit"
+      >
         <PencilSquareIcon className="size-6" />
         編集
       </Link>
@@ -43,6 +47,7 @@ export function ProfileCard({ user, button }: ProfileCardProps) {
       <Link
         className="btn btn-primary animate-bounce repeat-0"
         to={`/board/${user.handle}`}
+        data-testid="profile-card__preview"
       >
         <EyeIcon className="size-6" />
         ページを見る

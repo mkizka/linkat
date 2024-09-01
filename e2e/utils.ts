@@ -1,7 +1,7 @@
 import { test } from "@playwright/test";
 
-export const restoreStorageState = () => {
+export const resetStorageState = () => {
   test.use({
-    storageState: "./e2e/state.json",
+    storageState: { cookies: [], origins: [] },
   });
 };
