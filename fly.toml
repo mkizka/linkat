@@ -10,11 +10,12 @@ primary_region = 'nrt'
 
 [deploy]
   release_command = 'npx prisma db push --skip-generate'
+  strategy = "bluegreen"
 
 [http_service]
   internal_port = 3000
   force_https = true
-  auto_stop_machines = 'stop'
+  auto_stop_machines = 'suspend'
   auto_start_machines = true
   min_machines_running = 1
   processes = ['app']
