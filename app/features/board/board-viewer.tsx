@@ -11,7 +11,7 @@ import type { ValidCard } from "~/models/card";
 import type { ProfileCardProps } from "./card/profile-card";
 import { ProfileCard } from "./card/profile-card";
 import { SortableCardList } from "./card/sortable-card-list";
-import { CardFormModal } from "./form/card-form-modal";
+import { CardFormModal, cardModal } from "./form/card-form-modal";
 import type { CardFormPayload } from "./form/card-form-provider";
 import { CardFormProvider } from "./form/card-form-provider";
 
@@ -50,10 +50,14 @@ export function BoardViewer({ user, board, editable }: Props) {
     } else {
       setCards((cards) => [...cards, withId(payload)]);
     }
+    cardModal.close();
   };
 
   const handleDeleteCardForm = (id: string) => {
+    const ok = confirm("本当に削除しますか？");
+    if (!ok) return;
     setCards((cards) => cards.filter((card) => card.id !== id));
+    cardModal.close();
   };
 
   const handleSaveBoard = async () => {
