@@ -47,9 +47,28 @@ export function CardForm() {
         {...getInputProps(fields.id, { type: "hidden" })}
         key={fields.id.key}
       />
-      <Button type="submit" className="mt-4" data-testid="card-form__submit">
-        {fields.id.value ? "変更" : "追加"}
-      </Button>
+      <div className="flex gap-2">
+        <Button
+          type="submit"
+          name="action"
+          value="save"
+          className="flex-1"
+          data-testid="card-form__submit"
+        >
+          {fields.id.value ? "変更を保存" : "追加"}
+        </Button>
+        {fields.id.value && (
+          <Button
+            type="submit"
+            name="action"
+            value="delete"
+            className="btn-error w-24"
+            data-testid="card-form__delete"
+          >
+            削除
+          </Button>
+        )}
+      </div>
       <p className="pl-1 text-end text-sm text-gray-400">
         URLかテキストはどちらか空欄でもOKです
       </p>

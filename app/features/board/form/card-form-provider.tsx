@@ -18,19 +18,29 @@ export type CardFormPayload = z.infer<typeof schema>;
 
 type CardFormProps = {
   onSubmit: (payload: CardFormPayload) => void;
+  onDelete: (id: string) => void;
   children: React.ReactNode;
 };
 
-export function CardFormProvider({ onSubmit, children }: CardFormProps) {
+export function CardFormProvider({
+  onSubmit,
+  onDelete,
+  children,
+}: CardFormProps) {
   const [form] = useForm({
     id: "card-form",
     constraint: getZodConstraint(schema),
     onValidate({ formData }) {
       return parseWithZod(formData, { schema });
     },
-    onSubmit: (event, { submission }) => {
+    onSubmit: (event, { submission, formData }) => {
       event.preventDefault();
-      onSubmit(submission?.payload as CardFormPayload);
+      const payload = submission?.payload as CardFormPayload;
+      if (formData.get("action") === "delete") {
+        if (payload.id) onDelete(payload.id);
+      } else {
+        onSubmit(payload);
+      }
       cardModal.close();
     },
   });

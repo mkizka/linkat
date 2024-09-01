@@ -52,6 +52,10 @@ export function BoardViewer({ user, board, editable }: Props) {
     }
   };
 
+  const handleDeleteCardForm = (id: string) => {
+    setCards((cards) => cards.filter((card) => card.id !== id));
+  };
+
   const handleSaveBoard = async () => {
     if (!agent) {
       alert("予期しないエラーが発生しました");
@@ -75,7 +79,10 @@ export function BoardViewer({ user, board, editable }: Props) {
   })();
 
   return (
-    <CardFormProvider onSubmit={handleSubmitCardForm}>
+    <CardFormProvider
+      onSubmit={handleSubmitCardForm}
+      onDelete={handleDeleteCardForm}
+    >
       <div className="flex flex-col gap-2 py-4">
         <ProfileCard user={user} button={profileCardButton} />
         <SortableCardList
