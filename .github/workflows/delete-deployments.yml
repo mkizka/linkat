@@ -1,0 +1,28 @@
+name: Delete Environment
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    permissions: write-all
+
+    steps:
+      - uses: actions/checkout@v3
+
+      # Points to a recent commit instead of `main` to avoid supply chain attacks. (The latest tag is very old.)
+      # - name: 🎟 Get GitHub App token
+      #   uses: navikt/github-app-token-generator@a3831f44404199df32d8f39f7c0ad9bb8fa18b1c
+      #   id: get-token
+      #   with:
+      #     app-id: ${{ secrets.GH_APP_ID }}
+      #     private-key: ${{ secrets.GH_APP_PRIVATE_KEY }}
+
+      - name: 🗑 Delete deployment environment
+        uses: strumwolf/delete-deployment-environment@v2.2.3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          environment: production
