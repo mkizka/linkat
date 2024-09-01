@@ -20,13 +20,16 @@ const viteDevServer = isProduction
 
 const app = express();
 
-if (isProduction) {
-  app.use(
-    morgan("combined", {
-      skip: (req) => req.get("User-Agent") === "Consul Health Check",
-    }),
-  );
-}
+app.use(
+  morgan("combined", {
+    skip: (req) => {
+      return (
+        req.get("User-Agent") === "Consul Health Check" ||
+        req.hostname === "localhost"
+      );
+    },
+  }),
+);
 
 app.use(
   viteDevServer ? viteDevServer.middlewares : express.static("build/client"),
