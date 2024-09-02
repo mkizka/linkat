@@ -14,3 +14,6 @@ lexicons/com/
 # playwright
 playwright-report/
 e2e/state.json
+
+# fly.io
+fly.toml

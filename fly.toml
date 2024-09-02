@@ -1,4 +1,4 @@
-# fly.toml app configuration file generated for linkat on 2024-08-31T14:04:32+09:00
+# fly.toml app configuration file generated for linkat on 2024-09-03T00:58:29+09:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
@@ -9,30 +9,28 @@ primary_region = 'nrt'
 [build]
 
 [deploy]
-  release_command = 'npx prisma db push --skip-generate'
-  strategy = "bluegreen"
-
-[http_service]
-  internal_port = 3000
-  force_https = true
-  auto_stop_machines = 'suspend'
-  auto_start_machines = true
-  min_machines_running = 1
-  processes = ['app']
-
-[[http_service.checks]]
-  grace_period = "5s"
-  interval = "2s"
-  method = "GET"
-  timeout = "2s"
-  path = "/health"
-
-[[vm]]
-  memory = '1gb'
-  cpu_kind = 'shared'
-  cpus = 1
+release_command = 'npx prisma db push --skip-generate'
+strategy = 'bluegreen'
 
 [env]
-  BSKY_FIREHOSE_URL = 'wss://bsky.network'
-  BSKY_PUBLIC_API_URL = 'https://public.api.bsky.app'
-  LOG_LEVEL = 'info'
+BSKY_FIREHOSE_URL = 'wss://bsky.network'
+BSKY_PUBLIC_API_URL = 'https://public.api.bsky.app'
+LOG_LEVEL = 'info'
+
+[http_service]
+internal_port = 3000
+force_https = true
+auto_stop_machines = 'suspend'
+auto_start_machines = true
+min_machines_running = 1
+processes = ['app']
+
+[[http_service.checks]]
+interval = '2s'
+timeout = '2s'
+grace_period = '5s'
+method = 'GET'
+path = '/health'
+
+[[vm]]
+size = 'shared-cpu-1x'
