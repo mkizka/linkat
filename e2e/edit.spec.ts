@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 test.describe("編集", () => {
-  test("カードを追加して保存すると閲覧ページに反映される", async ({ page }) => {
+  test("カードの編集操作を一通り確認", async ({ page }) => {
     // セットアップ
     const text1 = `1. ${crypto.randomUUID()}`;
     const text2 = `2. ${crypto.randomUUID()}`;
@@ -74,5 +74,22 @@ test.describe("編集", () => {
     await expect(card1).not.toBeVisible();
     await expect(card1Edited).toBeVisible();
     await expect(card2).toBeVisible();
+
+    // カードを編集
+    await page.getByTestId("profile-card__edit").click();
+    page.on("dialog", (dialog) => dialog.accept());
+    await card1Edited.getByTestId("sortable-card__edit").click();
+    await page.getByTestId("card-form__delete").click();
+    await card2.getByTestId("sortable-card__edit").click();
+    await page.getByTestId("card-form__delete").click();
+
+    // 保存ボタン押下、Firehose反映待ち
+    await page.getByTestId("board-viewer__submit").click();
+    await page.waitForTimeout(1000);
+
+    // 閲覧ページで削除済みを確認
+    await page.getByTestId("profile-card__preview").click();
+    await expect(card1Edited).not.toBeVisible();
+    await expect(card2).not.toBeVisible();
   });
 });
