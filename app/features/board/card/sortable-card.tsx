@@ -81,7 +81,7 @@ export function SortableCard({
       {sortable && <div className="absolute z-10 size-full" />}
       <CardBody parsed={parsed} isDragging={isDragging} />
       {sortable && !isDragging && (
-        <div className="absolute right-0 top-0">
+        <div className="absolute right-0 top-0 z-20">
           <button
             className="btn btn-square"
             data-testid={`sortable-card__edit`}
