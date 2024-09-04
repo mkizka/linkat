@@ -51,6 +51,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Toaster />
         <ScrollRestoration />
         <Scripts />
+        <script async src="https://embed.bsky.app/static/embed.js"></script>
       </body>
     </html>
   );

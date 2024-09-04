@@ -7,3 +7,9 @@
 .utils--center {
   @apply flex min-h-svh items-center justify-center;
 }
+
+/* Blueskyの埋め込み時に自動で挿入されるスタイルの一部を打ち消す */
+.bluesky-embed {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
