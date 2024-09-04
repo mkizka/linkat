@@ -35,6 +35,7 @@ export abstract class FirehoseSubscriptionBase {
     this.sub = new Subscription({
       service: service,
       method: SUBSCRIPTION_METHOD,
+      maxReconnectSeconds: 60, // 再接続が2^n秒ごとに行われるがここで指定した間隔より大きくはならない
       getParams: () => this.getCursor(),
       validate: (value: unknown) => {
         try {
@@ -47,6 +48,13 @@ export abstract class FirehoseSubscriptionBase {
             error: String(error),
           });
         }
+      },
+      onReconnectError: (error: unknown, n: number, initialSetup: boolean) => {
+        logger.error("Firehoseの接続に失敗しました", {
+          error,
+          n,
+          initialSetup,
+        });
       },
     });
   }
