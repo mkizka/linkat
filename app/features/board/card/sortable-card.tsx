@@ -36,7 +36,6 @@ function CardBody({ parsed, isDragging }: CardBodyProps) {
       className={cn({
         "ring ring-neutral animate-in zoom-in-100 scale-[103%]": isDragging,
       })}
-      data-testid={`sortable-card`}
     >
       <CardContent parsed={parsed} />
     </Card>

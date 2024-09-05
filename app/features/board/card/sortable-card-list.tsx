@@ -26,7 +26,12 @@ export function SortableCardList({ cards, setCards, sortable }: Props) {
         </ul>
       )}
       renderItem={({ value, props, isDragged }) => (
-        <li {...props} key={props.key} className="list-none">
+        <li
+          {...props}
+          key={props.key}
+          className="list-none"
+          data-testid={`sortable-card`}
+        >
           <SortableCard
             card={value}
             isDragging={isDragged}

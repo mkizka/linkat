@@ -45,7 +45,7 @@ test.describe("編集", () => {
 
     // カードを並べ替える
     await page.getByTestId("profile-card__edit").click();
-    await card1.dragTo(card2);
+    await card1.dragTo(card2, { timeout: 2000 });
 
     // 保存ボタン押下、Firehose反映待ち
     await page.getByTestId("board-viewer__submit").click();
