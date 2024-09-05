@@ -15,8 +15,8 @@ const schema = z
 export type CardFormPayload = z.infer<typeof schema>;
 
 type CardFormProps = {
-  onSubmit: (payload: CardFormPayload) => void;
-  onDelete: (id: string) => void;
+  onSubmit: (payload: CardFormPayload) => Promise<void> | void;
+  onDelete: (id: string) => Promise<void> | void;
   children: React.ReactNode;
 };
 
@@ -31,13 +31,13 @@ export function CardFormProvider({
     onValidate({ formData }) {
       return parseWithZod(formData, { schema });
     },
-    onSubmit: (event, { submission, formData }) => {
+    onSubmit: async (event, { submission, formData }) => {
       event.preventDefault();
       const payload = submission?.payload as CardFormPayload;
       if (formData.get("action") === "delete") {
-        if (payload.id) onDelete(payload.id);
+        if (payload.id) await onDelete(payload.id);
       } else {
-        onSubmit(payload);
+        await onSubmit(payload);
       }
     },
   });

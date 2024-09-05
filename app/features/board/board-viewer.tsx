@@ -7,6 +7,7 @@ import { useUser } from "~/atoms/user/hooks";
 import { Button } from "~/components/button";
 import type { ValidBoard } from "~/models/board";
 import type { ValidCard } from "~/models/card";
+import { resolveHandleIfNeeded } from "~/utils/url";
 
 import type { ProfileCardProps } from "./card/profile-card";
 import { ProfileCard } from "./card/profile-card";
@@ -33,7 +34,7 @@ export function BoardViewer({ user, board, editable }: Props) {
   const [isSaved, setIsSaved] = useState(false);
   const isLoginUser = useUser()?.profile.did === user.did;
 
-  const handleSubmitCardForm = (payload: CardFormPayload) => {
+  const handleSubmitCardForm = async (payload: CardFormPayload) => {
     if (payload.id) {
       setCards((cards) =>
         cards.map((card) => {
@@ -48,7 +49,8 @@ export function BoardViewer({ user, board, editable }: Props) {
         }),
       );
     } else {
-      setCards((cards) => [...cards, withId(payload)]);
+      const url = payload.url && (await resolveHandleIfNeeded(payload.url));
+      setCards((cards) => [...cards, withId({ ...payload, url })]);
     }
     cardModal.close();
   };

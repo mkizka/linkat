@@ -2,9 +2,9 @@ import { LinkIcon } from "@heroicons/react/24/outline";
 import type { ComponentProps, FC } from "react";
 
 import type { ValidCard } from "~/models/card";
+import { atUri, isBlueskyPostUrl, isBlueskyProfileUrl } from "~/utils/url";
 
 import { BlueskyIcon } from "./icons/bluesky";
-import { atUri, isBlueskyPostUrl, isBlueskyProfileUrl } from "./url";
 
 type CardIconComponent = FC<ComponentProps<"svg">>;
 

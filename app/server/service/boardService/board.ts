@@ -59,7 +59,7 @@ const findBoard = async (userDid: string) => {
 const fetchBoardInPDS = async (userDid: string) => {
   logger.info("PDSからboardを取得します", { userDid });
   const agent = new LinkatAgent({
-    service: env.BSKY_PUBLIC_API_URL,
+    service: env.VITE_BSKY_PUBLIC_API_URL,
   });
   const response = await tryCatch(agent.getBoard.bind(agent))({
     repo: userDid,

@@ -9,14 +9,19 @@ const server = {
     .enum(["debug", "info", "warn", "error"])
     .default(process.env.NODE_ENV === "production" ? "info" : "debug"),
   DATABASE_URL: z.string(),
-  BSKY_PUBLIC_API_URL: z.string().url(),
   BSKY_FIREHOSE_URL: z.string().url(),
+};
+
+const client = {
+  VITE_BSKY_PUBLIC_API_URL: z.string().url(),
 };
 
 export const env = (() => {
   try {
     return createEnv({
       server,
+      client,
+      clientPrefix: "VITE_",
       runtimeEnv: process.env,
       emptyStringAsUndefined: true,
     });
