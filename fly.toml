@@ -14,7 +14,7 @@ strategy = 'bluegreen'
 
 [env]
 BSKY_FIREHOSE_URL = 'wss://bsky.network'
-VITE_BSKY_PUBLIC_API_URL = 'https://public.api.bsky.app'
+BSKY_PUBLIC_API_URL = 'https://public.api.bsky.app'
 LOG_LEVEL = 'info'
 
 [http_service]

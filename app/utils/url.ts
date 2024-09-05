@@ -1,7 +1,5 @@
 import { AtpAgent } from "@atproto/api";
 
-import { env } from "./env";
-
 // https://bsky.app/profile/example.com
 export const isBlueskyProfileUrl = (url: URL) => {
   const paths = url.pathname.split("/");
@@ -47,7 +45,8 @@ export const resolveHandleIfNeeded = async (original: string) => {
     return original;
   }
   const publicAgent = new AtpAgent({
-    service: env.VITE_BSKY_PUBLIC_API_URL,
+    // env.BSKY_PUBLIC_API_URLを使ってもいいが開発環境でもこのURLを使った方が便利なのでそのまま入れる
+    service: "https://public.api.bsky.app",
   });
   const response = await publicAgent.resolveHandle({ handle });
   const resolvedUrl = new URL(url.origin);
