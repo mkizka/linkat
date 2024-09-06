@@ -1,6 +1,6 @@
 {
   "lexicon": 1,
-  "id": "dev.mkizka.test.profile.board",
+  "id": "dev.mkizka.test.board",
   "defs": {
     "main": {
       "type": "record",

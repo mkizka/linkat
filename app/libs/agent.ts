@@ -20,12 +20,9 @@ export class LinkatAgent extends AtpAgent {
   }
 
   async getBoard(
-    params: Omit<
-      Parameters<typeof this.dev.mkizka.test.profile.board.get>[0],
-      "rkey"
-    >,
+    params: Omit<Parameters<typeof this.dev.mkizka.test.board.get>[0], "rkey">,
   ) {
-    return await this.dev.mkizka.test.profile.board.get({
+    return await this.dev.mkizka.test.board.get({
       ...params,
       rkey: "self",
     });
@@ -47,7 +44,7 @@ export class LinkatAgent extends AtpAgent {
   }
 
   async deleteBoard() {
-    return await this.dev.mkizka.test.profile.board.delete({
+    return await this.dev.mkizka.test.board.delete({
       repo: this.assertDid,
       rkey: "self",
     });
