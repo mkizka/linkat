@@ -11,6 +11,7 @@ const server = {
   DATABASE_URL: z.string(),
   BSKY_PUBLIC_API_URL: z.string().url(),
   BSKY_FIREHOSE_URL: z.string().url(),
+  ATPROTO_PCL_URL: z.string().url(),
 };
 
 export const env = (() => {

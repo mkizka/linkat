@@ -37,7 +37,7 @@ export class LinkatAgent extends AtpAgent {
     return await this.com.atproto.repo.putRecord({
       repo: this.assertDid,
       validate: false,
-      collection: "dev.mkizka.test.profile.board",
+      collection: "dev.mkizka.test.board",
       rkey: "self",
       record: boardScheme.parse(board),
     });

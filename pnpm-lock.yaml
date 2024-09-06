@@ -11,12 +11,18 @@ importers:
       '@atproto/api':
         specifier: ^0.13.5
         version: 0.13.5
+      '@atproto/identity':
+        specifier: ^0.4.1
+        version: 0.4.1
       '@atproto/lexicon':
         specifier: ^0.4.1
         version: 0.4.1
       '@atproto/repo':
         specifier: ^0.4.3
         version: 0.4.3
+      '@atproto/sync':
+        specifier: ^0.1.0
+        version: 0.1.0
       '@atproto/xrpc':
         specifier: ^0.6.1
         version: 0.6.1
@@ -215,6 +221,9 @@ packages:
   '@atproto/crypto@0.4.1':
     resolution: {integrity: sha512-7pQNHWYyx8jGhYdPbmcuPD9W73nd/5v3mfBlncO0sBzxnPbmA6aXAWOz+fNVZwHwBJPeb/Gzf/FT/uDx7/eYFg==}
 
+  '@atproto/identity@0.4.1':
+    resolution: {integrity: sha512-5AoPJDSD0rAay/6Sib+n/FjfwGulM/+xCNxwwDLR9QI4EoeUlvIH8g5BNdix812v312/Qd42kJrLpCNTZ5rvew==}
+
   '@atproto/lex-cli@0.5.0':
     resolution: {integrity: sha512-i6v7KEj5CKy83u4fY9NeVghqndoqFBLLNKNBZ7cxHcDXNIFWiJNj4OzltPipzighVkMerUOU1+6CnWBfIkwTqA==}
     hasBin: true
@@ -224,6 +233,12 @@ packages:
 
   '@atproto/repo@0.4.3':
     resolution: {integrity: sha512-9w4TlyxExLfFL9BysvXq4vhIsYsnmGi0uelmxJjlRXBICgLpqjqQVqhS8OBqE25ZTYvgXUi7nNqpo2llCHhOvQ==}
+
+  '@atproto/repo@0.5.0':
+    resolution: {integrity: sha512-kZbj4wW5eFrDjkSTS9z+6bT4OTr5K4GrqWukWbfdBJtZPXsRDm75AV0C9ItoHDTdbBXn65TK6kqaJTrf89osCg==}
+
+  '@atproto/sync@0.1.0':
+    resolution: {integrity: sha512-2O1UPaeZfL0agitE9rp2mjYVezvZsao3DgJwWCSid1S0N7Y2pOdc7/fSLH/OHn96QhG7g0FGpWzTEcdekRuT0g==}
 
   '@atproto/syntax@0.3.0':
     resolution: {integrity: sha512-Weq0ZBxffGHDXHl9U7BQc2BFJi/e23AL+k+i5+D9hUq/bzT4yjGsrCejkjq0xt82xXDjmhhvQSZ0LqxyZ5woxA==}
@@ -1785,6 +1800,9 @@ packages:
   await-lock@2.2.2:
     resolution: {integrity: sha512-aDczADvlvTGajTDjcjpJMqRkOF6Qdz3YbPZm/PyW6tKPkx2hlYBzxMhEywM/tU72HrVZjgl5VCdRuMlA7pZ8Gw==}
 
+  axios@0.27.2:
+    resolution: {integrity: sha512-t+yRIyySRTp/wua5xEr+z1q60QmLq8ABsS5O9Me1AsE5dfKqgnCFzwiCZZ/cGNd1lq4/7akDWMxdhVlucjmnOQ==}
+
   axios@1.7.6:
     resolution: {integrity: sha512-Ekur6XDwhnJ5RgOCaxFnXyqlPALI3rVeukZMwOdfghW7/wGz784BYKiQq+QD8NPcr91KRo30KfHOchyijwWw7g==}
 
@@ -2508,6 +2526,9 @@ packages:
   event-target-shim@5.0.1:
     resolution: {integrity: sha512-i/2XbnSz/uxRCU6+NdVJgKWDTM427+MqYbkQzD321DuCQJUqOuJKIA0IM2+W2xtYHdKOmZ4dR6fExsd4SXL+WQ==}
     engines: {node: '>=6'}
+
+  eventemitter3@4.0.7:
+    resolution: {integrity: sha512-8guHBZCwKnFhYdHr2ysuRWErTwhoN2X8XELRlrRwpmfeY2jjuUN4taQMsULKUVo1K4DvZl+0pgfyoysHxvmvEw==}
 
   eventemitter3@5.0.1:
     resolution: {integrity: sha512-GWkBvjiSZK87ELrYOSESUYeVIc9mvLLf/nXalMOS5dYrgZq9o5OVkbZAVM06CVxYsCwH9BDZFPlQTlPA1j4ahA==}
@@ -3924,6 +3945,10 @@ packages:
   outvariant@1.4.3:
     resolution: {integrity: sha512-+Sl2UErvtsoajRDKCE5/dBz4DIvHXQQnAxtQTF04OJxY0+DyZXSo5P5Bb7XYWOh81syohlYL24hbDwxedPUJCA==}
 
+  p-finally@1.0.0:
+    resolution: {integrity: sha512-LICb2p9CB7FS+0eR1oqWnHhp0FljGLZCWBE9aix0Uye9W8LTQPwMTYVGWQWIw9RdQiDg4+epXQODwIYJtSJaow==}
+    engines: {node: '>=4'}
+
   p-limit@2.3.0:
     resolution: {integrity: sha512-//88mFWSJx8lxCzwdAABTJL2MyWB12+eIY7MDL2SqLmAkeKU9qxRvWuSyTjm3FUmpBEMuFfckAIqEaVGUDxb6w==}
     engines: {node: '>=6'}
@@ -3947,6 +3972,14 @@ packages:
   p-map@4.0.0:
     resolution: {integrity: sha512-/bjOqmgETBYB5BoEeGVea8dmvHb2m9GLy1E9W43yeyfP6QQCZGFNa+XRceJEuDB6zqr+gKpIAmlLebMpykw/MQ==}
     engines: {node: '>=10'}
+
+  p-queue@6.6.2:
+    resolution: {integrity: sha512-RwFpb72c/BhQLEXIZ5K2e+AhgNVmIejGlTgiB9MzZ0e93GRvqZ7uSi0dvRF7/XIXDeNkra2fNHBxTyPDGySpjQ==}
+    engines: {node: '>=8'}
+
+  p-timeout@3.2.0:
+    resolution: {integrity: sha512-rhIwUycgwwKcP9yTOOFK/AKsAopjjCakVqLHePO3CC6Mir1Z99xT+R63jZxAT5lFZLa2inS5h+ZS2GvR99/FBg==}
+    engines: {node: '>=8'}
 
   p-try@2.2.0:
     resolution: {integrity: sha512-R4nPAVTAU0B9D35/Gk3uJf/7XYbQcyohSKdvAxIRSNghFl4e71hVoGnBNQz9cWaXxO2I10KTC+3jMdvvoKw6dQ==}
@@ -5390,6 +5423,14 @@ snapshots:
       '@noble/hashes': 1.4.0
       uint8arrays: 3.0.0
 
+  '@atproto/identity@0.4.1':
+    dependencies:
+      '@atproto/common-web': 0.3.0
+      '@atproto/crypto': 0.4.1
+      axios: 0.27.2
+    transitivePeerDependencies:
+      - debug
+
   '@atproto/lex-cli@0.5.0':
     dependencies:
       '@atproto/lexicon': 0.4.1
@@ -5420,6 +5461,34 @@ snapshots:
       multiformats: 9.9.0
       uint8arrays: 3.0.0
       zod: 3.23.8
+
+  '@atproto/repo@0.5.0':
+    dependencies:
+      '@atproto/common': 0.4.1
+      '@atproto/common-web': 0.3.0
+      '@atproto/crypto': 0.4.1
+      '@atproto/lexicon': 0.4.1
+      '@ipld/car': 3.2.4
+      '@ipld/dag-cbor': 7.0.3
+      multiformats: 9.9.0
+      uint8arrays: 3.0.0
+      zod: 3.23.8
+
+  '@atproto/sync@0.1.0':
+    dependencies:
+      '@atproto/common': 0.4.1
+      '@atproto/identity': 0.4.1
+      '@atproto/lexicon': 0.4.1
+      '@atproto/repo': 0.5.0
+      '@atproto/syntax': 0.3.0
+      '@atproto/xrpc-server': 0.6.3
+      multiformats: 9.9.0
+      p-queue: 6.6.2
+    transitivePeerDependencies:
+      - bufferutil
+      - debug
+      - supports-color
+      - utf-8-validate
 
   '@atproto/syntax@0.3.0': {}
 
@@ -7204,6 +7273,13 @@ snapshots:
 
   await-lock@2.2.2: {}
 
+  axios@0.27.2:
+    dependencies:
+      follow-redirects: 1.15.6
+      form-data: 4.0.0
+    transitivePeerDependencies:
+      - debug
+
   axios@1.7.6:
     dependencies:
       follow-redirects: 1.15.6
@@ -8086,6 +8162,8 @@ snapshots:
       require-like: 0.1.2
 
   event-target-shim@5.0.1: {}
+
+  eventemitter3@4.0.7: {}
 
   eventemitter3@5.0.1: {}
 
@@ -9920,6 +9998,8 @@ snapshots:
 
   outvariant@1.4.3: {}
 
+  p-finally@1.0.0: {}
+
   p-limit@2.3.0:
     dependencies:
       p-try: 2.2.0
@@ -9943,6 +10023,15 @@ snapshots:
   p-map@4.0.0:
     dependencies:
       aggregate-error: 3.1.0
+
+  p-queue@6.6.2:
+    dependencies:
+      eventemitter3: 4.0.7
+      p-timeout: 3.2.0
+
+  p-timeout@3.2.0:
+    dependencies:
+      p-finally: 1.0.0
 
   p-try@2.2.0: {}
 

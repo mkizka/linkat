@@ -1,52 +1,63 @@
-import type { ComAtprotoSyncSubscribeRepos } from "@atproto/api";
+import { IdResolver } from "@atproto/identity";
+import type {
+  Create as FirehoseCreateEvt,
+  Update as FirehoseUpdateEvt,
+} from "@atproto/sync";
+import { Firehose } from "@atproto/sync";
 import { fromZodError } from "zod-validation-error";
 
-import { DevMkizkaTestProfileBoard } from "~/generated/api";
 import { boardScheme } from "~/models/board";
 import { boardService } from "~/server/service/boardService";
 import { userService } from "~/server/service/userService";
 import { env } from "~/utils/env";
 import { createLogger } from "~/utils/logger";
 
-import type { FirehoseOperation } from "./subscription-base";
-import { FirehoseSubscriptionBase } from "./subscription-base";
-
 const logger = createLogger("firehose");
 
-class FirehoseSubscription extends FirehoseSubscriptionBase {
-  async handle(
-    operations: FirehoseOperation[],
-    _: ComAtprotoSyncSubscribeRepos.Commit,
-  ) {
-    for (const operation of operations) {
-      logger.debug("Firehoseからデータを取得しました", { operations });
-      if (!DevMkizkaTestProfileBoard.isRecord(operation.record)) {
-        continue;
-      }
-      const parsed = boardScheme.safeParse(operation.record);
-      if (!parsed.success) {
-        logger.warn("ボードのパースに失敗しました", {
-          operation,
-          error: fromZodError(parsed.error),
-        });
-        continue;
-      }
-      const user = await userService.findOrFetchUser({
-        handleOrDid: operation.repo,
-      });
-      const board = await boardService.createOrUpdateBoard({
-        userDid: operation.repo,
-        board: parsed.data,
-      });
-      logger.info("ボードを更新しました", { user, board });
-    }
-  }
-}
+const idResolver = new IdResolver({
+  plcUrl: env.ATPROTO_PCL_URL,
+});
 
-export const startFirehoseSubscription = () => {
-  logger.info(`Firehose subscription started to ${env.BSKY_FIREHOSE_URL}`);
-  const subscription = new FirehoseSubscription({
-    service: env.BSKY_FIREHOSE_URL,
+const handleCreateOrUpdate = async (
+  evt: FirehoseCreateEvt | FirehoseUpdateEvt,
+) => {
+  if (evt.collection !== "dev.mkizka.test.board") {
+    return;
+  }
+  const parsed = boardScheme.safeParse(evt.record);
+  if (!parsed.success) {
+    logger.warn("ボードのパースに失敗しました", {
+      record: evt.record,
+      error: fromZodError(parsed.error),
+    });
+    return;
+  }
+  const user = await userService.findOrFetchUser({
+    handleOrDid: evt.uri.host,
   });
-  void subscription.run({ reconnectDelay: 1000 });
+  const board = await boardService.createOrUpdateBoard({
+    userDid: evt.uri.host,
+    board: parsed.data,
+  });
+  logger.info("ボードを更新しました", { user, board });
 };
+
+export const firehose = new Firehose({
+  idResolver,
+  service: env.BSKY_FIREHOSE_URL,
+  handleEvent: async (evt) => {
+    logger.debug("Firehoseイベント", {
+      event: evt.event,
+      uri: "uri" in evt ? evt.uri.toString() : null,
+    });
+    if (evt.event === "create" || evt.event === "update") {
+      await handleCreateOrUpdate(evt);
+    } else if (evt.event === "delete") {
+      // TODO: 削除機能を実装する
+    }
+  },
+  onError: (error) => {
+    throw error;
+  },
+  filterCollections: ["dev.mkizka.test.board"],
+});
