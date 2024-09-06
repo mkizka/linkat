@@ -16,7 +16,7 @@ export class LinkatAgent extends AtpAgent {
   }
 
   async getSessionProfile() {
-    return await this.getProfile({ actor: this.accountDid });
+    return await this.getProfile({ actor: this.assertDid });
   }
 
   async getBoard(
@@ -32,13 +32,13 @@ export class LinkatAgent extends AtpAgent {
   }
 
   async getSessionBoard() {
-    return await this.getBoard({ repo: this.accountDid });
+    return await this.getBoard({ repo: this.assertDid });
   }
 
   async updateBoard(board: unknown) {
     // dev.mkizka.test.profile.boardにはなぜかputがないので、com.atproto.repoを使う
     return await this.com.atproto.repo.putRecord({
-      repo: this.accountDid,
+      repo: this.assertDid,
       validate: false,
       collection: "dev.mkizka.test.profile.board",
       rkey: "self",
@@ -48,7 +48,7 @@ export class LinkatAgent extends AtpAgent {
 
   async deleteBoard() {
     return await this.dev.mkizka.test.profile.board.delete({
-      repo: this.accountDid,
+      repo: this.assertDid,
       rkey: "self",
     });
   }
