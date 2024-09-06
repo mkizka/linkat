@@ -12,12 +12,6 @@ primary_region = 'nrt'
 release_command = 'npx prisma db push --skip-generate'
 strategy = 'bluegreen'
 
-[env]
-BSKY_FIREHOSE_URL = 'wss://bsky.network'
-BSKY_PUBLIC_API_URL = 'https://public.api.bsky.app'
-DID_PCL_URL = 'https://plc.directory'
-LOG_LEVEL = 'info'
-
 [http_service]
 internal_port = 3000
 force_https = true
