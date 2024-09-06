@@ -1,34 +1,41 @@
-import type { LoaderFunctionArgs } from "@remix-run/node";
-import { redirect } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+import { redirect, useLoaderData } from "@remix-run/react";
+import { getDefaultStore } from "jotai";
 
+import { linkatAgentAtom } from "~/atoms/agent/base";
+import { useUser } from "~/atoms/user/hooks";
+import { resumeSessionAtom } from "~/atoms/user/write-only";
 import { BoardViewer } from "~/features/board/board-viewer";
-import { boardService } from "~/server/service/boardService";
-import { userService } from "~/server/service/userService";
-import { createLogger } from "~/utils/logger";
+import { tryCatch } from "~/utils/tryCatch";
 
-const logger = createLogger("edit");
-
-export async function loader({ request }: LoaderFunctionArgs) {
-  const url = new URL(request.url);
-  const base = url.searchParams.get("base");
-  if (!base) {
+export async function clientLoader() {
+  const store = getDefaultStore();
+  await store.set(resumeSessionAtom);
+  const agent = store.get(linkatAgentAtom);
+  if (!agent) {
     return redirect("/");
   }
-  // この順で処理した場合ボードを持たない(=このサービスのユーザーでない)ユーザーの
-  // データも作られてしまうが、一旦このままにしておく
-  const user = await userService.findOrFetchUser({
-    handleOrDid: base,
-  });
-  if (!user) {
-    logger.debug("baseに指定されたユーザーの取得に失敗しました", { base });
-    return redirect("/");
+  const board = await tryCatch(agent.getSessionBoard.bind(agent))();
+  if (board instanceof Error) {
+    return { board: null };
   }
-  const board = await boardService.findOrFetchBoard(user.did);
-  return { user, board };
+  return { board: board.value };
 }
 
 export default function Index() {
-  const { user, board } = useLoaderData<typeof loader>();
-  return <BoardViewer user={user} board={board} editable />;
+  const user = useUser();
+  const { board } = useLoaderData<typeof clientLoader>();
+  if (!user) return null;
+  return (
+    <BoardViewer
+      // TODO: atom側に移す
+      user={{
+        did: user.profile.did,
+        handle: user.profile.handle,
+        displayName: user.profile.displayName ?? null,
+        avatar: user.profile.avatar ?? null,
+      }}
+      board={board}
+      editable
+    />
+  );
 }

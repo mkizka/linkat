@@ -65,7 +65,7 @@ export function LoginForm() {
       try {
         await login(payload);
         toast.success("ログインに成功しました");
-        navigate(`/edit?base=${payload.identifier}`);
+        navigate("/edit");
       } catch (e) {
         toast.error(`ログインに失敗しました。${getErrorMessage(e)}`);
         setIsSubmitting(false);

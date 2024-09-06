@@ -37,7 +37,7 @@ export function ProfileCard({ user, button }: ProfileCardProps) {
     edit: (
       <Link
         className="btn btn-neutral"
-        to={`/edit?base=${user.handle}`}
+        to="/edit"
         data-testid="profile-card__edit"
       >
         <PencilSquareIcon className="size-6" />
