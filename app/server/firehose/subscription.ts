@@ -60,4 +60,6 @@ export const firehose = new Firehose({
     logger.warn("Firehoseでエラーが発生しました", { error: error.message });
   },
   filterCollections: ["dev.mkizka.test.board"],
+  excludeIdentity: true,
+  excludeAccount: true,
 });
