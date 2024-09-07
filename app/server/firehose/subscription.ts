@@ -59,6 +59,7 @@ export const firehose = new Firehose({
   onError: (error) => {
     logger.warn("Firehoseでエラーが発生しました", { error: error.message });
   },
+  unauthenticatedCommits: true,
   filterCollections: ["dev.mkizka.test.board"],
   excludeIdentity: true,
   excludeAccount: true,
