@@ -57,7 +57,7 @@ export const firehose = new Firehose({
     }
   },
   onError: (error) => {
-    throw error;
+    logger.warn("Firehoseでエラーが発生しました", { error: error.message });
   },
   filterCollections: ["dev.mkizka.test.board"],
 });
