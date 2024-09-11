@@ -1,12 +1,11 @@
 import { createEnv } from "@t3-oss/env-core";
 import { z } from "zod";
 
+export const isProduction =
+  process.env.NODE_ENV === "production" && !process.env.E2E;
+
 const match = <Prod, Default>({ prod, dev }: { prod: Prod; dev: Default }) => {
-  if (process.env.NODE_ENV === "production" && !process.env.E2E) {
-    return prod;
-  } else {
-    return dev;
-  }
+  return isProduction ? prod : dev;
 };
 
 const server = {
@@ -17,12 +16,20 @@ const server = {
     .enum(["debug", "info", "warn", "error"])
     .default(match({ prod: "info", dev: "debug" })),
   DATABASE_URL: z.string(),
-  BSKY_PUBLIC_API_URL: z
+  // 開発環境でのOAuthログイン時にlocalhost:2583にリダイレクトされるが、
+  // ドメインが同じだとOAuthログインに失敗するためlinkat.localhostを使う
+  PUBLIC_URL: isProduction
+    ? z.string()
+    : z.string().default("http://linkat.localhost:3000"),
+  COOKIE_SECRET: isProduction
+    ? z.string()
+    : z.string().default("dev-cookie-secret"),
+  BSKY_PUBLIC_API_URL: z // TODO BSKY_PUBLIC_URLにリネーム
     .string()
     .url()
     .default(
       match({
-        prod: "https://public.api.bsky.app",
+        prod: "https://bsky.social",
         dev: "http://localhost:2584",
       }),
     ),

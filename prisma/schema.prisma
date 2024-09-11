@@ -19,7 +19,7 @@ datasource db {
 }
 
 model User {
-  did         String  @id
+  did         String   @id
   avatar      String?
   description String?
   displayName String?
@@ -36,4 +36,14 @@ model Board {
   record    String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model AuthSession {
+  key     String @id
+  session String
+}
+
+model AuthState {
+  key   String @id
+  state String
 }

@@ -4,6 +4,7 @@ import express from "express";
 import morgan from "morgan";
 
 import { firehose } from "./server/firehose/subscription.js";
+import { oauthRouter } from "./server/oauth/route.js";
 import { env } from "./utils/env.js";
 import { createLogger } from "./utils/logger.js";
 
@@ -26,7 +27,8 @@ app.use(
     skip: (req) => {
       return (
         req.get("User-Agent") === "Consul Health Check" ||
-        req.hostname === "localhost"
+        req.hostname === "localhost" ||
+        req.ip === "127.0.0.1"
       );
     },
   }),
@@ -35,6 +37,8 @@ app.use(
 app.use(
   viteDevServer ? viteDevServer.middlewares : express.static("build/client"),
 );
+
+app.use(oauthRouter);
 
 // const server = createServer();
 // server.dev.mkizka.sample.sampleMethod(() => {
@@ -61,7 +65,7 @@ app.all("*", createRequestHandler({ build }));
 const logger = createLogger("server");
 
 app.listen(3000, "0.0.0.0", () => {
-  logger.info(`App listening on http://localhost:3000`);
+  logger.info(`App listening on ${env.PUBLIC_URL}`);
   logger.info(`Firehose subscription started to ${env.BSKY_FIREHOSE_URL}`);
   firehose.start();
 });
