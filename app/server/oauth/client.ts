@@ -21,7 +21,7 @@ export const oauthClient = new NodeOAuthClient({
   },
   plcDirectoryUrl: env.ATPROTO_PCL_URL,
   // @ts-expect-error
-  handleResolver: env.BSKY_PUBLIC_API_URL,
+  handleResolver: env.BSKY_APPVIEW_URL,
   stateStore: new StateStore(),
   sessionStore: new SessionStore(),
 });
