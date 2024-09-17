@@ -38,6 +38,18 @@ app.use(
   viteDevServer ? viteDevServer.middlewares : express.static("build/client"),
 );
 
+if (!isProduction) {
+  // linkat.localhostでOAuthログインを行うと127.0.0.1/oauth/callbackにリダイレクトされるので、
+  // そこからさらにlinkat.localhostにリダイレクトさせる
+  app.use((req, res, next) => {
+    if (req.hostname === "127.0.0.1") {
+      res.redirect(new URL(req.originalUrl, env.PUBLIC_URL).toString());
+    } else {
+      next();
+    }
+  });
+}
+
 app.use(oauthRouter);
 
 // const server = createServer();
