@@ -4,14 +4,16 @@ import { env, isProduction } from "~/utils/env";
 
 import { SessionStore, StateStore } from "./storage";
 
+const baseUrl = isProduction ? env.PUBLIC_URL : "http://127.0.0.1:3000";
+
 export const oauthClient = new NodeOAuthClient({
   clientMetadata: {
     client_name: "Linkat",
     client_id: isProduction
       ? `${env.PUBLIC_URL}/client-metadata.json`
-      : `http://localhost?redirect_uri=${encodeURIComponent(`http://127.0.0.1:3000/oauth/callback`)}`,
+      : `http://localhost?redirect_uri=${encodeURIComponent(`${baseUrl}/oauth/callback`)}`,
     client_uri: env.PUBLIC_URL,
-    redirect_uris: [`http://127.0.0.1:3000/oauth/callback`],
+    redirect_uris: [`${baseUrl}/oauth/callback`],
     scope: "atproto transition:generic",
     grant_types: ["authorization_code", "refresh_token"],
     response_types: ["code"],
