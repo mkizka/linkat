@@ -29,8 +29,8 @@ export async function action({ request }: ActionFunctionArgs) {
 export default function LoginPage() {
   return (
     <Form method="post">
-      <input name="handle" type="text" />
-      <Button>送信</Button>
+      <input name="handle" type="text" data-testid="login-form__handle" />
+      <Button data-testid="login-form__submit">送信</Button>
     </Form>
   );
 }

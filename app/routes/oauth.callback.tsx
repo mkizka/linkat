@@ -7,7 +7,7 @@ import { createLogger } from "~/utils/logger";
 const logger = createLogger("oauth.callback");
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const remixSession = await getSession(request.headers.get("Cookie"));
+  const remixSession = await getSession(request);
   try {
     const { session: oauthSession } = await oauthClient.callback(
       new URL(request.url).searchParams,

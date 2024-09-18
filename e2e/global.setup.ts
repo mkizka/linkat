@@ -5,13 +5,17 @@ test.describe("ログイン", () => {
     test(`テストアカウントでログインできる(${identifier})`, async ({
       page,
     }) => {
-      await page.goto("/");
-      await page
-        .getByTestId("login-form__service")
-        .fill("http://localhost:2583");
-      await page.getByTestId("login-form__identifier").fill(identifier);
-      await page.getByTestId("login-form__password").fill("hunter2");
+      await page.goto("/login");
+      await page.getByTestId("login-form__handle").fill(identifier);
       await page.getByTestId("login-form__submit").click();
+
+      // OAuthログイン
+      await page.waitForURL((url) => url.pathname === "/oauth/authorize");
+      await page.locator("[name='password']").fill("hunter2");
+      await page.locator("button", { hasText: "Next" }).click();
+      await page.locator("button", { hasText: "Accept" }).click();
+
+      // ログイン完了
       await page.waitForURL((url) => url.pathname === "/edit");
       await page
         .context()

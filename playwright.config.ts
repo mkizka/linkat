@@ -11,7 +11,7 @@ export default defineConfig({
     ["html", { open: "always" }],
   ],
   use: {
-    baseURL: "http://localhost:3000",
+    baseURL: "http://linkat.localhost:3000",
     video: "on",
     trace: "on",
   },
