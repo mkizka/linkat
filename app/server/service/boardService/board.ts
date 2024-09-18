@@ -9,6 +9,7 @@ import { tryCatch } from "~/utils/tryCatch";
 
 const logger = createLogger("boardService");
 
+// TODO: boardをunknownで受け入れてこの関数内でパースする
 export const createOrUpdateBoard = async ({
   userDid,
   board,

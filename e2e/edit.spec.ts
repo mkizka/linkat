@@ -31,12 +31,9 @@ test.describe("編集", () => {
     await page.getByTestId("card-form__submit").click();
     await expect(card2).toBeVisible();
 
-    // 保存ボタン押下、Firehose反映待ち
+    // 保存して閲覧ページで順番を確認
     await page.getByTestId("board-viewer__submit").click();
-    await page.waitForTimeout(1000);
-
-    // 閲覧ページで順番を確認
-    await page.getByTestId("profile-card__preview").click();
+    await page.waitForURL((url) => url.pathname.startsWith("/board/"));
     await expect(card1).toBeVisible();
     await expect(card2).toBeVisible();
     const allCards = await page.getByTestId("sortable-card").allTextContents();
@@ -46,12 +43,9 @@ test.describe("編集", () => {
     await page.getByTestId("profile-card__edit").click();
     await card1.dragTo(card2, { timeout: 2000 });
 
-    // 保存ボタン押下、Firehose反映待ち
+    // 保存して閲覧ページで順番を確認
     await page.getByTestId("board-viewer__submit").click();
-    await page.waitForTimeout(1000);
-
-    // 閲覧ページで順番を確認
-    await page.getByTestId("profile-card__preview").click();
+    await page.waitForURL((url) => url.pathname.startsWith("/board/"));
     await expect(card1).toBeVisible();
     await expect(card2).toBeVisible();
     const sorted = await page.getByTestId("sortable-card").allTextContents();
@@ -64,12 +58,9 @@ test.describe("編集", () => {
     await page.getByTestId("card-form__url").fill("https://example.com");
     await page.getByTestId("card-form__submit").click();
 
-    // 保存ボタン押下、Firehose反映待ち
+    // 保存して閲覧ページで順番を確認
     await page.getByTestId("board-viewer__submit").click();
-    await page.waitForTimeout(1000);
-
-    // 閲覧ページで編集済みを確認
-    await page.getByTestId("profile-card__preview").click();
+    await page.waitForURL((url) => url.pathname.startsWith("/board/"));
     await expect(card1).not.toBeVisible();
     await expect(card1Edited).toBeVisible();
     await expect(card2).toBeVisible();
@@ -82,12 +73,9 @@ test.describe("編集", () => {
     await card2.getByTestId("sortable-card__edit").click();
     await page.getByTestId("card-form__delete").click();
 
-    // 保存ボタン押下、Firehose反映待ち
+    // 保存して閲覧ページで順番を確認
     await page.getByTestId("board-viewer__submit").click();
-    await page.waitForTimeout(1000);
-
-    // 閲覧ページで削除済みを確認
-    await page.getByTestId("profile-card__preview").click();
+    await page.waitForURL((url) => url.pathname.startsWith("/board/"));
     await expect(card1Edited).not.toBeVisible();
     await expect(card2).not.toBeVisible();
   });
