@@ -15,8 +15,7 @@ test.describe("編集", () => {
     const card1Edited = page.locator('[data-testid="sortable-card"]', {
       hasText: text1Edited,
     });
-    await page.goto("/");
-    await page.getByTestId("index__edit-link").click();
+    await page.goto("/edit");
 
     // カードを追加
     await page.getByTestId("card-form-modal__button").click();

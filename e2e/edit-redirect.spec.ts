@@ -2,35 +2,30 @@ import { test } from "@playwright/test";
 
 import { resetStorageState } from "./utils";
 
-const DUMMY_EXPIRED_USER = JSON.stringify({
-  profile: {},
-  session: {
-    accessJwt: "expired",
-    refreshJwt: "expired",
-    handle: "alice.test",
-    did: "did:plc:prh5i45qtb3sck6suspbccon",
-    email: "alice@test.com",
-    emailConfirmed: false,
-    active: true,
-  },
-  service: "http://localhost:2583/",
-});
-
 resetStorageState();
 
 test.describe("編集(リダイレクト)", () => {
   test("非ログイン時はトップにリダイレクト", async ({ page }) => {
     await page.goto("/edit");
-    await page.waitForURL((url) => url.pathname === "/");
+    await page.waitForURL((url) => url.pathname === "/login");
     await page.waitForTimeout(2000);
   });
-  test("ログインが無効な時はトップにリダイレクト", async ({ page }) => {
+  test("ログインが無効な時はトップにリダイレクト", async ({
+    page,
+    context,
+  }) => {
     await page.goto("/");
-    await page.evaluate((user) => {
-      localStorage.setItem("user", user);
-    }, DUMMY_EXPIRED_USER);
+    await context.addCookies([
+      {
+        name: "__session",
+        value:
+          "eyJkaWQiOiJkaWQ6cGxjOnRpd2h6NWdiZTVqZGt2cmdjbHB1Z2oybCJ9.09GaE2lRKbto%2FraoDdda4pGnsQNvsIRfuBHErKE1qU",
+        domain: "linkat.localhost",
+        path: "/",
+      },
+    ]);
     await page.goto("/edit");
-    await page.waitForURL((url) => url.pathname === "/");
+    await page.waitForURL((url) => url.pathname === "/login");
     await page.waitForTimeout(2000);
   });
 });
