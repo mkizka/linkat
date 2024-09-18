@@ -2,7 +2,6 @@ import { PencilSquareIcon } from "@heroicons/react/24/outline";
 import { Form } from "@remix-run/react";
 import { useState } from "react";
 
-import { useUser } from "~/atoms/user/hooks";
 import { Button } from "~/components/button";
 import type { ValidBoard } from "~/models/board";
 import type { ValidCard } from "~/models/card";
@@ -28,7 +27,6 @@ const withId = (card: ValidCard) => ({
 
 export function BoardViewer({ user, board, editable }: Props) {
   const [cards, setCards] = useState((board?.cards ?? []).map(withId));
-  const isLoginUser = useUser()?.profile.did === user.did;
 
   const handleSubmitCardForm = async (payload: CardFormPayload) => {
     if (payload.id) {
