@@ -1,3 +1,4 @@
+import { CredentialSession } from "@atproto/api";
 import type { Prisma } from "@prisma/client";
 
 import { LinkatAgent } from "~/libs/agent";
@@ -59,9 +60,9 @@ const findBoard = async (userDid: string) => {
 
 const fetchBoardInPDS = async (userDid: string) => {
   logger.info("PDSからboardを取得します", { userDid });
-  const agent = new LinkatAgent({
-    service: env.BSKY_APPVIEW_URL,
-  });
+  // TODO: plc.directoryを使ってPDSを取得する
+  const session = new CredentialSession(new URL(env.BSKY_APPVIEW_URL));
+  const agent = new LinkatAgent(session);
   const response = await tryCatch(agent.getBoard.bind(agent))({
     repo: userDid,
   });

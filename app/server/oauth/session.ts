@@ -1,6 +1,6 @@
 import { createCookieSessionStorage } from "@remix-run/node"; // or cloudflare/deno
 
-import { LinkatOAuthAgent } from "~/libs/agent-server";
+import { LinkatAgent } from "~/libs/agent";
 import { userService } from "~/server/service/userService";
 import { env } from "~/utils/env";
 
@@ -56,5 +56,5 @@ export const getSessionAgent = async (request: Request) => {
     return null;
   }
   const oauthSession = await oauthClient.restore(userDid);
-  return new LinkatOAuthAgent(oauthSession);
+  return new LinkatAgent(oauthSession);
 };

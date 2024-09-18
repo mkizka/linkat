@@ -1,17 +1,12 @@
-import { AtpAgent } from "@atproto/api";
+import { Agent } from "@atproto/api";
 
 import { DevNS } from "~/generated/api";
 import { boardScheme } from "~/models/board";
 
-export type LinkatAgentOptions = {
-  service: string;
-};
-
-// TODO: OAuth移行が完了したら削除
-export class LinkatAgent extends AtpAgent {
+export class LinkatAgent extends Agent {
   dev: DevNS;
 
-  constructor(options: LinkatAgentOptions) {
+  constructor(options: ConstructorParameters<typeof Agent>[0]) {
     super(options);
     this.dev = new DevNS(this);
   }
