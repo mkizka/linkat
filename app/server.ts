@@ -10,15 +10,16 @@ import { createLogger } from "./utils/logger.js";
 
 // import { createServer } from "./generated/server/index.js";
 
-const isProduction = process.env.NODE_ENV === "production";
-
-const viteDevServer = isProduction
-  ? null
-  : await import("vite").then((vite) =>
-      vite.createServer({
-        server: { middlewareMode: true },
-      }),
-    );
+// OAuthログインを行うためにE2Eテスト実行時のprocess.env.NODE_ENVはdevelopmentになっている
+// 代わりにprocess.env.E2Eが設定されているので、その場合はviteを使わない
+const viteDevServer =
+  process.env.NODE_ENV === "production" || !!process.env.E2E
+    ? null
+    : await import("vite").then((vite) =>
+        vite.createServer({
+          server: { middlewareMode: true },
+        }),
+      );
 
 const app = express();
 
@@ -38,17 +39,15 @@ app.use(
   viteDevServer ? viteDevServer.middlewares : express.static("build/client"),
 );
 
-if (!isProduction) {
-  // linkat.localhostでOAuthログインを行うと127.0.0.1/oauth/callbackにリダイレクトされるので、
-  // そこからさらにlinkat.localhostにリダイレクトさせる
-  app.use((req, res, next) => {
-    if (req.hostname === "127.0.0.1") {
-      res.redirect(new URL(req.originalUrl, env.PUBLIC_URL).toString());
-    } else {
-      next();
-    }
-  });
-}
+// 開発環境でのOAuthログイン時 http://127.0.0.1/oauth/callback にリダイレクトされるので、
+// そこからさらに http://linkat.localhost にリダイレクトさせる
+app.use((req, res, next) => {
+  if (req.hostname === "127.0.0.1") {
+    res.redirect(new URL(req.originalUrl, env.PUBLIC_URL).toString());
+  } else {
+    next();
+  }
+});
 
 app.use(oauthRouter);
 
