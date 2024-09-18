@@ -1,75 +1,26 @@
-import { XRPCError } from "@atproto/xrpc";
 import { getFormProps, getInputProps, useForm } from "@conform-to/react";
 import { getZodConstraint, parseWithZod } from "@conform-to/zod";
-import { Form, useNavigate } from "@remix-run/react";
-import { useState } from "react";
+import { Form, useNavigation } from "@remix-run/react";
 import { z } from "zod";
 
-import { useToast } from "~/atoms/toast/hooks";
-import { useLogin } from "~/atoms/user/hooks";
 import { Button } from "~/components/button";
 import { Card } from "~/components/card";
 import { Input } from "~/components/input";
 
-import { useLastLoginService } from "./use-last-login-service";
-
 const schema = z.object({
-  service: z
-    .string({ required_error: "入力してください" })
-    .url("URLを入力してください"),
   identifier: z
     .string({ required_error: "入力してください" })
     .regex(/\./, "example.bsky.socialのように入力してください"),
-  password: z
-    .string({ required_error: "入力してください" })
-    .regex(/^[a-z0-9-]+$/, "アプリパスワードしか使用できません"),
 });
 
-type Schema = z.infer<typeof schema>;
-
 export function LoginForm() {
-  const login = useLogin();
-  const navigate = useNavigate();
-  const toast = useToast();
-
-  const [lastLoginService, setLastLoginService] = useLastLoginService();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const getErrorMessage = (e: unknown) => {
-    if (e instanceof XRPCError) {
-      if (e.message === "Invalid identifier or password") {
-        return "ハンドルかパスワードが間違っています";
-      }
-      if (e.message === "Failed to fetch") {
-        return "サービスURLが間違っているかもしれません";
-      }
-    }
-    if (e instanceof Error) {
-      return e.message;
-    }
-    return "";
-  };
+  const navigation = useNavigation();
 
   const [form, fields] = useForm({
     id: "login-form",
     constraint: getZodConstraint(schema),
-    defaultValue: { service: lastLoginService },
     onValidate({ formData }) {
       return parseWithZod(formData, { schema });
-    },
-    onSubmit: async (event, { submission }) => {
-      event.preventDefault();
-      setIsSubmitting(true);
-      const payload = submission?.payload as Schema;
-      setLastLoginService(payload.service);
-      try {
-        await login(payload);
-        toast.success("ログインに成功しました");
-        navigate("/edit");
-      } catch (e) {
-        toast.error(`ログインに失敗しました。${getErrorMessage(e)}`);
-        setIsSubmitting(false);
-      }
     },
   });
 
@@ -86,13 +37,6 @@ export function LoginForm() {
           </div>
         )}
         <Input
-          {...getInputProps(fields.service, { type: "url" })}
-          label="サービスURL(分かる人向け)"
-          errors={fields.service.errors}
-          placeholder="https://bsky.social"
-          data-testid="login-form__service"
-        />
-        <Input
           {...getInputProps(fields.identifier, { type: "text" })}
           label="ハンドル"
           errors={fields.identifier.errors}
@@ -100,18 +44,10 @@ export function LoginForm() {
           autoComplete="username"
           data-testid="login-form__identifier"
         />
-        <Input
-          {...getInputProps(fields.password, { type: "password" })}
-          label="アプリパスワード"
-          errors={fields.password.errors}
-          placeholder="xxxx-xxxx-xxxx-xxxx"
-          autoComplete="current-password"
-          data-testid="login-form__password"
-        />
         <Button
           type="submit"
           className="mt-4"
-          loading={isSubmitting}
+          loading={navigation.state !== "idle"}
           data-testid="login-form__submit"
         >
           ログイン

@@ -1,18 +1,17 @@
 import type { ActionFunctionArgs } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
-import { Form } from "@remix-run/react";
+import { useActionData } from "@remix-run/react";
+import { useEffect } from "react";
 
-import { Button } from "~/components/button";
+import { useToast } from "~/atoms/toast/hooks";
+import { LoginForm } from "~/features/login/login-form";
 import { oauthClient } from "~/server/oauth/client";
-import { createLogger } from "~/utils/logger";
-
-const logger = createLogger("login");
 
 export async function action({ request }: ActionFunctionArgs) {
   const form = await request.formData();
-  const handle = form.get("handle");
+  const handle = form.get("identifier");
   if (typeof handle !== "string") {
-    return redirect("/login");
+    return { error: "不明なエラーが発生しました" };
   }
   try {
     const url = await oauthClient.authorize(handle, {
@@ -27,10 +26,18 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 export default function LoginPage() {
+  const actionData = useActionData<typeof action>();
+  const toast = useToast();
+
+  useEffect(() => {
+    if (actionData) {
+      toast.error(actionData.error);
+    }
+  }, [actionData, toast]);
+
   return (
-    <Form method="post">
-      <input name="handle" type="text" data-testid="login-form__handle" />
-      <Button data-testid="login-form__submit">送信</Button>
-    </Form>
+    <div className="utils--center">
+      <LoginForm />
+    </div>
   );
 }

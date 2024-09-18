@@ -6,7 +6,7 @@ test.describe("ログイン", () => {
       page,
     }) => {
       await page.goto("/login");
-      await page.getByTestId("login-form__handle").fill(identifier);
+      await page.getByTestId("login-form__identifier").fill(identifier);
       await page.getByTestId("login-form__submit").click();
 
       // OAuthログイン
