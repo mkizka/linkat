@@ -15,7 +15,7 @@ import { createLogger } from "~/utils/logger";
 const logger = createLogger("firehose");
 
 const idResolver = new IdResolver({
-  plcUrl: env.ATPROTO_PCL_URL,
+  plcUrl: env.ATPROTO_PLC_URL,
 });
 
 const handleCreateOrUpdate = async (

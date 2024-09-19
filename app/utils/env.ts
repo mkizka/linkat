@@ -42,7 +42,7 @@ const server = {
         dev: "ws://localhost:2583",
       }),
     ),
-  ATPROTO_PCL_URL: z
+  ATPROTO_PLC_URL: z
     .string()
     .url()
     .default(

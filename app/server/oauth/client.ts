@@ -21,7 +21,7 @@ export const oauthClient = new NodeOAuthClient({
     token_endpoint_auth_method: "none",
     dpop_bound_access_tokens: true,
   },
-  plcDirectoryUrl: env.ATPROTO_PCL_URL,
+  plcDirectoryUrl: env.ATPROTO_PLC_URL,
   // @ts-expect-error
   handleResolver: env.BSKY_PUBLIC_API_URL,
   stateStore: new StateStore(),
