@@ -27,6 +27,21 @@ const dummyBoardRecord = {
   },
 };
 
+const dummyDidDocument = (did: string) => ({
+  "@context": [
+    "https://www.w3.org/ns/did/v1",
+    "https://w3id.org/security/suites/secp256k1-2019/v1",
+  ],
+  id: did,
+  service: [
+    {
+      id: "#atproto_pds",
+      type: "AtprotoPersonalDataServer",
+      serviceEndpoint: "https://pds.example.com",
+    },
+  ],
+});
+
 describe("boardService", () => {
   describe("createBoard", () => {
     test("ボードがない場合は新規作成する", async () => {
@@ -71,7 +86,11 @@ describe("boardService", () => {
       const user = await UserFactory.create();
       server.use(
         http.get(
-          "https://public.api.example.com/xrpc/com.atproto.repo.getRecord",
+          `https://plc.example.com/${encodeURIComponent(user.did)}`,
+          () => HttpResponse.json(dummyDidDocument(user.did)),
+        ),
+        http.get(
+          "https://pds.example.com/xrpc/com.atproto.repo.getRecord",
           () => HttpResponse.json(dummyBoardRecord),
         ),
       );
@@ -82,9 +101,14 @@ describe("boardService", () => {
     });
     test("DBにボードがなくPDSから取得したボードが不正ならnullを返す", async () => {
       // arrange
+      const user = await UserFactory.create();
       server.use(
         http.get(
-          "https://public.api.example.com/xrpc/com.atproto.repo.getRecord",
+          `https://plc.example.com/${encodeURIComponent(user.did)}`,
+          () => HttpResponse.json(dummyDidDocument(user.did)),
+        ),
+        http.get(
+          "https://pds.example.com/xrpc/com.atproto.repo.getRecord",
           () =>
             HttpResponse.json({
               ...dummyBoardRecord,
@@ -93,7 +117,7 @@ describe("boardService", () => {
         ),
       );
       // act
-      const actual = await boardService.findOrFetchBoard("did:plc:example");
+      const actual = await boardService.findOrFetchBoard(user.did);
       // assert
       expect(mockedLogger.warn).toHaveBeenCalledWith(
         "PDSからのboardの形式が不正でした",
@@ -103,14 +127,19 @@ describe("boardService", () => {
     });
     test("DBにもPDSにもボードが無いときはnullを返す", async () => {
       // arrange
+      const user = await UserFactory.create();
       server.use(
         http.get(
-          "https://public.api.example.com/xrpc/com.atproto.repo.getRecord",
+          `https://plc.example.com/${encodeURIComponent(user.did)}`,
+          () => HttpResponse.json(dummyDidDocument(user.did)),
+        ),
+        http.get(
+          "https://pds.example.com/xrpc/com.atproto.repo.getRecord",
           () => HttpResponse.json({}, { status: 400 }),
         ),
       );
       // act
-      const actual = await boardService.findOrFetchBoard("did:plc:example");
+      const actual = await boardService.findOrFetchBoard(user.did);
       // assert
       expect(mockedLogger.warn).toHaveBeenCalledWith(
         "PDSからのboardの取得に失敗しました",

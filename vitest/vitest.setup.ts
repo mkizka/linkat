@@ -5,11 +5,6 @@ import { server } from "~/mocks/server";
 afterEach(() => {
   vi.useRealTimers();
 });
-vi.mock("~/utils/env", () => ({
-  env: {
-    BSKY_PUBLIC_API_URL: "https://public.api.example.com",
-  },
-}));
 
 // prisma
 vi.mock("~/server/service/prisma", () => ({
