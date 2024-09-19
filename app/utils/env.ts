@@ -24,12 +24,12 @@ const server = {
   COOKIE_SECRET: isProduction
     ? z.string()
     : z.string().default("dev-cookie-secret"),
-  BSKY_PUBLIC_API_URL: z // TODO BSKY_PUBLIC_URLにリネーム
+  BSKY_PUBLIC_API_URL: z
     .string()
     .url()
     .default(
       match({
-        prod: "https://bsky.social",
+        prod: "https://public.api.bsky.app",
         dev: "http://localhost:2584",
       }),
     ),
