@@ -3,8 +3,8 @@ import type { Prisma } from "@prisma/client";
 
 import { LinkatAgent } from "~/libs/agent";
 import { boardScheme, type ValidBoard } from "~/models/board";
+import { didService } from "~/server/service/didService";
 import { prisma } from "~/server/service/prisma";
-import { env } from "~/utils/env";
 import { createLogger } from "~/utils/logger";
 import { tryCatch } from "~/utils/tryCatch";
 
@@ -59,10 +59,13 @@ const findBoard = async (userDid: string) => {
 };
 
 const fetchBoardInPDS = async (userDid: string) => {
+  logger.info("DIDからPDSのURLを解決します", { userDid });
+  const serviceUrl = await didService.resolveServiceUrl(userDid);
+  if (!serviceUrl) {
+    return null;
+  }
   logger.info("PDSからboardを取得します", { userDid });
-  // TODO: plc.directoryを使ってPDSを取得する
-  const session = new CredentialSession(new URL(env.BSKY_PUBLIC_API_URL));
-  const agent = new LinkatAgent(session);
+  const agent = new LinkatAgent(new CredentialSession(serviceUrl));
   const response = await tryCatch(agent.getBoard.bind(agent))({
     repo: userDid,
   });
