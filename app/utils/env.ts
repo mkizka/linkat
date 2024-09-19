@@ -24,7 +24,7 @@ const server = {
   COOKIE_SECRET: isProduction
     ? z.string()
     : z.string().default("dev-cookie-secret"),
-  BSKY_APPVIEW_URL: z // TODO BSKY_PUBLIC_URLにリネーム
+  BSKY_PUBLIC_API_URL: z // TODO BSKY_PUBLIC_URLにリネーム
     .string()
     .url()
     .default(

@@ -62,7 +62,7 @@ const createOrUpdateUser = async ({
 const fetchBlueskyProfile = async (handleOrDid: string) => {
   logger.info("プロフィールを取得します", { actor: handleOrDid });
   const publicAgent = new AtpAgent({
-    service: env.BSKY_APPVIEW_URL,
+    service: env.BSKY_PUBLIC_API_URL,
   });
   const response = await publicAgent.getProfile({
     actor: handleOrDid,

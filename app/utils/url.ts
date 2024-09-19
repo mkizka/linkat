@@ -45,7 +45,7 @@ export const resolveHandleIfNeeded = async (original: string) => {
     return original;
   }
   const publicAgent = new AtpAgent({
-    // env.BSKY_APPVIEW_URLを使ってもいいが開発環境でもこのURLを使った方が便利なのでそのまま入れる
+    // env.BSKY_PUBLIC_API_URLを使ってもいいが開発環境でもこのURLを使った方が便利なのでそのまま入れる
     service: "https://public.api.bsky.app",
   });
   const response = await publicAgent.resolveHandle({ handle });

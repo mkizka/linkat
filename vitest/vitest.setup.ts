@@ -7,7 +7,7 @@ afterEach(() => {
 });
 vi.mock("~/utils/env", () => ({
   env: {
-    BSKY_APPVIEW_URL: "https://public.api.example.com",
+    BSKY_PUBLIC_API_URL: "https://public.api.example.com",
   },
 }));
 

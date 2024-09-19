@@ -61,7 +61,7 @@ const findBoard = async (userDid: string) => {
 const fetchBoardInPDS = async (userDid: string) => {
   logger.info("PDSからboardを取得します", { userDid });
   // TODO: plc.directoryを使ってPDSを取得する
-  const session = new CredentialSession(new URL(env.BSKY_APPVIEW_URL));
+  const session = new CredentialSession(new URL(env.BSKY_PUBLIC_API_URL));
   const agent = new LinkatAgent(session);
   const response = await tryCatch(agent.getBoard.bind(agent))({
     repo: userDid,
