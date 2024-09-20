@@ -1,9 +1,8 @@
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
-import { redirect, useActionData, useLoaderData } from "@remix-run/react";
-import { useEffect } from "react";
+import { redirect, useLoaderData } from "@remix-run/react";
 
-import { useToast } from "~/atoms/toast/hooks";
 import { BoardViewer } from "~/features/board/board-viewer";
+import { RouteToaster } from "~/features/toast/route";
 import { boardScheme } from "~/models/board";
 import { getSessionAgent, getSessionUser } from "~/server/oauth/session";
 import { boardService } from "~/server/service/boardService";
@@ -51,14 +50,11 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export default function Index() {
   const { user, board } = useLoaderData<typeof loader>();
-  const actionData = useActionData<typeof action>();
-  const toast = useToast();
 
-  useEffect(() => {
-    if (actionData) {
-      toast.error(actionData.error);
-    }
-  }, [toast, actionData]);
-
-  return <BoardViewer user={user} board={board} editable />;
+  return (
+    <>
+      <BoardViewer user={user} board={board} editable />;
+      <RouteToaster />
+    </>
+  );
 }

@@ -1,11 +1,9 @@
 import { OAuthResolverError } from "@atproto/oauth-client-node";
 import type { ActionFunctionArgs } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
-import { useActionData } from "@remix-run/react";
-import { useEffect } from "react";
 
-import { useToast } from "~/atoms/toast/hooks";
 import { LoginForm } from "~/features/login/login-form";
+import { RouteToaster } from "~/features/toast/route";
 import { oauthClient } from "~/server/oauth/client";
 import { createLogger } from "~/utils/logger";
 
@@ -32,18 +30,10 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 export default function LoginPage() {
-  const actionData = useActionData<typeof action>();
-  const toast = useToast();
-
-  useEffect(() => {
-    if (actionData) {
-      toast.error(actionData.error);
-    }
-  }, [actionData, toast]);
-
   return (
     <div className="utils--center">
       <LoginForm />
+      <RouteToaster />
     </div>
   );
 }
