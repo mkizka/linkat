@@ -35,7 +35,7 @@ export type ProfileCardProps = {
 export function ProfileCard({ user, showEditButton }: ProfileCardProps) {
   return (
     <Card>
-      <div className="card-body">
+      <div className="card-body gap-4">
         <div className="flex items-center">
           {user.avatar ? (
             <Avatar avatar={user.avatar} />
@@ -59,14 +59,15 @@ export function ProfileCard({ user, showEditButton }: ProfileCardProps) {
                 target="_blank"
                 rel="noreferrer"
               >
-                <BlueskyIcon className="size-6" />@{user.handle}
+                <BlueskyIcon className="size-6" />
+                Bluesky
               </a>
             )}
           </div>
         </div>
         <div>
           <h2 className="text-xl font-bold">{user.displayName}</h2>
-          {/* <p className="text-gray-500">@{user.handle}</p> */}
+          <p className="text-gray-500">@{user.handle}</p>
         </div>
       </div>
     </Card>
