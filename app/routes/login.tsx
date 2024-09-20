@@ -1,3 +1,4 @@
+import { OAuthResolverError } from "@atproto/oauth-client-node";
 import type { ActionFunctionArgs } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { useActionData } from "@remix-run/react";
@@ -6,6 +7,9 @@ import { useEffect } from "react";
 import { useToast } from "~/atoms/toast/hooks";
 import { LoginForm } from "~/features/login/login-form";
 import { oauthClient } from "~/server/oauth/client";
+import { createLogger } from "~/utils/logger";
+
+const logger = createLogger("login");
 
 export async function action({ request }: ActionFunctionArgs) {
   const form = await request.formData();
@@ -19,9 +23,11 @@ export async function action({ request }: ActionFunctionArgs) {
     });
     return redirect(url.toString());
   } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error(error);
-    return redirect("/login");
+    logger.info("OAuthログインに失敗しました", { error: String(error) });
+    if (error instanceof OAuthResolverError) {
+      return { error: "ログインに失敗しました(ハンドルを間違えてるかも)" };
+    }
+    return { error: "ログインに失敗しました" };
   }
 }
 
