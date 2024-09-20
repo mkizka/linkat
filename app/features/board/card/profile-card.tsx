@@ -1,4 +1,4 @@
-import { EyeIcon, PencilSquareIcon } from "@heroicons/react/24/outline";
+import { PencilSquareIcon } from "@heroicons/react/24/outline";
 import { UserIcon } from "@heroicons/react/24/solid";
 import type { User } from "@prisma/client";
 import { Link } from "@remix-run/react";
@@ -29,42 +29,10 @@ function AvatarPlaceholder() {
 
 export type ProfileCardProps = {
   user: Pick<User, "avatar" | "displayName" | "handle" | "did">;
-  button: "edit" | "preview" | "link" | "none";
+  showEditButton?: boolean;
 };
 
-export function ProfileCard({ user, button }: ProfileCardProps) {
-  const buttons = {
-    edit: (
-      <Link
-        className="btn btn-neutral"
-        to="/edit"
-        data-testid="profile-card__edit"
-      >
-        <PencilSquareIcon className="size-6" />
-        編集
-      </Link>
-    ),
-    preview: (
-      <Link
-        className="btn btn-neutral"
-        to={`/board/${user.handle}`}
-        data-testid="profile-card__preview"
-      >
-        <EyeIcon className="size-6" />
-        ページを見る
-      </Link>
-    ),
-    link: (
-      <Link
-        className="btn bg-[#0285FF] text-base-100"
-        to={`https://bsky.app/profile/${user.did}`}
-      >
-        <BlueskyIcon className="size-6" />@{user.handle}
-      </Link>
-    ),
-    none: null,
-  };
-
+export function ProfileCard({ user, showEditButton }: ProfileCardProps) {
   return (
     <Card>
       <div className="card-body">
@@ -74,11 +42,31 @@ export function ProfileCard({ user, button }: ProfileCardProps) {
           ) : (
             <AvatarPlaceholder />
           )}
-          <div className="flex flex-1 justify-end">{buttons[button]}</div>
+          <div className="flex flex-1 justify-end">
+            {showEditButton ? (
+              <Link
+                className="btn btn-neutral"
+                to="/edit"
+                data-testid="profile-card__edit"
+              >
+                <PencilSquareIcon className="size-6" />
+                編集
+              </Link>
+            ) : (
+              <a
+                className="btn bg-[#0285FF] text-base-100"
+                href={`https://bsky.app/profile/${user.did}`}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <BlueskyIcon className="size-6" />@{user.handle}
+              </a>
+            )}
+          </div>
         </div>
         <div>
           <h2 className="text-xl font-bold">{user.displayName}</h2>
-          <p className="text-gray-500">@{user.handle}</p>
+          {/* <p className="text-gray-500">@{user.handle}</p> */}
         </div>
       </div>
     </Card>

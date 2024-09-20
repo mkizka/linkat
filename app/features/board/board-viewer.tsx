@@ -18,6 +18,7 @@ type Props = {
   user: ProfileCardProps["user"];
   board: ValidBoard | null;
   editable?: boolean;
+  isMine?: boolean;
 };
 
 const withId = (card: ValidCard) => ({
@@ -25,7 +26,7 @@ const withId = (card: ValidCard) => ({
   id: crypto.randomUUID().toString(),
 });
 
-export function BoardViewer({ user, board, editable }: Props) {
+export function BoardViewer({ user, board, editable, isMine }: Props) {
   const [cards, setCards] = useState((board?.cards ?? []).map(withId));
 
   const handleSubmitCardForm = async (payload: CardFormPayload) => {
@@ -62,8 +63,7 @@ export function BoardViewer({ user, board, editable }: Props) {
       onDelete={handleDeleteCardForm}
     >
       <div className="flex flex-col gap-2 py-4">
-        {/* TODO: buttonを整理する */}
-        <ProfileCard user={user} button={"edit"} />
+        <ProfileCard user={user} showEditButton={!editable && isMine} />
         <SortableCardList
           cards={cards}
           setCards={setCards}

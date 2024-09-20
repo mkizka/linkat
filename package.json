@@ -98,7 +98,7 @@
   },
   "sideEffects": false,
   "lint-staged": {
-    "*.{js,mjs,ts,tsx}": "pnpm _eslint --fix",
+    "*.{js,mjs,ts,tsx}": "eslint --cache --cache-location ./node_modules/.cache/eslint --fix",
     "*": "prettier --ignore-unknown --write"
   },
   "prettier": {
