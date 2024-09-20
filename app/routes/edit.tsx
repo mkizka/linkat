@@ -53,7 +53,7 @@ export default function Index() {
 
   return (
     <>
-      <BoardViewer user={user} board={board} editable />;
+      <BoardViewer user={user} board={board} editable />
       <RouteToaster />
     </>
   );
