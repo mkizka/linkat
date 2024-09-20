@@ -30,6 +30,8 @@ export function BoardViewer({ user, board, editable, isMine }: Props) {
   const [cards, setCards] = useState((board?.cards ?? []).map(withId));
 
   const handleSubmitCardForm = async (payload: CardFormPayload) => {
+    const resolvedUrl =
+      payload.url && (await resolveHandleIfNeeded(payload.url));
     if (payload.id) {
       setCards((cards) =>
         cards.map((card) => {
@@ -37,15 +39,17 @@ export function BoardViewer({ user, board, editable, isMine }: Props) {
             return {
               id: payload.id,
               text: payload.text,
-              url: payload.url,
+              url: resolvedUrl,
             };
           }
           return card;
         }),
       );
     } else {
-      const url = payload.url && (await resolveHandleIfNeeded(payload.url));
-      setCards((cards) => [...cards, withId({ ...payload, url })]);
+      setCards((cards) => {
+        const newCard = withId({ ...payload, url: resolvedUrl });
+        return [...cards, newCard];
+      });
     }
     cardModal.close();
   };
