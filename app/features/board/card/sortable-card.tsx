@@ -1,5 +1,9 @@
 import { useFormMetadata } from "@conform-to/react";
-import { LinkIcon, PencilSquareIcon } from "@heroicons/react/24/outline";
+import {
+  ArrowsUpDownIcon,
+  LinkIcon,
+  PencilSquareIcon,
+} from "@heroicons/react/24/outline";
 
 import { Card } from "~/components/card";
 import { cardModal } from "~/features/board/form/card-form-modal";
@@ -80,7 +84,10 @@ export function SortableCard({
       {sortable && <div className="absolute z-10 size-full" />}
       <CardBody parsed={parsed} isDragging={isDragging} />
       {sortable && !isDragging && (
-        <div className="absolute right-0 top-0 z-20">
+        <div className="absolute right-2 top-2 z-20 flex gap-2">
+          <button className="btn btn-square" data-movable-handle>
+            <ArrowsUpDownIcon className="size-6" />
+          </button>
           <button
             className="btn btn-square"
             data-testid={`sortable-card__edit`}
