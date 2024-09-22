@@ -27,5 +27,9 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
 export default function Index() {
   const { user, board, isMine } = useLoaderData<typeof loader>();
-  return <BoardViewer user={user} board={board} isMine={isMine} />;
+  return (
+    <div className="pt-4">
+      <BoardViewer user={user} board={board} isMine={isMine} />
+    </div>
+  );
 }

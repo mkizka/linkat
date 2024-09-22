@@ -23,7 +23,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body className="bg-base-300">
-        <main className="mx-auto min-h-svh max-w-screen-sm px-4">
+        <main className="mx-auto min-h-svh max-w-screen-sm bg-base-200 px-4">
           {children}
         </main>
         <Toaster />

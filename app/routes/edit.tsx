@@ -52,9 +52,9 @@ export default function Index() {
   const { user, board } = useLoaderData<typeof loader>();
 
   return (
-    <>
+    <div className="pt-4">
       <BoardViewer user={user} board={board} editable />
       <RouteToaster />
-    </>
+    </div>
   );
 }

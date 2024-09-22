@@ -66,7 +66,7 @@ export function BoardViewer({ user, board, editable, isMine }: Props) {
       onSubmit={handleSubmitCardForm}
       onDelete={handleDeleteCardForm}
     >
-      <div className="flex flex-col gap-2 py-4">
+      <div className="flex flex-col gap-2">
         <ProfileCard user={user} showEditButton={!editable && isMine} />
         <SortableCardList
           cards={cards}
@@ -82,7 +82,7 @@ export function BoardViewer({ user, board, editable, isMine }: Props) {
               value={JSON.stringify({ cards })}
             />
             <Button
-              className="btn-circle btn-lg fixed bottom-4 right-4 w-32 shadow"
+              className="btn-circle btn-primary btn-lg fixed bottom-4 right-4 w-32 shadow ring-1"
               data-testid="board-viewer__submit"
             >
               <PencilSquareIcon className="size-8" />
