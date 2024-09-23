@@ -41,7 +41,9 @@ test.describe("編集", () => {
 
     // カードを並べ替える
     await page.getByTestId("profile-card__edit").click();
-    await card1.dragTo(card2, { timeout: 2000 });
+    await card1
+      .locator("[data-movable-handle]")
+      .dragTo(card2, { timeout: 2000 });
 
     // 保存して閲覧ページで順番を確認
     await page.getByTestId("board-viewer__submit").click();
