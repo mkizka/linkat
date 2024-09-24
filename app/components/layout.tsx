@@ -24,7 +24,7 @@ export function Main({ className, children }: Props) {
   return (
     <main
       className={cn(
-        "mx-auto w-full max-w-screen-sm flex-1 bg-base-200 p-4",
+        "mx-auto w-full max-w-screen-sm flex-1 bg-base-200 px-4",
         className,
       )}
     >
@@ -33,15 +33,21 @@ export function Main({ className, children }: Props) {
   );
 }
 
-export function Footer({ className, children }: Props) {
+type FooterProps = {
+  withNavigation?: boolean;
+};
+
+export function Footer({ withNavigation }: FooterProps) {
   return (
-    <footer
-      className={cn(
-        "footer footer-center mx-auto max-w-screen-sm items-center bg-neutral p-4 text-neutral-content",
-        className,
+    <footer className="mx-auto flex w-full max-w-screen-sm flex-col gap-2 bg-neutral py-4 text-center text-neutral-content">
+      {withNavigation && (
+        <nav>
+          <Link to="/">
+            <span className="mx-2 text-xl font-bold">Linkat</span>
+            でリンク集を作ろう
+          </Link>
+        </nav>
       )}
-    >
-      {children}
       <aside>
         <p>© {new Date().getFullYear()} Linkat</p>
       </aside>

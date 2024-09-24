@@ -33,7 +33,7 @@ export default function Index() {
       <Main>
         <BoardViewer user={user} board={board} isMine={isMine} />
       </Main>
-      <Footer />
+      <Footer withNavigation />
     </>
   );
 }

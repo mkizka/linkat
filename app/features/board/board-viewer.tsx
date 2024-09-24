@@ -66,7 +66,7 @@ export function BoardViewer({ user, board, editable, isMine }: Props) {
       onSubmit={handleSubmitCardForm}
       onDelete={handleDeleteCardForm}
     >
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-2 py-4">
         <ProfileCard user={user} showEditButton={!editable && isMine} />
         <SortableCardList
           cards={cards}

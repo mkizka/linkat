@@ -57,7 +57,7 @@ export default function Index() {
       <Main>
         <BoardViewer user={user} board={board} editable />
       </Main>
-      <Footer />
+      <Footer withNavigation />
       <RouteToaster />
     </>
   );
