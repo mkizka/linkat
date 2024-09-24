@@ -24,16 +24,11 @@ export default function Index() {
               {
                 text: "テキストだけでもOK",
               },
-
+              {
+                text: "BlueskyのURLは自動で埋め込まれます ↓",
+              },
               {
                 url: "https://bsky.app/profile/did:plc:z72i7hdynmk6r22z27h6tvur/post/3l47prg3wgy23",
-              },
-              {
-                text: "BlueskyのURLは自動埋め込み ↑",
-              },
-              {
-                text: "ここをタップで戻れます",
-                url: "https://linkat.blue",
               },
             ],
           }}
