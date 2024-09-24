@@ -22,10 +22,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Meta />
         <Links />
       </head>
-      <body className="bg-base-300">
-        <main className="mx-auto min-h-svh max-w-screen-sm bg-base-200 px-4">
-          {children}
-        </main>
+      <body className="flex h-fit min-h-svh flex-col bg-base-300">
+        {children}
         <Toaster />
         <ScrollRestoration />
         <Scripts />

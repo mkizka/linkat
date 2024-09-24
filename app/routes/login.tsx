@@ -2,6 +2,7 @@ import { OAuthResolverError } from "@atproto/oauth-client-node";
 import type { ActionFunctionArgs } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 
+import { Main, RootLayout } from "~/components/layout";
 import { LoginForm } from "~/features/login/login-form";
 import { RouteToaster } from "~/features/toast/route";
 import { oauthClient } from "~/server/oauth/client";
@@ -31,9 +32,11 @@ export async function action({ request }: ActionFunctionArgs) {
 
 export default function LoginPage() {
   return (
-    <div className="utils--center">
-      <LoginForm />
-      <RouteToaster />
-    </div>
+    <RootLayout>
+      <Main className="utils--center">
+        <LoginForm />
+        <RouteToaster />
+      </Main>
+    </RootLayout>
   );
 }

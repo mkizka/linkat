@@ -1,6 +1,7 @@
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { redirect, useLoaderData } from "@remix-run/react";
 
+import { Footer, Main } from "~/components/layout";
 import { BoardViewer } from "~/features/board/board-viewer";
 import { RouteToaster } from "~/features/toast/route";
 import { boardScheme } from "~/models/board";
@@ -52,9 +53,12 @@ export default function Index() {
   const { user, board } = useLoaderData<typeof loader>();
 
   return (
-    <div className="pt-4">
-      <BoardViewer user={user} board={board} editable />
+    <>
+      <Main>
+        <BoardViewer user={user} board={board} editable />
+      </Main>
+      <Footer />
       <RouteToaster />
-    </div>
+    </>
   );
 }

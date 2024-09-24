@@ -1,6 +1,7 @@
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 
+import { Footer, Main } from "~/components/layout";
 import { BoardViewer } from "~/features/board/board-viewer";
 import { getSessionUserDid } from "~/server/oauth/session";
 import { boardService } from "~/server/service/boardService";
@@ -28,8 +29,11 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 export default function Index() {
   const { user, board, isMine } = useLoaderData<typeof loader>();
   return (
-    <div className="pt-4">
-      <BoardViewer user={user} board={board} isMine={isMine} />
-    </div>
+    <>
+      <Main>
+        <BoardViewer user={user} board={board} isMine={isMine} />
+      </Main>
+      <Footer />
+    </>
   );
 }
