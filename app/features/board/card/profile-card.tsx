@@ -35,7 +35,7 @@ export type ProfileCardProps = {
 export function ProfileCard({ user, showEditButton }: ProfileCardProps) {
   return (
     <Card>
-      <div className="card-body gap-4">
+      <div className="card-body gap-2">
         <div className="flex items-center">
           {user.avatar ? (
             <Avatar avatar={user.avatar} />
