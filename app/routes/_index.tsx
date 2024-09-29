@@ -19,10 +19,10 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
     {
       title: "Linkat | シンプルなリンク集を作ろう",
     },
-    {
-      property: "og:image",
-      content: ogImageUrl,
-    },
+    // {
+    //   property: "og:image",
+    //   content: ogImageUrl,
+    // },
   ];
 };
 

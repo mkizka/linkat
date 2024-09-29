@@ -34,15 +34,15 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 }
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
-  const { user } = required(data);
+  const { user, ogImageUrl } = required(data);
   return [
     {
       title: `${user.displayName}(@${user.handle})さんのページ | Linkat`,
     },
-    // {
-    //   property: "og:image",
-    //   content: ogImageUrl,
-    // },
+    {
+      property: "og:image",
+      content: ogImageUrl,
+    },
   ];
 };
 
