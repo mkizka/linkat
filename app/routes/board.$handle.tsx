@@ -7,6 +7,7 @@ import { getSessionUserDid } from "~/server/oauth/session";
 import { boardService } from "~/server/service/boardService";
 import { userService } from "~/server/service/userService";
 import { env } from "~/utils/env";
+import { createMeta } from "~/utils/meta";
 import { required } from "~/utils/required";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
@@ -29,21 +30,14 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     user,
     board,
     isMine: user.did === sessionUserDid,
-    ogImageUrl: `${env.PUBLIC_URL}/board/${user.handle}/og`,
+    url: `${env.PUBLIC_URL}/board/${user.handle}`,
   };
 }
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
-  const { user, ogImageUrl } = required(data);
-  return [
-    {
-      title: `${user.displayName}(@${user.handle})さんのページ | Linkat`,
-    },
-    {
-      property: "og:image",
-      content: ogImageUrl,
-    },
-  ];
+  const { user, url } = required(data);
+  const title = `${user.displayName}(@${user.handle})さんのページ | Linkat`;
+  return createMeta({ title, url, ogImageUrl: `${url}/og` });
 };
 
 export default function Index() {

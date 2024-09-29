@@ -6,24 +6,17 @@ import { Main, RootLayout } from "~/components/layout";
 import { BlueskyIcon } from "~/features/board/card/icons/bluesky";
 import { getSessionUserDid } from "~/server/oauth/session";
 import { env } from "~/utils/env";
+import { createMeta } from "~/utils/meta";
 import { required } from "~/utils/required";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const userDid = await getSessionUserDid(request);
-  return { isLogin: !!userDid, ogImageUrl: `${env.PUBLIC_URL}/icon.png` };
+  return { isLogin: !!userDid, url: env.PUBLIC_URL };
 };
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
-  const { ogImageUrl } = required(data);
-  return [
-    {
-      title: "Linkat | シンプルなリンク集を作ろう",
-    },
-    // {
-    //   property: "og:image",
-    //   content: ogImageUrl,
-    // },
-  ];
+  const { url } = required(data);
+  return createMeta({ title: "Linkat | シンプルなリンク集を作ろう", url });
 };
 
 export default function Index() {
