@@ -22,12 +22,7 @@ export default function Index() {
             <br />
             リンク集を作ろう
           </h2>
-          <p className="py-6">
-            プロフィール欄に収まらない
-            <br />
-            情報をまとめて共有
-          </p>
-          <div className="flex flex-col gap-2">
+          <div className="mt-12 flex flex-col gap-2">
             {isLogin ? (
               <Link to="/edit" className="btn btn-primary">
                 <PencilSquareIcon className="size-6" />

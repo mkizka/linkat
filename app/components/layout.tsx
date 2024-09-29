@@ -43,7 +43,7 @@ export function Footer({ withNavigation }: FooterProps) {
       {withNavigation && (
         <nav>
           <Link to="/">
-            <span className="mx-2 text-xl font-bold">Linkat</span>
+            <span className="mx-2 text-xl font-bold underline">Linkat</span>
             でリンク集を作ろう
           </Link>
         </nav>
