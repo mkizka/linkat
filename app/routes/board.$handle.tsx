@@ -1,4 +1,4 @@
-import type { LoaderFunctionArgs } from "@remix-run/node";
+import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 
 import { Footer, Main } from "~/components/layout";
@@ -6,6 +6,8 @@ import { BoardViewer } from "~/features/board/board-viewer";
 import { getSessionUserDid } from "~/server/oauth/session";
 import { boardService } from "~/server/service/boardService";
 import { userService } from "~/server/service/userService";
+import { env } from "~/utils/env";
+import { required } from "~/utils/required";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   // この順で処理した場合ボードを持たない(=このサービスのユーザーでない)ユーザーの
@@ -23,8 +25,26 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     throw new Response(null, { status: 404 });
   }
   const sessionUserDid = await getSessionUserDid(request);
-  return { user, board, isMine: user.did === sessionUserDid };
+  return {
+    user,
+    board,
+    isMine: user.did === sessionUserDid,
+    ogImageUrl: `${env.PUBLIC_URL}/board/${user.handle}/og`,
+  };
 }
+
+export const meta: MetaFunction<typeof loader> = ({ data }) => {
+  const { user } = required(data);
+  return [
+    {
+      title: `${user.displayName}(@${user.handle})さんのページ | Linkat`,
+    },
+    // {
+    //   property: "og:image",
+    //   content: ogImageUrl,
+    // },
+  ];
+};
 
 export default function Index() {
   const { user, board, isMine } = useLoaderData<typeof loader>();

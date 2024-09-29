@@ -1,14 +1,29 @@
 import { ArrowRightIcon, PencilSquareIcon } from "@heroicons/react/24/outline";
-import type { LoaderFunctionArgs } from "@remix-run/node";
+import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
 
 import { Main, RootLayout } from "~/components/layout";
 import { BlueskyIcon } from "~/features/board/card/icons/bluesky";
 import { getSessionUserDid } from "~/server/oauth/session";
+import { env } from "~/utils/env";
+import { required } from "~/utils/required";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const userDid = await getSessionUserDid(request);
-  return { isLogin: !!userDid };
+  return { isLogin: !!userDid, ogImageUrl: `${env.PUBLIC_URL}/icon.png` };
+};
+
+export const meta: MetaFunction<typeof loader> = ({ data }) => {
+  const { ogImageUrl } = required(data);
+  return [
+    {
+      title: "Linkat | シンプルなリンク集を作ろう",
+    },
+    {
+      property: "og:image",
+      content: ogImageUrl,
+    },
+  ];
 };
 
 export default function Index() {
