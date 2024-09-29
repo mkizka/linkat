@@ -54,7 +54,7 @@ export function ProfileCard({ user, showEditButton }: ProfileCardProps) {
               </Link>
             ) : (
               <a
-                className="btn bg-bluesky text-base-100"
+                className="btn-bluesky btn text-base-100"
                 href={`https://bsky.app/profile/${user.handle}`}
                 target="_blank"
                 rel="noreferrer"

@@ -34,7 +34,7 @@ export default function Index() {
                 ページを編集
               </Link>
             ) : (
-              <Link to="/login" className="btn bg-bluesky text-base-100">
+              <Link to="/login" className="btn-bluesky btn text-base-100">
                 <BlueskyIcon className="size-6" />
                 Bluesky でログイン
               </Link>

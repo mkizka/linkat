@@ -19,3 +19,7 @@ body {
   margin-top: 0 !important;
   margin-bottom: 0 !important;
 }
+
+.btn-bluesky {
+  --btn-color: 62.58% 0.205 254.95;
+}

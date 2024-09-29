@@ -11,11 +11,6 @@ export default {
     fontFamily: {
       murecho: ["murecho", "sans-serif"],
     },
-    extend: {
-      colors: {
-        bluesky: "#0285FF",
-      },
-    },
   },
   plugins: [daisyui, animate],
   // https://daisyui.com/docs/config/
