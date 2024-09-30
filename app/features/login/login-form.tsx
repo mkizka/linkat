@@ -1,11 +1,11 @@
 import { getFormProps, getInputProps, useForm } from "@conform-to/react";
 import { getZodConstraint, parseWithZod } from "@conform-to/zod";
+import { AtSymbolIcon } from "@heroicons/react/24/outline";
 import { Form, useNavigation } from "@remix-run/react";
 import { z } from "zod";
 
 import { Button } from "~/components/button";
 import { Card } from "~/components/card";
-import { Input } from "~/components/input";
 
 const schema = z.object({
   identifier: z
@@ -25,10 +25,10 @@ export function LoginForm() {
   });
 
   return (
-    <Card className="flex w-full max-w-screen-sm flex-row justify-center p-4 pb-8">
+    <Card className="flex w-full max-w-screen-sm flex-row justify-center">
       <Form
         method="post"
-        className="flex w-full max-w-sm flex-col gap-2"
+        className="card-body flex w-full max-w-sm flex-col gap-2"
         {...getFormProps(form)}
       >
         {form.errors && (
@@ -36,17 +36,29 @@ export function LoginForm() {
             {form.errors}
           </div>
         )}
-        <Input
-          {...getInputProps(fields.identifier, { type: "text" })}
-          label="ハンドル"
-          errors={fields.identifier.errors}
-          placeholder="example.bsky.social"
-          autoComplete="username"
-          data-testid="login-form__identifier"
-        />
+        <div className="form-control">
+          <div className="label">
+            <span className="label-text">ハンドル</span>
+          </div>
+          <div className="join">
+            <div className="join-item flex h-full w-12 items-center justify-center rounded-r-full bg-neutral text-neutral-content">
+              <AtSymbolIcon className="size-5" />
+            </div>
+            <input
+              className="input join-item input-bordered w-full"
+              placeholder="example.bsky.social"
+              autoComplete="username"
+              data-testid="login-form__identifier"
+              {...getInputProps(fields.identifier, { type: "text" })}
+            />
+          </div>
+        </div>
+        {fields.identifier.errors && (
+          <p className="p-1 text-sm text-error">{fields.identifier.errors}</p>
+        )}
         <Button
           type="submit"
-          className="mt-4"
+          className="btn-bluesky mt-4 text-base-100"
           loading={navigation.state !== "idle"}
           data-testid="login-form__submit"
         >
