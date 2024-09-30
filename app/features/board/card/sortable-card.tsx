@@ -23,7 +23,7 @@ function CardContent({ parsed }: CardContentProps) {
   }
   return (
     <div className="card-body flex-row items-center gap-2">
-      {parsed.type === "link" && <LinkIcon className="-ml-4 size-6" />}
+      {parsed.type === "link" && <LinkIcon className="-ml-2 size-6" />}
       <p className="flex-1 truncate">{parsed.text}</p>
     </div>
   );

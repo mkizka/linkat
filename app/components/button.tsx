@@ -14,7 +14,7 @@ export function Button({
 }: Props) {
   return (
     <button
-      className={cn("btn btn-neutral relative", className)}
+      className={cn("btn relative", className)}
       disabled={loading}
       {...buttonProps}
     >

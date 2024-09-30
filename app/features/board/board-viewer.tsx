@@ -82,7 +82,7 @@ export function BoardViewer({ user, board, editable, isMine }: Props) {
               value={JSON.stringify({ cards })}
             />
             <Button
-              className="btn-circle btn-primary btn-lg fixed bottom-4 right-4 w-32 shadow ring-1"
+              className="btn-circle btn-primary btn-lg fixed bottom-4 right-4 w-32 shadow-xl"
               data-testid="board-viewer__submit"
             >
               <PencilSquareIcon className="size-8" />
