@@ -21,7 +21,7 @@ const idResolver = new IdResolver({
 const handleCreateOrUpdate = async (
   evt: FirehoseCreateEvt | FirehoseUpdateEvt,
 ) => {
-  if (evt.collection !== "dev.mkizka.test.board") {
+  if (evt.collection !== "blue.linkat.board") {
     return;
   }
   const parsed = boardScheme.safeParse(evt.record);
@@ -60,7 +60,7 @@ export const firehose = new Firehose({
     logger.warn("Firehoseでエラーが発生しました", { error: error.message });
   },
   unauthenticatedCommits: true,
-  filterCollections: ["dev.mkizka.test.board"],
+  filterCollections: ["blue.linkat.board"],
   excludeIdentity: true,
   excludeAccount: true,
 });

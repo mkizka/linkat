@@ -1,14 +1,14 @@
 import { Agent } from "@atproto/api";
 
-import { DevNS } from "~/generated/api";
+import { BlueNS } from "~/generated/api";
 import { boardScheme } from "~/models/board";
 
 export class LinkatAgent extends Agent {
-  dev: DevNS;
+  blue: BlueNS;
 
   constructor(options: ConstructorParameters<typeof Agent>[0]) {
     super(options);
-    this.dev = new DevNS(this);
+    this.blue = new BlueNS(this);
   }
 
   async getSessionProfile() {
@@ -16,9 +16,9 @@ export class LinkatAgent extends Agent {
   }
 
   async getBoard(
-    params: Omit<Parameters<typeof this.dev.mkizka.test.board.get>[0], "rkey">,
+    params: Omit<Parameters<typeof this.blue.linkat.board.get>[0], "rkey">,
   ) {
-    return await this.dev.mkizka.test.board.get({
+    return await this.blue.linkat.board.get({
       ...params,
       rkey: "self",
     });
@@ -29,18 +29,18 @@ export class LinkatAgent extends Agent {
   }
 
   async updateBoard(board: unknown) {
-    // dev.mkizka.test.profile.boardにはなぜかputがないので、com.atproto.repoを使う
+    // blue.linkat.profile.boardにはなぜかputがないので、com.atproto.repoを使う
     return await this.com.atproto.repo.putRecord({
       repo: this.assertDid,
       validate: false,
-      collection: "dev.mkizka.test.board",
+      collection: "blue.linkat.board",
       rkey: "self",
       record: boardScheme.parse(board),
     });
   }
 
   async deleteBoard() {
-    return await this.dev.mkizka.test.board.delete({
+    return await this.blue.linkat.board.delete({
       repo: this.assertDid,
       rkey: "self",
     });

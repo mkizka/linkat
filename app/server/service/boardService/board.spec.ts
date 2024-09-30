@@ -19,10 +19,10 @@ const dummyBoard = {
 } satisfies ValidBoard;
 
 const dummyBoardRecord = {
-  uri: "at://did:plc:fuphupq2ha3kk45osfummw42/dev.mkizka.test.profile.board/self",
+  uri: "at://did:plc:fuphupq2ha3kk45osfummw42/blue.linkat.board/self",
   cid: "bafyreiflxe3gz7tg4jje5w4wypqjvz5d4zntrols22gwp7btg2nh2t7wxm",
   value: {
-    $type: "dev.mkizka.test.profile.board",
+    $type: "blue.linkat.board",
     cards: dummyBoard.cards,
   },
 };
