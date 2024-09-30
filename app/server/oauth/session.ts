@@ -21,6 +21,7 @@ const {
 } = createCookieSessionStorage<SessionData, SessionFlashData>({
   cookie: {
     httpOnly: true,
+    maxAge: 30 * 24 * 60 * 60,
     secure: process.env.NODE_ENV === "production",
     secrets: [env.COOKIE_SECRET],
   },
