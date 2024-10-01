@@ -8,6 +8,9 @@ const match = <Prod, Default>({ prod, dev }: { prod: Prod; dev: Default }) => {
   return isProduction ? prod : dev;
 };
 
+const DEVELOPMENT_PRIVATE_KEY =
+  "LS0tLS1CRUdJTiBQUklWQVRFIEtFWS0tLS0tCk1JR0hBZ0VBTUJNR0J5cUdTTTQ5QWdFR0NDcUdTTTQ5QXdFSEJHMHdhd0lCQVFRZ1hoS1ZMc2pwVSszSm9wd2kKcjhUcjBBVXVMNTNyRzR6V2duQkNSZUNRQjdTaFJBTkNBQVRaNzlHaGQxYnphVVpHb1lzcitLRVJxNnIyUXZJZApRQXZ4ZUpqRkdMbDJ0TDRmZUhSWmVkc3NxZjdDNUpjdGZWN2hKd2hYOG5ackxjYXU3OWtEQ25PTQotLS0tLUVORCBQUklWQVRFIEtFWS0tLS0tCg==";
+
 const server = {
   NODE_ENV: z
     .enum(["development", "production", "test"])
@@ -21,9 +24,14 @@ const server = {
   PUBLIC_URL: isProduction
     ? z.string()
     : z.string().default("http://linkat.localhost:3000"),
+  // openssl rand -base64 33
   COOKIE_SECRET: isProduction
     ? z.string()
     : z.string().default("dev-cookie-secret"),
+  // openssl ecparam -name prime256v1 -genkey | openssl pkcs8 -topk8 -nocrypt | openssl base64 -A
+  PRIVATE_KEY_ES256_B64: isProduction
+    ? z.string()
+    : z.string().default(DEVELOPMENT_PRIVATE_KEY),
   BSKY_PUBLIC_API_URL: z
     .string()
     .url()

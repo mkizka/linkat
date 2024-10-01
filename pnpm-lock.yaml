@@ -14,6 +14,9 @@ importers:
       '@atproto/identity':
         specifier: 0.4.1
         version: 0.4.1
+      '@atproto/jwk-jose':
+        specifier: ^0.1.2
+        version: 0.1.2
       '@atproto/lexicon':
         specifier: 0.4.1
         version: 0.4.1

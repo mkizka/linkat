@@ -31,6 +31,7 @@
   "dependencies": {
     "@atproto/api": "0.13.7",
     "@atproto/identity": "0.4.1",
+    "@atproto/jwk-jose": "^0.1.2",
     "@atproto/lexicon": "0.4.1",
     "@atproto/oauth-client-node": "0.1.1",
     "@atproto/repo": "0.5.1",
