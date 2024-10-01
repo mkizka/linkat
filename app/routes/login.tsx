@@ -5,7 +5,7 @@ import { redirect } from "@remix-run/node";
 import { Main, RootLayout } from "~/components/layout";
 import { LoginForm } from "~/features/login/login-form";
 import { RouteToaster } from "~/features/toast/route";
-import { oauthClient } from "~/server/oauth/client";
+import { createOAuthClient } from "~/server/oauth/client";
 import { createLogger } from "~/utils/logger";
 
 const logger = createLogger("login");
@@ -17,6 +17,7 @@ export async function action({ request }: ActionFunctionArgs) {
     return { error: "不明なエラーが発生しました" };
   }
   try {
+    const oauthClient = await createOAuthClient();
     const url = await oauthClient.authorize(handle, {
       scope: "atproto transition:generic",
     });

@@ -1,14 +1,16 @@
 import express from "express";
 
-import { oauthClient } from "./client";
+import { createOAuthClient } from "./client";
 
 const router = express.Router();
 
-router.get("/client-metadata.json", (_req, res) => {
+router.get("/client-metadata.json", async (_req, res) => {
+  const oauthClient = await createOAuthClient();
   return res.json(oauthClient.clientMetadata);
 });
 
-router.get("/jwks.json", (_req, res) => {
+router.get("/jwks.json", async (_req, res) => {
+  const oauthClient = await createOAuthClient();
   return res.json(oauthClient.jwks);
 });
 

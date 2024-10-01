@@ -4,7 +4,7 @@ import { LinkatAgent } from "~/libs/agent";
 import { userService } from "~/server/service/userService";
 import { env } from "~/utils/env";
 
-import { oauthClient } from "./client";
+import { createOAuthClient } from "./client";
 
 type SessionData = {
   did: string;
@@ -56,6 +56,7 @@ export const getSessionAgent = async (request: Request) => {
   if (!userDid) {
     return null;
   }
+  const oauthClient = await createOAuthClient();
   const oauthSession = await oauthClient.restore(userDid);
   return new LinkatAgent(oauthSession);
 };
