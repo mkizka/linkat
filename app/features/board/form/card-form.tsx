@@ -52,10 +52,10 @@ export function CardForm() {
           type="submit"
           name="action"
           value="save"
-          className="btn-primary"
+          className="btn-neutral"
           data-testid="card-form__submit"
         >
-          {fields.id.value ? "変更を保存" : "追加"}
+          {fields.id.value ? "変更" : "追加"}
         </Button>
         {fields.id.value && (
           <Button
