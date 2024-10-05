@@ -7,9 +7,13 @@ import {
   isBlueskyFeedUrl,
   isBlueskyPostUrl,
   isBlueskyProfileUrl,
+  isGitHubProfileUrl,
+  isTwitterProfileUrl,
 } from "~/utils/url";
 
 import { BlueskyIcon } from "./icons/bluesky";
+import { GitHubIcon } from "./icons/github";
+import { TwitterIcon } from "./icons/twitter";
 
 type CardIconComponent = FC<ComponentProps<"svg">>;
 
@@ -44,9 +48,9 @@ type ParsedCard =
 
 const cardIcons: Record<string, CardIconComponent | undefined> = {
   "bsky.app": BlueskyIcon,
-  // "x.com": TwitterIcon,
-  // "twitter.com": TwitterIcon,
-  // "github.com": GitHubIcon,
+  "x.com": TwitterIcon,
+  "twitter.com": TwitterIcon,
+  "github.com": GitHubIcon,
 };
 
 export const parseCard = (card: ValidCard): ParsedCard => {
@@ -79,22 +83,22 @@ export const parseCard = (card: ValidCard): ParsedCard => {
       url: card.url,
     };
   }
-  // if (isTwitterProfileUrl(url)) {
-  //   return {
-  //     type: "link",
-  //     icon: TwitterIcon,
-  //     text: card.text || `@${paths[1]}`,
-  //     url: card.url,
-  //   };
-  // }
-  // if (isGitHubProfileUrl(url)) {
-  //   return {
-  //     type: "link",
-  //     icon: GitHubIcon,
-  //     text: card.text || `@${paths[1]}`,
-  //     url: card.url,
-  //   };
-  // }
+  if (isTwitterProfileUrl(url)) {
+    return {
+      type: "link",
+      icon: TwitterIcon,
+      text: card.text || `@${paths[1]}`,
+      url: card.url,
+    };
+  }
+  if (isGitHubProfileUrl(url)) {
+    return {
+      type: "link",
+      icon: GitHubIcon,
+      text: card.text || `@${paths[1]}`,
+      url: card.url,
+    };
+  }
   return {
     type: "link",
     icon: cardIcons[url.hostname] || LinkIcon,
