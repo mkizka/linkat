@@ -51,15 +51,15 @@ export function BlueskyFeed({ feedUri, url }: Props) {
             </div>
           </div>
           <div className="flex-1 overflow-hidden">
-            <p className="truncate text-lg font-bold">
+            <p className="truncate font-bold leading-snug">
               {feed.view.displayName}
             </p>
-            <p className="truncate text-gray-500">
+            <p className="truncate leading-snug text-gray-500">
               @{feed.view.creator.handle}によるフィード
             </p>
           </div>
         </div>
-        <p>{feed.view.description}</p>
+        <p className="whitespace-pre-line">{feed.view.description}</p>
       </div>
     </a>
   );
