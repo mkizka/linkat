@@ -37,7 +37,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
   const { user, url } = required(data);
   const title = `${user.displayName}(@${user.handle})さんのページ | Linkat`;
-  return createMeta({ title, url, ogImageUrl: `${url}/og` });
+  return createMeta({ title, url, ogImageUrl: `${url}/og.png` });
 };
 
 export default function Index() {
