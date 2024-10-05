@@ -7,7 +7,7 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
-  useLoaderData,
+  useRouteLoaderData,
 } from "@remix-run/react";
 import { useTranslation } from "react-i18next";
 import { useChangeLanguage } from "remix-i18next/react";
@@ -28,7 +28,8 @@ export const handle = {
 };
 
 export function Layout({ children }: { children: React.ReactNode }) {
-  const { locale } = useLoaderData<typeof loader>();
+  // https://wp-kyoto.net/use-userouteloaderdata-insteadof-useloaderdata-on-layout-component/
+  const locale = useRouteLoaderData<typeof loader>("root")!.locale;
   const { i18n } = useTranslation();
 
   useChangeLanguage(locale);
