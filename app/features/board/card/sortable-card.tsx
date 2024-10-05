@@ -11,6 +11,7 @@ import type { ValidCard } from "~/models/card";
 import { cn } from "~/utils/cn";
 
 import { BlueskyEmbed } from "./bluesky-embed";
+import { BlueskyFeed } from "./bluesky-feed";
 import { parseCard } from "./parser";
 
 type CardContentProps = {
@@ -18,6 +19,9 @@ type CardContentProps = {
 };
 
 function CardContent({ parsed }: CardContentProps) {
+  if (parsed.type === "feed") {
+    return <BlueskyFeed feedUri={parsed.feedUri} url={parsed.url} />;
+  }
   if (parsed.type === "embed") {
     return <BlueskyEmbed blueskyUri={parsed.blueskyUri} />;
   }

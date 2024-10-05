@@ -19,6 +19,17 @@ export const isBlueskyPostUrl = (url: URL) => {
   );
 };
 
+// https://bsky.app/profile/did:plc:.../feed/12345...
+export const isBlueskyFeedUrl = (url: URL) => {
+  const paths = url.pathname.split("/");
+  return (
+    url.hostname === "bsky.app" &&
+    paths[1] === "profile" &&
+    paths[3] === "feed" &&
+    paths.length === 5
+  );
+};
+
 // https://twitter.com/x
 // https://x.com/x
 export const isTwitterProfileUrl = (url: URL) => {
@@ -57,7 +68,7 @@ export const resolveHandleIfNeeded = async (original: string) => {
 // https://bsky.app/profile/did:plc:abcdefg.../post/hijklmnop...
 // ↓
 // at://did:plc:abcdefg.../app.bsky.feed.post/hijklmnop...
-export const atUri = (url: URL) => {
+export const atUri = (url: URL, collection: string) => {
   const [_, _profile, did, _post, tid] = url.pathname.split("/");
-  return `at://${did}/app.bsky.feed.post/${tid}`;
+  return `at://${did}/${collection}/${tid}`;
 };

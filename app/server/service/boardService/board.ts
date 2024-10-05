@@ -1,4 +1,3 @@
-import { CredentialSession } from "@atproto/api";
 import type { Prisma } from "@prisma/client";
 
 import { LinkatAgent } from "~/libs/agent";
@@ -65,7 +64,7 @@ const fetchBoardInPDS = async (userDid: string) => {
     return null;
   }
   logger.info("PDSからboardを取得します", { userDid });
-  const agent = new LinkatAgent(new CredentialSession(serviceUrl));
+  const agent = LinkatAgent.public();
   const response = await tryCatch(agent.getBoard.bind(agent))({
     repo: userDid,
   });

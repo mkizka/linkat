@@ -2,7 +2,12 @@ import { LinkIcon } from "@heroicons/react/24/outline";
 import type { ComponentProps, FC } from "react";
 
 import type { ValidCard } from "~/models/card";
-import { atUri, isBlueskyPostUrl, isBlueskyProfileUrl } from "~/utils/url";
+import {
+  atUri,
+  isBlueskyFeedUrl,
+  isBlueskyPostUrl,
+  isBlueskyProfileUrl,
+} from "~/utils/url";
 
 import { BlueskyIcon } from "./icons/bluesky";
 
@@ -25,7 +30,17 @@ export type ParsedEmbedCard = {
   blueskyUri: string;
 };
 
-type ParsedCard = ParsedLinkCard | ParsedTextCard | ParsedEmbedCard;
+export type ParsedFeedCard = {
+  type: "feed";
+  feedUri: string;
+  url: string;
+};
+
+type ParsedCard =
+  | ParsedLinkCard
+  | ParsedTextCard
+  | ParsedEmbedCard
+  | ParsedFeedCard;
 
 const cardIcons: Record<string, CardIconComponent | undefined> = {
   "bsky.app": BlueskyIcon,
@@ -43,10 +58,17 @@ export const parseCard = (card: ValidCard): ParsedCard => {
   }
   const url = new URL(card.url);
   const paths = url.pathname.split("/");
+  if (isBlueskyFeedUrl(url)) {
+    return {
+      type: "feed",
+      feedUri: atUri(url, "app.bsky.feed.generator"),
+      url: card.url,
+    };
+  }
   if (isBlueskyPostUrl(url)) {
     return {
       type: "embed",
-      blueskyUri: atUri(url),
+      blueskyUri: atUri(url, "app.bsky.feed.post"),
     };
   }
   if (isBlueskyProfileUrl(url)) {

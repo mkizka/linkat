@@ -1,4 +1,4 @@
-import { Agent } from "@atproto/api";
+import { Agent, CredentialSession } from "@atproto/api";
 
 import { BlueNS } from "~/generated/api";
 import { boardScheme } from "~/models/board";
@@ -9,6 +9,13 @@ export class LinkatAgent extends Agent {
   constructor(options: ConstructorParameters<typeof Agent>[0]) {
     super(options);
     this.blue = new BlueNS(this);
+  }
+
+  static public() {
+    const session = new CredentialSession(
+      new URL("https://public.api.bsky.app"),
+    );
+    return new LinkatAgent(session);
   }
 
   async getSessionProfile() {
