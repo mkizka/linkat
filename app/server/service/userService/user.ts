@@ -1,7 +1,7 @@
 import type { AppBskyActorDefs } from "@atproto/api";
-import { AtpAgent } from "@atproto/api";
 import type { Prisma, User } from "@prisma/client";
 
+import { LinkatAgent } from "~/libs/agent";
 import { prisma } from "~/server/service/prisma";
 import { env } from "~/utils/env";
 import { createLogger } from "~/utils/logger";
@@ -61,10 +61,8 @@ const createOrUpdateUser = async ({
 
 const fetchBlueskyProfile = async (handleOrDid: string) => {
   logger.info("プロフィールを取得します", { actor: handleOrDid });
-  const publicAgent = new AtpAgent({
-    service: env.BSKY_PUBLIC_API_URL,
-  });
-  const response = await publicAgent.getProfile({
+  const agent = LinkatAgent.credential(env.BSKY_PUBLIC_API_URL);
+  const response = await agent.getProfile({
     actor: handleOrDid,
   });
   return response.data;

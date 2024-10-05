@@ -14,7 +14,7 @@ export function BlueskyFeed({ feedUri, url }: Props) {
   const [showError, setShowError] = useState(false);
 
   useEffect(() => {
-    const agent = LinkatAgent.public();
+    const agent = LinkatAgent.credential();
     agent.app.bsky.feed
       .getFeedGenerator({ feed: feedUri })
       .then((response) => {
@@ -46,7 +46,7 @@ export function BlueskyFeed({ feedUri, url }: Props) {
       <div className="flex flex-col gap-2 p-4">
         <div className="flex items-center gap-2">
           <div className="avatar">
-            <div className="w-14 rounded-full">
+            <div className="w-10 rounded-full">
               <img src={feed.view.avatar} />
             </div>
           </div>

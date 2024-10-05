@@ -64,7 +64,7 @@ const fetchBoardInPDS = async (userDid: string) => {
     return null;
   }
   logger.info("PDSからboardを取得します", { userDid });
-  const agent = LinkatAgent.public();
+  const agent = LinkatAgent.credential(serviceUrl);
   const response = await tryCatch(agent.getBoard.bind(agent))({
     repo: userDid,
   });

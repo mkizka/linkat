@@ -32,5 +32,5 @@ export const resolveServiceUrl = async (userDid: string) => {
     logger.warn("DID解決後にPDSのURLが取得できませんでした", { didDocument });
     return null;
   }
-  return new URL(serviceUrl);
+  return serviceUrl;
 };

@@ -11,10 +11,8 @@ export class LinkatAgent extends Agent {
     this.blue = new BlueNS(this);
   }
 
-  static public() {
-    const session = new CredentialSession(
-      new URL("https://public.api.bsky.app"),
-    );
+  static credential(serviceUrl: string = "https://public.api.bsky.app") {
+    const session = new CredentialSession(new URL(serviceUrl));
     return new LinkatAgent(session);
   }
 

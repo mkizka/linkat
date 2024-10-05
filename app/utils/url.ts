@@ -1,4 +1,4 @@
-import { AtpAgent } from "@atproto/api";
+import { LinkatAgent } from "~/libs/agent";
 
 // https://bsky.app/profile/example.com
 export const isBlueskyProfileUrl = (url: URL) => {
@@ -55,10 +55,7 @@ export const resolveHandleIfNeeded = async (original: string) => {
   if (!handle || handle.startsWith("did:")) {
     return original;
   }
-  const publicAgent = new AtpAgent({
-    // env.BSKY_PUBLIC_API_URLを使ってもいいが開発環境でもこのURLを使った方が便利なのでそのまま入れる
-    service: "https://public.api.bsky.app",
-  });
+  const publicAgent = LinkatAgent.credential();
   const response = await publicAgent.resolveHandle({ handle });
   const resolvedUrl = new URL(url.origin);
   resolvedUrl.pathname = "/" + [profile, response.data.did, ...rest].join("/");
