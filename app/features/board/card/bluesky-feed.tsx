@@ -1,5 +1,6 @@
 import type { AppBskyFeedGetFeedGenerator } from "@atproto/api";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { LinkatAgent } from "~/libs/agent";
 
@@ -9,6 +10,7 @@ type Props = {
 };
 
 export function BlueskyFeed({ feedUri, url }: Props) {
+  const { t } = useTranslation();
   const [feed, setFeed] =
     useState<AppBskyFeedGetFeedGenerator.OutputSchema | null>(null);
   const [showError, setShowError] = useState(false);
@@ -30,7 +32,7 @@ export function BlueskyFeed({ feedUri, url }: Props) {
   if (showError) {
     return (
       <div className="card-body">
-        <p>エラー！フィードを表示できませんでした</p>
+        <p>{t("error-message")}</p>
       </div>
     );
   }
@@ -55,7 +57,9 @@ export function BlueskyFeed({ feedUri, url }: Props) {
               {feed.view.displayName}
             </p>
             <p className="truncate leading-snug text-gray-500">
-              @{feed.view.creator.handle}によるフィード
+              {t("bluesky-feed.creator-text", {
+                handle: feed.view.creator.handle,
+              })}
             </p>
           </div>
         </div>

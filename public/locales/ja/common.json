@@ -1,0 +1,52 @@
+{
+  "_index": {
+    "hero-text": "Blueskyのための\nリンク集を作ろう",
+    "edit-link": "ボードを編集",
+    "login-with-bluesky": "Blueskyでログイン",
+    "sample-link": "サンプルを見る"
+  },
+  "login": {
+    "unknown-error-message": "不明なエラーが発生しました",
+    "oauth-resolve-error-message": "ログインに失敗しました(ハンドルを間違えてるかも)",
+    "default-error-message": "ログインに失敗しました"
+  },
+  "sample": {
+    "user-name": "サンプル",
+    "you-can-write-text-instead-of-url": "URLの代わりにテキストも書ける",
+    "you-can-write-only-text": "テキストだけでもOK",
+    "bluesky-url-is-embedded": "BlueskyのURLは自動で埋め込まれます"
+  },
+  "board-viewer": {
+    "confirm-delete-message": "本当に削除しますか？",
+    "submit-button": "保存"
+  },
+  "card-form": {
+    "text-label": "テキスト",
+    "text-placeholder": "テキストを入力",
+    "change-button": "変更",
+    "add-button": "追加",
+    "delete-button": "削除",
+    "form-footer-message": "URLかテキストはどちらか空欄でもOKです。"
+  },
+  "card-form-modal": {
+    "add-card": "カードを追加"
+  },
+  "layout": {
+    "footer-message": "Linkatでリンク集を作ろう"
+  },
+  "error-boundary": {
+    "image-alt": "悲しい表情をした犬の画像",
+    "image-source-start": "画像は",
+    "image-source-end": "より",
+    "back-to-top": "トップに戻る",
+    "not-found-message": "ページが見つかりませんでした。",
+    "error-message": "エラーが発生しました。"
+  },
+  "bluesky-feed": {
+    "error-message": "エラー！フィードを表示できませんでした。",
+    "creator-text": "{{handle}}によるフィード"
+  },
+  "profile-card": {
+    "edit-button": "編集"
+  }
+}

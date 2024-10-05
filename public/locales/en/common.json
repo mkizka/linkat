@@ -1,3 +1,52 @@
 {
-  "greeting": "Hello"
+  "_index": {
+    "hero-text": "Create a Link in Bio\nfor Bluesky",
+    "edit-link": "Edit Board",
+    "login-with-bluesky": "Login with Bluesky",
+    "sample-link": "View Sample"
+  },
+  "login": {
+    "unknown-error-message": "An unknown error occurred",
+    "oauth-resolve-error-message": "Login failed (you might have entered the handle incorrectly)",
+    "default-error-message": "Login failed"
+  },
+  "sample": {
+    "user-name": "Sample",
+    "you-can-write-text-instead-of-url": "You can write text instead of a URL",
+    "you-can-write-only-text": "It's okay to write only text",
+    "bluesky-url-is-embedded": "The Bluesky URL will be embedded automatically"
+  },
+  "board-viewer": {
+    "confirm-delete-message": "Are you sure you want to delete?",
+    "submit-button": "Save"
+  },
+  "card-form": {
+    "text-label": "Text",
+    "text-placeholder": "Enter text",
+    "change-button": "Change",
+    "add-button": "Add",
+    "delete-button": "Delete",
+    "form-footer-message": "It's okay to leave either the URL or text empty."
+  },
+  "card-form-modal": {
+    "add-card": "Add Card"
+  },
+  "layout": {
+    "footer-message": "Let's create a link collection with Linkat"
+  },
+  "error-boundary": {
+    "image-alt": "Image of a dog with a sad expression",
+    "image-source-start": "Image from",
+    "image-source-end": "by",
+    "back-to-top": "Back to Top",
+    "not-found-message": "Page not found.",
+    "error-message": "An error occurred."
+  },
+  "bluesky-feed": {
+    "error-message": "Error! Unable to display feed.",
+    "creator-text": "Feed by {{handle}}"
+  },
+  "profile-card": {
+    "edit-button": "Edit"
+  }
 }

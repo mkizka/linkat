@@ -1,5 +1,6 @@
 import { useFormMetadata } from "@conform-to/react";
 import { PlusCircleIcon } from "@heroicons/react/24/solid";
+import { useTranslation } from "react-i18next";
 
 import { Card } from "~/components/card";
 
@@ -22,6 +23,7 @@ export const cardModal = {
 
 export function CardFormModal() {
   const form = useFormMetadata();
+  const { t } = useTranslation();
 
   const handleOpen = () => {
     form.reset();
@@ -37,7 +39,7 @@ export function CardFormModal() {
       >
         <div className="card-body flex-row items-center justify-center">
           <PlusCircleIcon className="size-8" />
-          カードを追加
+          {t("card-form-modal.add-card")}
         </div>
       </Card>
       <dialog id={EDIT_CARD_MODAL_ID} className="modal top-8 items-start">

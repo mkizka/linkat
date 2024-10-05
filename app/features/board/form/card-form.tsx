@@ -4,6 +4,7 @@ import {
   useFormMetadata,
 } from "@conform-to/react";
 import { Form } from "@remix-run/react";
+import { useTranslation } from "react-i18next";
 
 import { Button } from "~/components/button";
 import { Input } from "~/components/input";
@@ -11,6 +12,7 @@ import { Input } from "~/components/input";
 import type { CardFormPayload } from "./card-form-provider";
 
 export function CardForm() {
+  const { t } = useTranslation();
   const form = useFormMetadata<CardFormPayload>();
   const fields = form.getFieldset();
   return (
@@ -26,9 +28,9 @@ export function CardForm() {
       )}
       <Input
         {...getInputProps(fields.text, { type: "text" })}
-        label="テキスト"
+        label={t("card-form.text-label")}
         errors={fields.text.errors}
-        placeholder="カードに表示される文字"
+        placeholder={t("card-form.text-placeholder")}
         // https://github.com/edmundhung/conform/issues/600
         key={fields.text.key}
         data-testid="card-form__text"
@@ -55,7 +57,9 @@ export function CardForm() {
           className="btn-neutral"
           data-testid="card-form__submit"
         >
-          {fields.id.value ? "変更" : "追加"}
+          {fields.id.value
+            ? t("card-form.change-button")
+            : t("card-form.add-button")}
         </Button>
         {fields.id.value && (
           <Button
@@ -65,12 +69,12 @@ export function CardForm() {
             className="btn-error"
             data-testid="card-form__delete"
           >
-            削除
+            {t("card-form.delete-button")}
           </Button>
         )}
       </div>
       <p className="pl-1 text-end text-sm text-gray-400">
-        URLかテキストはどちらか空欄でもOKです
+        {t("card-form.form-footer-message")}
       </p>
     </Form>
   );

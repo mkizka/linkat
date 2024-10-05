@@ -5,16 +5,18 @@ import { redirect } from "@remix-run/node";
 import { Main, RootLayout } from "~/components/layout";
 import { LoginForm } from "~/features/login/login-form";
 import { RouteToaster } from "~/features/toast/route";
+import { i18next } from "~/i18next.server";
 import { createOAuthClient } from "~/server/oauth/client";
 import { createLogger } from "~/utils/logger";
 
 const logger = createLogger("login");
 
 export async function action({ request }: ActionFunctionArgs) {
+  const t = await i18next.getFixedT(request);
   const form = await request.formData();
   const handle = form.get("identifier");
   if (typeof handle !== "string") {
-    return { error: "不明なエラーが発生しました" };
+    return { error: t("login.unknown-error") };
   }
   try {
     const oauthClient = await createOAuthClient();
@@ -25,9 +27,9 @@ export async function action({ request }: ActionFunctionArgs) {
   } catch (error) {
     logger.info("OAuthログインに失敗しました", { error: String(error) });
     if (error instanceof OAuthResolverError) {
-      return { error: "ログインに失敗しました(ハンドルを間違えてるかも)" };
+      return { error: t("login.oauth-resolve-error-message") };
     }
-    return { error: "ログインに失敗しました" };
+    return { error: t("login.default-error-message") };
   }
 }
 

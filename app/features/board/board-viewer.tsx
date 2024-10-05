@@ -1,6 +1,7 @@
 import { PencilSquareIcon } from "@heroicons/react/24/outline";
 import { Form } from "@remix-run/react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { Button } from "~/components/button";
 import type { ValidBoard } from "~/models/board";
@@ -28,6 +29,7 @@ const withId = (card: ValidCard) => ({
 
 export function BoardViewer({ user, board, editable, isMine }: Props) {
   const [cards, setCards] = useState((board?.cards ?? []).map(withId));
+  const { t } = useTranslation();
 
   const handleSubmitCardForm = async (payload: CardFormPayload) => {
     const resolvedUrl =
@@ -55,7 +57,7 @@ export function BoardViewer({ user, board, editable, isMine }: Props) {
   };
 
   const handleDeleteCardForm = (id: string) => {
-    const ok = confirm("本当に削除しますか？");
+    const ok = confirm(t("board-viewer.confirm-delete-message"));
     if (!ok) return;
     setCards((cards) => cards.filter((card) => card.id !== id));
     cardModal.close();
@@ -86,7 +88,7 @@ export function BoardViewer({ user, board, editable, isMine }: Props) {
               data-testid="board-viewer__submit"
             >
               <PencilSquareIcon className="size-8" />
-              保存
+              {t("board-viewer.submit-button")}
             </Button>
           </Form>
         )}

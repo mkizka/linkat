@@ -2,6 +2,7 @@ import { PencilSquareIcon } from "@heroicons/react/24/outline";
 import { UserIcon } from "@heroicons/react/24/solid";
 import type { User } from "@prisma/client";
 import { Link } from "@remix-run/react";
+import { useTranslation } from "react-i18next";
 
 import { Card } from "~/components/card";
 
@@ -33,6 +34,7 @@ export type ProfileCardProps = {
 };
 
 export function ProfileCard({ user, showEditButton }: ProfileCardProps) {
+  const { t } = useTranslation();
   return (
     <Card>
       <div className="card-body gap-2">
@@ -50,7 +52,7 @@ export function ProfileCard({ user, showEditButton }: ProfileCardProps) {
                 data-testid="profile-card__edit"
               >
                 <PencilSquareIcon className="size-6" />
-                編集
+                {t("profile-card.edit-button")}
               </Link>
             ) : (
               <a

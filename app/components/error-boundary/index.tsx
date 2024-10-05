@@ -1,4 +1,5 @@
 import { isRouteErrorResponse, Link, useRouteError } from "@remix-run/react";
+import { useTranslation } from "react-i18next";
 
 import { Card } from "~/components/card";
 import { Main, RootLayout } from "~/components/layout";
@@ -10,19 +11,20 @@ import errorImage from "./error-image.jpg";
 const logger = createLogger("error-boundary");
 
 function ErrorPage(props: { title: string; text: string }) {
+  const { t } = useTranslation();
   return (
     <RootLayout>
       <Main className="utils--center">
         <Card>
           <figure>
-            <img src={errorImage} alt="悲しい表情をした犬の画像" />
+            <img src={errorImage} alt={t("error-boundary.image-alt")} />
           </figure>
           <div className="card-body">
             <h1 className="card-title">{props.title}</h1>
             <p>{props.text}</p>
             <div className="card-actions mt-2 items-end justify-end">
               <p className="text-sm text-gray-400">
-                画像は
+                {t("error-boundary.image-source-start")}
                 <a
                   className="text-primary"
                   href="https://unsplash.com/ja/%E5%86%99%E7%9C%9F/%E3%82%B7%E3%83%A7%E3%83%BC%E3%83%88%E3%82%B3%E3%83%BC%E3%83%88%E3%81%AE%E7%99%BD%E3%81%A8%E9%BB%84%E8%A4%90%E8%89%B2%E3%81%AE%E7%8A%AC-BrtCGcrZd10"
@@ -31,10 +33,10 @@ function ErrorPage(props: { title: string; text: string }) {
                 >
                   Unsplash
                 </a>
-                より
+                {t("error-boundary.image-source-end")}
               </p>
               <Link to="/" className="btn btn-neutral btn-md">
-                トップページに戻る
+                {t("error-boundary.back-to-top")}
               </Link>
             </div>
           </div>
@@ -45,15 +47,13 @@ function ErrorPage(props: { title: string; text: string }) {
 }
 
 export function ErrorBoundary() {
+  const { t } = useTranslation();
   const error = useRouteError();
   if (isRouteErrorResponse(error) && error.status === 404) {
-    return <ErrorPage title="404" text="ページが見つかりませんでした。" />;
+    return (
+      <ErrorPage title="404" text={t("error-boundary.not-found-message")} />
+    );
   }
   logger.error("ErrorBoundaryがエラーをキャッチしました", { error });
-  return (
-    <ErrorPage
-      title="エラー"
-      text="予期しないエラーが発生しました。しばらくしてから再度お試しください。"
-    />
-  );
+  return <ErrorPage title="Error" text={t("error-boundary.error-message")} />;
 }

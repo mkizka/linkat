@@ -1,5 +1,6 @@
 import { Link } from "@remix-run/react";
 import type { ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 
 import { cn } from "~/utils/cn";
 
@@ -38,14 +39,12 @@ type FooterProps = {
 };
 
 export function Footer({ withNavigation }: FooterProps) {
+  const { t } = useTranslation();
   return (
     <footer className="mx-auto flex w-full max-w-screen-sm flex-col gap-2 bg-neutral py-4 text-center text-neutral-content">
       {withNavigation && (
         <nav>
-          <Link to="/">
-            <span className="mx-2 text-xl font-bold underline">Linkat</span>
-            でリンク集を作ろう
-          </Link>
+          <Link to="/">{t("layout.footer-message")}</Link>
         </nav>
       )}
       <aside>
