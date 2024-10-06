@@ -5,14 +5,14 @@ import { redirect } from "@remix-run/node";
 import { Main, RootLayout } from "~/components/layout";
 import { LoginForm } from "~/features/login/login-form";
 import { RouteToaster } from "~/features/toast/route";
-import { i18next } from "~/i18next.server";
+import { i18nServer } from "~/i18n/i18n";
 import { createOAuthClient } from "~/server/oauth/client";
 import { createLogger } from "~/utils/logger";
 
 const logger = createLogger("login");
 
 export async function action({ request }: ActionFunctionArgs) {
-  const t = await i18next.getFixedT(request);
+  const t = await i18nServer.getFixedT(request);
   const form = await request.formData();
   const handle = form.get("identifier");
   if (typeof handle !== "string") {
