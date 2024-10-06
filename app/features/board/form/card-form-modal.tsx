@@ -13,6 +13,11 @@ export const cardModal = {
     // @ts-expect-error
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     document.getElementById(EDIT_CARD_MODAL_ID).showModal();
+    // なぜかすぐ呼ぶと動かない
+    setTimeout(() => {
+      // @ts-expect-error
+      document.getElementById("card-form-url").focus();
+    }, 100);
   },
   close: () => {
     // @ts-expect-error

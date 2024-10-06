@@ -27,16 +27,6 @@ export function CardForm() {
         </p>
       )}
       <Input
-        {...getInputProps(fields.text, { type: "text" })}
-        label={t("card-form.text-label")}
-        errors={fields.text.errors}
-        placeholder={t("card-form.text-placeholder")}
-        // https://github.com/edmundhung/conform/issues/600
-        key={fields.text.key}
-        data-testid="card-form__text"
-        autoFocus
-      />
-      <Input
         {...getInputProps(fields.url, { type: "url" })}
         label="URL"
         errors={fields.url.errors}
@@ -44,6 +34,15 @@ export function CardForm() {
         // https://github.com/edmundhung/conform/issues/600
         key={fields.url.key}
         data-testid="card-form__url"
+      />
+      <Input
+        {...getInputProps(fields.text, { type: "text" })}
+        label={t("card-form.text-label")}
+        errors={fields.text.errors}
+        placeholder={t("card-form.text-placeholder")}
+        // https://github.com/edmundhung/conform/issues/600
+        key={fields.text.key}
+        data-testid="card-form__text"
       />
       <input
         {...getInputProps(fields.id, { type: "hidden" })}
