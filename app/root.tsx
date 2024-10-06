@@ -2,6 +2,7 @@ import "./tailwind.css";
 
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import {
+  json,
   Links,
   Meta,
   Outlet,
@@ -13,7 +14,7 @@ import {
 import { useChangeLanguage } from "remix-i18next/react";
 
 import { Toaster } from "./features/toast/toaster";
-import { i18nServer } from "./i18n/i18n";
+import { i18nServer, localeCookie } from "./i18n/i18n";
 
 export { ErrorBoundary } from "~/components/error-boundary";
 export { HydrateFallback } from "~/components/hydate-fallback";
@@ -21,8 +22,11 @@ export { HydrateFallback } from "~/components/hydate-fallback";
 export const handle = { i18n: ["translation"] };
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const locale = await i18nServer.getLocale(request); // get the locale
-  return { locale };
+  const locale = await i18nServer.getLocale(request);
+  return json(
+    { locale },
+    { headers: { "Set-Cookie": await localeCookie.serialize(locale) } },
+  );
 }
 
 export function Layout({ children }: { children: React.ReactNode }) {

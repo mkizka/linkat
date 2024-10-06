@@ -1,4 +1,5 @@
-import { Link } from "@remix-run/react";
+import { LanguageIcon } from "@heroicons/react/24/outline";
+import { Form, Link } from "@remix-run/react";
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -17,6 +18,25 @@ export function Header() {
           Linkat
         </Link>
       </div>
+      <details className="dropdown dropdown-end absolute right-2 top-2">
+        <summary className="btn btn-square m-1 bg-white shadow">
+          <LanguageIcon className="size-6" />
+        </summary>
+        <Form reloadDocument>
+          <ul className="menu dropdown-content z-[1] w-52 rounded-box bg-white p-2 shadow">
+            <li>
+              <button type="submit" name="lng" value="ja">
+                日本語
+              </button>
+            </li>
+            <li>
+              <button type="submit" name="lng" value="en">
+                English
+              </button>
+            </li>
+          </ul>
+        </Form>
+      </details>
     </header>
   );
 }
