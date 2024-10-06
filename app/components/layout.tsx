@@ -19,11 +19,11 @@ export function Header() {
         </Link>
       </div>
       <details className="dropdown dropdown-end absolute right-2 top-2">
-        <summary className="btn btn-square m-1 bg-white shadow">
+        <summary className="btn btn-square m-1 shadow dark:btn-neutral light:bg-white">
           <LanguageIcon className="size-6" />
         </summary>
         <Form reloadDocument>
-          <ul className="menu dropdown-content z-[1] w-52 rounded-box bg-white p-2 shadow">
+          <ul className="menu dropdown-content z-[1] w-52 rounded-box p-2 shadow light:bg-white dark:bg-neutral">
             <li>
               <button type="submit" name="lng" value="ja">
                 日本語
