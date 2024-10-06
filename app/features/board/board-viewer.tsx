@@ -1,5 +1,5 @@
 import { PencilSquareIcon } from "@heroicons/react/24/outline";
-import { Form } from "@remix-run/react";
+import { Form, useNavigation } from "@remix-run/react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -30,6 +30,7 @@ const withId = (card: ValidCard) => ({
 export function BoardViewer({ user, board, editable, isMine }: Props) {
   const [cards, setCards] = useState((board?.cards ?? []).map(withId));
   const { t } = useTranslation();
+  const navigation = useNavigation();
 
   const handleSubmitCardForm = async (payload: CardFormPayload) => {
     const resolvedUrl =
@@ -86,6 +87,7 @@ export function BoardViewer({ user, board, editable, isMine }: Props) {
             <Button
               className="btn-circle btn-primary btn-lg fixed bottom-4 right-4 w-32 shadow-xl"
               data-testid="board-viewer__submit"
+              loading={navigation.state !== "idle"}
             >
               <PencilSquareIcon className="size-8" />
               {t("board-viewer.submit-button")}
