@@ -3,6 +3,7 @@ import { cn } from "~/utils/cn";
 
 export function Toaster() {
   const toasts = useToasts();
+  if (toasts.length === 0) return null;
   return (
     <div className="toast toast-center w-full max-w-screen-sm whitespace-normal opacity-90">
       {toasts.map((toast) => (

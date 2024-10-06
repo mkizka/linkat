@@ -73,11 +73,23 @@ export function Footer({ withNavigation }: FooterProps) {
     <footer className="mx-auto flex w-full max-w-screen-sm flex-col gap-2 bg-neutral py-4 text-center text-neutral-content">
       {withNavigation && (
         <nav>
-          <Link to="/">{t("layout.footer-message")}</Link>
+          <Link to="/" className="hover:underline">
+            {t("layout.footer-message")}
+          </Link>
         </nav>
       )}
-      <aside>
-        <p>© {new Date().getFullYear()} Linkat</p>
+      <aside className="flex h-8 flex-col justify-center">
+        <p>
+          GitHub:
+          <a
+            href="https://github.com/mkizka/linkat"
+            className="ml-1 hover:underline"
+            target="_blank"
+            rel="noreferrer"
+          >
+            mkizka/linkat
+          </a>
+        </p>
       </aside>
     </footer>
   );
