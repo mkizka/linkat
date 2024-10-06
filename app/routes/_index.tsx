@@ -7,6 +7,7 @@ import { Main, RootLayout } from "~/components/layout";
 import { BlueskyIcon } from "~/features/board/card/icons/bluesky";
 import { i18nServer } from "~/i18n/i18n";
 import { getSessionUserDid } from "~/server/oauth/session";
+import { cn } from "~/utils/cn";
 import { env } from "~/utils/env";
 import { createMeta } from "~/utils/meta";
 import { required } from "~/utils/required";
@@ -28,12 +29,17 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
 
 export default function Index() {
   const { isLogin } = useLoaderData<typeof loader>();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   return (
     <RootLayout>
       <Main className="utils--center">
         <div className="text-center">
-          <h2 className="whitespace-pre-line text-4xl font-bold">
+          <h2
+            className={cn(
+              "whitespace-pre-line font-bold",
+              i18n.language === "ja" ? "text-4xl" : "text-3xl",
+            )}
+          >
             {t("_index.hero-text")}
           </h2>
           <div className="mt-12 flex flex-col items-center gap-2">
