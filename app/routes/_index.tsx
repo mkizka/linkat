@@ -36,19 +36,19 @@ export default function Index() {
           <h2 className="whitespace-pre-line text-4xl font-bold">
             {t("_index.hero-text")}
           </h2>
-          <div className="mt-12 flex flex-col gap-2">
+          <div className="mt-12 flex flex-col items-center gap-2">
             {isLogin ? (
-              <Link to="/edit" className="btn btn-primary">
+              <Link to="/edit" className="btn btn-primary w-64">
                 <PencilSquareIcon className="size-6" />
                 {t("_index.edit-link")}
               </Link>
             ) : (
-              <Link to="/login" className="btn-bluesky btn text-base-100">
+              <Link to="/login" className="btn-bluesky btn w-64 text-base-100">
                 <BlueskyIcon className="size-6" />
                 {t("_index.login-with-bluesky")}
               </Link>
             )}
-            <Link to="/sample" className="btn btn-neutral">
+            <Link to="/sample" className="btn btn-neutral w-64">
               <ArrowRightIcon className="size-6" />
               {t("_index.sample-link")}
             </Link>
