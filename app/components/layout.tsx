@@ -1,6 +1,6 @@
 import { LanguageIcon } from "@heroicons/react/24/outline";
 import { Form, Link } from "@remix-run/react";
-import type { ReactNode } from "react";
+import { type ReactNode, useRef } from "react";
 import { useTranslation } from "react-i18next";
 
 import { cn } from "~/utils/cn";
@@ -11,6 +11,12 @@ type Props = {
 };
 
 export function Header() {
+  const detailsRef = useRef<HTMLDetailsElement>(null);
+  const handleClick = () => {
+    if (detailsRef.current) {
+      detailsRef.current.removeAttribute("open");
+    }
+  };
   return (
     <header className="relative mx-auto w-full max-w-screen-sm">
       <div className="absolute left-4 top-4">
@@ -18,19 +24,22 @@ export function Header() {
           Linkat
         </Link>
       </div>
-      <details className="dropdown dropdown-end absolute right-2 top-2">
+      <details
+        className="dropdown dropdown-end absolute right-2 top-2"
+        ref={detailsRef}
+      >
         <summary className="btn btn-square m-1 shadow dark:btn-neutral light:bg-white">
           <LanguageIcon className="size-6" />
         </summary>
-        <Form reloadDocument>
+        <Form>
           <ul className="menu dropdown-content z-[1] w-52 rounded-box p-2 shadow light:bg-white dark:bg-neutral">
             <li>
-              <button type="submit" name="lng" value="ja">
+              <button type="submit" name="lng" value="ja" onClick={handleClick}>
                 日本語
               </button>
             </li>
             <li>
-              <button type="submit" name="lng" value="en">
+              <button type="submit" name="lng" value="en" onClick={handleClick}>
                 English
               </button>
             </li>
