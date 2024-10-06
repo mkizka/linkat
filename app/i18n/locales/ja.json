@@ -28,7 +28,7 @@
     "invalid-form-error-message": "フォームが無効です"
   },
   "board": {
-    "meta-title": "{{displayName}}(@{{handle}})さんのリンク集"
+    "meta-title": "{{displayName}}(@{{handle}})さんのボード"
   },
   "board-viewer": {
     "confirm-delete-message": "本当に削除しますか？",

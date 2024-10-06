@@ -28,7 +28,7 @@
     "invalid-form-error-message": "The form is invalid"
   },
   "board": {
-    "meta-title": "{{displayName}}(@{{handle}})'s Link in Bio"
+    "meta-title": "{{displayName}}(@{{handle}})'s board"
   },
   "board-viewer": {
     "confirm-delete-message": "Are you sure you want to delete?",
