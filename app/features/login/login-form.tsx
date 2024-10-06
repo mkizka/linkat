@@ -2,20 +2,21 @@ import { getFormProps, getInputProps, useForm } from "@conform-to/react";
 import { getZodConstraint, parseWithZod } from "@conform-to/zod";
 import { AtSymbolIcon } from "@heroicons/react/24/outline";
 import { Form, useNavigation } from "@remix-run/react";
+import { useTranslation } from "react-i18next";
 import { z } from "zod";
 
 import { Button } from "~/components/button";
 import { Card } from "~/components/card";
 
-const schema = z.object({
-  identifier: z
-    .string({ required_error: "入力してください" })
-    .regex(/\./, "example.bsky.socialのように入力してください"),
-});
-
 export function LoginForm() {
+  const { t } = useTranslation();
   const navigation = useNavigation();
 
+  const schema = z.object({
+    identifier: z
+      .string({ required_error: t("login-form.required-error-message") })
+      .regex(/\./, t("login-form.invalid-handle-error-message")),
+  });
   const [form, fields] = useForm({
     id: "login-form",
     constraint: getZodConstraint(schema),
@@ -38,7 +39,7 @@ export function LoginForm() {
         )}
         <div className="form-control">
           <div className="label">
-            <span className="label-text">ハンドル</span>
+            <span className="label-text">{t("login-form.handle-label")}</span>
           </div>
           <div className="join">
             <div className="join-item flex h-full w-12 items-center justify-center rounded-r-full bg-neutral text-neutral-content">
@@ -62,7 +63,7 @@ export function LoginForm() {
           loading={navigation.state !== "idle"}
           data-testid="login-form__submit"
         >
-          ログイン
+          {t("login-form.login-button")}
         </Button>
       </Form>
     </Card>

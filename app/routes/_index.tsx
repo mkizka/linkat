@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 
 import { Main, RootLayout } from "~/components/layout";
 import { BlueskyIcon } from "~/features/board/card/icons/bluesky";
+import { i18nServer } from "~/i18n/i18n";
 import { getSessionUserDid } from "~/server/oauth/session";
 import { env } from "~/utils/env";
 import { createMeta } from "~/utils/meta";
@@ -12,12 +13,17 @@ import { required } from "~/utils/required";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const userDid = await getSessionUserDid(request);
-  return { isLogin: !!userDid, url: env.PUBLIC_URL };
+  const t = await i18nServer.getFixedT(request);
+  return {
+    isLogin: !!userDid,
+    title: t("_index.meta-title"),
+    url: env.PUBLIC_URL,
+  };
 };
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
-  const { url } = required(data);
-  return createMeta({ title: "Linkat | シンプルなリンク集を作ろう", url });
+  const { title, url } = required(data);
+  return createMeta({ title, url });
 };
 
 export default function Index() {

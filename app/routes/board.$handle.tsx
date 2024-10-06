@@ -3,6 +3,7 @@ import { useLoaderData } from "@remix-run/react";
 
 import { Footer, Main } from "~/components/layout";
 import { BoardViewer } from "~/features/board/board-viewer";
+import { i18nServer } from "~/i18n/i18n";
 import { getSessionUserDid } from "~/server/oauth/session";
 import { boardService } from "~/server/service/boardService";
 import { userService } from "~/server/service/userService";
@@ -26,17 +27,22 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     throw new Response(null, { status: 404 });
   }
   const sessionUserDid = await getSessionUserDid(request);
+  const t = await i18nServer.getFixedT(request);
+  const title = t("board.meta-title", {
+    displayName: user.displayName,
+    handle: user.handle,
+  });
   return {
     user,
     board,
     isMine: user.did === sessionUserDid,
+    title: `${title} | Linkat`,
     url: `${env.PUBLIC_URL}/board/${user.handle}`,
   };
 }
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
-  const { user, url } = required(data);
-  const title = `${user.displayName}(@${user.handle})さんのページ | Linkat`;
+  const { title, url } = required(data);
   return createMeta({ title, url, ogImageUrl: `${url}/og.png` });
 };
 

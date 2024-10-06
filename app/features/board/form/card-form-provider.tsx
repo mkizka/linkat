@@ -1,18 +1,15 @@
 import { FormProvider, useForm } from "@conform-to/react";
 import { getZodConstraint, parseWithZod } from "@conform-to/zod";
+import { useTranslation } from "react-i18next";
 import { z } from "zod";
 
-const schema = z
-  .object({
-    text: z.string().optional(),
-    url: z.string().url().optional(),
-    id: z.string().optional(),
-  })
-  .refine((value) => value.text || value.url, {
-    message: "どちらかは入力してください",
-  });
+const _schema = z.object({
+  text: z.string().optional(),
+  url: z.string().url().optional(),
+  id: z.string().optional(),
+});
 
-export type CardFormPayload = z.infer<typeof schema>;
+export type CardFormPayload = z.infer<typeof _schema>;
 
 type CardFormProps = {
   onSubmit: (payload: CardFormPayload) => Promise<void> | void;
@@ -25,6 +22,10 @@ export function CardFormProvider({
   onDelete,
   children,
 }: CardFormProps) {
+  const { t } = useTranslation();
+  const schema = _schema.refine((value) => value.text || value.url, {
+    message: t("card-form-provider.input-required-error-message"),
+  });
   const [form] = useForm({
     id: "card-form",
     constraint: getZodConstraint(schema),

@@ -1,5 +1,6 @@
 {
   "_index": {
+    "meta-title": "Linkat | Blueskyのためのリンク集",
     "hero-text": "Blueskyのための\nリンク集を作ろう",
     "edit-link": "ボードを編集",
     "login-with-bluesky": "Blueskyでログイン",
@@ -10,15 +11,31 @@
     "oauth-resolve-error-message": "ログインに失敗しました(ハンドルを間違えてるかも)",
     "default-error-message": "ログインに失敗しました"
   },
+  "login-form": {
+    "required-error-message": "入力してください",
+    "invalid-handle-error-message": "example.bsky.socialのように入力してください",
+    "handle-label": "ハンドル",
+    "login-button": "ログイン"
+  },
   "sample": {
     "user-name": "サンプル",
     "you-can-write-text-instead-of-url": "URLの代わりにテキストも書ける",
     "you-can-write-only-text": "テキストだけでもOK",
     "bluesky-url-is-embedded": "BlueskyのURLは自動で埋め込まれます"
   },
+  "edit": {
+    "invalid-session-error-message": "ログイン情報が無効でした",
+    "invalid-form-error-message": "フォームが無効です"
+  },
+  "board": {
+    "meta-title": "{{displayName}}(@{{handle}})さんのリンク集"
+  },
   "board-viewer": {
     "confirm-delete-message": "本当に削除しますか？",
     "submit-button": "保存"
+  },
+  "profile-card": {
+    "edit-button": "編集"
   },
   "card-form": {
     "text-label": "テキスト",
@@ -31,6 +48,13 @@
   "card-form-modal": {
     "add-card": "カードを追加"
   },
+  "card-form-provider": {
+    "input-required-error-message": "どちらかは入力してください"
+  },
+  "bluesky-feed": {
+    "error-message": "エラー！フィードを表示できませんでした。",
+    "creator-text": "{{handle}}によるフィード"
+  },
   "layout": {
     "footer-message": "Linkatでリンク集を作ろう"
   },
@@ -41,12 +65,5 @@
     "back-to-top": "トップに戻る",
     "not-found-message": "ページが見つかりませんでした。",
     "error-message": "エラーが発生しました。"
-  },
-  "bluesky-feed": {
-    "error-message": "エラー！フィードを表示できませんでした。",
-    "creator-text": "{{handle}}によるフィード"
-  },
-  "profile-card": {
-    "edit-button": "編集"
   }
 }
