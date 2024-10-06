@@ -70,7 +70,11 @@ export function BoardViewer({ user, board, editable, isMine }: Props) {
       onDelete={handleDeleteCardForm}
     >
       <div className="flex flex-col gap-2 py-4">
-        <ProfileCard user={user} showEditButton={!editable && isMine} />
+        <ProfileCard
+          user={user}
+          shareText={`https://linkat.blue/board/${user.handle}`}
+          showEditButton={!editable && isMine}
+        />
         <SortableCardList
           cards={cards}
           setCards={setCards}

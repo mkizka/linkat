@@ -1,4 +1,4 @@
-import { PencilSquareIcon } from "@heroicons/react/24/outline";
+import { PencilSquareIcon, ShareIcon } from "@heroicons/react/24/outline";
 import { UserIcon } from "@heroicons/react/24/solid";
 import type { User } from "@prisma/client";
 import { Link } from "@remix-run/react";
@@ -30,10 +30,15 @@ function AvatarPlaceholder() {
 
 export type ProfileCardProps = {
   user: Pick<User, "avatar" | "displayName" | "handle">;
+  shareText: string;
   showEditButton?: boolean;
 };
 
-export function ProfileCard({ user, showEditButton }: ProfileCardProps) {
+export function ProfileCard({
+  user,
+  shareText,
+  showEditButton,
+}: ProfileCardProps) {
   const { t } = useTranslation();
   return (
     <Card>
@@ -44,10 +49,10 @@ export function ProfileCard({ user, showEditButton }: ProfileCardProps) {
           ) : (
             <AvatarPlaceholder />
           )}
-          <div className="flex flex-1 justify-end">
+          <div className="flex flex-1 justify-end gap-2">
             {showEditButton ? (
               <Link
-                className="btn btn-neutral"
+                className="btn btn-primary"
                 to="/edit"
                 data-testid="profile-card__edit"
               >
@@ -65,6 +70,14 @@ export function ProfileCard({ user, showEditButton }: ProfileCardProps) {
                 Bluesky
               </a>
             )}
+            <a
+              className="btn btn-square btn-neutral"
+              href={`https://bsky.app/intent/compose?text=${encodeURIComponent(shareText)}`}
+              target="_blank"
+              rel="noreferrer"
+            >
+              <ShareIcon className="size-6" />
+            </a>
           </div>
         </div>
         <div>
