@@ -58,6 +58,14 @@ export default function Index() {
               <ArrowRightIcon className="size-6" />
               {t("_index.sample-link")}
             </Link>
+            <a
+              href="https://scrapbox.io/mkizka/Linkat"
+              className="mt-8 underline"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Linkatを使用するにあたっての注意
+            </a>
           </div>
         </div>
       </Main>
