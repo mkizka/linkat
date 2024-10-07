@@ -64,7 +64,7 @@ export default function Index() {
               target="_blank"
               rel="noreferrer"
             >
-              Linkatを使用するにあたっての注意
+              {t("_index.notes-link")}
             </a>
           </div>
         </div>

@@ -4,7 +4,8 @@
     "hero-text": "Create your Link in Bio\nfor Bluesky",
     "edit-link": "Edit Board",
     "login-with-bluesky": "Login with Bluesky",
-    "sample-link": "View Sample"
+    "sample-link": "View Sample",
+    "notes-link": "Things to keep in mind when using Linkat (Japanese)"
   },
   "login": {
     "unknown-error-message": "An unknown error occurred",

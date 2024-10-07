@@ -4,7 +4,8 @@
     "hero-text": "Blueskyのための\nリンク集を作ろう",
     "edit-link": "ボードを編集",
     "login-with-bluesky": "Blueskyでログイン",
-    "sample-link": "サンプルを見る"
+    "sample-link": "サンプルを見る",
+    "notes-link": "Linkatを使用するにあたっての注意"
   },
   "login": {
     "unknown-error-message": "不明なエラーが発生しました",
