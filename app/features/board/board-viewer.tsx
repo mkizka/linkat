@@ -72,7 +72,7 @@ export function BoardViewer({ user, board, editable, isMine }: Props) {
       <div className="flex flex-col gap-2 py-4">
         <ProfileCard
           user={user}
-          shareText={`https://linkat.blue/board/${user.handle}`}
+          shareText={`https://linkat.blue/${user.handle}`}
           showEditButton={!editable && isMine}
         />
         <SortableCardList

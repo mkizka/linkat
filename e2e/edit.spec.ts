@@ -19,21 +19,21 @@ test.describe("編集", () => {
 
     // カードを追加
     await page.getByTestId("card-form-modal__button").click();
-    await page.getByTestId("card-form__text").fill(text1);
     await page.getByTestId("card-form__url").fill("https://example.com");
+    await page.getByTestId("card-form__text").fill(text1);
     await page.getByTestId("card-form__submit").click();
     await expect(card1).toBeVisible();
 
     // カードを追加(2回目)
     await page.getByTestId("card-form-modal__button").click();
-    await page.getByTestId("card-form__text").fill(text2);
     await page.getByTestId("card-form__url").fill("https://example.com");
+    await page.getByTestId("card-form__text").fill(text2);
     await page.getByTestId("card-form__submit").click();
     await expect(card2).toBeVisible();
 
     // 保存して閲覧ページで順番を確認
     await page.getByTestId("board-viewer__submit").click();
-    await page.waitForURL((url) => url.pathname.startsWith("/board/"));
+    await page.waitForURL((url) => url.pathname !== "/edit");
     await expect(card1).toBeVisible();
     await expect(card2).toBeVisible();
     const allCards = await page.getByTestId("sortable-card").allTextContents();
@@ -47,7 +47,7 @@ test.describe("編集", () => {
 
     // 保存して閲覧ページで順番を確認
     await page.getByTestId("board-viewer__submit").click();
-    await page.waitForURL((url) => url.pathname.startsWith("/board/"));
+    await page.waitForURL((url) => url.pathname !== "/edit");
     await expect(card1).toBeVisible();
     await expect(card2).toBeVisible();
     const sorted = await page.getByTestId("sortable-card").allTextContents();
@@ -56,13 +56,13 @@ test.describe("編集", () => {
     // カードを編集
     await page.getByTestId("profile-card__edit").click();
     await card1.getByTestId("sortable-card__edit").click();
-    await page.getByTestId("card-form__text").fill(text1Edited);
     await page.getByTestId("card-form__url").fill("https://example.com");
+    await page.getByTestId("card-form__text").fill(text1Edited);
     await page.getByTestId("card-form__submit").click();
 
     // 保存して閲覧ページで順番を確認
     await page.getByTestId("board-viewer__submit").click();
-    await page.waitForURL((url) => url.pathname.startsWith("/board/"));
+    await page.waitForURL((url) => url.pathname !== "/edit");
     await expect(card1).not.toBeVisible();
     await expect(card1Edited).toBeVisible();
     await expect(card2).toBeVisible();
@@ -77,7 +77,7 @@ test.describe("編集", () => {
 
     // 保存して閲覧ページで順番を確認
     await page.getByTestId("board-viewer__submit").click();
-    await page.waitForURL((url) => url.pathname.startsWith("/board/"));
+    await page.waitForURL((url) => url.pathname !== "/edit");
     await expect(card1Edited).not.toBeVisible();
     await expect(card2).not.toBeVisible();
   });

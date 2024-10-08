@@ -5,11 +5,13 @@ export const createMeta = ({
   url,
   description,
   ogImageUrl,
+  canonicalUrl,
 }: {
   title: string;
   url: string;
   description?: string;
   ogImageUrl?: string;
+  canonicalUrl?: string;
 }) => {
   const meta = [
     {
@@ -42,6 +44,11 @@ export const createMeta = ({
     {
       property: "og:url",
       content: url,
+    },
+    {
+      tagName: "link",
+      rel: "canonical",
+      href: canonicalUrl,
     },
   ] satisfies ReturnType<MetaFunction>;
   // undefinedな値がある要素を除外

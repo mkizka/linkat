@@ -39,7 +39,7 @@ export async function action({ request }: ActionFunctionArgs) {
     logger.error("PDSへのボードの保存に失敗しました", { error });
   }
   // 3. 閲覧ページにリダイレクト
-  return redirect(`/board/${user.handle}`);
+  return redirect(`/${user.handle}`);
 }
 
 export async function loader({ request }: LoaderFunctionArgs) {

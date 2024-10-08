@@ -6,6 +6,7 @@ import { fileURLToPath } from "url";
 
 import { userService } from "~/server/service/userService";
 import { env } from "~/utils/env";
+import { required } from "~/utils/required";
 
 // https://github.com/orgs/vercel/discussions/1567#discussioncomment-5854851
 const fontData = fs.readFileSync(
@@ -14,7 +15,7 @@ const fontData = fs.readFileSync(
 
 export async function loader({ params }: LoaderFunctionArgs) {
   const user = await userService.findOrFetchUser({
-    handleOrDid: params.handle!,
+    handleOrDid: required(params.handle),
   });
   if (!user) {
     // eslint-disable-next-line @typescript-eslint/only-throw-error
