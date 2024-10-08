@@ -20,7 +20,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
       },
     });
   } catch (error) {
-    logger.error("OAuthコールバックに失敗しました", { error });
+    logger.error("OAuthコールバックに失敗しました", { error: String(error) });
     return redirect("/login");
   }
 }
