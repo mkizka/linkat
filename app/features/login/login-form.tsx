@@ -15,7 +15,9 @@ export function LoginForm() {
   const schema = z.object({
     identifier: z
       .string({ required_error: t("login-form.required-error-message") })
-      .regex(/\./, t("login-form.invalid-handle-error-message")),
+      .refine((value) => value.includes(".") && !value.includes("@"), {
+        message: t("login-form.invalid-handle-error-message"),
+      }),
   });
   const [form, fields] = useForm({
     id: "login-form",
