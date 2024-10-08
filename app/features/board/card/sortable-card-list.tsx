@@ -21,7 +21,7 @@ export function SortableCardList({ cards, setCards, sortable }: Props) {
         setCards(arrayMove(cards, oldIndex, newIndex))
       }
       renderList={({ children, props }) => (
-        <ul {...props} className="grid grid-cols-1 gap-2">
+        <ul {...props} className="flex flex-col gap-2">
           {children}
         </ul>
       )}
