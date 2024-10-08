@@ -1,10 +1,13 @@
-import { ArrowRightIcon, PencilSquareIcon } from "@heroicons/react/24/outline";
+import {
+  ArrowRightIcon,
+  AtSymbolIcon,
+  PencilSquareIcon,
+} from "@heroicons/react/24/outline";
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
 import { useTranslation } from "react-i18next";
 
 import { Main, RootLayout } from "~/components/layout";
-import { BlueskyIcon } from "~/features/board/card/icons/bluesky";
 import { i18nServer } from "~/i18n/i18n";
 import { getSessionUserDid } from "~/server/oauth/session";
 import { cn } from "~/utils/cn";
@@ -50,8 +53,8 @@ export default function Index() {
               </Link>
             ) : (
               <Link to="/login" className="btn-bluesky btn w-64 text-base-100">
-                <BlueskyIcon className="size-6" />
-                {t("_index.login-with-bluesky")}
+                <AtSymbolIcon className="-ml-4 size-6" />
+                {t("_index.login-link")}
               </Link>
             )}
             <Link to="/sample" className="btn btn-neutral w-64">

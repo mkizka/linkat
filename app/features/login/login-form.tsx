@@ -31,18 +31,17 @@ export function LoginForm() {
     <Card className="flex w-full max-w-screen-sm flex-row justify-center">
       <Form
         method="post"
-        className="card-body flex w-full max-w-sm flex-col gap-2"
+        className="card-body flex w-full max-w-sm flex-col gap-4"
         {...getFormProps(form)}
       >
+        <h1 className="text-2xl font-bold">{t("login-form.login-title")}</h1>
+        <p>{t("login-form.login-description")}</p>
         {form.errors && (
           <div id={form.errorId} className="text-error">
             {form.errors}
           </div>
         )}
         <div className="form-control">
-          <div className="label">
-            <span className="label-text">{t("login-form.handle-label")}</span>
-          </div>
           <div className="join">
             <div className="join-item flex h-full w-12 items-center justify-center rounded-r-full bg-neutral text-neutral-content">
               <AtSymbolIcon className="size-5" />
@@ -61,7 +60,7 @@ export function LoginForm() {
         )}
         <Button
           type="submit"
-          className="btn-bluesky mt-4 text-base-100"
+          className="btn-bluesky text-base-100"
           loading={navigation.state !== "idle"}
           data-testid="login-form__submit"
         >
