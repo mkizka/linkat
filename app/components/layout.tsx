@@ -34,12 +34,24 @@ export function Header() {
         <Form>
           <ul className="menu dropdown-content z-[1] w-52 rounded-box p-2 shadow light:bg-white dark:bg-neutral">
             <li>
-              <button type="submit" name="lng" value="ja" onClick={handleClick}>
+              <button
+                type="submit"
+                name="lng"
+                value="ja"
+                onClick={handleClick}
+                data-umami-event="click-header-lang-ja"
+              >
                 日本語
               </button>
             </li>
             <li>
-              <button type="submit" name="lng" value="en" onClick={handleClick}>
+              <button
+                type="submit"
+                name="lng"
+                value="en"
+                onClick={handleClick}
+                data-umami-event="click-header-lang-en"
+              >
                 English
               </button>
             </li>
@@ -73,7 +85,11 @@ export function Footer({ withNavigation }: FooterProps) {
     <footer className="mx-auto flex w-full max-w-screen-sm flex-col gap-2 bg-neutral py-4 text-center text-neutral-content">
       {withNavigation && (
         <nav>
-          <Link to="/" className="hover:underline">
+          <Link
+            to="/"
+            className="hover:underline"
+            data-umami-event="click-footer-top-link"
+          >
             {t("layout.footer-message")}
           </Link>
         </nav>
@@ -86,6 +102,7 @@ export function Footer({ withNavigation }: FooterProps) {
             className="ml-1 hover:underline"
             target="_blank"
             rel="noreferrer"
+            data-umami-event="click-footer-github-link"
           >
             mkizka/linkat
           </a>

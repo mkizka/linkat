@@ -92,6 +92,7 @@ export function BoardViewer({ user, board, editable, isMine }: Props) {
               className="btn-circle btn-primary btn-lg fixed bottom-4 right-4 w-32 shadow-xl"
               data-testid="board-viewer__submit"
               loading={navigation.state !== "idle"}
+              data-umami-event="click-submit-button"
             >
               <PencilSquareIcon className="size-8" />
               {t("board-viewer.submit-button")}

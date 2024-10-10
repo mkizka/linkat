@@ -14,7 +14,8 @@
       "@remix-run/node",
       "vite/client",
       "vitest/globals",
-      "vitest-environment-vprisma"
+      "vitest-environment-vprisma",
+      "@types/umami"
     ],
     "isolatedModules": true,
     "esModuleInterop": true,

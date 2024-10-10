@@ -1,4 +1,5 @@
 import { isRouteErrorResponse, Link, useRouteError } from "@remix-run/react";
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 
 import { Card } from "~/components/card";
@@ -49,11 +50,22 @@ function ErrorPage(props: { title: string; text: string }) {
 export function ErrorBoundary() {
   const { t } = useTranslation();
   const error = useRouteError();
-  if (isRouteErrorResponse(error) && error.status === 404) {
+  const notFound = isRouteErrorResponse(error) && error.status === 404;
+
+  useEffect(() => {
+    void umami.track(notFound ? "show-404-page" : "show-error-page", {
+      status: isRouteErrorResponse(error) ? error.status : null,
+      message: error instanceof Error ? error.message : null,
+    });
+  }, [error, notFound]);
+
+  if (notFound) {
     return (
       <ErrorPage title="404" text={t("error-boundary.not-found-message")} />
     );
   }
-  logger.error("ErrorBoundaryがエラーをキャッチしました", { error });
+  logger.error("ErrorBoundaryがエラーをキャッチしました", {
+    error: String(error),
+  });
   return <ErrorPage title="Error" text={t("error-boundary.error-message")} />;
 }

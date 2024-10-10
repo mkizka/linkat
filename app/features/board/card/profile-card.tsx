@@ -65,6 +65,8 @@ export function ProfileCard({
                 href={`https://bsky.app/profile/${user.handle}`}
                 target="_blank"
                 rel="noreferrer"
+                data-umami-event="click-bsky-link"
+                data-umami-event-handle={user.handle}
               >
                 <BlueskyIcon className="size-6" />
                 Bluesky
@@ -75,6 +77,8 @@ export function ProfileCard({
               href={`https://bsky.app/intent/compose?text=${encodeURIComponent(shareText)}`}
               target="_blank"
               rel="noreferrer"
+              data-umami-event="click-share-link"
+              data-umami-event-handle={user.handle}
             >
               <ShareIcon className="size-6" />
             </a>
