@@ -59,6 +59,8 @@ const server = {
         dev: "http://localhost:2582",
       }),
     ),
+  UMAMI_SCRIPT_URL: z.string().optional(),
+  UMAMI_WEBSITE_ID: z.string().optional(),
 };
 
 export const env = (() => {
