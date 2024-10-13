@@ -24,6 +24,7 @@ export function LogoutButton() {
         type="submit"
         className="btn btn-ghost btn-sm w-64 text-error"
         data-umami-event="click-logout-button"
+        data-testid="logout-button"
       >
         {t("logout-button.text")}
       </Button>
