@@ -8,6 +8,7 @@ import { Link, useLoaderData } from "@remix-run/react";
 import { useTranslation } from "react-i18next";
 
 import { Main, RootLayout } from "~/components/layout";
+import { LogoutButton } from "~/components/logout-button";
 import { i18nServer } from "~/i18n/i18n";
 import { getSessionUserDid } from "~/server/oauth/session";
 import { cn } from "~/utils/cn";
@@ -61,9 +62,12 @@ export default function Index() {
               <ArrowRightIcon className="size-6" />
               {t("_index.sample-link")}
             </Link>
+            {isLogin && <LogoutButton />}
             <a
               href="https://scrapbox.io/mkizka/Linkat"
-              className="mt-8 underline"
+              className={cn("underline", {
+                "mt-8": !isLogin,
+              })}
               target="_blank"
               rel="noreferrer"
             >

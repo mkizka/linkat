@@ -67,5 +67,9 @@
     "back-to-top": "Back to top",
     "not-found-message": "Page not found.",
     "error-message": "An error occurred."
+  },
+  "logout-button": {
+    "text": "Logout",
+    "confirm-message": "Are you sure you want to log out?"
   }
 }
