@@ -35,6 +35,10 @@
         "text": {
           "type": "string",
           "description": "Text of the card"
+        },
+        "emoji": {
+          "type": "string",
+          "description": "Emoji of the card"
         }
       }
     }

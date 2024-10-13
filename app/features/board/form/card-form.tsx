@@ -3,7 +3,9 @@ import {
   getInputProps,
   useFormMetadata,
 } from "@conform-to/react";
+import Picker from "@emoji-mart/react";
 import { Form } from "@remix-run/react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { Button } from "~/components/button";
@@ -15,6 +17,7 @@ export function CardForm() {
   const { t } = useTranslation();
   const form = useFormMetadata<CardFormPayload>();
   const fields = form.getFieldset();
+  const [isEmojipickerOpen, setIsEmojiPickerOpen] = useState(false);
   return (
     <Form
       method="post"
@@ -44,6 +47,30 @@ export function CardForm() {
         key={fields.text.key}
         data-testid="card-form__text"
       />
+      <Input
+        {...getInputProps(fields.emoji, { type: "text" })}
+        label={t("card-form.emoji-label")}
+        errors={fields.emoji.errors}
+        placeholder={t("card-form.text-placeholder")}
+        // https://github.com/edmundhung/conform/issues/600
+        key={fields.emoji.key}
+        data-testid="card-form__emoji"
+        onFocus={() => setIsEmojiPickerOpen(true)}
+      />
+      {isEmojipickerOpen && (
+        <Picker
+          // onClickOutside={() => setIsEmojiPickerOpen(false)}
+          previewPosition="none"
+          onEmojiSelect={(emoji: { native: string }) => {
+            // eslint-disable-next-line no-console
+            console.log(emoji);
+            form.update({
+              name: "emoji",
+              value: emoji.native,
+            });
+          }}
+        />
+      )}
       <input
         {...getInputProps(fields.id, { type: "hidden" })}
         key={fields.id.key}
