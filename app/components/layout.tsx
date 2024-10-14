@@ -28,7 +28,10 @@ export function Header() {
         className="dropdown dropdown-end absolute right-2 top-2"
         ref={detailsRef}
       >
-        <summary className="btn btn-square m-1 shadow dark:btn-neutral light:bg-white">
+        <summary
+          className="btn btn-square m-1 shadow dark:btn-neutral light:bg-white"
+          data-umami-event="click-header-lang"
+        >
           <LanguageIcon className="size-6" />
         </summary>
         <Form>
