@@ -3,6 +3,8 @@ import {
   getInputProps,
   useFormMetadata,
 } from "@conform-to/react";
+import emojiPickerEn from "@emoji-mart/data/i18n/en.json";
+import emojiPickerJa from "@emoji-mart/data/i18n/ja.json";
 import Picker from "@emoji-mart/react";
 import { Form } from "@remix-run/react";
 import { useState } from "react";
@@ -10,11 +12,17 @@ import { useTranslation } from "react-i18next";
 
 import { Button } from "~/components/button";
 import { Input } from "~/components/input";
+import { cn } from "~/utils/cn";
 
 import type { CardFormPayload } from "./card-form-provider";
 
+const emojiMartI18n: Record<string, unknown> = {
+  ja: emojiPickerJa,
+  en: emojiPickerEn,
+};
+
 export function CardForm() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const form = useFormMetadata<CardFormPayload>();
   const fields = form.getFieldset();
   const [isEmojipickerOpen, setIsEmojiPickerOpen] = useState(false);
@@ -47,29 +55,41 @@ export function CardForm() {
         key={fields.text.key}
         data-testid="card-form__text"
       />
-      <Input
-        {...getInputProps(fields.emoji, { type: "text" })}
-        label={t("card-form.emoji-label")}
-        errors={fields.emoji.errors}
-        placeholder={t("card-form.text-placeholder")}
-        // https://github.com/edmundhung/conform/issues/600
-        key={fields.emoji.key}
-        data-testid="card-form__emoji"
-        onFocus={() => setIsEmojiPickerOpen(true)}
-      />
+      <div>
+        <label className="form-control">
+          <div className="label">
+            <span className="label-text">絵文字アイコン</span>
+          </div>
+          <input
+            {...getInputProps(fields.emoji, { type: "hidden" })}
+            key={fields.emoji.key}
+          />
+        </label>
+        <Button
+          type="button"
+          className={cn("w-fit", {
+            "text-xl": !!fields.emoji.value,
+          })}
+          onClick={() => setIsEmojiPickerOpen(true)}
+        >
+          {fields.emoji.value ?? "変更する"}
+        </Button>
+        {fields.emoji.errors && (
+          <p className="p-1 text-sm text-error">{fields.emoji.errors}</p>
+        )}
+      </div>
       {isEmojipickerOpen && (
-        <Picker
-          // onClickOutside={() => setIsEmojiPickerOpen(false)}
-          previewPosition="none"
-          onEmojiSelect={(emoji: { native: string }) => {
-            // eslint-disable-next-line no-console
-            console.log(emoji);
-            form.update({
-              name: "emoji",
-              value: emoji.native,
-            });
-          }}
-        />
+        <div className="w-full">
+          <Picker
+            i18n={emojiMartI18n[i18n.language] ?? emojiMartI18n.en}
+            onClickOutside={() => setIsEmojiPickerOpen(false)}
+            previewPosition="none"
+            skinTonePosition="none"
+            onEmojiSelect={(emoji: { native: string }) => {
+              form.update({ name: "emoji", value: emoji.native });
+            }}
+          />
+        </div>
       )}
       <input
         {...getInputProps(fields.id, { type: "hidden" })}

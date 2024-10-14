@@ -22,11 +22,13 @@ export type ParsedLinkCard = {
   icon: CardIconComponent;
   text: string;
   url: string;
+  emoji?: string;
 };
 
 export type ParsedTextCard = {
   type: "text";
   text: string;
+  emoji: string;
 };
 
 export type ParsedEmbedCard = {
@@ -58,6 +60,7 @@ export const parseCard = (card: ValidCard): ParsedCard => {
     return {
       type: "text",
       text: card.text || card.url || "",
+      emoji: card.emoji,
     };
   }
   const url = new URL(card.url);
@@ -89,6 +92,7 @@ export const parseCard = (card: ValidCard): ParsedCard => {
       icon: TwitterIcon,
       text: card.text || `@${paths[1]}`,
       url: card.url,
+      emoji: card.emoji,
     };
   }
   if (isGitHubProfileUrl(url)) {
@@ -97,6 +101,7 @@ export const parseCard = (card: ValidCard): ParsedCard => {
       icon: GitHubIcon,
       text: card.text || `@${paths[1]}`,
       url: card.url,
+      emoji: card.emoji,
     };
   }
   return {
@@ -104,5 +109,6 @@ export const parseCard = (card: ValidCard): ParsedCard => {
     icon: cardIcons[url.hostname] || LinkIcon,
     text: card.text || card.url,
     url: card.url,
+    emoji: card.emoji,
   };
 };
