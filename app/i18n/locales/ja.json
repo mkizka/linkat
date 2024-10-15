@@ -1,6 +1,7 @@
 {
   "_index": {
     "meta-title": "Linkat | Blueskyのためのリンク集",
+    "meta-description": "Linkat（リンクアット）は、Blueskyのためのリンク集を作成できるATProtoサービスです。作成したリンク集はあなたのアカウントのPDSに保存されます。",
     "hero-text": "Blueskyのための\nリンク集を作ろう",
     "edit-link": "ボードを編集",
     "login-link": "ログイン",

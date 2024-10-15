@@ -22,13 +22,14 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   return {
     isLogin: !!userDid,
     title: t("_index.meta-title"),
+    description: t("_index.meta-description"),
     url: env.PUBLIC_URL,
   };
 };
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
-  const { title, url } = required(data);
-  return createMeta({ title, url });
+  const { title, description, url } = required(data);
+  return createMeta({ title, description, url });
 };
 
 export default function Index() {
