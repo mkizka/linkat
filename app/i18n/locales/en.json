@@ -1,6 +1,7 @@
 {
   "_index": {
     "meta-title": "Linkat | Link in Bio for Bluesky",
+    "meta-description": "Linkat is an ATProto service for creating a \"Link in Bio\" for Bluesky. Your links are saved in your PDS.",
     "hero-text": "Create your Link in Bio\nfor Bluesky",
     "edit-link": "Edit Board",
     "login-link": "Login",
@@ -67,5 +68,9 @@
     "back-to-top": "Back to top",
     "not-found-message": "Page not found.",
     "error-message": "An error occurred."
+  },
+  "logout-button": {
+    "text": "Logout",
+    "confirm-message": "Are you sure you want to log out?"
   }
 }

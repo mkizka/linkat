@@ -10,10 +10,6 @@
         "type": "object",
         "required": ["cards"],
         "properties": {
-          "description": {
-            "type": "string",
-            "description": "Description of the board."
-          },
           "cards": {
             "type": "array",
             "description": "List of cards in the board.",

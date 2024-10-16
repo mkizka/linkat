@@ -5,13 +5,11 @@ export const createMeta = ({
   url,
   description,
   ogImageUrl,
-  canonicalUrl,
 }: {
   title: string;
   url: string;
   description?: string;
   ogImageUrl?: string;
-  canonicalUrl?: string;
 }) => {
   const meta = [
     {
@@ -47,8 +45,26 @@ export const createMeta = ({
     },
     {
       tagName: "link",
+      rel: "alternate",
+      hrefLang: "ja",
+      href: `${url}?lng=ja`,
+    },
+    {
+      tagName: "link",
+      rel: "alternate",
+      hrefLang: "en",
+      href: `${url}?lng=en`,
+    },
+    {
+      tagName: "link",
+      rel: "alternate",
+      hrefLang: "x-default",
+      href: url,
+    },
+    {
+      tagName: "link",
       rel: "canonical",
-      href: canonicalUrl,
+      href: url,
     },
   ] satisfies ReturnType<MetaFunction>;
   // undefinedな値がある要素を除外

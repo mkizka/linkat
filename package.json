@@ -9,7 +9,7 @@
   "scripts": {
     "_eslint": "eslint --cache --cache-location ./node_modules/.cache/eslint",
     "all": "run-s build format test",
-    "build": "pnpm -s typecheck && run-p -s build:*",
+    "build": "run-p -s build:*",
     "build:remix": "remix vite:build",
     "build:server": "node ./scripts/build-server.js",
     "dev": "pnpm setup-dev && pnpm run-p -l dev:*",

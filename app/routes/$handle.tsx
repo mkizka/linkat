@@ -52,7 +52,6 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
     title,
     url,
     ogImageUrl: `${url}/og.png`,
-    canonicalUrl: url,
   });
 };
 

@@ -8,6 +8,7 @@ import { Link, useLoaderData } from "@remix-run/react";
 import { useTranslation } from "react-i18next";
 
 import { Main, RootLayout } from "~/components/layout";
+import { LogoutButton } from "~/components/logout-button";
 import { i18nServer } from "~/i18n/i18n";
 import { getSessionUserDid } from "~/server/oauth/session";
 import { cn } from "~/utils/cn";
@@ -21,13 +22,14 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   return {
     isLogin: !!userDid,
     title: t("_index.meta-title"),
+    description: t("_index.meta-description"),
     url: env.PUBLIC_URL,
   };
 };
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
-  const { title, url } = required(data);
-  return createMeta({ title, url });
+  const { title, description, url } = required(data);
+  return createMeta({ title, description, url });
 };
 
 export default function Index() {
@@ -61,9 +63,12 @@ export default function Index() {
               <ArrowRightIcon className="size-6" />
               {t("_index.sample-link")}
             </Link>
+            {isLogin && <LogoutButton />}
             <a
               href="https://scrapbox.io/mkizka/Linkat"
-              className="mt-8 underline"
+              className={cn("underline", {
+                "mt-8": !isLogin,
+              })}
               target="_blank"
               rel="noreferrer"
             >

@@ -27,6 +27,10 @@ export function Header() {
       <details
         className="dropdown dropdown-end absolute right-2 top-2"
         ref={detailsRef}
+        onClick={() => {
+          if (detailsRef.current?.open) return;
+          void umami.track("click-header-lang");
+        }}
       >
         <summary className="btn btn-square m-1 shadow dark:btn-neutral light:bg-white">
           <LanguageIcon className="size-6" />
