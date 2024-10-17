@@ -3,9 +3,9 @@ import { getZodConstraint, parseWithZod } from "@conform-to/zod";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
 
-const _schema = z.object({
-  text: z.string().optional(),
-  url: z.string().url().optional(),
+import { cardSchema } from "~/models/card";
+
+const _schema = cardSchema.extend({
   id: z.string().optional(),
 });
 
