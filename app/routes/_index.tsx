@@ -1,7 +1,6 @@
 import {
   ArrowRightIcon,
   AtSymbolIcon,
-  ExclamationTriangleIcon,
   PencilSquareIcon,
 } from "@heroicons/react/24/outline";
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
@@ -70,12 +69,6 @@ export default function Index() {
                 "mt-8": !isLogin,
               })}
             >
-              <div role="alert" className="alert alert-warning">
-                <ExclamationTriangleIcon className="size-6" />
-                現在Blueskyに障害が発生しているため、
-                <br />
-                ログインに失敗する場合があります。
-              </div>
               <p>
                 <a
                   href="https://scrapbox.io/mkizka/Linkat"
