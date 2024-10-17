@@ -1,6 +1,7 @@
 import {
   ArrowRightIcon,
   AtSymbolIcon,
+  ExclamationTriangleIcon,
   PencilSquareIcon,
 } from "@heroicons/react/24/outline";
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
@@ -64,16 +65,28 @@ export default function Index() {
               {t("_index.sample-link")}
             </Link>
             {isLogin && <LogoutButton />}
-            <a
-              href="https://scrapbox.io/mkizka/Linkat"
-              className={cn("underline", {
+            <div
+              className={cn("flex flex-col gap-2", {
                 "mt-8": !isLogin,
               })}
-              target="_blank"
-              rel="noreferrer"
             >
-              {t("_index.notes-link")}
-            </a>
+              <div role="alert" className="alert alert-warning">
+                <ExclamationTriangleIcon className="size-6" />
+                現在Blueskyに障害が発生しているため、
+                <br />
+                ログインに失敗する場合があります。
+              </div>
+              <p>
+                <a
+                  href="https://scrapbox.io/mkizka/Linkat"
+                  className="underline"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  {t("_index.notes-link")}
+                </a>
+              </p>
+            </div>
           </div>
         </div>
       </Main>
