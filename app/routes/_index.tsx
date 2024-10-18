@@ -71,7 +71,7 @@ export default function Index() {
             >
               <p>
                 <a
-                  href="https://scrapbox.io/mkizka/Linkat"
+                  href="https://whtwnd.com/mkizka.dev/3l6sg24zov62s"
                   className="underline"
                   target="_blank"
                   rel="noreferrer"
