@@ -26,10 +26,13 @@ function CardContent({ parsed }: CardContentProps) {
   }
   return (
     <div className="card-body flex-row items-center gap-2">
-      {!parsed.emoji && parsed.type === "link" && (
-        <parsed.icon className="-ml-2 size-6" />
+      {parsed.emoji ? (
+        <div className="-ml-2 flex size-6 items-center justify-center text-xl">
+          {parsed.emoji}
+        </div>
+      ) : (
+        parsed.type === "link" && <parsed.icon className="-ml-2 size-6" />
       )}
-      {parsed.emoji && <span>{parsed.emoji}</span>}
       <p className="flex-1 truncate">{parsed.text}</p>
     </div>
   );

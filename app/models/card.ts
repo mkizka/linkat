@@ -6,6 +6,7 @@ export const cardSchema = z.object({
   emoji: z
     .string()
     .regex(/^\p{Emoji}$/u)
+    .or(z.literal(""))
     .optional(),
 });
 

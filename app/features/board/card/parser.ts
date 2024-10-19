@@ -28,7 +28,7 @@ export type ParsedLinkCard = {
 export type ParsedTextCard = {
   type: "text";
   text: string;
-  emoji: string;
+  emoji?: string;
 };
 
 export type ParsedEmbedCard = {
