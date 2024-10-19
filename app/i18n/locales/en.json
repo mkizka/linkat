@@ -46,7 +46,11 @@
     "change-button": "Change",
     "add-button": "Add",
     "delete-button": "Delete",
-    "form-footer-message": "Either the URL or text can be left blank."
+    "emoji-label": "Emoji Icon",
+    "emoji-select-button": "Select emoji",
+    "emoji-reset-button": "Reset selection",
+    "help-input-message": "Either the URL or text can be left blank.",
+    "help-emoji-message": "When not selected, it will be automatically determined based on the URL."
   },
   "card-form-modal": {
     "add-card": "Add Card"

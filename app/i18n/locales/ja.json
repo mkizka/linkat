@@ -47,7 +47,11 @@
     "change-button": "変更",
     "add-button": "追加",
     "delete-button": "削除",
-    "form-footer-message": "URLかテキストはどちらか空欄でもOKです。"
+    "emoji-label": "絵文字アイコン",
+    "emoji-select-button": "絵文字を選択",
+    "emoji-reset-button": "未選択に戻す",
+    "help-input-message": "URLかテキストはどちらか空欄でもOKです。",
+    "help-emoji-message": "未選択時はURLに応じて自動で決まります。"
   },
   "card-form-modal": {
     "add-card": "カードを追加"
