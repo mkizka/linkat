@@ -3,8 +3,6 @@ import {
   getInputProps,
   useFormMetadata,
 } from "@conform-to/react";
-import emojiPickerEn from "@emoji-mart/data/i18n/en.json";
-import emojiPickerJa from "@emoji-mart/data/i18n/ja.json";
 import Picker from "@emoji-mart/react";
 import { Form } from "@remix-run/react";
 import { useState } from "react";
@@ -16,13 +14,8 @@ import { cn } from "~/utils/cn";
 
 import type { CardFormPayload } from "./card-form-provider";
 
-const emojiMartI18n: Record<string, unknown> = {
-  ja: emojiPickerJa,
-  en: emojiPickerEn,
-};
-
 export function CardForm() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const form = useFormMetadata<CardFormPayload>();
   const fields = form.getFieldset();
   const [isEmojipickerOpen, setIsEmojiPickerOpen] = useState(false);
@@ -79,17 +72,15 @@ export function CardForm() {
         )}
       </div>
       {isEmojipickerOpen && (
-        <div className="w-full">
-          <Picker
-            i18n={emojiMartI18n[i18n.language] ?? emojiMartI18n.en}
-            onClickOutside={() => setIsEmojiPickerOpen(false)}
-            previewPosition="none"
-            skinTonePosition="none"
-            onEmojiSelect={(emoji: { native: string }) => {
-              form.update({ name: "emoji", value: emoji.native });
-            }}
-          />
-        </div>
+        <Picker
+          dynamicWidth
+          onClickOutside={() => setIsEmojiPickerOpen(false)}
+          previewPosition="none"
+          skinTonePosition="none"
+          onEmojiSelect={(emoji: { native: string }) => {
+            form.update({ name: "emoji", value: emoji.native });
+          }}
+        />
       )}
       <input
         {...getInputProps(fields.id, { type: "hidden" })}
