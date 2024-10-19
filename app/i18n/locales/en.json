@@ -46,7 +46,7 @@
     "change-button": "Change",
     "add-button": "Add",
     "delete-button": "Delete",
-    "emoji-label": "Emoji Icon",
+    "emoji-label": "Icon",
     "emoji-select-button": "Select emoji",
     "emoji-reset-button": "Reset selection",
     "help-input-message": "Either the URL or text can be left blank.",
