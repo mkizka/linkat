@@ -74,11 +74,16 @@ export function CardForm() {
               "text-xl": !!fields.emoji.value,
             })}
             onClick={() => setIsEmojiPickerOpen(true)}
+            data-umami-event="click-emoji-picker-button"
           >
             {fields.emoji.value ?? t("card-form.emoji-select-button")}
           </Button>
           {fields.emoji.value && (
-            <Button type="button" onClick={handleResetEmoji}>
+            <Button
+              type="button"
+              onClick={handleResetEmoji}
+              data-umami-event="click-reset-emoji-button"
+            >
               <XMarkIcon className="size-6 text-error" />
               {t("card-form.emoji-reset-button")}
             </Button>

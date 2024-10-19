@@ -53,6 +53,13 @@ export function ErrorBoundary() {
   const notFound = isRouteErrorResponse(error) && error.status === 404;
 
   useEffect(() => {
+    if (notFound) {
+      void umami.track("show-404-page");
+    } else {
+      void umami.track("show-error-page", {
+        message: error instanceof Error ? error.message : String(error),
+      });
+    }
     void umami.track(notFound ? "show-404-page" : "show-error-page", {
       status: isRouteErrorResponse(error) ? error.status : null,
       message: error instanceof Error ? error.message : null,

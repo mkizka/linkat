@@ -84,6 +84,7 @@ export function SortableCard({
         target="_blank"
         rel="noreferrer"
         className="relative block"
+        data-umami-event="click-card-link"
       >
         <CardBody parsed={parsed} isDragging={isDragging} />
       </a>
