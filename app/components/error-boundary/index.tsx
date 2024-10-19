@@ -60,10 +60,6 @@ export function ErrorBoundary() {
         message: error instanceof Error ? error.message : String(error),
       });
     }
-    void umami.track(notFound ? "show-404-page" : "show-error-page", {
-      status: isRouteErrorResponse(error) ? error.status : null,
-      message: error instanceof Error ? error.message : null,
-    });
   }, [error, notFound]);
 
   if (notFound) {
