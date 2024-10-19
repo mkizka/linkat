@@ -26,7 +26,13 @@ function CardContent({ parsed }: CardContentProps) {
   }
   return (
     <div className="card-body flex-row items-center gap-2">
-      {parsed.type === "link" && <parsed.icon className="-ml-2 size-6" />}
+      {parsed.emoji ? (
+        <div className="-ml-2 flex size-6 items-center justify-center text-xl">
+          {parsed.emoji}
+        </div>
+      ) : (
+        parsed.type === "link" && <parsed.icon className="-ml-2 size-6" />
+      )}
       <p className="flex-1 truncate">{parsed.text}</p>
     </div>
   );
@@ -66,6 +72,7 @@ export function SortableCard({
   const handleOpen = () => {
     form.update({ name: "text", value: card.text });
     form.update({ name: "url", value: card.url });
+    form.update({ name: "emoji", value: card.emoji });
     form.update({ name: "id", value: card.id });
     cardModal.open();
   };

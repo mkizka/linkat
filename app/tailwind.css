@@ -23,3 +23,8 @@ body {
 .btn-bluesky {
   --btn-color: 62.58% 0.205 254.95;
 }
+
+em-emoji-picker {
+  width: 100%;
+  height: 300px;
+}
