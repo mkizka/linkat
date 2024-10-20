@@ -13,6 +13,7 @@
     "build:remix": "remix vite:build",
     "build:server": "node ./scripts/build-server.js",
     "dev": "./scripts/dev.sh",
+    "dev-atproto": "cd atproto && make run-dev-env",
     "e2e": "playwright test",
     "format": "pnpm _eslint --fix && prettier . --write",
     "lint": "pnpm _eslint && prettier . --check",
