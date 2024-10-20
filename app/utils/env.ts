@@ -50,6 +50,15 @@ const server = {
         dev: "ws://localhost:2583",
       }),
     ),
+  JETSTREAM_URL: z
+    .string()
+    .url()
+    .default(
+      match({
+        prod: "wss://jetstream1.us-west.bsky.network/subscribe",
+        dev: "ws://localhost:6008/subscribe",
+      }),
+    ),
   ATPROTO_PLC_URL: z
     .string()
     .url()

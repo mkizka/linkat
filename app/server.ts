@@ -3,7 +3,7 @@ import type { ServerBuild } from "@remix-run/node";
 import express from "express";
 import morgan from "morgan";
 
-import { firehose } from "./server/firehose/subscription.js";
+import { jetstream } from "./server/jetstream/subscription.js";
 import { oauthRouter } from "./server/oauth/route.js";
 import { env } from "./utils/env.js";
 import { createLogger } from "./utils/logger.js";
@@ -83,6 +83,5 @@ const logger = createLogger("server");
 
 app.listen(3000, "0.0.0.0", () => {
   logger.info(`App listening on ${env.PUBLIC_URL}`);
-  logger.info(`Firehose subscription started to ${env.BSKY_FIREHOSE_URL}`);
-  firehose.start();
+  jetstream.start();
 });
