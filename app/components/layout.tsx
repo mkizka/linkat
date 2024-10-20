@@ -27,9 +27,11 @@ export function Header() {
       <details
         className="dropdown dropdown-end absolute right-2 top-2"
         ref={detailsRef}
-        onClick={() => {
-          if (detailsRef.current?.open) return;
-          void umami.track("click-header-lang");
+        onClick={(event) => {
+          if ((event.target as HTMLElement).tagName === "BUTTON") return;
+          void umami.track("click-header-lang", {
+            action: "open",
+          });
         }}
       >
         <summary className="btn btn-square m-1 shadow dark:btn-neutral light:bg-white">
@@ -43,7 +45,8 @@ export function Header() {
                 name="lng"
                 value="ja"
                 onClick={handleClick}
-                data-umami-event="click-header-lang-ja"
+                data-umami-event="click-header-lang"
+                data-umami-event-action="select-ja"
               >
                 日本語
               </button>
@@ -54,7 +57,8 @@ export function Header() {
                 name="lng"
                 value="en"
                 onClick={handleClick}
-                data-umami-event="click-header-lang-en"
+                data-umami-event="click-header-lang"
+                data-umami-event-action="select-en"
               >
                 English
               </button>
