@@ -10,7 +10,7 @@ import { tryCatch } from "~/utils/tryCatch";
 const logger = createLogger("userService");
 
 // 最後の取得から10分以上経過していたら再取得する
-const shouldReFetch = (user: User) => {
+const shouldRefetch = (user: User) => {
   return user.updatedAt <= new Date(Date.now() - 10 * 60 * 1000);
 };
 
@@ -30,9 +30,6 @@ const findUser = async ({
       createdAt: "desc",
     },
   });
-  if (!user || shouldReFetch(user)) {
-    return null;
-  }
   return user;
 };
 
@@ -76,7 +73,7 @@ export const findOrFetchUser = async ({
   handleOrDid: string;
 }) => {
   const user = await findUser({ tx, handleOrDid });
-  if (user) {
+  if (user && !shouldRefetch(user)) {
     return user;
   }
   const blueskyProfile = await tryCatch(fetchBlueskyProfile)(handleOrDid);
@@ -84,7 +81,7 @@ export const findOrFetchUser = async ({
     logger.warn("プロフィールの取得に失敗しました", {
       error: blueskyProfile.message,
     });
-    return null;
+    return user;
   }
   return await createOrUpdateUser({
     tx,
