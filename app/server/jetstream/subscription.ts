@@ -44,15 +44,13 @@ const handleCreateOrUpdate = async (
     });
     return;
   }
-  const [user, board] = await Promise.all([
-    userService.findOrFetchUser({
-      handleOrDid: event.did,
-    }),
-    boardService.createOrUpdateBoard({
-      userDid: event.did,
-      board: parsed.data,
-    }),
-  ]);
+  const user = await userService.findOrFetchUser({
+    handleOrDid: event.did,
+  });
+  const board = await boardService.createOrUpdateBoard({
+    userDid: event.did,
+    board: parsed.data,
+  });
   logger.info("ボードを更新しました", { user, board });
 };
 
