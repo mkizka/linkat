@@ -41,7 +41,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: "pnpm start:e2e",
+    command: "pnpm start:local",
     port: 3000,
     stdout: "pipe",
     reuseExistingServer: !process.env.CI,

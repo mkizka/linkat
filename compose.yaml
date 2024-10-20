@@ -1,6 +1,5 @@
 volumes:
   db_data:
-  jetstream_data:
 
 services:
   db:
@@ -20,9 +19,6 @@ services:
     image: ghcr.io/bluesky-social/jetstream:sha-011b545
     restart: always
     network_mode: host
-    volumes:
-      - jetstream_data:/data
     environment:
       - JETSTREAM_WS_URL=ws://localhost:2583/xrpc/com.atproto.sync.subscribeRepos
       - JETSTREAM_WORKER_COUNT=1
-      - JETSTREAM_DATA_DIR=/data

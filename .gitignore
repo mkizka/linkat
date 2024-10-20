@@ -10,6 +10,7 @@ coverage/
 generated/
 atproto/
 lexicons/com/
+nohup.out
 
 # playwright
 playwright-report/
