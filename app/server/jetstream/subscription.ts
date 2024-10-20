@@ -1,7 +1,11 @@
-/* eslint-disable no-console */
+import type { CommitCreateEvent, CommitUpdateEvent } from "@skyware/jetstream";
 import { Jetstream } from "@skyware/jetstream";
 import WebSocket from "ws";
+import { fromZodError } from "zod-validation-error";
 
+import { boardScheme } from "~/models/board";
+import { boardService } from "~/server/service/boardService";
+import { userService } from "~/server/service/userService";
 import { env } from "~/utils/env";
 import { createLogger } from "~/utils/logger";
 
@@ -27,14 +31,31 @@ jetstream.on("error", (error) => {
   });
 });
 
-jetstream.onCreate("blue.linkat.board", (event) => {
-  console.log("create", JSON.stringify(event));
-});
+const handleCreateOrUpdate = async (
+  event:
+    | CommitCreateEvent<"blue.linkat.board">
+    | CommitUpdateEvent<"blue.linkat.board">,
+) => {
+  const parsed = boardScheme.safeParse(event.commit.record);
+  if (!parsed.success) {
+    logger.warn("ボードのパースに失敗しました", {
+      record: event.commit.record,
+      error: fromZodError(parsed.error).toString(),
+    });
+    return;
+  }
+  const [user, board] = await Promise.all([
+    userService.findOrFetchUser({
+      handleOrDid: event.did,
+    }),
+    boardService.createOrUpdateBoard({
+      userDid: event.did,
+      board: parsed.data,
+    }),
+  ]);
+  logger.info("ボードを更新しました", { user, board });
+};
 
-jetstream.onUpdate("blue.linkat.board", (event) => {
-  console.log("update", JSON.stringify(event));
-});
+jetstream.onCreate("blue.linkat.board", handleCreateOrUpdate);
 
-jetstream.onDelete("blue.linkat.board", (event) => {
-  console.log("delete", JSON.stringify(event));
-});
+jetstream.onUpdate("blue.linkat.board", handleCreateOrUpdate);
