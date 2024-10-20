@@ -41,15 +41,6 @@ const server = {
         dev: "http://localhost:2584",
       }),
     ),
-  BSKY_FIREHOSE_URL: z
-    .string()
-    .url()
-    .default(
-      match({
-        prod: "wss://bsky.network",
-        dev: "ws://localhost:2583",
-      }),
-    ),
   JETSTREAM_URL: z
     .string()
     .url()

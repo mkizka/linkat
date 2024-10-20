@@ -35,7 +35,6 @@
     "@atproto/lexicon": "0.4.1",
     "@atproto/oauth-client-node": "0.1.1",
     "@atproto/repo": "0.5.1",
-    "@atproto/sync": "0.1.1",
     "@atproto/xrpc": "0.6.2",
     "@atproto/xrpc-server": "0.6.4",
     "@conform-to/react": "1.2.2",

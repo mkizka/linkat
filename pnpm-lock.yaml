@@ -26,9 +26,6 @@ importers:
       '@atproto/repo':
         specifier: 0.5.1
         version: 0.5.1
-      '@atproto/sync':
-        specifier: 0.1.1
-        version: 0.1.1
       '@atproto/xrpc':
         specifier: 0.6.2
         version: 0.6.2
@@ -331,9 +328,6 @@ packages:
 
   '@atproto/repo@0.5.1':
     resolution: {integrity: sha512-/asnjlqoDiJrKnBGsv9Xg4sUMKK0YsaLBMt6AepWfwrXTTfHPLY7QxyyFMxxuzQQtLyYaj4lIn5zhmNz7TXf0w==}
-
-  '@atproto/sync@0.1.1':
-    resolution: {integrity: sha512-3DZH8wmWKLbYGx7Y+LtATso2PLYW+pqy3M3c1l5E4c6dJB7WVdlAYDl3qgp2QGgmfwJVngPazJlq4ljT57S0Xg==}
 
   '@atproto/syntax@0.3.0':
     resolution: {integrity: sha512-Weq0ZBxffGHDXHl9U7BQc2BFJi/e23AL+k+i5+D9hUq/bzT4yjGsrCejkjq0xt82xXDjmhhvQSZ0LqxyZ5woxA==}
@@ -2849,9 +2843,6 @@ packages:
     resolution: {integrity: sha512-8q3LsZjRezbFZ2PN+uP+Q7pnHUMmAOziU2vA2OwoFaKIXxlxl38IylhSSgUorWu/rf4er67w0ikBqjBFk/pomA==}
     engines: {node: '>=10.13.0'}
 
-  eventemitter3@4.0.7:
-    resolution: {integrity: sha512-8guHBZCwKnFhYdHr2ysuRWErTwhoN2X8XELRlrRwpmfeY2jjuUN4taQMsULKUVo1K4DvZl+0pgfyoysHxvmvEw==}
-
   eventemitter3@5.0.1:
     resolution: {integrity: sha512-GWkBvjiSZK87ELrYOSESUYeVIc9mvLLf/nXalMOS5dYrgZq9o5OVkbZAVM06CVxYsCwH9BDZFPlQTlPA1j4ahA==}
 
@@ -4283,10 +4274,6 @@ packages:
   outvariant@1.4.3:
     resolution: {integrity: sha512-+Sl2UErvtsoajRDKCE5/dBz4DIvHXQQnAxtQTF04OJxY0+DyZXSo5P5Bb7XYWOh81syohlYL24hbDwxedPUJCA==}
 
-  p-finally@1.0.0:
-    resolution: {integrity: sha512-LICb2p9CB7FS+0eR1oqWnHhp0FljGLZCWBE9aix0Uye9W8LTQPwMTYVGWQWIw9RdQiDg4+epXQODwIYJtSJaow==}
-    engines: {node: '>=4'}
-
   p-limit@2.3.0:
     resolution: {integrity: sha512-//88mFWSJx8lxCzwdAABTJL2MyWB12+eIY7MDL2SqLmAkeKU9qxRvWuSyTjm3FUmpBEMuFfckAIqEaVGUDxb6w==}
     engines: {node: '>=6'}
@@ -4310,14 +4297,6 @@ packages:
   p-map@4.0.0:
     resolution: {integrity: sha512-/bjOqmgETBYB5BoEeGVea8dmvHb2m9GLy1E9W43yeyfP6QQCZGFNa+XRceJEuDB6zqr+gKpIAmlLebMpykw/MQ==}
     engines: {node: '>=10'}
-
-  p-queue@6.6.2:
-    resolution: {integrity: sha512-RwFpb72c/BhQLEXIZ5K2e+AhgNVmIejGlTgiB9MzZ0e93GRvqZ7uSi0dvRF7/XIXDeNkra2fNHBxTyPDGySpjQ==}
-    engines: {node: '>=8'}
-
-  p-timeout@3.2.0:
-    resolution: {integrity: sha512-rhIwUycgwwKcP9yTOOFK/AKsAopjjCakVqLHePO3CC6Mir1Z99xT+R63jZxAT5lFZLa2inS5h+ZS2GvR99/FBg==}
-    engines: {node: '>=8'}
 
   p-try@2.2.0:
     resolution: {integrity: sha512-R4nPAVTAU0B9D35/Gk3uJf/7XYbQcyohSKdvAxIRSNghFl4e71hVoGnBNQz9cWaXxO2I10KTC+3jMdvvoKw6dQ==}
@@ -5957,22 +5936,6 @@ snapshots:
       multiformats: 9.9.0
       uint8arrays: 3.0.0
       zod: 3.23.8
-
-  '@atproto/sync@0.1.1':
-    dependencies:
-      '@atproto/common': 0.4.2
-      '@atproto/identity': 0.4.1
-      '@atproto/lexicon': 0.4.1
-      '@atproto/repo': 0.5.1
-      '@atproto/syntax': 0.3.0
-      '@atproto/xrpc-server': 0.6.4
-      multiformats: 9.9.0
-      p-queue: 6.6.2
-    transitivePeerDependencies:
-      - bufferutil
-      - debug
-      - supports-color
-      - utf-8-validate
 
   '@atproto/syntax@0.3.0': {}
 
@@ -8810,8 +8773,6 @@ snapshots:
 
   event-target-shim@6.0.2: {}
 
-  eventemitter3@4.0.7: {}
-
   eventemitter3@5.0.1: {}
 
   events@3.3.0: {}
@@ -10657,8 +10618,6 @@ snapshots:
 
   outvariant@1.4.3: {}
 
-  p-finally@1.0.0: {}
-
   p-limit@2.3.0:
     dependencies:
       p-try: 2.2.0
@@ -10682,15 +10641,6 @@ snapshots:
   p-map@4.0.0:
     dependencies:
       aggregate-error: 3.1.0
-
-  p-queue@6.6.2:
-    dependencies:
-      eventemitter3: 4.0.7
-      p-timeout: 3.2.0
-
-  p-timeout@3.2.0:
-    dependencies:
-      p-finally: 1.0.0
 
   p-try@2.2.0: {}
 
