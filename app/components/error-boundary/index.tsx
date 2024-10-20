@@ -54,9 +54,12 @@ export function ErrorBoundary() {
 
   useEffect(() => {
     if (notFound) {
-      void umami.track("show-404-page");
+      void umami.track("show-404-page", {
+        path: location.pathname,
+      });
     } else {
       void umami.track("show-error-page", {
+        path: location.pathname,
         message: error instanceof Error ? error.message : String(error),
       });
     }
