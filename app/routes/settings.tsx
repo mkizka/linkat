@@ -1,4 +1,6 @@
+import { ChevronLeftIcon } from "@heroicons/react/24/outline";
 import { type LoaderFunctionArgs, redirect } from "@remix-run/node";
+import { Link } from "@remix-run/react";
 
 import { Card } from "~/components/card";
 import { Footer, Main } from "~/components/layout";
@@ -16,9 +18,14 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 export default function SettingsPage() {
   return (
     <>
-      <Main>
+      <Main className="py-4">
         <Card>
-          <div className="card-body">
+          <div className="card-body gap-4">
+            <Link to="/" className="btn">
+              <ChevronLeftIcon className="size-4" />
+              トップに戻る
+            </Link>
+            <h1 className="card-title"># 設定</h1>
             <LogoutButton />
           </div>
         </Card>
