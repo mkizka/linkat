@@ -1,5 +1,10 @@
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
-import { redirect, useLoaderData } from "@remix-run/react";
+import {
+  redirect,
+  unstable_usePrompt as usePrompt,
+  useBeforeUnload,
+  useLoaderData,
+} from "@remix-run/react";
 
 import { Main } from "~/components/layout";
 import { BoardViewer } from "~/features/board/board-viewer";
@@ -53,6 +58,23 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export default function Index() {
   const { user, board } = useLoaderData<typeof loader>();
+
+  // 更新ボタンを押したりしたときに確認ダイアログを出す
+  useBeforeUnload((event) => {
+    event.preventDefault();
+  });
+
+  // 戻るボタンを押したりしたときに確認ダイアログを出す
+  usePrompt({
+    message: "保存していない変更は失われます。よろしいですか？",
+    when: ({ currentLocation, nextLocation, historyAction }) =>
+      // 保存ボタンを押したときの移動以外のとき
+      (currentLocation.pathname !== nextLocation.pathname &&
+        nextLocation.pathname !== `/${user.handle}`) ||
+      // /alice.testから/editに移動して戻るとき
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
+      historyAction === "POP",
+  });
 
   return (
     <>
