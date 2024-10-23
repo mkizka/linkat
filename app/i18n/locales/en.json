@@ -28,7 +28,8 @@
   },
   "edit": {
     "invalid-session-error-message": "The login information was invalid",
-    "invalid-form-error-message": "The form is invalid"
+    "invalid-form-error-message": "The form is invalid",
+    "confirm-leave-message": "Unsaved changes will be lost. Are you sure?"
   },
   "board": {
     "meta-title": "{{displayName}}(@{{handle}})'s board"

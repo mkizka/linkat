@@ -5,6 +5,7 @@ import {
   useBeforeUnload,
   useLoaderData,
 } from "@remix-run/react";
+import { useTranslation } from "react-i18next";
 
 import { Main } from "~/components/layout";
 import { BoardViewer } from "~/features/board/board-viewer";
@@ -58,6 +59,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export default function Index() {
   const { user, board } = useLoaderData<typeof loader>();
+  const { t } = useTranslation();
 
   // 更新ボタンを押したりしたときに確認ダイアログを出す
   useBeforeUnload((event) => {
@@ -66,7 +68,7 @@ export default function Index() {
 
   // 戻るボタンを押したりしたときに確認ダイアログを出す
   usePrompt({
-    message: "保存していない変更は失われます。よろしいですか？",
+    message: t("edit.confirm-leave-message"),
     when: ({ currentLocation, nextLocation, historyAction }) =>
       // 保存ボタンを押したときの移動以外のとき
       (currentLocation.pathname !== nextLocation.pathname &&

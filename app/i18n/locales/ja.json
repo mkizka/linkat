@@ -29,7 +29,8 @@
   },
   "edit": {
     "invalid-session-error-message": "ログイン情報が無効でした",
-    "invalid-form-error-message": "フォームが無効です"
+    "invalid-form-error-message": "フォームが無効です",
+    "confirm-leave-message": "保存していない変更は失われます。よろしいですか？"
   },
   "board": {
     "meta-title": "{{displayName}}(@{{handle}})さんのボード"
