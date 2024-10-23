@@ -1,12 +1,14 @@
 import { OAuthResolverError } from "@atproto/oauth-client-node";
-import type { ActionFunctionArgs } from "@remix-run/node";
+import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
+import { useLoaderData } from "@remix-run/react";
 
 import { Main, RootLayout } from "~/components/layout";
 import { LoginForm } from "~/features/login/login-form";
 import { RouteToaster } from "~/features/toast/route";
 import { i18nServer } from "~/i18n/i18n";
 import { createOAuthClient } from "~/server/oauth/client";
+import { getSessionUserDid } from "~/server/oauth/session";
 import { createLogger } from "~/utils/logger";
 
 const logger = createLogger("login");
@@ -33,9 +35,17 @@ export async function action({ request }: ActionFunctionArgs) {
   }
 }
 
+export const loader = async ({ request }: LoaderFunctionArgs) => {
+  const userDid = await getSessionUserDid(request);
+  return {
+    isLogin: !!userDid,
+  };
+};
+
 export default function LoginPage() {
+  const { isLogin } = useLoaderData<typeof loader>();
   return (
-    <RootLayout>
+    <RootLayout isLogin={isLogin}>
       <Main className="utils--center">
         <LoginForm />
         <RouteToaster />

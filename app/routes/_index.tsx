@@ -8,7 +8,6 @@ import { Link, useLoaderData } from "@remix-run/react";
 import { useTranslation } from "react-i18next";
 
 import { Main, RootLayout } from "~/components/layout";
-import { LogoutButton } from "~/components/logout-button";
 import { i18nServer } from "~/i18n/i18n";
 import { getSessionUserDid } from "~/server/oauth/session";
 import { cn } from "~/utils/cn";
@@ -36,7 +35,7 @@ export default function Index() {
   const { isLogin } = useLoaderData<typeof loader>();
   const { t, i18n } = useTranslation();
   return (
-    <RootLayout>
+    <RootLayout isLogin={isLogin}>
       <Main className="utils--center">
         <div className="text-center">
           <h2
@@ -63,12 +62,7 @@ export default function Index() {
               <ArrowRightIcon className="size-6" />
               {t("_index.sample-link")}
             </Link>
-            {isLogin && <LogoutButton />}
-            <div
-              className={cn("flex flex-col gap-2", {
-                "mt-8": !isLogin,
-              })}
-            >
+            <div className={cn("flex flex-col gap-2 mt-8")}>
               <p>
                 <a
                   href="https://whtwnd.com/mkizka.dev/3l6sg24zov62s"
