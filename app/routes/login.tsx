@@ -1,7 +1,6 @@
 import { OAuthResolverError } from "@atproto/oauth-client-node";
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
 
 import { Main, RootLayout } from "~/components/layout";
 import { LoginForm } from "~/features/login/login-form";
@@ -37,15 +36,15 @@ export async function action({ request }: ActionFunctionArgs) {
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const userDid = await getSessionUserDid(request);
-  return {
-    isLogin: !!userDid,
-  };
+  if (userDid) {
+    return redirect("/");
+  }
+  return null;
 };
 
 export default function LoginPage() {
-  const { isLogin } = useLoaderData<typeof loader>();
   return (
-    <RootLayout isLogin={isLogin}>
+    <RootLayout>
       <Main className="utils--center">
         <LoginForm />
         <RouteToaster />
