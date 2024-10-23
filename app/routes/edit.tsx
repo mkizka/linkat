@@ -1,10 +1,11 @@
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import {
   redirect,
-  unstable_usePrompt as usePrompt,
   useBeforeUnload,
+  useBlocker,
   useLoaderData,
 } from "@remix-run/react";
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 
 import { Main } from "~/components/layout";
@@ -63,20 +64,35 @@ export default function Index() {
 
   // 更新ボタンを押したりしたときに確認ダイアログを出す
   useBeforeUnload((event) => {
+    void umami.track("unload-edit");
     event.preventDefault();
   });
 
   // 戻るボタンを押したりしたときに確認ダイアログを出す
-  usePrompt({
-    message: t("edit.confirm-leave-message"),
-    when: ({ currentLocation, nextLocation, historyAction }) =>
+  const blocker = useBlocker(
+    ({ currentLocation, nextLocation, historyAction }) =>
       // 保存ボタンを押したときの移動以外のとき
       (currentLocation.pathname !== nextLocation.pathname &&
         nextLocation.pathname !== `/${user.handle}`) ||
       // /alice.testから/editに移動して戻るとき
       // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
       historyAction === "POP",
-  });
+  );
+
+  useEffect(() => {
+    if (blocker.state !== "blocked") return;
+    if (confirm(t("edit.confirm-leave-message"))) {
+      void umami.track("leave-edit", {
+        action: "confirm",
+      });
+      blocker.proceed();
+    } else {
+      void umami.track("leave-edit", {
+        action: "cancel",
+      });
+      blocker.reset();
+    }
+  }, [t, blocker]);
 
   return (
     <>
