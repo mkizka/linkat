@@ -1,5 +1,5 @@
 import { OAuthResolverError } from "@atproto/oauth-client-node";
-import type { ActionFunctionArgs } from "@remix-run/node";
+import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 
 import { Main, RootLayout } from "~/components/layout";
@@ -7,6 +7,7 @@ import { LoginForm } from "~/features/login/login-form";
 import { RouteToaster } from "~/features/toast/route";
 import { i18nServer } from "~/i18n/i18n";
 import { createOAuthClient } from "~/server/oauth/client";
+import { getSessionUserDid } from "~/server/oauth/session";
 import { createLogger } from "~/utils/logger";
 
 const logger = createLogger("login");
@@ -32,6 +33,14 @@ export async function action({ request }: ActionFunctionArgs) {
     return { error: t("login.default-error-message") };
   }
 }
+
+export const loader = async ({ request }: LoaderFunctionArgs) => {
+  const userDid = await getSessionUserDid(request);
+  if (userDid) {
+    return redirect("/");
+  }
+  return null;
+};
 
 export default function LoginPage() {
   return (
