@@ -44,11 +44,11 @@
     "post-to-bluesky": "Post to Bluesky",
     "copy-url": "Copy URL",
     "copied-message": "Copied!",
-    "share-text": "I created a Link in Bio using Linkat!\n#linkat\n{{url}}"
+    "share-text": "I created a Link in Bio using Linkat! #linkat {{url}}"
   },
   "profile-card": {
     "edit-button": "Edit",
-    "share-text": "{{displayName}}'s board\n#linkat\n{{url}}"
+    "share-text": "{{displayName}}'s board #linkat {{url}}"
   },
   "card-form": {
     "text-label": "Text",
