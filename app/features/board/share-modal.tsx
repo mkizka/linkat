@@ -91,7 +91,12 @@ export function ShareModal({ url }: Props) {
         </form>
       </div>
       <form method="dialog" className="modal-backdrop">
-        <button>close</button>
+        <button
+          data-umami-event="handle-share-modal"
+          data-umami-event-action="close"
+        >
+          close
+        </button>
       </form>
     </dialog>
   );
