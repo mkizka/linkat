@@ -56,12 +56,18 @@ export function ShareModal({ url }: Props) {
               href={`https://bsky.app/intent/compose?text=${encodeURIComponent(shareText)}`}
               target="_blank"
               rel="noreferrer"
-              data-umami-event="click-share-link"
+              data-umami-event="handle-share-modal"
+              data-umami-event-action="post-to-bluesky"
             >
               <BlueskyIcon className="size-6" />
               {t("share-modal.post-to-bluesky")}
             </a>
-            <Button onClick={handleCopy} className="flex-1">
+            <Button
+              onClick={handleCopy}
+              className="flex-1"
+              data-umami-event="handle-share-modal"
+              data-umami-event-action="copy-url"
+            >
               {copied ? (
                 <ClipboardDocumentCheckIcon className="size-6" />
               ) : (
@@ -77,6 +83,8 @@ export function ShareModal({ url }: Props) {
           <button
             className="btn btn-circle btn-ghost btn-sm absolute right-2 top-2"
             data-testid="show-modal__close"
+            data-umami-event="handle-share-modal"
+            data-umami-event-action="close"
           >
             ✕
           </button>
