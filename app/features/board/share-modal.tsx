@@ -26,15 +26,15 @@ export function ShareModal({ url }: Props) {
   useEffect(() => {
     if (searchParams.has("success")) {
       ref.current!.showModal();
-      // setSearchParams(
-      //   (prev) => {
-      //     prev.delete("success");
-      //     return prev;
-      //   },
-      //   {
-      //     replace: true,
-      //   },
-      // );
+      setSearchParams(
+        (prev) => {
+          prev.delete("success");
+          return prev;
+        },
+        {
+          replace: true,
+        },
+      );
     }
   }, [searchParams, setSearchParams]);
 
@@ -51,15 +51,16 @@ export function ShareModal({ url }: Props) {
       ref={ref}
       data-testid="show-modal__dialog"
     >
-      <div className="modal-box">
+      <div className="modal-box flex flex-col gap-2">
         <h3 className="text-lg font-bold">{t("share-modal.title")}</h3>
         <p>{t("share-modal.description")}</p>
-        <div className="flex flex-col gap-2 py-4 sm:flex-row">
+        <div className="flex flex-col gap-4 py-4 sm:flex-row">
           <a
             className="btn-bluesky btn flex-1 text-base-100"
             href={`https://bsky.app/intent/compose?text=${encodeURIComponent(shareText)}`}
             target="_blank"
             rel="noreferrer"
+            data-umami-event="click-share-link"
           >
             <BlueskyIcon className="size-6" />
             {t("share-modal.post-to-bluesky")}
