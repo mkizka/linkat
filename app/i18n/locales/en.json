@@ -48,7 +48,7 @@
   },
   "profile-card": {
     "edit-button": "Edit",
-    "share-text": "{{displayName}}'s board #linkat {{- url}}"
+    "share-text": "{{- displayName}}'s board #linkat {{- url}}"
   },
   "card-form": {
     "text-label": "Text",
