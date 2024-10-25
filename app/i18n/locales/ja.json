@@ -39,8 +39,17 @@
     "confirm-delete-message": "本当に削除しますか？",
     "submit-button": "保存"
   },
+  "share-modal": {
+    "title": "保存しました",
+    "description": "リンク集をシェアしよう！",
+    "post-to-bluesky": "Blueskyにポストする",
+    "copy-url": "URLをコピーする",
+    "copied-message": "コピーしました！",
+    "share-text": "Linkatでリンク集を作りました！\n#linkat\n{{url}}"
+  },
   "profile-card": {
-    "edit-button": "編集"
+    "edit-button": "編集",
+    "share-text": "{{displayName}}さんのボード\n#linkat\n{{url}}"
   },
   "card-form": {
     "text-label": "テキスト",

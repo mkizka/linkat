@@ -15,6 +15,7 @@ import { i18nServer } from "~/i18n/i18n";
 import { boardScheme } from "~/models/board";
 import { getSessionAgent, getSessionUser } from "~/server/oauth/session";
 import { boardService } from "~/server/service/boardService";
+import { env } from "~/utils/env";
 import { createLogger } from "~/utils/logger";
 
 const logger = createLogger("edit");
@@ -46,7 +47,7 @@ export async function action({ request }: ActionFunctionArgs) {
     logger.error("PDSへのボードの保存に失敗しました", { error });
   }
   // 3. 閲覧ページにリダイレクト
-  return redirect(`/${user.handle}`);
+  return redirect(`/${user.handle}?success`);
 }
 
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -55,11 +56,11 @@ export async function loader({ request }: LoaderFunctionArgs) {
     return redirect("/login");
   }
   const board = await boardService.findOrFetchBoard(user.did);
-  return { user, board };
+  return { user, board, url: `${env.PUBLIC_URL}/${user.handle}` };
 }
 
 export default function Index() {
-  const { user, board } = useLoaderData<typeof loader>();
+  const { user, board, url } = useLoaderData<typeof loader>();
   const { t } = useTranslation();
 
   // 更新ボタンを押したりしたときに確認ダイアログを出す
@@ -97,7 +98,7 @@ export default function Index() {
   return (
     <>
       <Main>
-        <BoardViewer user={user} board={board} editable />
+        <BoardViewer user={user} board={board} url={url} editable />
       </Main>
       <RouteToaster />
     </>

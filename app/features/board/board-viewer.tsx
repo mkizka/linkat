@@ -14,10 +14,12 @@ import { SortableCardList } from "./card/sortable-card-list";
 import { CardFormModal, cardModal } from "./form/card-form-modal";
 import type { CardFormPayload } from "./form/card-form-provider";
 import { CardFormProvider } from "./form/card-form-provider";
+import { ShareModal } from "./share-modal";
 
 type Props = {
   user: ProfileCardProps["user"];
   board: ValidBoard | null;
+  url: string;
   editable?: boolean;
   isMine?: boolean;
 };
@@ -27,7 +29,7 @@ const withId = (card: ValidCard) => ({
   id: crypto.randomUUID().toString(),
 });
 
-export function BoardViewer({ user, board, editable, isMine }: Props) {
+export function BoardViewer({ user, board, url, editable, isMine }: Props) {
   const [cards, setCards] = useState((board?.cards ?? []).map(withId));
   const { t } = useTranslation();
   const navigation = useNavigation();
@@ -73,7 +75,7 @@ export function BoardViewer({ user, board, editable, isMine }: Props) {
       <div className="flex flex-col gap-2 py-4">
         <ProfileCard
           user={user}
-          shareText={`https://linkat.blue/${user.handle}`}
+          url={url}
           showEditButton={!editable && isMine}
         />
         <SortableCardList
@@ -102,6 +104,7 @@ export function BoardViewer({ user, board, editable, isMine }: Props) {
           </Form>
         )}
       </div>
+      <ShareModal url={url} />
     </CardFormProvider>
   );
 }
