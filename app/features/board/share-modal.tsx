@@ -71,7 +71,7 @@ export function ShareModal({ url }: Props) {
         </div>
       </div>
       <form method="dialog" className="modal-backdrop">
-        <button>close</button>
+        <button data-testid="share-modal__close">close</button>
       </form>
     </dialog>
   );
