@@ -34,7 +34,6 @@ test.describe("編集", () => {
     // 保存して閲覧ページで順番を確認
     await page.getByTestId("board-viewer__submit").click();
     await page.waitForURL((url) => url.pathname !== "/edit");
-    await page.keyboard.press("Escape");
     await expect(card1).toBeVisible();
     await expect(card2).toBeVisible();
     const allCards = await page.getByTestId("sortable-card").allTextContents();
@@ -49,7 +48,6 @@ test.describe("編集", () => {
     // 保存して閲覧ページで順番を確認
     await page.getByTestId("board-viewer__submit").click();
     await page.waitForURL((url) => url.pathname !== "/edit");
-    await page.keyboard.press("Escape");
     await expect(card1).toBeVisible();
     await expect(card2).toBeVisible();
     const sorted = await page.getByTestId("sortable-card").allTextContents();
@@ -65,7 +63,6 @@ test.describe("編集", () => {
     // 保存して閲覧ページで順番を確認
     await page.getByTestId("board-viewer__submit").click();
     await page.waitForURL((url) => url.pathname !== "/edit");
-    await page.keyboard.press("Escape");
     await expect(card1).not.toBeVisible();
     await expect(card1Edited).toBeVisible();
     await expect(card2).toBeVisible();
@@ -81,7 +78,6 @@ test.describe("編集", () => {
     // 保存して閲覧ページで順番を確認
     await page.getByTestId("board-viewer__submit").click();
     await page.waitForURL((url) => url.pathname !== "/edit");
-    await page.keyboard.press("Escape");
     await expect(card1Edited).not.toBeVisible();
     await expect(card2).not.toBeVisible();
   });
