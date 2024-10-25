@@ -38,8 +38,17 @@
     "confirm-delete-message": "Are you sure you want to delete?",
     "submit-button": "Save"
   },
+  "share-modal": {
+    "title": "Saved",
+    "description": "Let's share your Link in Bio!",
+    "post-to-bluesky": "Post to Bluesky",
+    "copy-url": "Copy URL",
+    "copied-message": "Copied!",
+    "share-text": "I created a Link in Bio using Linkat! #linkat {{- url}}"
+  },
   "profile-card": {
-    "edit-button": "Edit"
+    "edit-button": "Edit",
+    "share-text": "{{- displayName}}'s board #linkat {{- url}}"
   },
   "card-form": {
     "text-label": "Text",
