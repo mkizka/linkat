@@ -21,6 +21,7 @@ export function ShareModal({ url }: Props) {
   const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
   const [copied, setCopied] = useState(false);
+  const shareText = t("share-modal.share-text", { url });
 
   useEffect(() => {
     if (searchParams.has("success")) {
@@ -44,14 +45,19 @@ export function ShareModal({ url }: Props) {
   };
 
   return (
-    <dialog id={SHARE_MODAL_ID} className="modal" ref={ref}>
+    <dialog
+      id={SHARE_MODAL_ID}
+      className="modal"
+      ref={ref}
+      data-testid="show-modal__dialog"
+    >
       <div className="modal-box">
         <h3 className="text-lg font-bold">{t("share-modal.title")}</h3>
         <p>{t("share-modal.description")}</p>
         <div className="flex flex-col gap-2 py-4 sm:flex-row">
           <a
             className="btn-bluesky btn flex-1 text-base-100"
-            href={`https://bsky.app/intent/compose?text=${encodeURIComponent(t("share-modal.share-text", { url }))}`}
+            href={`https://bsky.app/intent/compose?text=${encodeURIComponent(shareText)}`}
             target="_blank"
             rel="noreferrer"
           >
@@ -71,7 +77,7 @@ export function ShareModal({ url }: Props) {
         </div>
       </div>
       <form method="dialog" className="modal-backdrop">
-        <button data-testid="share-modal__close">close</button>
+        <button>close</button>
       </form>
     </dialog>
   );
