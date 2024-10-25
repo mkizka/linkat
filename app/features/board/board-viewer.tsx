@@ -14,7 +14,6 @@ import { SortableCardList } from "./card/sortable-card-list";
 import { CardFormModal, cardModal } from "./form/card-form-modal";
 import type { CardFormPayload } from "./form/card-form-provider";
 import { CardFormProvider } from "./form/card-form-provider";
-import { ShareModal } from "./share-modal";
 
 type Props = {
   user: ProfileCardProps["user"];
@@ -104,7 +103,6 @@ export function BoardViewer({ user, board, url, editable, isMine }: Props) {
           </Form>
         )}
       </div>
-      <ShareModal url={url} />
     </CardFormProvider>
   );
 }

@@ -17,7 +17,8 @@ type Props = {
 };
 
 export function ShareModal({ url }: Props) {
-  const ref = useRef<HTMLDialogElement>(null);
+  const dialogRef = useRef<HTMLDialogElement>(null);
+  const handledRef = useRef(false);
   const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
   const [copied, setCopied] = useState(false);
@@ -25,7 +26,7 @@ export function ShareModal({ url }: Props) {
 
   useEffect(() => {
     if (searchParams.has("success")) {
-      ref.current!.showModal();
+      dialogRef.current!.showModal();
       setSearchParams(
         (prev) => {
           prev.delete("success");
@@ -38,14 +39,33 @@ export function ShareModal({ url }: Props) {
     }
   }, [searchParams, setSearchParams]);
 
+  const trackShareModal = (action: string) => {
+    if (!handledRef.current) {
+      void umami.track("handle-share-modal", {
+        action,
+      });
+      handledRef.current = true;
+    }
+  };
+
+  const handlePost = () => {
+    trackShareModal("post-to-bluesky");
+  };
+
   const handleCopy = async () => {
     setCopied(true);
     await navigator.clipboard.writeText(url);
     setTimeout(() => setCopied(false), 3000);
+
+    trackShareModal("copy-url");
+  };
+
+  const handleClose = () => {
+    trackShareModal("close");
   };
 
   return (
-    <dialog id={SHARE_MODAL_ID} className="modal" ref={ref}>
+    <dialog id={SHARE_MODAL_ID} className="modal" ref={dialogRef}>
       <div className="modal-box">
         <div className="flex flex-col gap-2">
           <h3 className="text-lg font-bold">{t("share-modal.title")}</h3>
@@ -56,18 +76,12 @@ export function ShareModal({ url }: Props) {
               href={`https://bsky.app/intent/compose?text=${encodeURIComponent(shareText)}`}
               target="_blank"
               rel="noreferrer"
-              data-umami-event="handle-share-modal"
-              data-umami-event-action="post-to-bluesky"
+              onClick={handlePost}
             >
               <BlueskyIcon className="size-6" />
               {t("share-modal.post-to-bluesky")}
             </a>
-            <Button
-              onClick={handleCopy}
-              className="flex-1"
-              data-umami-event="handle-share-modal"
-              data-umami-event-action="copy-url"
-            >
+            <Button className="flex-1" onClick={handleCopy}>
               {copied ? (
                 <ClipboardDocumentCheckIcon className="size-6" />
               ) : (
@@ -83,20 +97,14 @@ export function ShareModal({ url }: Props) {
           <button
             className="btn btn-circle btn-ghost btn-sm absolute right-2 top-2"
             data-testid="show-modal__close"
-            data-umami-event="handle-share-modal"
-            data-umami-event-action="close"
+            onClick={handleClose}
           >
             ✕
           </button>
         </form>
       </div>
       <form method="dialog" className="modal-backdrop">
-        <button
-          data-umami-event="handle-share-modal"
-          data-umami-event-action="close"
-        >
-          close
-        </button>
+        <button onClick={handleClose}>close</button>
       </form>
     </dialog>
   );

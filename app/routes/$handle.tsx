@@ -3,6 +3,7 @@ import { useLoaderData } from "@remix-run/react";
 
 import { Footer, Main } from "~/components/layout";
 import { BoardViewer } from "~/features/board/board-viewer";
+import { ShareModal } from "~/features/board/share-modal";
 import { i18nServer } from "~/i18n/i18n";
 import { getSessionUserDid } from "~/server/oauth/session";
 import { boardService } from "~/server/service/boardService";
@@ -62,6 +63,7 @@ export default function Index() {
     <>
       <Main>
         <BoardViewer user={user} board={board} url={url} isMine={isMine} />
+        <ShareModal url={url} />
       </Main>
       <Footer withNavigation />
     </>
