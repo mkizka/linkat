@@ -15,7 +15,7 @@ importers:
         specifier: 0.4.1
         version: 0.4.1
       '@atproto/jwk-jose':
-        specifier: ^0.1.2
+        specifier: 0.1.2
         version: 0.1.2
       '@atproto/lexicon':
         specifier: 0.4.1
@@ -39,10 +39,10 @@ importers:
         specifier: 1.2.2
         version: 1.2.2(zod@3.23.8)
       '@emoji-mart/data':
-        specifier: ^1.2.1
+        specifier: 1.2.1
         version: 1.2.1
       '@emoji-mart/react':
-        specifier: ^1.1.1
+        specifier: 1.1.1
         version: 1.1.1(emoji-mart@5.6.0)(react@18.3.1)
       '@heroicons/react':
         specifier: 2.1.5
@@ -60,28 +60,28 @@ importers:
         specifier: 2.12.1
         version: 2.12.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.6.2)
       '@skyware/jetstream':
-        specifier: ^0.2.0
+        specifier: 0.2.0
         version: 0.2.0(@atcute/client@2.0.3)
       '@t3-oss/env-core':
         specifier: 0.11.1
         version: 0.11.1(typescript@5.6.2)(zod@3.23.8)
       '@vercel/og':
-        specifier: ^0.6.3
+        specifier: 0.6.3
         version: 0.6.3
       clsx:
         specifier: 2.1.1
         version: 2.1.1
       emoji-mart:
-        specifier: ^5.6.0
+        specifier: 5.6.0
         version: 5.6.0
       express:
         specifier: 4.21.0
         version: 4.21.0
       i18next:
-        specifier: ^23.15.2
+        specifier: 23.15.2
         version: 23.15.2
       i18next-browser-languagedetector:
-        specifier: ^8.0.0
+        specifier: 8.0.0
         version: 8.0.0
       isbot:
         specifier: 5.1.17
@@ -102,13 +102,13 @@ importers:
         specifier: 18.3.1
         version: 18.3.1(react@18.3.1)
       react-i18next:
-        specifier: ^15.0.2
+        specifier: 15.0.2
         version: 15.0.2(i18next@23.15.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react-movable:
         specifier: 3.3.1
         version: 3.3.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       remix-i18next:
-        specifier: ^6.4.1
+        specifier: 6.4.1
         version: 6.4.1(@remix-run/node@2.12.1(typescript@5.6.2))(@remix-run/react@2.12.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.6.2))(i18next@23.15.2)(react-i18next@15.0.2(i18next@23.15.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)
       remix-utils:
         specifier: 7.7.0
@@ -117,7 +117,7 @@ importers:
         specifier: 2.5.2
         version: 2.5.2
       ws:
-        specifier: ^8.18.0
+        specifier: 8.18.0
         version: 8.18.0
       zod:
         specifier: 3.23.8
@@ -163,10 +163,10 @@ importers:
         specifier: 18.3.0
         version: 18.3.0
       '@types/umami':
-        specifier: ^2.10.0
+        specifier: 2.10.0
         version: 2.10.0
       '@types/ws':
-        specifier: ^8.5.12
+        specifier: 8.5.12
         version: 8.5.12
       '@vitest/coverage-v8':
         specifier: 2.1.1
