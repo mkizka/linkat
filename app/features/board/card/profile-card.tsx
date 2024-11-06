@@ -30,16 +30,16 @@ function AvatarPlaceholder() {
 
 export type ProfileCardProps = {
   user: Pick<User, "avatar" | "displayName" | "handle">;
-  shareText: string;
+  url: string;
   showEditButton?: boolean;
 };
 
-export function ProfileCard({
-  user,
-  shareText,
-  showEditButton,
-}: ProfileCardProps) {
+export function ProfileCard({ user, url, showEditButton }: ProfileCardProps) {
   const { t } = useTranslation();
+  const shareText = t("profile-card.share-text", {
+    url,
+    displayName: user.displayName,
+  });
   return (
     <Card>
       <div className="card-body gap-2">

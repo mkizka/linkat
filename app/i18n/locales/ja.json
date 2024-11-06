@@ -1,6 +1,6 @@
 {
   "_index": {
-    "meta-title": "Linkat | Blueskyのためのリンク集",
+    "meta-title": "Linkat | Blueskyのためのリンク集を作ろう",
     "meta-description": "Linkat（リンクアット）は、Blueskyのためのリンク集を作成できるATProtoサービスです。作成したリンク集はあなたのアカウントのPDSに保存されます。",
     "hero-text": "Blueskyのための\nリンク集を作ろう",
     "edit-link": "ボードを編集",
@@ -39,8 +39,17 @@
     "confirm-delete-message": "本当に削除しますか？",
     "submit-button": "保存"
   },
+  "share-modal": {
+    "title": "保存しました",
+    "description": "リンク集をシェアしよう！",
+    "post-to-bluesky": "Blueskyにポストする",
+    "copy-url": "URLをコピーする",
+    "copied-message": "コピーしました！",
+    "share-text": "Linkatでリンク集を作りました！ #linkat {{- url}}"
+  },
   "profile-card": {
-    "edit-button": "編集"
+    "edit-button": "編集",
+    "share-text": "{{- displayName}}さんのボード #linkat {{- url}}"
   },
   "card-form": {
     "text-label": "テキスト",
