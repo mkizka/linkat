@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-docker compose up -d --wait > /dev/null
+docker compose up db -d --wait > /dev/null
 pnpm prisma db push --skip-generate
