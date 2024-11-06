@@ -1,14 +1,24 @@
+import { useLoaderData } from "@remix-run/react";
 import { useTranslation } from "react-i18next";
 
 import { Footer, Main } from "~/components/layout";
 import { BoardViewer } from "~/features/board/board-viewer";
+import { env } from "~/utils/env";
+
+export function loader() {
+  return {
+    url: `${env.PUBLIC_URL}/sample`,
+  };
+}
 
 export default function Index() {
+  const { url } = useLoaderData<typeof loader>();
   const { t } = useTranslation();
   return (
     <>
       <Main>
         <BoardViewer
+          url={url}
           user={{
             avatar: null,
             displayName: t("sample.user-name"),
