@@ -1,6 +1,8 @@
+import { json } from "@remix-run/node";
+
 import { createOAuthClient } from "~/server/oauth/client";
 
 export async function loader() {
   const oauthClient = await createOAuthClient();
-  return oauthClient.clientMetadata;
+  return json(oauthClient.clientMetadata);
 }
