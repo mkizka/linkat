@@ -4,7 +4,6 @@ import express from "express";
 import morgan from "morgan";
 
 import { jetstream } from "./server/jetstream/subscription.js";
-import { oauthRouter } from "./server/oauth/route.js";
 import { env } from "./utils/env.js";
 import { createLogger } from "./utils/logger.js";
 
@@ -54,8 +53,6 @@ app.use((req, res, next) => {
     next();
   }
 });
-
-app.use(oauthRouter);
 
 // const server = createServer();
 // server.dev.mkizka.sample.sampleMethod(() => {
