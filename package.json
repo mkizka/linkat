@@ -30,7 +30,7 @@
     "@atproto/identity": "0.4.2",
     "@atproto/jwk-jose": "0.1.2",
     "@atproto/lexicon": "0.4.2",
-    "@atproto/oauth-client-node": "0.2.0",
+    "@atproto/oauth-client-node": "0.1.4",
     "@atproto/repo": "0.5.3",
     "@atproto/xrpc": "0.6.3",
     "@atproto/xrpc-server": "0.7.1",
