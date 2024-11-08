@@ -52,12 +52,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link
           rel="icon"
-          href="https://assets.linkat.blue/0/favicon.ico"
+          href="https://r2.linkat.blue/images/favicon.ico"
           sizes="48x48"
         />
         <link
           rel="apple-touch-icon"
-          href="https://assets.linkat.blue/0/apple-touch-icon.png"
+          href="https://r2.linkat.blue/images/apple-touch-icon.png"
           sizes="180x180"
         />
         <Meta />
