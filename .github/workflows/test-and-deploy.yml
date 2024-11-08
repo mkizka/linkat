@@ -73,11 +73,6 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_ENDPOINT_URL: ${{ secrets.AWS_ENDPOINT_URL }}
           AWS_DEFAULT_REGION: auto
-  test:
-    runs-on: ubuntu-latest
-    needs: [upload-assets]
-    steps:
-      - run: echo ${{ github.run_number }}
   deploy:
     runs-on: ubuntu-latest
     needs: [upload-assets]
