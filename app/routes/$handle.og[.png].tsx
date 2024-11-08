@@ -10,7 +10,7 @@ import { required } from "~/utils/required";
 
 // https://github.com/orgs/vercel/discussions/1567#discussioncomment-5854851
 const fontData = fs.readFileSync(
-  path.join(fileURLToPath(import.meta.url), "../../../public/Murecho-Bold.ttf"),
+  path.join(fileURLToPath(import.meta.url), "../../../fonts/Murecho-Bold.ttf"),
 );
 
 export async function loader({ params }: LoaderFunctionArgs) {
