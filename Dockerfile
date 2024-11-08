@@ -14,6 +14,7 @@ COPY --link prisma ./prisma
 COPY --link lexicons ./lexicons
 RUN pnpm install --frozen-lockfile
 COPY --link . .
+ARG VITE_CONFIG_BASE=/
 RUN pnpm build
 RUN pnpm prune --prod --ignore-scripts
 

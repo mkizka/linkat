@@ -47,7 +47,7 @@ jobs:
         run: |
           E2E_S3_PATH="playwright-report/${{ github.ref == 'refs/heads/main' && 'main' || github.sha }}"
           aws s3 cp playwright-report "s3://${{ vars.E2E_BUCKET_NAME }}/$E2E_S3_PATH" --recursive
-          echo "Report: https://gha.linkat.blue/$E2E_S3_PATH/index.html"
+          echo "Report: https://${{ vars.S3_BUCKET_NAME }}/$E2E_S3_PATH/index.html"
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -67,7 +67,7 @@ jobs:
       - run: pnpm build
       - name: Upload Assets
         run: |
-          aws s3 cp build/client/assets "s3://${{ vars.ASSETS_BUCKET_NAME }}/${{ github.run_number }}/assets" --recursive
+          aws s3 cp build/client/assets "s3://build/${{ github.run_number }}/assets" --recursive
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -82,6 +82,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: superfly/flyctl-actions/setup-flyctl@master
-      - run: flyctl deploy --remote-only --build-arg VITE_CONFIG_BASE=${{ vars.VITE_CONFIG_BASE }}/${{ github.run_number }}/
+      - run: flyctl deploy --remote-only --build-arg VITE_CONFIG_BASE=${{ vars.S3_BASE_URL }}/build/${{ github.run_number }}/
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
