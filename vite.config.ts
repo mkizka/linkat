@@ -4,7 +4,7 @@ import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
   // base: process.env.VITE_CONFIG_BASE ?? "/",
-  base: "https://assets.linkat.blue/70/",
+  base: "https://assets.linkat.blue/71/",
   plugins: [
     remix({
       future: {

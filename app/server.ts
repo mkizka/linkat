@@ -12,7 +12,7 @@ import { createLogger } from "./utils/logger.js";
 // OAuthログインを行うためにE2Eテスト実行時のprocess.env.NODE_ENVはdevelopmentになっている
 // 代わりにprocess.env.E2Eが設定されているので、その場合はviteを使わない
 const viteDevServer =
-  process.env.NODE_ENV === "production" || !!process.env.E2E
+  process.env.NODE_ENV === "production" || process.env.E2E
     ? null
     : await import("vite").then((vite) =>
         vite.createServer({
@@ -34,15 +34,11 @@ app.use(
   }),
 );
 
-app.use(
-  viteDevServer
-    ? viteDevServer.middlewares
-    : express.static("build/client", {
-        setHeaders: (res) => {
-          res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
-        },
-      }),
-);
+if (viteDevServer) {
+  app.use(viteDevServer.middlewares);
+} else if (process.env.E2E) {
+  app.use(express.static("build/client"));
+}
 
 // 開発環境でのOAuthログイン時 http://127.0.0.1/oauth/callback にリダイレクトされるので、
 // そこからさらに http://linkat.localhost にリダイレクトさせる
