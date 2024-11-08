@@ -47,7 +47,7 @@ jobs:
         run: |
           E2E_S3_PATH="playwright-report/${{ github.ref == 'refs/heads/main' && 'main' || github.sha }}"
           aws s3 cp playwright-report "s3://${{ vars.E2E_BUCKET_NAME }}/$E2E_S3_PATH" --recursive
-          echo "Report: https://${{ vars.S3_BUCKET_NAME }}/$E2E_S3_PATH/index.html"
+          echo "Report: https://$E2E_S3_PATH/index.html"
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -55,7 +55,7 @@ jobs:
           AWS_DEFAULT_REGION: auto
   upload-assets:
     runs-on: ubuntu-latest
-    # if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main'
     steps:
       - uses: actions/checkout@v4
       - run: corepack enable pnpm
