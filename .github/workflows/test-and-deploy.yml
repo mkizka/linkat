@@ -65,6 +65,8 @@ jobs:
           cache: pnpm
       - run: pnpm i
       - run: pnpm build
+        env:
+          VITE_CONFIG_BASE: ${{ vars.S3_BASE_URL }}/build/${{ github.run_number }}/
       - name: Upload Assets
         run: |
           aws s3 cp build/client/assets "s3://build/${{ github.run_number }}/assets" --recursive
