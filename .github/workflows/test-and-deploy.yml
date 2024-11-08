@@ -76,12 +76,12 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     needs: [upload-assets]
-    if: github.ref == 'refs/heads/main'
+    # if: github.ref == 'refs/heads/main'
     concurrency: deploy-group
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: superfly/flyctl-actions/setup-flyctl@master
-      - run: flyctl deploy --remote-only
+      - run: flyctl deploy --remote-only --build-arg VITE_CONFIG_BASE=${{ vars.VITE_CONFIG_BASE }}/${{ github.run_number }}/
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}

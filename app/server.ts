@@ -36,7 +36,7 @@ app.use(
 
 if (viteDevServer) {
   app.use(viteDevServer.middlewares);
-} else if (process.env.E2E) {
+} else {
   app.use(express.static("build/client"));
 }
 

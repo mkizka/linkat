@@ -57,8 +57,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
         />
         <link
           rel="apple-touch-icon"
-          sizes="180x180"
           href="https://assets.linkat.blue/0/apple-touch-icon.png"
+          sizes="180x180"
         />
         <Meta />
         <Links />
