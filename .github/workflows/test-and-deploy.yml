@@ -55,7 +55,7 @@ jobs:
           AWS_DEFAULT_REGION: auto
   upload-assets:
     runs-on: ubuntu-latest
-    # if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main'
     steps:
       - uses: actions/checkout@v4
       - run: corepack enable pnpm
