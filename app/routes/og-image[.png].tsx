@@ -107,7 +107,7 @@ export function loader({ request }: LoaderFunctionArgs) {
           </div>
           <div
             style={{
-              fontSize: "3rem",
+              fontSize: "4rem",
               fontWeight: "bold",
               position: "absolute",
               right: "4rem",
