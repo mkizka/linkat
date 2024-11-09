@@ -1,5 +1,6 @@
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
+import { useEffect } from "react";
 
 import { Footer, Main } from "~/components/layout";
 import { BoardViewer } from "~/features/board/board-viewer";
@@ -59,6 +60,12 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
 
 export default function Index() {
   const { user, board, url, isMine } = useLoaderData<typeof loader>();
+
+  useEffect(() => {
+    // OGP画像を生成するためにリクエストを送る
+    new Image().src = `${url}/og.png`;
+  }, [url]);
+
   return (
     <>
       <Main>
