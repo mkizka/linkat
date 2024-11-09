@@ -51,7 +51,7 @@ export function ShareModal({ url }: Props) {
 
   const handlePost = async () => {
     setLoading(true);
-    await fetch(`${url}/og.png`);
+    await fetch(`${url}/image.png`);
     open(
       `https://bsky.app/intent/compose?text=${encodeURIComponent(shareText)}`,
       "_blank",
