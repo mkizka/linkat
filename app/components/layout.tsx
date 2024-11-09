@@ -1,6 +1,7 @@
 import { LanguageIcon } from "@heroicons/react/24/outline";
 import { Form, Link } from "@remix-run/react";
 import { type ReactNode, useRef } from "react";
+import GitHubButton from "react-github-btn";
 import { useTranslation } from "react-i18next";
 
 import { cn } from "~/utils/cn";
@@ -105,7 +106,7 @@ export function Footer({ withNavigation }: FooterProps) {
           </Link>
         </nav>
       )}
-      <nav className="flex justify-center gap-4">
+      <nav className="flex h-10 items-center justify-center gap-4">
         <a
           href="https://bsky.app/profile/linkat.blue"
           target="_blank"
@@ -122,6 +123,18 @@ export function Footer({ withNavigation }: FooterProps) {
         >
           <GitHubIcon className="size-7 text-base-100" />
         </a>
+        <div className="relative size-7">
+          <div className="loading loading-spinner absolute top-1.5 size-4"></div>
+          <div className="absolute top-1">
+            <GitHubButton
+              href="https://github.com/mkizka/linkat"
+              data-color-scheme="no-preference: light; light: light; dark: dark;"
+              data-icon="octicon-star"
+              data-show-count="true"
+              aria-label="Star mkizka/linkat on GitHub"
+            />
+          </div>
+        </div>
       </nav>
     </footer>
   );
