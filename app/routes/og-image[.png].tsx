@@ -122,13 +122,13 @@ export function loader({ request }: LoaderFunctionArgs) {
     {
       width: 1200,
       height: 630,
-      fonts: [
-        {
-          name: "Murecho",
-          data: fontData,
-          style: "normal",
-        },
-      ],
+      // fonts: [
+      //   {
+      //     name: "Murecho",
+      //     data: fontData,
+      //     style: "normal",
+      //   },
+      // ],
     },
   );
 }
