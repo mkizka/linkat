@@ -1,17 +1,20 @@
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import { ImageResponse } from "@vercel/og";
 import fs from "fs";
-
-import { userService } from "~/server/service/userService";
-import { required } from "~/utils/required";
+import { z } from "zod";
 
 const fontData = fs.readFileSync("./fonts/Murecho-Bold.ttf");
 
-export async function loader({ params }: LoaderFunctionArgs) {
-  const user = await userService.findOrFetchUser({
-    handleOrDid: required(params.handle),
-  });
-  if (!user) {
+const schema = z.object({
+  handle: z.string(),
+  displayName: z.string(),
+  avatar: z.string().optional(),
+});
+
+export function loader({ request }: LoaderFunctionArgs) {
+  const query = Object.fromEntries(new URL(request.url).searchParams);
+  const parsed = schema.safeParse(query);
+  if (!parsed.success) {
     // eslint-disable-next-line @typescript-eslint/only-throw-error
     throw new Response(null, { status: 404 });
   }
@@ -52,9 +55,9 @@ export async function loader({ params }: LoaderFunctionArgs) {
               alignItems: "center",
             }}
           >
-            {user.avatar ? (
+            {parsed.data.avatar ? (
               <img
-                src={user.avatar}
+                src={parsed.data.avatar}
                 style={{
                   width: "200px",
                   height: "200px",
@@ -86,7 +89,7 @@ export async function loader({ params }: LoaderFunctionArgs) {
                   overflow: "hidden",
                 }}
               >
-                {user.displayName}
+                {parsed.data.displayName}
               </p>
               <p
                 style={{
@@ -98,7 +101,7 @@ export async function loader({ params }: LoaderFunctionArgs) {
                   marginTop: "-1rem",
                 }}
               >
-                @{user.handle}
+                @{parsed.data.handle}
               </p>
             </div>
           </div>
@@ -119,10 +122,6 @@ export async function loader({ params }: LoaderFunctionArgs) {
     {
       width: 1200,
       height: 630,
-      headers: {
-        // Cloudflareに10分間キャッシュさせる
-        "cache-control": "public, s-maxage=600, max-age=0",
-      },
       fonts: [
         {
           name: "Murecho",
