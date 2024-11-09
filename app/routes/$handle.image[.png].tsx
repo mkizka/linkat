@@ -1,21 +1,21 @@
+import type { User } from "@prisma/client";
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import { Resvg } from "@resvg/resvg-js";
 import fs from "fs";
+import { LRUCache } from "lru-cache";
 import satori from "satori";
 
 import { userService } from "~/server/service/userService";
 import { required } from "~/utils/required";
 
+const cache = new LRUCache<string, Buffer>({
+  max: 100,
+  ttl: 1000 * 60 * 10,
+});
+
 const fontData = fs.readFileSync("./fonts/Murecho-Bold.ttf");
 
-export async function loader({ params }: LoaderFunctionArgs) {
-  const user = await userService.findOrFetchUser({
-    handleOrDid: required(params.handle),
-  });
-  if (!user) {
-    // eslint-disable-next-line @typescript-eslint/only-throw-error
-    throw new Response(null, { status: 404 });
-  }
+const createImage = async (user: User) => {
   //
   // カード内の割合
   // 100px(padding) + 200px(avatar) + 50px(mariginLeft) + 650px(handle/displayName) + 100px(padding) = 1100px
@@ -128,7 +128,21 @@ export async function loader({ params }: LoaderFunctionArgs) {
     },
   );
   const resvg = new Resvg(svg);
-  return new Response(resvg.render().asPng(), {
+  const image = resvg.render().asPng();
+  cache.set(user.did, image);
+  return image;
+};
+
+export async function loader({ params }: LoaderFunctionArgs) {
+  const user = await userService.findOrFetchUser({
+    handleOrDid: required(params.handle),
+  });
+  if (!user) {
+    // eslint-disable-next-line @typescript-eslint/only-throw-error
+    throw new Response(null, { status: 404 });
+  }
+  const image = cache.get(user.did) ?? (await createImage(user));
+  return new Response(image, {
     headers: {
       "Ccontent-Type": "image/png",
       "Cache-Control": "public, max-age=31536000, immutable",
