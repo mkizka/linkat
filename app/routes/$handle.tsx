@@ -1,3 +1,4 @@
+import type { User } from "@prisma/client";
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 
@@ -15,6 +16,18 @@ import { required } from "~/utils/required";
 const notFound = () => {
   // eslint-disable-next-line @typescript-eslint/only-throw-error
   throw new Response("Not Found", { status: 404 });
+};
+
+const createOgImageUrl = (user: User) => {
+  const url = new URL(`${env.PUBLIC_URL}/og-image.png`);
+  url.searchParams.append("handle", user.handle);
+  if (user.displayName) {
+    url.searchParams.append("displayName", user.displayName);
+  }
+  if (user.avatar) {
+    url.searchParams.append("avatar", user.avatar);
+  }
+  return url.toString();
 };
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
@@ -45,16 +58,13 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     isMine: user.did === (await getSessionUserDid(request)),
     title: `${title} | Linkat`,
     url: `${env.PUBLIC_URL}/${user.handle}`,
+    ogImageUrl: createOgImageUrl(user),
   };
 }
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
-  const { title, url } = required(data);
-  return createMeta({
-    title,
-    url,
-    ogImageUrl: `${url}/image.png`,
-  });
+  const { title, url, ogImageUrl } = required(data);
+  return createMeta({ title, url, ogImageUrl });
 };
 
 export default function Index() {
