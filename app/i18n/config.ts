@@ -3,7 +3,7 @@ import type { InitOptions } from "i18next";
 import en from "./locales/en.json";
 import ja from "./locales/ja.json";
 
-export const i18nConfig: InitOptions = {
+export const i18nConfig = {
   supportedLngs: ["en", "ja"],
   fallbackLng: "en",
   defaultNS: "translation",
@@ -14,4 +14,4 @@ export const i18nConfig: InitOptions = {
     en: { translation: en },
     ja: { translation: ja },
   },
-};
+} satisfies InitOptions;
