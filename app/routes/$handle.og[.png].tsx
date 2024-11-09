@@ -121,7 +121,7 @@ export async function loader({ params }: LoaderFunctionArgs) {
       height: 630,
       headers: {
         // Cloudflareに10分間キャッシュさせる
-        "Cache-Control": "public, s-maxage=600, max-age=0",
+        "cache-control": "public, s-maxage=600, max-age=0",
       },
       fonts: [
         {
