@@ -1,6 +1,9 @@
 import { LinkIcon } from "@heroicons/react/24/outline";
 import type { ComponentProps, FC } from "react";
 
+import { BlueskyIcon } from "~/components/icons/bluesky";
+import { GitHubIcon } from "~/components/icons/github";
+import { TwitterIcon } from "~/components/icons/twitter";
 import type { ValidCard } from "~/models/card";
 import {
   atUri,
@@ -10,10 +13,6 @@ import {
   isGitHubProfileUrl,
   isTwitterProfileUrl,
 } from "~/utils/url";
-
-import { BlueskyIcon } from "./icons/bluesky";
-import { GitHubIcon } from "./icons/github";
-import { TwitterIcon } from "./icons/twitter";
 
 type CardIconComponent = FC<ComponentProps<"svg">>;
 

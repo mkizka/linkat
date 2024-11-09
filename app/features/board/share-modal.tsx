@@ -7,8 +7,7 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { Button } from "~/components/button";
-
-import { BlueskyIcon } from "./card/icons/bluesky";
+import { BlueskyIcon } from "~/components/icons/bluesky";
 
 const SHARE_MODAL_ID = "share-modal";
 

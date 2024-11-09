@@ -7,8 +7,7 @@ import { useTranslation } from "react-i18next";
 
 import { Button } from "~/components/button";
 import { Card } from "~/components/card";
-
-import { BlueskyIcon } from "./icons/bluesky";
+import { BlueskyIcon } from "~/components/icons/bluesky";
 
 function Avatar({ avatar }: { avatar: string }) {
   return (
