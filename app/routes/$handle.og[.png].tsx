@@ -1,17 +1,11 @@
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import { ImageResponse } from "@vercel/og";
 import fs from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
 
 import { userService } from "~/server/service/userService";
-import { env } from "~/utils/env";
 import { required } from "~/utils/required";
 
-// https://github.com/orgs/vercel/discussions/1567#discussioncomment-5854851
-const fontData = fs.readFileSync(
-  path.join(fileURLToPath(import.meta.url), "../../../public/Murecho-Bold.ttf"),
-);
+const fontData = fs.readFileSync("./fonts/Murecho-Bold.ttf");
 
 export async function loader({ params }: LoaderFunctionArgs) {
   const user = await userService.findOrFetchUser({
@@ -21,12 +15,16 @@ export async function loader({ params }: LoaderFunctionArgs) {
     // eslint-disable-next-line @typescript-eslint/only-throw-error
     throw new Response(null, { status: 404 });
   }
+  //
+  // カード内の割合
+  // 100px(padding) + 200px(avatar) + 50px(mariginLeft) + 650px(handle/displayName) + 100px(padding) = 1100px
+  //
   return new ImageResponse(
     (
       <div
         style={{
-          height: "100%",
-          width: "100%",
+          width: "1200px",
+          height: "630px",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
@@ -38,10 +36,10 @@ export async function loader({ params }: LoaderFunctionArgs) {
         <div
           style={{
             display: "flex",
-            padding: "4rem",
-            width: "90%",
-            height: "90%",
-            backgroundColor: "#f2f2f2",
+            padding: "100px",
+            width: "1100px",
+            height: "500px",
+            backgroundColor: "#ffffff",
             borderRadius: "1rem",
             // https://tailwindcss.com/docs/box-shadow
             boxShadow:
@@ -55,12 +53,18 @@ export async function loader({ params }: LoaderFunctionArgs) {
             }}
           >
             {user.avatar ? (
-              <img width={300} height={300} src={user.avatar} />
+              <img
+                src={user.avatar}
+                style={{
+                  width: "200px",
+                  height: "200px",
+                }}
+              />
             ) : (
               <div
                 style={{
-                  width: "250px",
-                  height: "250px",
+                  width: "200px",
+                  height: "200px",
                   backgroundColor: "#aaa",
                 }}
               />
@@ -69,13 +73,17 @@ export async function loader({ params }: LoaderFunctionArgs) {
               style={{
                 display: "flex",
                 flexDirection: "column",
-                marginLeft: "4rem",
+                marginLeft: "50px",
+                width: "650px",
               }}
             >
               <p
                 style={{
-                  fontSize: "5rem",
+                  fontSize: "4rem",
                   fontWeight: "bold",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
                 }}
               >
                 {user.displayName}
@@ -83,6 +91,9 @@ export async function loader({ params }: LoaderFunctionArgs) {
               <p
                 style={{
                   fontSize: "3rem",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
                   color: "#6b7280",
                   marginTop: "-1rem",
                 }}
@@ -91,22 +102,27 @@ export async function loader({ params }: LoaderFunctionArgs) {
               </p>
             </div>
           </div>
-          <img
-            width={150}
-            height={150}
-            src={env.PUBLIC_URL + "/icon.png"}
+          <div
             style={{
+              fontSize: "3rem",
+              fontWeight: "bold",
               position: "absolute",
-              right: "3rem",
-              top: "3rem",
+              right: "4rem",
+              bottom: "2rem",
             }}
-          />
+          >
+            Linkat
+          </div>
         </div>
       </div>
     ),
     {
       width: 1200,
       height: 630,
+      headers: {
+        // Cloudflareに10分間キャッシュさせる
+        "cache-control": "public, s-maxage=600, max-age=0",
+      },
       fonts: [
         {
           name: "Murecho",
