@@ -144,7 +144,7 @@ export async function loader({ params }: LoaderFunctionArgs) {
   const image = cache.get(user.did) ?? (await createImage(user));
   return new Response(image, {
     headers: {
-      "Ccontent-Type": "image/png",
+      "Content-Type": "image/png",
     },
   });
 }
