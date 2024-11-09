@@ -39,7 +39,7 @@ export async function loader({ params }: LoaderFunctionArgs) {
             padding: "100px",
             width: "1100px",
             height: "500px",
-            backgroundColor: "#f2f2f2",
+            backgroundColor: "#ffffff",
             borderRadius: "1rem",
             // https://tailwindcss.com/docs/box-shadow
             boxShadow:
