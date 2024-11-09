@@ -145,7 +145,6 @@ export async function loader({ params }: LoaderFunctionArgs) {
   return new Response(image, {
     headers: {
       "Ccontent-Type": "image/png",
-      "Cache-Control": "public, max-age=31536000, immutable",
     },
   });
 }

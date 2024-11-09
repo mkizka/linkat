@@ -46,7 +46,7 @@ export function ProfileCard({ user, url, showEditButton }: ProfileCardProps) {
 
   const handlePost = async () => {
     setLoading(true);
-    await fetch(`${url}/image.png`);
+    await fetch(`${url}/og`);
     open(
       `https://bsky.app/intent/compose?text=${encodeURIComponent(shareText)}`,
       "_blank",

@@ -53,7 +53,7 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
   return createMeta({
     title,
     url,
-    ogImageUrl: `${url}/image.png`,
+    ogImageUrl: `${url}/og`,
   });
 };
 
