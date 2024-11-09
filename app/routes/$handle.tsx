@@ -59,7 +59,6 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
 
 export default function Index() {
   const { user, board, url, isMine } = useLoaderData<typeof loader>();
-
   return (
     <>
       <Main>
