@@ -2,8 +2,10 @@ import { PencilSquareIcon, ShareIcon } from "@heroicons/react/24/outline";
 import { UserIcon } from "@heroicons/react/24/solid";
 import type { User } from "@prisma/client";
 import { Link } from "@remix-run/react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import { Button } from "~/components/button";
 import { Card } from "~/components/card";
 
 import { BlueskyIcon } from "./icons/bluesky";
@@ -35,11 +37,26 @@ export type ProfileCardProps = {
 };
 
 export function ProfileCard({ user, url, showEditButton }: ProfileCardProps) {
+  const [loading, setLoading] = useState(false);
   const { t } = useTranslation();
   const shareText = t("profile-card.share-text", {
     url,
     displayName: user.displayName,
   });
+
+  const handlePost = async () => {
+    setLoading(true);
+    await fetch(`${url}/og.png`);
+    open(
+      `https://bsky.app/intent/compose?text=${encodeURIComponent(shareText)}`,
+      "_blank",
+      "noreferrer",
+    );
+    setLoading(false);
+
+    void umami.track("click-share-link");
+  };
+
   return (
     <Card>
       <div className="card-body gap-2">
@@ -72,16 +89,13 @@ export function ProfileCard({ user, url, showEditButton }: ProfileCardProps) {
                 Bluesky
               </a>
             )}
-            <a
+            <Button
               className="btn btn-square btn-neutral"
-              href={`https://bsky.app/intent/compose?text=${encodeURIComponent(shareText)}`}
-              target="_blank"
-              rel="noreferrer"
-              data-umami-event="click-share-link"
-              data-umami-event-handle={user.handle}
+              loading={loading}
+              onClick={handlePost}
             >
               <ShareIcon className="size-6" />
-            </a>
+            </Button>
           </div>
         </div>
         <div>
