@@ -1,9 +1,13 @@
 import { Cog8ToothIcon, LanguageIcon } from "@heroicons/react/24/outline";
 import { Form, Link } from "@remix-run/react";
 import { type ReactNode, useRef } from "react";
+import GitHubButton from "react-github-btn";
 import { useTranslation } from "react-i18next";
 
 import { cn } from "~/utils/cn";
+
+import { BlueskyIcon } from "./icons/bluesky";
+import { GitHubIcon } from "./icons/github";
 
 type HeaderProps = {
   isLogin?: boolean;
@@ -104,7 +108,7 @@ type FooterProps = {
 export function Footer({ withNavigation }: FooterProps) {
   const { t } = useTranslation();
   return (
-    <footer className="mx-auto flex w-full max-w-screen-sm flex-col gap-2 bg-neutral py-4 text-center text-neutral-content">
+    <footer className="mx-auto flex w-full max-w-screen-sm flex-col gap-6 bg-neutral py-4 text-center text-neutral-content">
       {withNavigation && (
         <nav>
           <Link
@@ -116,20 +120,36 @@ export function Footer({ withNavigation }: FooterProps) {
           </Link>
         </nav>
       )}
-      <aside className="flex h-8 flex-col justify-center">
-        <p>
-          GitHub:
-          <a
-            href="https://github.com/mkizka/linkat"
-            className="ml-1 hover:underline"
-            target="_blank"
-            rel="noreferrer"
-            data-umami-event="click-footer-github-link"
-          >
-            mkizka/linkat
-          </a>
-        </p>
-      </aside>
+      <nav className="flex h-10 items-center justify-center gap-4">
+        <a
+          href="https://bsky.app/profile/linkat.blue"
+          target="_blank"
+          rel="noreferrer"
+          data-umami-event="click-footer-bsky-link"
+        >
+          <BlueskyIcon className="size-7 text-base-100" />
+        </a>
+        <a
+          href="https://github.com/mkizka/linkat"
+          target="_blank"
+          rel="noreferrer"
+          data-umami-event="click-footer-github-link"
+        >
+          <GitHubIcon className="size-7 text-base-100" />
+        </a>
+        <div className="relative size-7">
+          <div className="loading loading-spinner absolute top-1.5 size-4"></div>
+          <div className="absolute top-1">
+            <GitHubButton
+              href="https://github.com/mkizka/linkat"
+              data-color-scheme="no-preference: light; light: light; dark: dark;"
+              data-icon="octicon-star"
+              data-show-count="true"
+              aria-label="Star mkizka/linkat on GitHub"
+            />
+          </div>
+        </div>
+      </nav>
     </footer>
   );
 }

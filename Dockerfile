@@ -14,14 +14,15 @@ COPY --link prisma ./prisma
 COPY --link lexicons ./lexicons
 RUN pnpm install --frozen-lockfile
 COPY --link . .
+ARG VITE_CONFIG_BASE=/
 RUN pnpm build
 RUN pnpm prune --prod --ignore-scripts
 
 FROM base AS runner
 ENV NODE_ENV="production"
 COPY --from=build /app/node_modules /app/node_modules
-COPY --from=build /app/public /app/public
 COPY --from=build /app/build /app/build
+COPY --from=build /app/fonts /app/fonts
 COPY --from=build /app/dist /app/dist
 COPY --from=build /app/prisma /app/prisma
 COPY --from=build /app/package.json /app/

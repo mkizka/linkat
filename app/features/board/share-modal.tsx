@@ -7,8 +7,7 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { Button } from "~/components/button";
-
-import { BlueskyIcon } from "./card/icons/bluesky";
+import { BlueskyIcon } from "~/components/icons/bluesky";
 
 const SHARE_MODAL_ID = "share-modal";
 
@@ -22,6 +21,7 @@ export function ShareModal({ url }: Props) {
   const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
   const [copied, setCopied] = useState(false);
+  const [loading, setLoading] = useState(false);
   const shareText = t("share-modal.share-text", { url });
 
   useEffect(() => {
@@ -48,7 +48,16 @@ export function ShareModal({ url }: Props) {
     }
   };
 
-  const handlePost = () => {
+  const handlePost = async () => {
+    setLoading(true);
+    await fetch(`${url}/og`);
+    open(
+      `https://bsky.app/intent/compose?text=${encodeURIComponent(shareText)}`,
+      "_blank",
+      "noreferrer",
+    );
+    setLoading(false);
+
     trackShareModal("post-to-bluesky");
   };
 
@@ -71,16 +80,14 @@ export function ShareModal({ url }: Props) {
           <h3 className="text-lg font-bold">{t("share-modal.title")}</h3>
           <p>{t("share-modal.description")}</p>
           <div className="flex flex-col gap-4 py-4 sm:flex-row">
-            <a
+            <Button
               className="btn-bluesky btn flex-1 text-base-100"
-              href={`https://bsky.app/intent/compose?text=${encodeURIComponent(shareText)}`}
-              target="_blank"
-              rel="noreferrer"
+              loading={loading}
               onClick={handlePost}
             >
               <BlueskyIcon className="size-6" />
               {t("share-modal.post-to-bluesky")}
-            </a>
+            </Button>
             <Button className="flex-1" onClick={handleCopy}>
               {copied ? (
                 <ClipboardDocumentCheckIcon className="size-6" />
