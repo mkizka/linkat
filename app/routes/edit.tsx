@@ -1,12 +1,12 @@
-import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
+import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
+import type { ActionFunctionArgs, LoaderFunctionArgs } from "react-router";
 import {
   redirect,
   useBeforeUnload,
   useBlocker,
   useLoaderData,
-} from "@remix-run/react";
-import { useEffect } from "react";
-import { useTranslation } from "react-i18next";
+} from "react-router";
 
 import { Main } from "~/components/layout";
 import { BoardViewer } from "~/features/board/board-viewer";

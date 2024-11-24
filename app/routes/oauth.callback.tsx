@@ -1,4 +1,4 @@
-import { type LoaderFunctionArgs, redirect } from "@remix-run/node";
+import { type LoaderFunctionArgs, redirect } from "react-router";
 
 import { createOAuthClient } from "~/server/oauth/client";
 import { commitSession, getSession } from "~/server/oauth/session";

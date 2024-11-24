@@ -1,5 +1,5 @@
 import type { User } from "@prisma/client";
-import type { LoaderFunctionArgs } from "@remix-run/node";
+import type { LoaderFunctionArgs } from "react-router";
 import { Resvg } from "@resvg/resvg-js";
 import fs from "fs";
 import { LRUCache } from "lru-cache";

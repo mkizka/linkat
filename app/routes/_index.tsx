@@ -3,8 +3,8 @@ import {
   AtSymbolIcon,
   PencilSquareIcon,
 } from "@heroicons/react/24/outline";
-import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
-import { Link, useLoaderData } from "@remix-run/react";
+import type { LoaderFunctionArgs, MetaFunction } from "react-router";
+import { Link, useLoaderData } from "react-router";
 import { useTranslation } from "react-i18next";
 
 import { Main, RootLayout } from "~/components/layout";

@@ -1,4 +1,4 @@
-import { Form, useSubmit } from "@remix-run/react";
+import { Form, useSubmit } from "react-router";
 import { useTranslation } from "react-i18next";
 
 import { Button } from "./button";

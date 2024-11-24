@@ -1,7 +1,7 @@
 import { PencilSquareIcon, ShareIcon } from "@heroicons/react/24/outline";
 import { UserIcon } from "@heroicons/react/24/solid";
 import type { User } from "@prisma/client";
-import { Link } from "@remix-run/react";
+import { Link } from "react-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 

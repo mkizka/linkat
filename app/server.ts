@@ -1,5 +1,5 @@
-import { createRequestHandler } from "@remix-run/express";
-import type { ServerBuild } from "@remix-run/node";
+import { createRequestHandler } from "@react-router/express";
+import type { ServerBuild } from "react-router";
 import express from "express";
 import morgan from "morgan";
 
@@ -64,7 +64,7 @@ app.use((req, res, next) => {
 const build = viteDevServer
   ? () =>
       viteDevServer.ssrLoadModule(
-        "virtual:remix/server-build",
+        "virtual:react-router/server-build",
       ) as Promise<ServerBuild>
   : // eslint-disable-next-line
     // @ts-ignore: ビルド成果物はあったりなかったりするのでts-expect-errorを使わない

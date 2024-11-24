@@ -1,5 +1,5 @@
 import { LanguageIcon } from "@heroicons/react/24/outline";
-import { Form, Link } from "@remix-run/react";
+import { Form, Link } from "react-router";
 import { type ReactNode, useRef } from "react";
 import GitHubButton from "react-github-btn";
 import { useTranslation } from "react-i18next";

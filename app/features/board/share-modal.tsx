@@ -2,7 +2,7 @@ import {
   ClipboardDocumentCheckIcon,
   ClipboardIcon,
 } from "@heroicons/react/24/outline";
-import { useSearchParams } from "@remix-run/react";
+import { useSearchParams } from "react-router";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
