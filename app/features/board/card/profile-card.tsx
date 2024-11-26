@@ -1,9 +1,9 @@
 import { PencilSquareIcon, ShareIcon } from "@heroicons/react/24/outline";
 import { UserIcon } from "@heroicons/react/24/solid";
 import type { User } from "@prisma/client";
-import { Link } from "react-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router";
 
 import { Button } from "~/components/button";
 import { Card } from "~/components/card";

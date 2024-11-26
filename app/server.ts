@@ -1,7 +1,7 @@
 import { createRequestHandler } from "@react-router/express";
-import type { ServerBuild } from "react-router";
 import express from "express";
 import morgan from "morgan";
+import type { ServerBuild } from "react-router";
 
 import { jetstream } from "./server/jetstream/subscription.js";
 import { env } from "./utils/env.js";

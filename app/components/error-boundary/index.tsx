@@ -1,6 +1,6 @@
-import { isRouteErrorResponse, Link, useRouteError } from "react-router";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { isRouteErrorResponse, Link, useRouteError } from "react-router";
 
 import { Card } from "~/components/card";
 import { Main, RootLayout } from "~/components/layout";

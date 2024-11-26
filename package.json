@@ -8,7 +8,7 @@
   },
   "scripts": {
     "_eslint": "eslint --cache --cache-location ./node_modules/.cache/eslint",
-    "all": "run-s build format test",
+    "all": "run-s typecheck format test",
     "build": "run-p -s build:*",
     "build:remix": "react-router build",
     "build:server": "node ./scripts/build-server.js",
