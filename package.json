@@ -22,7 +22,7 @@
     "setup-dev": "./scripts/setup-dev.sh",
     "start": "NODE_ENV=production node ./dist/server.js",
     "start:local": "NODE_ENV=development E2E=1 node --env-file .env ./dist/server.js",
-    "test": "vitest",
+    "test": "vitest run",
     "typecheck": "react-router typegen && tsc"
   },
   "dependencies": {
