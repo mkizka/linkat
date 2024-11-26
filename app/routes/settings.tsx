@@ -1,16 +1,17 @@
 import { ChevronLeftIcon } from "@heroicons/react/24/outline";
-import { type LoaderFunctionArgs, redirect } from "@remix-run/node";
-import { Link } from "@remix-run/react";
+import { Link, redirect } from "react-router";
 
 import { Card } from "~/components/card";
 import { Footer, Main } from "~/components/layout";
 import { LogoutButton } from "~/components/logout-button";
 import { getSessionUserDid } from "~/server/oauth/session";
 
-export const loader = async ({ request }: LoaderFunctionArgs) => {
+import type { Route } from "./+types/settings";
+
+export const loader = async ({ request }: Route.LoaderArgs) => {
   const userDid = await getSessionUserDid(request);
   if (!userDid) {
-    return redirect("/login");
+    throw redirect("/login");
   }
   return null;
 };
