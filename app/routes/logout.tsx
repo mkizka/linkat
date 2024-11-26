@@ -1,9 +1,10 @@
-import type { ActionFunctionArgs } from "@remix-run/node";
-import { redirect } from "@remix-run/node";
+import { redirect } from "react-router";
 
 import { destroySession, getSession } from "~/server/oauth/session";
 
-export const action = async ({ request }: ActionFunctionArgs) => {
+import type { Route } from "./+types/logout";
+
+export const action = async ({ request }: Route.ActionArgs) => {
   const session = await getSession(request);
   return redirect("/", {
     headers: {

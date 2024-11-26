@@ -1,4 +1,4 @@
-import { createCookieSessionStorage } from "@remix-run/node"; // or cloudflare/deno
+import { createCookieSessionStorage } from "react-router"; // or cloudflare/deno
 
 import { LinkatAgent } from "~/libs/agent";
 import { userService } from "~/server/service/userService";

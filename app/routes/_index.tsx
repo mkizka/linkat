@@ -3,9 +3,8 @@ import {
   AtSymbolIcon,
   PencilSquareIcon,
 } from "@heroicons/react/24/outline";
-import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
-import { Link, useLoaderData } from "@remix-run/react";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router";
 
 import { Main, RootLayout } from "~/components/layout";
 import { i18nServer } from "~/i18n/i18n";
@@ -15,7 +14,9 @@ import { env } from "~/utils/env";
 import { createMeta } from "~/utils/meta";
 import { required } from "~/utils/required";
 
-export const loader = async ({ request }: LoaderFunctionArgs) => {
+import type { Route } from "./+types/_index";
+
+export const loader = async ({ request }: Route.LoaderArgs) => {
   const userDid = await getSessionUserDid(request);
   const t = await i18nServer.getFixedT(request);
   return {
@@ -26,13 +27,13 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   };
 };
 
-export const meta: MetaFunction<typeof loader> = ({ data }) => {
+export const meta = ({ data }: Route.MetaArgs) => {
   const { title, description, url } = required(data);
   return createMeta({ title, description, url });
 };
 
-export default function Index() {
-  const { isLogin } = useLoaderData<typeof loader>();
+export default function Index({ loaderData }: Route.ComponentProps) {
+  const { isLogin } = loaderData;
   const { t, i18n } = useTranslation();
   return (
     <RootLayout isLogin={isLogin}>

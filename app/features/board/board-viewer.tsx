@@ -1,7 +1,7 @@
 import { PencilSquareIcon } from "@heroicons/react/24/outline";
-import { Form, useNavigation } from "@remix-run/react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Form, useNavigation } from "react-router";
 
 import { Button } from "~/components/button";
 import type { ValidBoard } from "~/models/board";

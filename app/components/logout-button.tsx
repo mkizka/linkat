@@ -1,5 +1,5 @@
-import { Form, useSubmit } from "@remix-run/react";
 import { useTranslation } from "react-i18next";
+import { Form, useSubmit } from "react-router";
 
 import { Button } from "./button";
 
@@ -11,7 +11,7 @@ export function LogoutButton() {
     event.preventDefault();
     const ok = confirm(t("logout-button.confirm-message"));
     if (ok) {
-      submit(event.currentTarget);
+      void submit(event.currentTarget);
     }
     void umami.track("handle-logout", {
       action: ok ? "confirm" : "cancel",
