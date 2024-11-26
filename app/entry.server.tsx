@@ -58,7 +58,6 @@ async function handleBotRequest(
 ) {
   const instance = createInstance();
   const lng = await i18nServer.getLocale(request);
-  // @ts-expect-error
   const ns = i18nServer.getRouteNamespaces(reactRouterContext);
   await instance.use(initReactI18next).init({
     ...i18nConfig,
@@ -120,7 +119,6 @@ async function handleBrowserRequest(
 ) {
   const instance = createInstance();
   const lng = await i18nServer.getLocale(request);
-  // @ts-expect-error
   const ns = i18nServer.getRouteNamespaces(reactRouterContext);
   await instance.use(initReactI18next).init({
     ...i18nConfig,

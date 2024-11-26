@@ -1,9 +1,10 @@
-import { useLoaderData } from "react-router";
 import { useTranslation } from "react-i18next";
 
 import { Footer, Main } from "~/components/layout";
 import { BoardViewer } from "~/features/board/board-viewer";
 import { env } from "~/utils/env";
+
+import type { Route } from "./+types/sample";
 
 export function loader() {
   return {
@@ -11,8 +12,7 @@ export function loader() {
   };
 }
 
-export default function Index() {
-  const { url } = useLoaderData<typeof loader>();
+export default function Index({ loaderData: { url } }: Route.ComponentProps) {
   const { t } = useTranslation();
   return (
     <>

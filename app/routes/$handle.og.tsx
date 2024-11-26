@@ -1,5 +1,4 @@
 import type { User } from "@prisma/client";
-import type { LoaderFunctionArgs } from "react-router";
 import { Resvg } from "@resvg/resvg-js";
 import fs from "fs";
 import { LRUCache } from "lru-cache";
@@ -7,6 +6,8 @@ import satori from "satori";
 
 import { userService } from "~/server/service/userService";
 import { required } from "~/utils/required";
+
+import type { Route } from "./+types/$handle.og";
 
 const cache = new LRUCache<string, Buffer>({
   max: 100,
@@ -133,12 +134,11 @@ const createImage = async (user: User) => {
   return image;
 };
 
-export async function loader({ params }: LoaderFunctionArgs) {
+export async function loader({ params }: Route.LoaderArgs) {
   const user = await userService.findOrFetchUser({
     handleOrDid: required(params.handle),
   });
   if (!user) {
-    // eslint-disable-next-line @typescript-eslint/only-throw-error
     throw new Response(null, { status: 404 });
   }
   const image = cache.get(user.did) ?? (await createImage(user));

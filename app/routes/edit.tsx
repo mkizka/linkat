@@ -1,12 +1,6 @@
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import type { ActionFunctionArgs, LoaderFunctionArgs } from "react-router";
-import {
-  redirect,
-  useBeforeUnload,
-  useBlocker,
-  useLoaderData,
-} from "react-router";
+import { redirect, useBeforeUnload, useBlocker } from "react-router";
 
 import { Main } from "~/components/layout";
 import { BoardViewer } from "~/features/board/board-viewer";
@@ -18,9 +12,11 @@ import { boardService } from "~/server/service/boardService";
 import { env } from "~/utils/env";
 import { createLogger } from "~/utils/logger";
 
+import type { Route } from "./+types/edit";
+
 const logger = createLogger("edit");
 
-export async function action({ request }: ActionFunctionArgs) {
+export async function action({ request }: Route.ActionArgs) {
   const t = await i18nServer.getFixedT(request);
   const [user, agent] = await Promise.all([
     getSessionUser(request),
@@ -50,17 +46,17 @@ export async function action({ request }: ActionFunctionArgs) {
   return redirect(`/${user.handle}?success`);
 }
 
-export async function loader({ request }: LoaderFunctionArgs) {
+export async function loader({ request }: Route.LoaderArgs) {
   const user = await getSessionUser(request);
   if (!user) {
-    return redirect("/login");
+    throw redirect("/login");
   }
   const board = await boardService.findOrFetchBoard(user.did);
   return { user, board, url: `${env.PUBLIC_URL}/${user.handle}` };
 }
 
-export default function Index() {
-  const { user, board, url } = useLoaderData<typeof loader>();
+export default function Index({ loaderData }: Route.ComponentProps) {
+  const { user, board, url } = loaderData;
   const { t } = useTranslation();
 
   // 更新ボタンを押したりしたときに確認ダイアログを出す

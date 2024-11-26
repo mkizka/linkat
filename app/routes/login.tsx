@@ -1,5 +1,4 @@
 import { OAuthResolverError } from "@atproto/oauth-client-node";
-import type { ActionFunctionArgs } from "react-router";
 import { redirect } from "react-router";
 
 import { Main, RootLayout } from "~/components/layout";
@@ -9,9 +8,11 @@ import { i18nServer } from "~/i18n/i18n";
 import { createOAuthClient } from "~/server/oauth/client";
 import { createLogger } from "~/utils/logger";
 
+import type { Route } from "./+types/login";
+
 const logger = createLogger("login");
 
-export async function action({ request }: ActionFunctionArgs) {
+export async function action({ request }: Route.ActionArgs) {
   const t = await i18nServer.getFixedT(request);
   const form = await request.formData();
   const handle = form.get("identifier");

@@ -1,6 +1,7 @@
-import type { LoaderFunctionArgs } from "react-router";
 import { redirect } from "react-router";
 
-export function loader({ params }: LoaderFunctionArgs) {
+import type { Route } from "./+types/board.$handle";
+
+export function loader({ params }: Route.LoaderArgs) {
   return redirect(`/${params.handle}`);
 }
