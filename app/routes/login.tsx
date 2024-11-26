@@ -35,7 +35,7 @@ export async function action({ request }: Route.ActionArgs) {
   }
 }
 
-export const loader = async ({ request }: LoaderFunctionArgs) => {
+export const loader = async ({ request }: Route.LoaderArgs) => {
   const userDid = await getSessionUserDid(request);
   if (userDid) {
     return redirect("/");
