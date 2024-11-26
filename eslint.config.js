@@ -6,6 +6,11 @@ export default [
   ...configs.react(),
   ...configs.tailwind(),
   {
+    rules: {
+      "@typescript-eslint/only-throw-error": "off",
+    },
+  },
+  {
     files: ["**/*.spec.ts"],
     ignores: ["e2e/**/*.spec.ts"],
     ...arrangeActAssert,

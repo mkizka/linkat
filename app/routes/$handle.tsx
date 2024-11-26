@@ -1,6 +1,3 @@
-import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
-
 import { Footer, Main } from "~/components/layout";
 import { BoardViewer } from "~/features/board/board-viewer";
 import { ShareModal } from "~/features/board/share-modal";
@@ -12,12 +9,13 @@ import { env } from "~/utils/env";
 import { createMeta } from "~/utils/meta";
 import { required } from "~/utils/required";
 
+import type { Route } from "./+types/$handle";
+
 const notFound = () => {
-  // eslint-disable-next-line @typescript-eslint/only-throw-error
   throw new Response("Not Found", { status: 404 });
 };
 
-export async function loader({ request, params }: LoaderFunctionArgs) {
+export async function loader({ request, params }: Route.LoaderArgs) {
   const maybeHandle = params.handle;
   if (!maybeHandle || !maybeHandle.includes(".")) {
     return notFound();
@@ -48,7 +46,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   };
 }
 
-export const meta: MetaFunction<typeof loader> = ({ data }) => {
+export const meta = ({ data }: Route.MetaArgs) => {
   const { title, url } = required(data);
   return createMeta({
     title,
@@ -57,8 +55,8 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
   });
 };
 
-export default function Index() {
-  const { user, board, url, isMine } = useLoaderData<typeof loader>();
+export default function Index({ loaderData }: Route.ComponentProps) {
+  const { user, board, url, isMine } = loaderData;
   return (
     <>
       <Main>

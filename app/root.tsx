@@ -1,8 +1,8 @@
 import "./tailwind.css";
 
-import type { LoaderFunctionArgs } from "@remix-run/node";
+import type { LoaderFunctionArgs } from "react-router";
 import {
-  json,
+  data,
   Links,
   Meta,
   Outlet,
@@ -10,7 +10,7 @@ import {
   ScrollRestoration,
   useLoaderData,
   useRouteLoaderData,
-} from "@remix-run/react";
+} from "react-router";
 import { useChangeLanguage } from "remix-i18next/react";
 
 import { Toaster } from "./features/toast/toaster";
@@ -24,7 +24,7 @@ export const handle = { i18n: ["translation"] };
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const locale = await i18nServer.getLocale(request);
-  return json(
+  return data(
     {
       locale,
       umami: {

@@ -15,3 +15,6 @@ nohup.out
 # playwright
 playwright-report/
 e2e/state.json
+
+# react-router
+.react-router/
