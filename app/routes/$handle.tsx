@@ -7,7 +7,6 @@ import { boardService } from "~/server/service/boardService";
 import { userService } from "~/server/service/userService";
 import { env } from "~/utils/env";
 import { createMeta } from "~/utils/meta";
-import { required } from "~/utils/required";
 
 import type { Route } from "./+types/$handle";
 
@@ -47,7 +46,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
 }
 
 export const meta = ({ data }: Route.MetaArgs) => {
-  const { title, url } = required(data);
+  const { title, url } = data;
   return createMeta({
     title,
     url,
