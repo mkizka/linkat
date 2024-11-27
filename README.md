@@ -1,25 +1,27 @@
 # Linkat
 
-Blueskyアカウントでリンク集を作ろう
+Organize your links using your Bluesky account.
 
-![](./screenshot.png)
+<img src="./screenshot.png" width="600" />
 
 ## Development
+
+To develop locally, ensure you have the following installed:
 
 - Node.js
 - Docker
 
-が必要です。
+Then, follow these steps to set up and run the project:
 
 ```
-cp -f .env.example .env
-corepack enable pnpm
-pnpm i
+cp -f .env.example .env  
+corepack enable pnpm  
+pnpm install  
 pnpm dev
 ```
 
-http://linkat.localhost:3000 を開く
+After running the commands, open [http://linkat.localhost:3000](http://linkat.localhost:3000) in your browser.
 
 ## Contributing
 
-Issue, PullRequest 歓迎します！
+Issues and pull requests are welcome!
