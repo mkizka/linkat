@@ -1,15 +1,17 @@
-import type { MetaFunction } from "react-router";
+import type { MetaDescriptor } from "react-router";
 
 export const createMeta = ({
   title,
   url,
   description,
   ogImageUrl,
+  atUri,
 }: {
   title: string;
   url: string;
   description?: string;
   ogImageUrl?: string;
+  atUri?: string;
 }) => {
   const meta = [
     {
@@ -66,7 +68,12 @@ export const createMeta = ({
       rel: "canonical",
       href: url,
     },
-  ] satisfies ReturnType<MetaFunction>;
+    {
+      tagName: "link",
+      rel: "alternate",
+      href: atUri,
+    },
+  ] satisfies MetaDescriptor[];
   // undefinedな値がある要素を除外
   return meta.filter((item) => Object.values(item).every(Boolean));
 };
