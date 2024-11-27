@@ -65,13 +65,13 @@ export const createMeta = ({
     },
     {
       tagName: "link",
-      rel: "canonical",
-      href: url,
+      rel: "alternate",
+      href: atUri,
     },
     {
       tagName: "link",
-      rel: "alternate",
-      href: atUri,
+      rel: "canonical",
+      href: url,
     },
   ] satisfies MetaDescriptor[];
   // undefinedな値がある要素を除外
