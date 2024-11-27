@@ -38,16 +38,14 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     isMine: user.did === (await getSessionUserDid(request)),
     title: `${title} | Linkat`,
     url: `${env.PUBLIC_URL}/${user.handle}`,
+    ogImageUrl: `${env.PUBLIC_URL}/${user.handle}/og`,
+    atUri: `at://${user.did}/blue.linkat.board/self`,
   };
 }
 
-export const meta = ({ data }: Route.MetaArgs) => {
-  const { title, url } = data;
-  return createMeta({
-    title,
-    url,
-    ogImageUrl: `${url}/og`,
-  });
+export const meta: Route.MetaFunction = ({ data }) => {
+  const { title, url, ogImageUrl, atUri } = data;
+  return createMeta({ title, url, ogImageUrl, atUri });
 };
 
 export default function Index({ loaderData }: Route.ComponentProps) {
