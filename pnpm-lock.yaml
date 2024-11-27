@@ -11,6 +11,9 @@ importers:
       '@atproto/api':
         specifier: 0.13.18
         version: 0.13.18
+      '@atproto/did':
+        specifier: 0.1.3
+        version: 0.1.3
       '@atproto/identity':
         specifier: 0.4.3
         version: 0.4.3
@@ -309,6 +312,9 @@ packages:
 
   '@atproto/did@0.1.2':
     resolution: {integrity: sha512-gmY1SyAuqfmsFbIXkUIScfnULqn39FoUNz4oE0fUuMu9in6PEyoxlmD2lAo7Q3KMy3X/hvTn2u5f8W/2KuDg1w==}
+
+  '@atproto/did@0.1.3':
+    resolution: {integrity: sha512-ULD8Gw/KRRwLFZ2Z2L4DjmdOMrg8IYYlcjdSc+GQ2/QJSVnD2zaJJVTLd3vls121wGt/583rNaiZTT2DpBze4w==}
 
   '@atproto/identity@0.4.3':
     resolution: {integrity: sha512-DLXMWh57dHvIeBl+IvC+q20z0IdDZT1awOn84vDyxacL9DfhbiTy/zCUPFEzHyvfrilNG1tDA4zQzURubdFqNg==}
@@ -5280,6 +5286,10 @@ snapshots:
       uint8arrays: 3.0.0
 
   '@atproto/did@0.1.2':
+    dependencies:
+      zod: 3.23.8
+
+  '@atproto/did@0.1.3':
     dependencies:
       zod: 3.23.8
 
