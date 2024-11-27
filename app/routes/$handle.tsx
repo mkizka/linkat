@@ -15,14 +15,10 @@ const notFound = () => {
 };
 
 export async function loader({ request, params }: Route.LoaderArgs) {
-  const maybeHandle = params.handle;
-  if (!maybeHandle || !maybeHandle.includes(".")) {
-    return notFound();
-  }
   // この順で処理した場合ボードを持たない(=このサービスのユーザーでない)ユーザーの
   // データも作られてしまうが、一旦このままにしておく
   const user = await userService.findOrFetchUser({
-    handleOrDid: maybeHandle,
+    handleOrDid: params.handle,
   });
   if (!user) {
     return notFound();

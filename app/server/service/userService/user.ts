@@ -1,4 +1,5 @@
 import type { AppBskyActorDefs } from "@atproto/api";
+import { isDid } from "@atproto/did";
 import type { Prisma, User } from "@prisma/client";
 
 import { LinkatAgent } from "~/libs/agent";
@@ -72,6 +73,9 @@ export const findOrFetchUser = async ({
   tx?: Prisma.TransactionClient;
   handleOrDid: string;
 }) => {
+  if (!handleOrDid.includes(".") && !isDid(handleOrDid)) {
+    return null;
+  }
   const user = await findUser({ tx, handleOrDid });
   if (user && !shouldRefetch(user)) {
     return user;
