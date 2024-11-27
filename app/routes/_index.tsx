@@ -13,7 +13,6 @@ import { getSessionUserDid } from "~/server/oauth/session";
 import { cn } from "~/utils/cn";
 import { env } from "~/utils/env";
 import { createMeta } from "~/utils/meta";
-import { required } from "~/utils/required";
 
 import type { Route } from "./+types/_index";
 
@@ -29,7 +28,7 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
 };
 
 export const meta = ({ data }: Route.MetaArgs) => {
-  const { title, description, url } = required(data);
+  const { title, description, url } = data;
   return createMeta({ title, description, url });
 };
 

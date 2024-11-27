@@ -5,7 +5,6 @@ import { LRUCache } from "lru-cache";
 import satori from "satori";
 
 import { userService } from "~/server/service/userService";
-import { required } from "~/utils/required";
 
 import type { Route } from "./+types/$handle.og";
 
@@ -136,7 +135,7 @@ const createImage = async (user: User) => {
 
 export async function loader({ params }: Route.LoaderArgs) {
   const user = await userService.findOrFetchUser({
-    handleOrDid: required(params.handle),
+    handleOrDid: params.handle,
   });
   if (!user) {
     throw new Response(null, { status: 404 });
