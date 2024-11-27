@@ -14,9 +14,9 @@ To develop locally, ensure you have the following installed:
 Then, follow these steps to set up and run the project:
 
 ```
-cp -f .env.example .env  
-corepack enable pnpm  
-pnpm install  
+cp -f .env.example .env
+corepack enable pnpm
+pnpm install
 pnpm dev
 ```
 
