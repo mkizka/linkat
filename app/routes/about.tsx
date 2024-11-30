@@ -2,6 +2,7 @@ import { AtUri } from "@atproto/api";
 import { ChevronLeftIcon } from "@heroicons/react/24/outline";
 import { LRUCache } from "lru-cache";
 import markdownit from "markdown-it";
+import linkAttributes from "markdown-it-link-attributes";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 import { z } from "zod";
@@ -28,7 +29,12 @@ const whtwndSchema = z.object({
   content: z.string(),
 });
 
-const md = markdownit();
+const md = markdownit().use(linkAttributes, {
+  attrs: {
+    target: "_blank",
+    rel: "noopener noreferrer",
+  },
+});
 
 const getRkey = (locale: string) => {
   switch (locale) {
