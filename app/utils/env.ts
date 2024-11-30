@@ -59,6 +59,13 @@ const server = {
     ),
   UMAMI_SCRIPT_URL: z.string().optional(),
   UMAMI_WEBSITE_ID: z.string().optional(),
+  // aboutページで使用するwhitewindの記事情報
+  ABOUT_WHTWND_PDS_URL: z
+    .string()
+    .default("https://enoki.us-east.host.bsky.network"),
+  ABOUT_WHTWND_REPO: z.string().default("did:plc:4gow62pk3vqpuwiwaslcwisa"),
+  ABOUT_WHTWND_RKEY_JA: z.string().default("3l6sg24zov62s"),
+  ABOUT_WHTWND_RKEY_EN: z.string().default("3lc5gjjo3sb2n"),
 };
 
 export const env = (() => {
