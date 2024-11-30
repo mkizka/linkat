@@ -1,3 +1,4 @@
+import typography from "@tailwindcss/typography";
 import daisyui from "daisyui";
 import type { Config } from "tailwindcss";
 import plugin from "tailwindcss/plugin";
@@ -20,7 +21,7 @@ export default {
       murecho: ["murecho", "sans-serif"],
     },
   },
-  plugins: [daisyui, animate, lightSelectorPlugin],
+  plugins: [typography, daisyui, animate, lightSelectorPlugin],
   // https://daisyui.com/docs/config/
   daisyui: {
     logs: false,
