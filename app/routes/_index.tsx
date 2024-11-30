@@ -70,14 +70,9 @@ export default function Index({ loaderData }: Route.ComponentProps) {
               })}
             >
               <p>
-                <a
-                  href="https://whtwnd.com/mkizka.dev/3l6sg24zov62s"
-                  className="underline"
-                  target="_blank"
-                  rel="noreferrer"
-                >
+                <Link to="/about" className="underline">
                   {t("_index.notes-link")}
-                </a>
+                </Link>
               </p>
             </div>
           </div>
