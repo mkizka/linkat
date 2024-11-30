@@ -96,7 +96,7 @@ export default function AboutPage({ loaderData }: Route.ComponentProps) {
   return (
     <>
       <Main className="py-2">
-        <Link to="/" className="flex h-8 items-center underline">
+        <Link to="/" className="flex h-8 items-center">
           <ChevronLeftIcon className="size-6" />
           {t("about.back-to-top")}
         </Link>
