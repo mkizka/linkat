@@ -7,7 +7,6 @@ import { boardService } from "~/server/service/boardService";
 import { userService } from "~/server/service/userService";
 import { env } from "~/utils/env";
 import { createMeta } from "~/utils/meta";
-import { required } from "~/utils/required";
 
 import type { Route } from "./+types/$handle";
 
@@ -16,14 +15,10 @@ const notFound = () => {
 };
 
 export async function loader({ request, params }: Route.LoaderArgs) {
-  const maybeHandle = params.handle;
-  if (!maybeHandle || !maybeHandle.includes(".")) {
-    return notFound();
-  }
   // この順で処理した場合ボードを持たない(=このサービスのユーザーでない)ユーザーの
   // データも作られてしまうが、一旦このままにしておく
   const user = await userService.findOrFetchUser({
-    handleOrDid: maybeHandle,
+    handleOrDid: params.handle,
   });
   if (!user) {
     return notFound();
@@ -43,16 +38,14 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     isMine: user.did === (await getSessionUserDid(request)),
     title: `${title} | Linkat`,
     url: `${env.PUBLIC_URL}/${user.handle}`,
+    ogImageUrl: `${env.PUBLIC_URL}/${user.handle}/og`,
+    atUri: `at://${user.did}/blue.linkat.board/self`,
   };
 }
 
-export const meta = ({ data }: Route.MetaArgs) => {
-  const { title, url } = required(data);
-  return createMeta({
-    title,
-    url,
-    ogImageUrl: `${url}/og`,
-  });
+export const meta: Route.MetaFunction = ({ data }) => {
+  const { title, url, ogImageUrl, atUri } = data;
+  return createMeta({ title, url, ogImageUrl, atUri });
 };
 
 export default function Index({ loaderData }: Route.ComponentProps) {

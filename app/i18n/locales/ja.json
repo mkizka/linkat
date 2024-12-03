@@ -87,5 +87,8 @@
   "logout-button": {
     "text": "ログアウト",
     "confirm-message": "ログアウトしますか？"
+  },
+  "about": {
+    "back-to-top": "トップに戻る"
   }
 }

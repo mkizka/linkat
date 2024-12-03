@@ -12,7 +12,6 @@ import { getSessionUserDid } from "~/server/oauth/session";
 import { cn } from "~/utils/cn";
 import { env } from "~/utils/env";
 import { createMeta } from "~/utils/meta";
-import { required } from "~/utils/required";
 
 import type { Route } from "./+types/_index";
 
@@ -28,7 +27,7 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
 };
 
 export const meta = ({ data }: Route.MetaArgs) => {
-  const { title, description, url } = required(data);
+  const { title, description, url } = data;
   return createMeta({ title, description, url });
 };
 
@@ -65,14 +64,9 @@ export default function Index({ loaderData }: Route.ComponentProps) {
             </Link>
             <div className={cn("flex flex-col gap-2 mt-8")}>
               <p>
-                <a
-                  href="https://whtwnd.com/mkizka.dev/3l6sg24zov62s"
-                  className="underline"
-                  target="_blank"
-                  rel="noreferrer"
-                >
+                <Link to="/about" className="underline">
                   {t("_index.notes-link")}
-                </a>
+                </Link>
               </p>
             </div>
           </div>

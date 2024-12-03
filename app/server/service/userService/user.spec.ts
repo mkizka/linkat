@@ -154,5 +154,23 @@ describe("userService", () => {
       // assert
       expect(actual).toBeNull();
     });
+    test("入力が明らかにドメインでなければnullを返す", async () => {
+      // arrange
+      // act
+      const actual = await userService.findOrFetchUser({
+        handleOrDid: "invalid",
+      });
+      // assert
+      expect(actual).toBeNull();
+    });
+    test("入力がDIDとして不正であればnullを返す", async () => {
+      // arrange
+      // act
+      const actual = await userService.findOrFetchUser({
+        handleOrDid: "did:plc:invalid",
+      });
+      // assert
+      expect(actual).toBeNull();
+    });
   });
 });
