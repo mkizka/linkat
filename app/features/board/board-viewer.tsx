@@ -2,6 +2,7 @@ import {
   ExclamationTriangleIcon,
   PencilSquareIcon,
 } from "@heroicons/react/24/solid";
+import type { FormEventHandler } from "react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Form, useNavigation } from "react-router";
@@ -69,6 +70,13 @@ export function BoardViewer({ user, board, url, editable, isMine }: Props) {
     cardModal.close();
   };
 
+  const handleDelete: FormEventHandler<HTMLFormElement> = (event) => {
+    const ok = confirm(t("board-viewer.confirm-delete-board-message"));
+    if (!ok) {
+      event.preventDefault();
+    }
+  };
+
   return (
     <CardFormProvider
       onSubmit={handleSubmitCardForm}
@@ -91,6 +99,7 @@ export function BoardViewer({ user, board, url, editable, isMine }: Props) {
             action="/delete"
             method="post"
             className="mt-2 flex justify-center"
+            onSubmit={handleDelete}
           >
             <Button type="submit" className="btn btn-outline btn-error w-4/5">
               <ExclamationTriangleIcon className="size-6" />

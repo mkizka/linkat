@@ -37,7 +37,8 @@
   "board-viewer": {
     "confirm-delete-message": "Are you sure you want to delete?",
     "submit-button": "Save",
-    "delete-button": "Delete this board"
+    "delete-button": "Delete this board",
+    "confirm-delete-board-message": "Are you sure you want to delete this board? (This action cannot be undone)"
   },
   "delete": {
     "invalid-session-error-message": "The login information was invalid"
