@@ -49,7 +49,11 @@ export default function Index({ loaderData }: Route.ComponentProps) {
           </h2>
           <div className="mt-12 flex flex-col items-center gap-2">
             {isLogin ? (
-              <Link to="/edit" className="btn btn-primary w-64">
+              <Link
+                to="/edit"
+                className="btn btn-primary w-64"
+                data-testid="index__edit-link"
+              >
                 <PencilSquareIcon className="size-6" />
                 {t("_index.edit-link")}
               </Link>

@@ -101,7 +101,11 @@ export function BoardViewer({ user, board, url, editable, isMine }: Props) {
             className="mt-2 flex justify-center"
             onSubmit={handleDelete}
           >
-            <Button type="submit" className="btn btn-outline btn-error w-4/5">
+            <Button
+              type="submit"
+              className="btn btn-outline btn-error w-4/5"
+              data-testid="board-viewer__delete-button"
+            >
               <ExclamationTriangleIcon className="size-6" />
               {t("board-viewer.delete-button")}
             </Button>
