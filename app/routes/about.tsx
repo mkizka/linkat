@@ -1,12 +1,11 @@
 import { AtUri } from "@atproto/api";
-import { ChevronLeftIcon } from "@heroicons/react/24/outline";
 import { LRUCache } from "lru-cache";
 import markdownit from "markdown-it";
 import linkAttributes from "markdown-it-link-attributes";
 import { useTranslation } from "react-i18next";
-import { Link } from "react-router";
 import { z } from "zod";
 
+import { BackButton } from "~/components/back-button";
 import { Card } from "~/components/card";
 import { Footer, Main } from "~/components/layout";
 import { i18nServer } from "~/i18n/i18n";
@@ -99,10 +98,7 @@ export default function AboutPage({ loaderData }: Route.ComponentProps) {
       <Main>
         <Card className="my-4">
           <div className="card-body">
-            <Link to="/" className="flex h-8 items-center">
-              <ChevronLeftIcon className="size-6" />
-              {t("about.back-to-top")}
-            </Link>
+            <BackButton />
             <article className="prose mt-4">
               <h1 className="text-3xl">{about.title}</h1>
               <div dangerouslySetInnerHTML={{ __html: about.content }} />

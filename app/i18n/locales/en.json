@@ -87,8 +87,8 @@
     "text": "Logout",
     "confirm-message": "Are you sure you want to log out?"
   },
-  "about": {
-    "back-to-top": "Back to top"
+  "back-button": {
+    "text": "Back to top"
   },
   "delete": {
     "invalid-session-error-message": "The login information was invalid"
