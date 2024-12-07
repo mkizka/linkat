@@ -78,6 +78,10 @@ export default function Index({ loaderData }: Route.ComponentProps) {
 
   useEffect(() => {
     if (blocker.state !== "blocked") return;
+    if (blocker.location.pathname === "/delete") {
+      blocker.proceed();
+      return;
+    }
     if (confirm(t("edit.confirm-leave-message"))) {
       void umami.track("leave-edit", {
         action: "confirm",

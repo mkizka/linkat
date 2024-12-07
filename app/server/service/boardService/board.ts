@@ -95,3 +95,11 @@ export const findOrFetchBoard = async (userDid: string) => {
     board: boardInPDS,
   });
 };
+
+export const deleteBoard = async (userDid: string) => {
+  await prisma.board.deleteMany({
+    where: {
+      userDid,
+    },
+  });
+};

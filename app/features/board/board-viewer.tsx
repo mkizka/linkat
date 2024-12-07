@@ -1,4 +1,7 @@
-import { PencilSquareIcon } from "@heroicons/react/24/outline";
+import {
+  ExclamationTriangleIcon,
+  PencilSquareIcon,
+} from "@heroicons/react/24/solid";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Form, useNavigation } from "react-router";
@@ -83,6 +86,18 @@ export function BoardViewer({ user, board, url, editable, isMine }: Props) {
           sortable={editable}
         />
         {editable && <CardFormModal />}
+        {editable && (
+          <Form
+            action="/delete"
+            method="post"
+            className="mt-2 flex justify-center"
+          >
+            <Button type="submit" className="btn btn-outline btn-error w-4/5">
+              <ExclamationTriangleIcon className="size-6" />
+              {t("board-viewer.delete-button")}
+            </Button>
+          </Form>
+        )}
         {editable && (
           <Form method="post">
             <input

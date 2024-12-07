@@ -37,7 +37,11 @@
   },
   "board-viewer": {
     "confirm-delete-message": "本当に削除しますか？",
-    "submit-button": "保存"
+    "submit-button": "保存",
+    "delete-button": "ボードを削除する"
+  },
+  "delete": {
+    "invalid-session-error-message": "ログイン情報が無効でした"
   },
   "share-modal": {
     "title": "保存しました",

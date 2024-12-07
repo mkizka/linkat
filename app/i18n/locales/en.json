@@ -36,7 +36,11 @@
   },
   "board-viewer": {
     "confirm-delete-message": "Are you sure you want to delete?",
-    "submit-button": "Save"
+    "submit-button": "Save",
+    "delete-button": "Delete this board"
+  },
+  "delete": {
+    "invalid-session-error-message": "The login information was invalid"
   },
   "share-modal": {
     "title": "Saved",
