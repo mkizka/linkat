@@ -3,7 +3,8 @@ import { Link, redirect } from "react-router";
 
 import { Card } from "~/components/card";
 import { Footer, Main } from "~/components/layout";
-import { LogoutButton } from "~/components/logout-button";
+import { DeleteBoardButton } from "~/features/settings/delete-button";
+import { LogoutButton } from "~/features/settings/logout-button";
 import { getSessionUserDid } from "~/server/oauth/session";
 
 import type { Route } from "./+types/settings";
@@ -26,8 +27,9 @@ export default function SettingsPage() {
               <ChevronLeftIcon className="size-4" />
               トップに戻る
             </Link>
-            <h1 className="card-title"># 設定</h1>
+            <h1 className="card-title">設定</h1>
             <LogoutButton />
+            <DeleteBoardButton />
           </div>
         </Card>
       </Main>

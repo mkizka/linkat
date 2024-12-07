@@ -57,3 +57,8 @@ const handleCreateOrUpdate = async (
 jetstream.onCreate("blue.linkat.board", handleCreateOrUpdate);
 
 jetstream.onUpdate("blue.linkat.board", handleCreateOrUpdate);
+
+jetstream.onDelete("blue.linkat.board", async (event) => {
+  await boardService.deleteBoard(event.did);
+  logger.info("ボードを削除しました", { userDid: event.did });
+});
