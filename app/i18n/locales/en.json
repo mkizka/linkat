@@ -95,6 +95,12 @@
   },
   "delete-board-button": {
     "text": "Delete this board",
-    "confirm-message": "Are you sure you want to delete this board? (This action cannot be undone)"
+    "confirm-message": "Are you sure you want to delete your board?"
+  },
+  "settings": {
+    "title": "Settings",
+    "header-account": "Account",
+    "header-board": "Board",
+    "delete-board-warning": "Delete your board saved in PDS. This action cannot be undone."
   }
 }

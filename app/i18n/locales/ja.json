@@ -96,7 +96,7 @@
   },
   "delete-board-button": {
     "text": "ボードを削除する",
-    "confirm-message": "本当にボードを削除しますか？(この操作は元に戻せません)"
+    "confirm-message": "本当にボードを削除しますか？"
   },
   "settings": {
     "title": "設定",
