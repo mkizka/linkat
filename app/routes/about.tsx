@@ -2,7 +2,6 @@ import { AtUri } from "@atproto/api";
 import { LRUCache } from "lru-cache";
 import markdownit from "markdown-it";
 import linkAttributes from "markdown-it-link-attributes";
-import { useTranslation } from "react-i18next";
 import { z } from "zod";
 
 import { BackButton } from "~/components/back-button";
@@ -91,7 +90,6 @@ export const meta: Route.MetaFunction = ({ data }) => {
 };
 
 export default function AboutPage({ loaderData }: Route.ComponentProps) {
-  const { t } = useTranslation();
   const { about } = loaderData;
   return (
     <>
