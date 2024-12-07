@@ -6,6 +6,7 @@ import { LoginForm } from "~/features/login/login-form";
 import { RouteToaster } from "~/features/toast/route";
 import { i18nServer } from "~/i18n/i18n";
 import { createOAuthClient } from "~/server/oauth/client";
+import { getSessionUserDid } from "~/server/oauth/session";
 import { createLogger } from "~/utils/logger";
 
 import type { Route } from "./+types/login";
@@ -33,6 +34,14 @@ export async function action({ request }: Route.ActionArgs) {
     return { error: t("login.default-error-message") };
   }
 }
+
+export const loader = async ({ request }: Route.LoaderArgs) => {
+  const userDid = await getSessionUserDid(request);
+  if (userDid) {
+    return redirect("/");
+  }
+  return null;
+};
 
 export default function LoginPage() {
   return (

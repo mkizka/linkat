@@ -1,4 +1,4 @@
-import { LanguageIcon } from "@heroicons/react/24/outline";
+import { Cog8ToothIcon, LanguageIcon } from "@heroicons/react/24/outline";
 import { type ReactNode, useRef } from "react";
 import GitHubButton from "react-github-btn";
 import { useTranslation } from "react-i18next";
@@ -9,12 +9,11 @@ import { cn } from "~/utils/cn";
 import { BlueskyIcon } from "./icons/bluesky";
 import { GitHubIcon } from "./icons/github";
 
-type Props = {
-  className?: string;
-  children?: ReactNode;
+type HeaderProps = {
+  isLogin?: boolean;
 };
 
-export function Header() {
+export function Header({ isLogin }: HeaderProps) {
   const detailsRef = useRef<HTMLDetailsElement>(null);
   const handleClick = () => {
     if (detailsRef.current) {
@@ -28,53 +27,68 @@ export function Header() {
           Linkat
         </Link>
       </div>
-      <details
-        className="dropdown dropdown-end absolute right-2 top-2"
-        ref={detailsRef}
-        onClick={(event) => {
-          if ((event.target as HTMLElement).tagName === "BUTTON") return;
-          void umami.track("click-header-lang", {
-            action: "open",
-          });
-        }}
-      >
-        <summary className="btn btn-square m-1 shadow dark:btn-neutral light:bg-white">
-          <LanguageIcon className="size-6" />
-        </summary>
-        <Form>
-          <ul className="menu dropdown-content z-[1] w-52 rounded-box p-2 shadow light:bg-white dark:bg-neutral">
-            <li>
-              <button
-                type="submit"
-                name="lng"
-                value="ja"
-                onClick={handleClick}
-                data-umami-event="click-header-lang"
-                data-umami-event-action="select-ja"
-              >
-                日本語
-              </button>
-            </li>
-            <li>
-              <button
-                type="submit"
-                name="lng"
-                value="en"
-                onClick={handleClick}
-                data-umami-event="click-header-lang"
-                data-umami-event-action="select-en"
-              >
-                English
-              </button>
-            </li>
-          </ul>
-        </Form>
-      </details>
+      <div className="absolute right-2 top-2 flex gap-1">
+        <details
+          className="dropdown dropdown-end"
+          ref={detailsRef}
+          onClick={(event) => {
+            if ((event.target as HTMLElement).tagName === "BUTTON") return;
+            void umami.track("click-header-lang", {
+              action: "open",
+            });
+          }}
+        >
+          <summary className="btn btn-square m-1 shadow dark:btn-neutral light:bg-white">
+            <LanguageIcon className="size-6" />
+          </summary>
+          <Form>
+            <ul className="menu dropdown-content z-[1] w-52 rounded-box p-2 shadow light:bg-white dark:bg-neutral">
+              <li>
+                <button
+                  type="submit"
+                  name="lng"
+                  value="ja"
+                  onClick={handleClick}
+                  data-umami-event="click-header-lang"
+                  data-umami-event-action="select-ja"
+                >
+                  日本語
+                </button>
+              </li>
+              <li>
+                <button
+                  type="submit"
+                  name="lng"
+                  value="en"
+                  onClick={handleClick}
+                  data-umami-event="click-header-lang"
+                  data-umami-event-action="select-en"
+                >
+                  English
+                </button>
+              </li>
+            </ul>
+          </Form>
+        </details>
+        {isLogin && (
+          <Link
+            to="/settings"
+            className="btn btn-square m-1 shadow dark:btn-neutral light:bg-white"
+          >
+            <Cog8ToothIcon className="size-6" />
+          </Link>
+        )}
+      </div>
     </header>
   );
 }
 
-export function Main({ className, children }: Props) {
+type MainProps = {
+  className?: string;
+  children?: ReactNode;
+};
+
+export function Main({ className, children }: MainProps) {
   return (
     <main
       className={cn(
@@ -140,10 +154,15 @@ export function Footer({ withNavigation }: FooterProps) {
   );
 }
 
-export function RootLayout({ children }: { children: ReactNode }) {
+type RootLayoutProps = {
+  isLogin?: boolean;
+  children: ReactNode;
+};
+
+export function RootLayout({ isLogin, children }: RootLayoutProps) {
   return (
     <>
-      <Header />
+      <Header isLogin={isLogin} />
       {children}
       <Footer />
     </>

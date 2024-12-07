@@ -70,19 +70,27 @@ test.describe("編集", () => {
     await expect(card1Edited).toBeVisible();
     await expect(card2).toBeVisible();
 
-    // カードを編集
+    // カードを削除(後続の削除処理の確認のために1つ残す)
     await page.getByTestId("profile-card__edit").click();
     page.on("dialog", (dialog) => dialog.accept());
     await card1Edited.getByTestId("sortable-card__edit").click();
     await page.getByTestId("card-form__delete").click();
-    await card2.getByTestId("sortable-card__edit").click();
-    await page.getByTestId("card-form__delete").click();
 
-    // 保存して閲覧ページで順番を確認
+    // 保存して閲覧ページで削除を確認
     await page.getByTestId("board-viewer__submit").click();
     await page.waitForURL((url) => url.pathname !== "/edit");
     await page.getByTestId("show-modal__close").click();
     await expect(card1Edited).not.toBeVisible();
-    await expect(card2).not.toBeVisible();
+
+    // ボードを削除
+    await page.goto("/settings");
+    await page.getByTestId("delete-board-button").click();
+
+    // 編集ページで削除されていることを確認
+    await page.getByTestId("index__edit-link").click();
+    await page.waitForURL("/edit");
+    await expect(
+      page.locator('[data-testid="sortable-card"]'),
+    ).not.toBeVisible();
   });
 });

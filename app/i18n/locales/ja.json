@@ -88,7 +88,20 @@
     "text": "ログアウト",
     "confirm-message": "ログアウトしますか？"
   },
-  "about": {
-    "back-to-top": "トップに戻る"
+  "back-button": {
+    "text": "トップに戻る"
+  },
+  "delete": {
+    "invalid-session-error-message": "ログイン情報が無効でした"
+  },
+  "delete-board-button": {
+    "text": "ボードを削除する",
+    "confirm-message": "本当にボードを削除しますか？"
+  },
+  "settings": {
+    "title": "設定",
+    "header-account": "アカウント",
+    "header-board": "ボード",
+    "delete-board-warning": "PDSに保存されているボードを削除します。削除後は元に戻せません。"
   }
 }

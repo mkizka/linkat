@@ -7,7 +7,6 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 
 import { Main, RootLayout } from "~/components/layout";
-import { LogoutButton } from "~/components/logout-button";
 import { i18nServer } from "~/i18n/i18n";
 import { getSessionUserDid } from "~/server/oauth/session";
 import { cn } from "~/utils/cn";
@@ -36,7 +35,7 @@ export default function Index({ loaderData }: Route.ComponentProps) {
   const { isLogin } = loaderData;
   const { t, i18n } = useTranslation();
   return (
-    <RootLayout>
+    <RootLayout isLogin={isLogin}>
       <Main className="utils--center">
         <div className="text-center">
           <h2
@@ -49,7 +48,11 @@ export default function Index({ loaderData }: Route.ComponentProps) {
           </h2>
           <div className="mt-12 flex flex-col items-center gap-2">
             {isLogin ? (
-              <Link to="/edit" className="btn btn-primary w-64">
+              <Link
+                to="/edit"
+                className="btn btn-primary w-64"
+                data-testid="index__edit-link"
+              >
                 <PencilSquareIcon className="size-6" />
                 {t("_index.edit-link")}
               </Link>
@@ -63,12 +66,7 @@ export default function Index({ loaderData }: Route.ComponentProps) {
               <ArrowRightIcon className="size-6" />
               {t("_index.sample-link")}
             </Link>
-            {isLogin && <LogoutButton />}
-            <div
-              className={cn("flex flex-col gap-2", {
-                "mt-8": !isLogin,
-              })}
-            >
+            <div className={cn("flex flex-col gap-2 mt-8")}>
               <p>
                 <Link to="/about" className="underline">
                   {t("_index.notes-link")}
