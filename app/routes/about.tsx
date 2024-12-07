@@ -97,7 +97,7 @@ export default function AboutPage({ loaderData }: Route.ComponentProps) {
         <Card className="my-4">
           <div className="card-body">
             <BackButton />
-            <article className="prose mt-4">
+            <article className="prose">
               <h1 className="text-3xl">{about.title}</h1>
               <div dangerouslySetInnerHTML={{ __html: about.content }} />
             </article>
