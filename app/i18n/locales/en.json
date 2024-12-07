@@ -89,5 +89,12 @@
   },
   "about": {
     "back-to-top": "Back to top"
+  },
+  "delete": {
+    "invalid-session-error-message": "The login information was invalid"
+  },
+  "delete-board-button": {
+    "text": "Delete this board",
+    "confirm-message": "Are you sure you want to delete this board? (This action cannot be undone)"
   }
 }

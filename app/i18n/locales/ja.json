@@ -90,5 +90,12 @@
   },
   "about": {
     "back-to-top": "トップに戻る"
+  },
+  "delete": {
+    "invalid-session-error-message": "ログイン情報が無効でした"
+  },
+  "delete-board-button": {
+    "text": "ボードを削除する",
+    "confirm-message": "本当にボードを削除しますか？(この操作は元に戻せません)"
   }
 }
