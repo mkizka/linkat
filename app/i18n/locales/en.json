@@ -94,7 +94,7 @@
     "invalid-session-error-message": "The login information was invalid"
   },
   "delete-board-button": {
-    "text": "Delete this board",
+    "text": "Delete your board",
     "confirm-message": "Are you sure you want to delete your board?"
   },
   "settings": {
