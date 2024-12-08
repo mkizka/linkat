@@ -3,7 +3,11 @@ import { Form, useSubmit } from "react-router";
 
 import { Button } from "~/components/button";
 
-export function DeleteBoardButton() {
+type Props = {
+  handle: string;
+};
+
+export function DeleteBoardButton({ handle }: Props) {
   const { t } = useTranslation();
   const submit = useSubmit();
 
@@ -13,8 +17,9 @@ export function DeleteBoardButton() {
     if (ok) {
       void submit(event.currentTarget);
     }
-    void umami.track("handle-", {
+    void umami.track("handle-delete-board", {
       action: ok ? "confirm" : "cancel",
+      handle,
     });
   };
 

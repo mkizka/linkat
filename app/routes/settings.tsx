@@ -6,20 +6,21 @@ import { Card } from "~/components/card";
 import { Footer, Main } from "~/components/layout";
 import { DeleteBoardButton } from "~/features/settings/delete-button";
 import { LogoutButton } from "~/features/settings/logout-button";
-import { getSessionUserDid } from "~/server/oauth/session";
+import { getSessionUser } from "~/server/oauth/session";
 
 import type { Route } from "./+types/settings";
 
 export const loader = async ({ request }: Route.LoaderArgs) => {
-  const userDid = await getSessionUserDid(request);
-  if (!userDid) {
+  const user = await getSessionUser(request);
+  if (!user) {
     throw redirect("/login");
   }
-  return null;
+  return { user };
 };
 
-export default function SettingsPage() {
+export default function SettingsPage({ loaderData }: Route.ComponentProps) {
   const { t } = useTranslation();
+  const { user } = loaderData;
 
   return (
     <>
@@ -35,7 +36,7 @@ export default function SettingsPage() {
             <h2 className="border-b-2 border-gray-200 pb-1 font-bold">
               {t("settings.header-board")}
             </h2>
-            <DeleteBoardButton />
+            <DeleteBoardButton handle={user.handle} />
             <p className="text-gray-400">
               {t("settings.delete-board-warning")}
             </p>
