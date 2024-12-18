@@ -1,10 +1,7 @@
 # syntax = docker/dockerfile:1
-FROM node:20.13-slim AS base
+FROM node:22.12-alpine AS base
 LABEL fly_launch_runtime="Remix/Prisma"
 WORKDIR /app
-RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y openssl && \
-    rm -rf /var/lib/apt/lists /var/cache/apt/archives
 RUN corepack enable pnpm
 
 FROM base AS build
