@@ -2,6 +2,7 @@
 FROM node:22.12-alpine AS base
 LABEL fly_launch_runtime="Remix/Prisma"
 WORKDIR /app
+RUN apk add --no-cache openssl
 RUN corepack enable pnpm
 
 FROM base AS build
