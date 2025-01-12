@@ -13,7 +13,7 @@ const DEVELOPMENT_PRIVATE_KEY =
 
 const server = {
   NODE_ENV: z.enum(["development", "production", "test"]),
-  PORT: z.number().default(3000),
+  PORT: z.coerce.number().default(3000),
   LOG_LEVEL: z
     .enum(["debug", "info", "warn", "error"])
     .default(match({ prod: "info", dev: "debug" })),
