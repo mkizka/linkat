@@ -1,7 +1,7 @@
 {
   "$schema": "https://railway.com/railway.schema.json",
   "deploy": {
-    "startCommand": "/bin/sh -c \"pnpm prisma db push --skip-generate && pnpm start\"",
+    "preDeployCommand": "pnpm prisma db push --skip-generate",
     "healthcheckPath": "/health",
     "healthcheckTimeout": 60
   }
