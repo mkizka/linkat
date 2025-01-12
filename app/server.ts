@@ -12,7 +12,7 @@ import { createLogger } from "./utils/logger.js";
 // OAuthログインを行うためにE2Eテスト実行時のprocess.env.NODE_ENVはdevelopmentになっている
 // 代わりにprocess.env.E2Eが設定されているので、その場合はviteを使わない
 const viteDevServer =
-  process.env.NODE_ENV === "production" || process.env.E2E
+  env.NODE_ENV === "production" || process.env.E2E
     ? null
     : await import("vite").then((vite) =>
         vite.createServer({
@@ -24,13 +24,7 @@ const app = express();
 
 app.use(
   morgan("combined", {
-    skip: (req) => {
-      return (
-        req.get("User-Agent") === "Consul Health Check" ||
-        req.hostname === "localhost" ||
-        req.ip === "127.0.0.1"
-      );
-    },
+    skip: () => env.NODE_ENV === "development",
   }),
 );
 
@@ -43,7 +37,7 @@ if (viteDevServer) {
 // 開発環境でのOAuthログイン時 http://127.0.0.1/oauth/callback にリダイレクトされるので、
 // そこからさらに http://linkat.localhost にリダイレクトさせる
 app.use((req, res, next) => {
-  if (process.env.NODE_ENV === "development" && req.hostname === "127.0.0.1") {
+  if (env.NODE_ENV === "development" && req.hostname === "127.0.0.1") {
     res.redirect(new URL(req.originalUrl, env.PUBLIC_URL).toString());
   } else {
     next();
