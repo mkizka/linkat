@@ -3,6 +3,6 @@
   "deploy": {
     "preDeployCommand": "pnpm prisma db push --skip-generate",
     "healthcheckPath": "/health",
-    "healthcheckTimeout": 60
+    "healthcheckTimeout": 100
   }
 }
