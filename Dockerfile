@@ -1,6 +1,5 @@
 # syntax = docker/dockerfile:1
 FROM node:20.13-slim AS base
-LABEL fly_launch_runtime="Remix/Prisma"
 WORKDIR /app
 RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y openssl && \

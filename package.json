@@ -75,7 +75,6 @@
   },
   "devDependencies": {
     "@atproto/lex-cli": "0.5.2",
-    "@flydotio/dockerfile": "0.5.9",
     "@mkizka/eslint-config": "5.3.4",
     "@mkizka/eslint-plugin-aaa": "1.0.2",
     "@playwright/test": "1.49.0",
