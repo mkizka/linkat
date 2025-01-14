@@ -31,7 +31,13 @@ app.use(
 if (viteDevServer) {
   app.use(viteDevServer.middlewares);
 } else {
-  app.use(express.static("build/client"));
+  app.use(
+    express.static("build/client", {
+      setHeaders: (res) => {
+        res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+      },
+    }),
+  );
 }
 
 // 開発環境でのOAuthログイン時 http://127.0.0.1/oauth/callback にリダイレクトされるので、
