@@ -60,6 +60,16 @@ export function Layout({ children }: { children: React.ReactNode }) {
           href="https://r2.linkat.blue/images/apple-touch-icon.png"
           sizes="180x180"
         />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Murecho:wght@100..900&display=swap"
+          rel="stylesheet"
+        />
         <Meta />
         <Links />
       </head>
