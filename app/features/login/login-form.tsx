@@ -43,7 +43,7 @@ export function LoginForm() {
         )}
         <div className="form-control">
           <div className="join">
-            <div className="join-item flex h-full w-12 items-center justify-center rounded-r-full bg-neutral text-neutral-content">
+            <div className="join-item flex w-12 items-center justify-center rounded-r-full bg-neutral text-neutral-content">
               <AtSymbolIcon className="size-5" />
             </div>
             <input
