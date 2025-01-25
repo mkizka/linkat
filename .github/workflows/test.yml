@@ -42,6 +42,10 @@ jobs:
       - run: pnpm setup-dev
       - run: pnpm build
       - run: pnpm e2e
+      # https://www.cloudflarestatus.com/incidents/t5nrjmpxc1cj
+      - uses: unfor19/install-aws-cli-action@v1
+        with:
+          version: 2.22.35
       - name: Upload Report
         if: always()
         run: |
