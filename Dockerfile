@@ -2,7 +2,7 @@
 FROM node:20.13-slim AS base
 WORKDIR /app
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y openssl && \
+    apt-get install --no-install-recommends -y curl openssl && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 RUN corepack enable pnpm
 
