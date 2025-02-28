@@ -93,7 +93,7 @@
     "@vitest/coverage-v8": "2.1.6",
     "autoprefixer": "10.4.20",
     "daisyui": "4.12.14",
-    "esbuild": "0.24.0",
+    "esbuild": "0.25.0",
     "eslint": "9.15.0",
     "giget": "1.2.3",
     "husky": "9.1.7",
