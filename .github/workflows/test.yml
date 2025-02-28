@@ -16,7 +16,7 @@ jobs:
           corepack enable pnpm
       - uses: actions/setup-node@v4
         with:
-          node-version-file: .tool-versions
+          node-version-file: .node-version
           cache: pnpm
       - run: pnpm i
       - run: pnpm typecheck
@@ -31,7 +31,7 @@ jobs:
           corepack enable pnpm
       - uses: actions/setup-node@v4
         with:
-          node-version-file: .tool-versions
+          node-version-file: .node-version
           cache: pnpm
       - run: |
           ATPROTO_COMMIT=$(cat ./scripts/postinstall.sh | grep ATPROTO_COMMIT= | awk -F'=' '{print $2}')
