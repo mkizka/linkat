@@ -4,7 +4,8 @@ WORKDIR /app
 RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y curl openssl && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
-RUN corepack enable pnpm
+RUN npm i -g corepack@latest && \
+    corepack enable pnpm
 
 FROM base AS build
 COPY --link package.json pnpm-lock.yaml ./
