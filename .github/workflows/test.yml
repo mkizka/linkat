@@ -50,10 +50,11 @@ jobs:
       - run: pnpm e2e
       # https://www.cloudflarestatus.com/incidents/t5nrjmpxc1cj
       - uses: unfor19/install-aws-cli-action@v1
+        if: github.ref == 'refs/heads/main' || github.actor == 'mkizka'
         with:
           version: 2.22.35
       - name: Upload Report
-        if: always()
+        if: github.ref == 'refs/heads/main' || github.actor == 'mkizka'
         run: |
           E2E_S3_PATH="playwright-report/${{ github.ref == 'refs/heads/main' && 'main' || github.sha }}"
           aws s3 cp playwright-report "s3://$E2E_S3_PATH" --recursive
