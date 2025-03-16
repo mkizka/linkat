@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { PassThrough } from "node:stream";
 
 import { createReadableStreamFromReadable } from "@react-router/node";
@@ -6,8 +7,13 @@ import { isbot } from "isbot";
 import type { RenderToPipeableStreamOptions } from "react-dom/server";
 import { renderToPipeableStream } from "react-dom/server";
 import { I18nextProvider, initReactI18next } from "react-i18next";
-import type { AppLoadContext, EntryContext } from "react-router";
-import { ServerRouter } from "react-router";
+import type {
+  ActionFunctionArgs,
+  AppLoadContext,
+  EntryContext,
+  LoaderFunctionArgs,
+} from "react-router";
+import { isRouteErrorResponse, ServerRouter } from "react-router";
 
 import { i18nConfig } from "./i18n/config";
 import { i18nServer } from "./i18n/i18n";
@@ -81,7 +87,6 @@ export default async function handleRequest(
           // errors encountered during initial shell rendering since they'll
           // reject and get logged in handleDocumentRequest.
           if (shellRendered) {
-            // eslint-disable-next-line no-console
             console.error(error);
           }
         },
@@ -92,4 +97,19 @@ export default async function handleRequest(
     // flush down the rejected boundaries
     setTimeout(abort, streamTimeout + 1000);
   });
+}
+
+// デフォルトのハンドラはこれ
+// https://github.com/remix-run/remix/blob/8f38118e44298d609224c6074ae6519d385196f1/packages/remix-server-runtime/server.ts#L71-L78
+export function handleError(
+  error: unknown,
+  { request }: LoaderFunctionArgs | ActionFunctionArgs,
+) {
+  if (
+    (isRouteErrorResponse(error) && error.status === 404) ||
+    request.signal.aborted
+  ) {
+    return;
+  }
+  console.error(error);
 }
