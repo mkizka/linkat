@@ -23,7 +23,7 @@ export const createOAuthClient = async () => {
       client_id: isProduction
         ? `${env.PUBLIC_URL}/client-metadata.json`
         : `http://localhost?redirect_uri=${encodeURIComponent(`${baseUrl}/oauth/callback`)}`,
-      client_uri: env.PUBLIC_URL,
+      client_uri: baseUrl,
       jwks_uri: `${baseUrl}/jwks.json`,
       redirect_uris: [`${baseUrl}/oauth/callback`],
       scope: "atproto transition:generic",
@@ -36,10 +36,15 @@ export const createOAuthClient = async () => {
     },
     keyset: [privateKey],
     plcDirectoryUrl: env.ATPROTO_PLC_URL,
-    // @ts-expect-error
-    handleResolver: env.BSKY_PUBLIC_API_URL,
     stateStore: new StateStore(),
     sessionStore: new SessionStore(),
+    // 以下、開発時用の設定
+    // ローカル開発環境ではalice.testという名前を通常didに解決できないため、
+    // pnpm patchでhandleResolverを上書き可能にしたうえで、ローカル環境のbsky AppViewを使用してハンドルを解決している
+    // 参照：https://github.com/bluesky-social/atproto/blob/670b6b5de2bf91e6944761c98eb1126fb6a681ee/packages/oauth/oauth-client/src/oauth-client.ts#L212-L215
+    // @ts-expect-error
+    handleResolver: !isProduction ? env.BSKY_PUBLIC_API_URL : undefined,
+    allowHttp: !isProduction, // httpを許可しないとOAuthProtectedResourceMetadataResolverがエラーを投げる
   });
   return oauthClient;
 };
