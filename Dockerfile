@@ -12,6 +12,7 @@ COPY --link package.json pnpm-lock.yaml ./
 COPY --link scripts ./scripts
 COPY --link prisma ./prisma
 COPY --link lexicons ./lexicons
+COPY --link patches ./patches
 RUN pnpm install --frozen-lockfile
 COPY --link . .
 ARG VITE_CONFIG_BASE=/
