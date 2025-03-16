@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { PassThrough } from "node:stream";
 
 import { createReadableStreamFromReadable } from "@react-router/node";
@@ -17,6 +16,7 @@ import { isRouteErrorResponse, ServerRouter } from "react-router";
 
 import { i18nConfig } from "./i18n/config";
 import { i18nServer } from "./i18n/i18n";
+import { createLogger } from "./utils/logger";
 
 export const streamTimeout = 5_000;
 
@@ -34,6 +34,8 @@ const createI18nInstance = async (
   });
   return instance;
 };
+
+const logger = createLogger("entry.server");
 
 export default async function handleRequest(
   request: Request,
@@ -87,7 +89,9 @@ export default async function handleRequest(
           // errors encountered during initial shell rendering since they'll
           // reject and get logged in handleDocumentRequest.
           if (shellRendered) {
-            console.error(error);
+            logger.error("renderToPipeableStreamでエラーが発生しました", {
+              error,
+            });
           }
         },
       },
@@ -111,5 +115,5 @@ export function handleError(
   ) {
     return;
   }
-  console.error(error);
+  logger.error("サーバーエラーが発生しました", { error });
 }
