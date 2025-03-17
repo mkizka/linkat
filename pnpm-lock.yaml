@@ -92,8 +92,8 @@ importers:
         specifier: 8.0.4
         version: 8.0.4
       isbot:
-        specifier: 5.1.23
-        version: 5.1.23
+        specifier: 5.1.25
+        version: 5.1.25
       jotai:
         specifier: 2.12.2
         version: 2.12.2(@types/react@18.3.12)(react@18.3.1)
@@ -134,8 +134,8 @@ importers:
         specifier: 7.1.0
         version: 7.1.0(i18next@24.2.3(typescript@5.8.2))(react-i18next@15.4.1(i18next@24.2.3(typescript@5.8.2))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-router@7.3.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)
       remix-utils:
-        specifier: 8.4.0
-        version: 8.4.0(react-router@7.3.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)(zod@3.24.2)
+        specifier: 8.4.1
+        version: 8.4.1(react-router@7.3.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)(zod@3.24.2)
       satori:
         specifier: 0.12.1
         version: 0.12.1
@@ -162,8 +162,8 @@ importers:
         specifier: 1.0.2
         version: 1.0.2
       '@playwright/test':
-        specifier: 1.51.0
-        version: 1.51.0
+        specifier: 1.51.1
+        version: 1.51.1
       '@quramy/prisma-fabbrica':
         specifier: 2.2.2
         version: 2.2.2(@prisma/client@5.22.0(prisma@5.22.0))(typescript@5.8.2)
@@ -1234,8 +1234,8 @@ packages:
     resolution: {integrity: sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==}
     engines: {node: '>=14'}
 
-  '@playwright/test@1.51.0':
-    resolution: {integrity: sha512-dJ0dMbZeHhI+wb77+ljx/FeC8VBP6j/rj9OAojO08JI80wTZy6vRk9KvHKiDCUh4iMpEiseMgqRBIeW+eKX6RA==}
+  '@playwright/test@1.51.1':
+    resolution: {integrity: sha512-nM+kEaTSAoVlXmMPH10017vn3FSiFqr/bh4fKg9vmAdMfd9SDqRZNvPSiAHADc/itWak+qPvMPZQOPwCBW7k7Q==}
     engines: {node: '>=18'}
     hasBin: true
 
@@ -3232,8 +3232,8 @@ packages:
   isarray@2.0.5:
     resolution: {integrity: sha512-xHjhDr3cNBK0BzdUJSPXZntQUx/mwMS5Rw4A7lPJ90XGAO6ISP/ePDNuo0vhqOZU+UD5JoodwCAAoZQd3FeAKw==}
 
-  isbot@5.1.23:
-    resolution: {integrity: sha512-ie3ehy2iXdkuzaZx32SoKb9b8l9Cm8cqQ1lJjQXnq8GRTrk/Jx7IUDcB4mhlw6H3gWaMqGYoWeV0lPv1P/20Ig==}
+  isbot@5.1.25:
+    resolution: {integrity: sha512-mqU76fmT7cpGG0JX1EzhCZIC+xovpH6TD2SAK18alonk0RG/RgChpGduJTYzRaq9a0COoFA99M9JVtEUOcScIw==}
     engines: {node: '>=18'}
 
   isexe@2.0.0:
@@ -4020,13 +4020,13 @@ packages:
     resolution: {integrity: sha512-nDywThFk1i4BQK4twPQ6TA4RT8bDY96yeuCVBWL3ePARCiEKDRSrNGbFIgUJpLp+XeIR65v8ra7WuJOFUBtkMA==}
     engines: {node: '>=8'}
 
-  playwright-core@1.51.0:
-    resolution: {integrity: sha512-x47yPE3Zwhlil7wlNU/iktF7t2r/URR3VLbH6EknJd/04Qc/PSJ0EY3CMXipmglLG+zyRxW6HNo2EGbKLHPWMg==}
+  playwright-core@1.51.1:
+    resolution: {integrity: sha512-/crRMj8+j/Nq5s8QcvegseuyeZPxpQCZb6HNk3Sos3BlZyAknRjoyJPFWkpNn8v0+P3WiwqFF8P+zQo4eqiNuw==}
     engines: {node: '>=18'}
     hasBin: true
 
-  playwright@1.51.0:
-    resolution: {integrity: sha512-442pTfGM0xxfCYxuBa/Pu6B2OqxqqaYq39JS8QDMGThUvIOCd6s0ANDog3uwA0cHavVlnTQzGCN7Id2YekDSXA==}
+  playwright@1.51.1:
+    resolution: {integrity: sha512-kkx+MB2KQRkyxjYPc3a0wLZZoDczmppyGJIvQ43l+aZihkaVvmu/21kiyaHeHjiFxjxNNFnUncKmcGIyOojsaw==}
     engines: {node: '>=18'}
     hasBin: true
 
@@ -4290,8 +4290,8 @@ packages:
       react-i18next: ^13.0.0 || ^14.0.0 || ^15.0.0
       react-router: ^7.0.0
 
-  remix-utils@8.4.0:
-    resolution: {integrity: sha512-w/b2Qu1iLOcavKGF2+Zu0pg/n79B9O7EjqKHkJCFtDm4Gz79ofOwnX8T2A0RVI0sCoOq9Ds4NW72ZC9XGDj6LQ==}
+  remix-utils@8.4.1:
+    resolution: {integrity: sha512-YwKmoPIsQ4UuwrLEQFZmnJb1kWKkAIrmdY4DWQPQ78XTqs7Z5qnkNmWm7vJxvdkB025YfMtrDSU9+iSRaod2+w==}
     engines: {node: '>=20.0.0'}
     peerDependencies:
       '@edgefirst-dev/batcher': ^1.0.0
@@ -6295,9 +6295,9 @@ snapshots:
   '@pkgjs/parseargs@0.11.0':
     optional: true
 
-  '@playwright/test@1.51.0':
+  '@playwright/test@1.51.1':
     dependencies:
-      playwright: 1.51.0
+      playwright: 1.51.1
 
   '@prisma/client@5.22.0(prisma@5.22.0)':
     optionalDependencies:
@@ -8596,7 +8596,7 @@ snapshots:
 
   isarray@2.0.5: {}
 
-  isbot@5.1.23: {}
+  isbot@5.1.25: {}
 
   isexe@2.0.0: {}
 
@@ -9584,11 +9584,11 @@ snapshots:
     dependencies:
       find-up: 3.0.0
 
-  playwright-core@1.51.0: {}
+  playwright-core@1.51.1: {}
 
-  playwright@1.51.0:
+  playwright@1.51.1:
     dependencies:
-      playwright-core: 1.51.0
+      playwright-core: 1.51.1
     optionalDependencies:
       fsevents: 2.3.2
 
@@ -9841,7 +9841,7 @@ snapshots:
       react-i18next: 15.4.1(i18next@24.2.3(typescript@5.8.2))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react-router: 7.3.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
 
-  remix-utils@8.4.0(react-router@7.3.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)(zod@3.24.2):
+  remix-utils@8.4.1(react-router@7.3.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)(zod@3.24.2):
     dependencies:
       type-fest: 4.37.0
     optionalDependencies:
