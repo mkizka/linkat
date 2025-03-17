@@ -92,7 +92,7 @@
     "@types/ws": "8.18.0",
     "@vitest/coverage-v8": "3.0.9",
     "autoprefixer": "10.4.21",
-    "daisyui": "4.12.14",
+    "daisyui": "5.0.6",
     "esbuild": "0.25.1",
     "eslint": "9.22.0",
     "giget": "2.0.0",
