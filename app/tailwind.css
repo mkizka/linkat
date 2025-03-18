@@ -1,8 +1,8 @@
 @import url("https://fonts.googleapis.com/css2?family=Murecho:wght@100..900&display=swap");
 @import "tailwindcss";
-@plugin "daisyui";
 @plugin "@tailwindcss/typography";
 @plugin "tailwindcss-animate";
+@plugin "daisyui";
 
 /* https://stackoverflow.com/a/79434267 */
 @custom-variant light (@media (prefers-color-scheme: light));
@@ -10,6 +10,16 @@
 @theme {
   --font-murecho: "Murecho", sans-serif;
   --breakpoint-sm: 430px;
+}
+
+@plugin "daisyui/theme" {
+  name: "light";
+  default: true;
+  --size-field: 0.3rem;
+  --radius-field: 0.5rem;
+  --radius-box: 1rem;
+  --card-fs: 1rem;
+  --card-p: 2rem;
 }
 
 /* body以下でh-fullなどを使用するために指定しておく */
