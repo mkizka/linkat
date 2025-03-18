@@ -28,7 +28,7 @@ export function LoginForm() {
   });
 
   return (
-    <Card className="flex w-full max-w-screen-sm flex-row justify-center">
+    <Card className="flex w-full max-w-(--breakpoint-sm) flex-row justify-center">
       <Form
         method="post"
         className="card-body flex w-full max-w-sm flex-col gap-4"
