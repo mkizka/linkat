@@ -42,12 +42,12 @@ export function LoginForm() {
           </div>
         )}
         <div className="form-control">
-          <div className="join">
-            <div className="join-item flex w-12 items-center justify-center rounded-r-full bg-neutral text-neutral-content">
+          <div className="join w-full">
+            <div className="join-item flex w-12 items-center justify-center bg-neutral text-neutral-content">
               <AtSymbolIcon className="size-5" />
             </div>
             <input
-              className="input join-item input-bordered w-full"
+              className="input join-item input-bordered h-12"
               placeholder="example.bsky.social"
               autoComplete="username"
               data-testid="login-form__identifier"
