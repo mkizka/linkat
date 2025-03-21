@@ -22,12 +22,6 @@
   --card-p: 2rem;
 }
 
-/* body以下でh-fullなどを使用するために指定しておく */
-html,
-body {
-  height: 100%;
-}
-
 .utils--center {
   @apply flex h-full w-full items-center justify-center;
 }
