@@ -43,3 +43,4 @@ CREATE UNIQUE INDEX "Board_userDid_key" ON "Board"("userDid");
 
 -- AddForeignKey
 ALTER TABLE "Board" ADD CONSTRAINT "Board_userDid_fkey" FOREIGN KEY ("userDid") REFERENCES "User"("did") ON DELETE RESTRICT ON UPDATE CASCADE;
+
