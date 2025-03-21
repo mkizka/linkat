@@ -40,7 +40,7 @@
     "@emoji-mart/data": "1.2.1",
     "@emoji-mart/react": "1.1.1",
     "@heroicons/react": "2.2.0",
-    "@prisma/client": "5.22.0",
+    "@prisma/client": "6.5.0",
     "@react-router/express": "^7.3.0",
     "@react-router/fs-routes": "7.3.0",
     "@react-router/node": "^7.3.0",
