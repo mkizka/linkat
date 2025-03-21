@@ -2,4 +2,4 @@
 set -euo pipefail
 
 docker compose up db -d --wait > /dev/null
-pnpm prisma db push --skip-generate
+pnpm prisma migrate deploy
