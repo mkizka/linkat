@@ -49,6 +49,8 @@ const server = {
         dev: "ws://localhost:6008/subscribe",
       }),
     ),
+  // PR環境などJetstreamを使わない場合に無効化出来るようにする
+  DISABLE_JETSTREAM: z.coerce.boolean().default(false),
   ATPROTO_PLC_URL: z
     .string()
     .url()
