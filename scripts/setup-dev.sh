@@ -23,4 +23,4 @@ exit
 
 # 3. Setup database and jetstream
 pnpm wait-on tcp:2583 && docker compose up -d --wait
-pnpm prisma db push --skip-generate
+pnpm prisma migrate deploy
