@@ -47,7 +47,7 @@ function CardBody({ parsed, isDragging }: CardBodyProps) {
   return (
     <Card
       className={cn({
-        "ring ring-neutral animate-in zoom-in-100 scale-[103%]": isDragging,
+        "ring-3 ring-neutral animate-in zoom-in-100 scale-[103%]": isDragging,
       })}
     >
       <CardContent parsed={parsed} />

@@ -21,7 +21,7 @@ function Avatar({ avatar }: { avatar: string }) {
 
 function AvatarPlaceholder() {
   return (
-    <div className="avatar placeholder">
+    <div className="avatar avatar-placeholder">
       <div className="w-14 rounded-full bg-neutral text-neutral-content">
         <UserIcon className="w-8" />
       </div>

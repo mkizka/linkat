@@ -1,10 +1,11 @@
 import { reactRouter } from "@react-router/dev/vite";
+import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
   base: process.env.VITE_CONFIG_BASE ?? "/",
-  plugins: [reactRouter(), tsconfigPaths()],
+  plugins: [reactRouter(), tsconfigPaths(), tailwindcss()],
   test: {
     include: ["app/**/*.spec.ts"],
     coverage: {

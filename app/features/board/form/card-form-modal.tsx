@@ -47,8 +47,8 @@ export function CardFormModal() {
           {t("card-form-modal.add-card")}
         </div>
       </Card>
-      <dialog id={EDIT_CARD_MODAL_ID} className="modal top-8 items-start">
-        <div className="modal-box">
+      <dialog id={EDIT_CARD_MODAL_ID} className="modal items-start">
+        <div className="modal-box top-8">
           <CardForm />
           <form method="dialog">
             <button className="btn btn-circle btn-ghost btn-sm absolute right-2 top-2">
