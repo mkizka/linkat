@@ -8,7 +8,7 @@ import { SessionStore, StateStore } from "./storage";
 
 const baseUrl = isProduction ? env.PUBLIC_URL : "http://127.0.0.1:3000";
 
-const privateKey = Buffer.from(env.PRIVATE_KEY_ES256_B64, "base64");
+const privateKey = Buffer.from(env.PRIVATE_KEY_ES256_B64, "base64").toString();
 
 const oauthClientOptions: NodeOAuthClientOptions = {
   clientMetadata: {
@@ -27,7 +27,7 @@ const oauthClientOptions: NodeOAuthClientOptions = {
     token_endpoint_auth_signing_alg: "ES256",
     dpop_bound_access_tokens: true,
   },
-  keyset: [await JoseKey.fromImportable(privateKey.toString(), "key1")],
+  keyset: [await JoseKey.fromImportable(privateKey, "key1")],
   plcDirectoryUrl: env.ATPROTO_PLC_URL,
   stateStore: new StateStore(),
   sessionStore: new SessionStore(),
