@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { Card } from "~/components/card";
 
 import { CardForm } from "./card-form";
+import type { CardFormPayload } from "./card-form-provider";
 
 const EDIT_CARD_MODAL_ID = "card-form-modal";
 
@@ -27,7 +28,7 @@ export const cardModal = {
 };
 
 export function CardFormModal() {
-  const form = useFormMetadata();
+  const form = useFormMetadata<CardFormPayload>();
   const { t } = useTranslation();
 
   const handleOpen = () => {
