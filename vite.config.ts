@@ -5,6 +5,9 @@ import tsconfigPaths from "vite-tsconfig-paths";
 export default defineConfig({
   base: process.env.VITE_CONFIG_BASE ?? "/",
   plugins: [reactRouter(), tsconfigPaths()],
+  build: {
+    target: "es2022",
+  },
   test: {
     include: ["app/**/*.spec.ts"],
     coverage: {
