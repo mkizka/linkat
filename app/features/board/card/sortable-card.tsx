@@ -6,6 +6,7 @@ import {
 
 import { Card } from "~/components/card";
 import { cardModal } from "~/features/board/form/card-form-modal";
+import type { CardFormPayload } from "~/features/board/form/card-form-provider";
 import type { ValidCard } from "~/models/card";
 import { cn } from "~/utils/cn";
 
@@ -66,7 +67,7 @@ export function SortableCard({
   sortable,
   isDragging,
 }: SortableCardProps) {
-  const form = useFormMetadata();
+  const form = useFormMetadata<CardFormPayload>();
   const parsed = parseCard(card);
 
   const handleOpen = () => {
