@@ -119,11 +119,6 @@
     "*.{js,mjs,ts,tsx}": "eslint --cache --cache-location ./node_modules/.cache/eslint --fix",
     "*": "prettier --ignore-unknown --write"
   },
-  "pnpm": {
-    "patchedDependencies": {
-      "@atproto/oauth-client-node": "patches/@atproto__oauth-client-node.patch"
-    }
-  },
   "prettier": {
     "plugins": [
       "prettier-plugin-pkg"

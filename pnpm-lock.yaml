@@ -4,11 +4,6 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-patchedDependencies:
-  '@atproto/oauth-client-node':
-    hash: b3640ebd95a7fdaec791d0fa16c36bbeed9a2f7891f0e78d0be6560c18bc6012
-    path: patches/@atproto__oauth-client-node.patch
-
 importers:
 
   .:
@@ -30,7 +25,7 @@ importers:
         version: 0.4.11
       '@atproto/oauth-client-node':
         specifier: 0.3.1
-        version: 0.3.1(patch_hash=b3640ebd95a7fdaec791d0fa16c36bbeed9a2f7891f0e78d0be6560c18bc6012)
+        version: 0.3.1
       '@atproto/repo':
         specifier: 0.8.3
         version: 0.8.3
@@ -5255,7 +5250,7 @@ snapshots:
       multiformats: 9.9.0
       zod: 3.25.67
 
-  '@atproto/oauth-client-node@0.3.1(patch_hash=b3640ebd95a7fdaec791d0fa16c36bbeed9a2f7891f0e78d0be6560c18bc6012)':
+  '@atproto/oauth-client-node@0.3.1':
     dependencies:
       '@atproto-labs/did-resolver': 0.2.0
       '@atproto-labs/handle-resolver-node': 0.1.18
