@@ -1,4 +1,5 @@
 import { JoseKey } from "@atproto/jwk-jose";
+import type { NodeOAuthClientOptions } from "@atproto/oauth-client-node";
 import { NodeOAuthClient } from "@atproto/oauth-client-node";
 
 import { env, isProduction } from "~/utils/env";
@@ -17,7 +18,7 @@ export const createOAuthClient = async () => {
     "base64",
   ).toString();
   const privateKey = await JoseKey.fromImportable(privateKeyPKCS8, "key1");
-  oauthClient = new NodeOAuthClient({
+  const oauthClientOptions: NodeOAuthClientOptions = {
     clientMetadata: {
       client_name: "Linkat",
       client_id: isProduction
@@ -38,12 +39,11 @@ export const createOAuthClient = async () => {
     plcDirectoryUrl: env.ATPROTO_PLC_URL,
     stateStore: new StateStore(),
     sessionStore: new SessionStore(),
-    // 以下、開発時用の設定
-    // ローカル開発環境ではalice.testという名前を通常didに解決できないため、
-    // pnpm patchでhandleResolverを上書き可能にしたうえで、ローカル環境のbsky AppViewを使用してハンドルを解決している
-    // 参照：https://github.com/bluesky-social/atproto/blob/670b6b5de2bf91e6944761c98eb1126fb6a681ee/packages/oauth/oauth-client/src/oauth-client.ts#L212-L215
-    handleResolver: !isProduction ? env.BSKY_PUBLIC_API_URL : undefined,
-    allowHttp: !isProduction, // httpを許可しないとOAuthProtectedResourceMetadataResolverがエラーを投げる
-  });
+  };
+  if (!isProduction) {
+    oauthClientOptions.handleResolver = env.BSKY_PUBLIC_API_URL;
+    oauthClientOptions.allowHttp = true; // httpを許可しないとOAuthProtectedResourceMetadataResolverがエラーを投げる
+  }
+  oauthClient = new NodeOAuthClient(oauthClientOptions);
   return oauthClient;
 };
