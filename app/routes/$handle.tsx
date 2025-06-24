@@ -44,6 +44,9 @@ export async function loader({ request, params }: Route.LoaderArgs) {
 }
 
 export const meta: Route.MetaFunction = ({ data }) => {
+  if (!data) {
+    return [];
+  }
   const { title, url, ogImageUrl, atUri } = data;
   return createMeta({ title, url, ogImageUrl, atUri });
 };

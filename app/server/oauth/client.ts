@@ -42,7 +42,6 @@ export const createOAuthClient = async () => {
     // ローカル開発環境ではalice.testという名前を通常didに解決できないため、
     // pnpm patchでhandleResolverを上書き可能にしたうえで、ローカル環境のbsky AppViewを使用してハンドルを解決している
     // 参照：https://github.com/bluesky-social/atproto/blob/670b6b5de2bf91e6944761c98eb1126fb6a681ee/packages/oauth/oauth-client/src/oauth-client.ts#L212-L215
-    // @ts-expect-error
     handleResolver: !isProduction ? env.BSKY_PUBLIC_API_URL : undefined,
     allowHttp: !isProduction, // httpを許可しないとOAuthProtectedResourceMetadataResolverがエラーを投げる
   });
