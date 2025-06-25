@@ -58,7 +58,7 @@ const createOrUpdateUser = async ({
 };
 
 const fetchBlueskyProfile = async (handleOrDid: string) => {
-  logger.info("プロフィールを取得します", { actor: handleOrDid });
+  logger.info({ actor: handleOrDid }, "プロフィールを取得します");
   const agent = LinkatAgent.credential(env.BSKY_PUBLIC_API_URL);
   const response = await agent.getProfile({
     actor: handleOrDid,
@@ -82,9 +82,7 @@ export const findOrFetchUser = async ({
   }
   const blueskyProfile = await tryCatch(fetchBlueskyProfile)(handleOrDid);
   if (blueskyProfile instanceof Error) {
-    logger.warn("プロフィールの取得に失敗しました", {
-      error: blueskyProfile.message,
-    });
+    logger.warn(blueskyProfile, "プロフィールの取得に失敗しました");
     return user;
   }
   return await createOrUpdateUser({

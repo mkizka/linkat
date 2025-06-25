@@ -40,7 +40,7 @@ export async function action({ request }: Route.ActionArgs) {
     // 2. PDSにも保存
     await agent.updateBoard(parsedBoard);
   } catch (error) {
-    logger.error("PDSへのボードの保存に失敗しました", { error });
+    logger.error(error, "PDSへのボードの保存に失敗しました");
   }
   // 3. 閲覧ページにリダイレクト
   return redirect(`/${user.handle}?success`);

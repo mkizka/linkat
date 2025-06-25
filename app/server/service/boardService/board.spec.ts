@@ -120,8 +120,8 @@ describe("boardService", () => {
       const actual = await boardService.findOrFetchBoard(user.did);
       // assert
       expect(mockedLogger.warn).toHaveBeenCalledWith(
-        "PDSからのboardの形式が不正でした",
         expect.anything(),
+        "PDSからのboardの形式が不正でした",
       );
       expect(actual).toBeNull();
     });
@@ -142,8 +142,8 @@ describe("boardService", () => {
       const actual = await boardService.findOrFetchBoard(user.did);
       // assert
       expect(mockedLogger.warn).toHaveBeenCalledWith(
-        "PDSからのboardの取得に失敗しました",
         expect.anything(),
+        "PDSからのboardの取得に失敗しました",
       );
       expect(actual).toBeNull();
     });

@@ -21,7 +21,7 @@ export async function loader({ request }: Route.LoaderArgs) {
       },
     });
   } catch (error) {
-    logger.error("OAuthコールバックに失敗しました", { error: String(error) });
+    logger.error(error, "OAuthコールバックに失敗しました");
     return redirect("/login");
   }
 }

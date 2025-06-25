@@ -24,12 +24,12 @@ const getServiceEndpoint = (document: DidDocument) => {
 export const resolveServiceUrl = async (userDid: string) => {
   const didDocument = await resolver.did.resolve(userDid);
   if (!didDocument) {
-    logger.warn("DIDの解決に失敗しました", { userDid });
+    logger.warn({ userDid }, "DIDの解決に失敗しました");
     return null;
   }
   const serviceUrl = getServiceEndpoint(didDocument);
   if (!serviceUrl) {
-    logger.warn("DID解決後にPDSのURLが取得できませんでした", { didDocument });
+    logger.warn({ didDocument }, "DID解決後にPDSのURLが取得できませんでした");
     return null;
   }
   return serviceUrl;
