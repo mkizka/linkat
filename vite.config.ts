@@ -7,6 +7,7 @@ export default defineConfig({
   plugins: [reactRouter(), tsconfigPaths()],
   build: {
     target: "es2022",
+    sourcemap: true,
   },
   test: {
     include: ["app/**/*.spec.ts"],
