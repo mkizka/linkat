@@ -1,6 +1,5 @@
-import { createOAuthClient } from "~/server/oauth/client";
+import { oauthClient } from "~/server/oauth/client";
 
-export async function loader() {
-  const oauthClient = await createOAuthClient();
+export function loader() {
   return Response.json(oauthClient.clientMetadata);
 }

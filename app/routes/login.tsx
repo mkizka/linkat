@@ -5,7 +5,7 @@ import { Main, RootLayout } from "~/components/layout";
 import { LoginForm } from "~/features/login/login-form";
 import { RouteToaster } from "~/features/toast/route";
 import { i18nServer } from "~/i18n/i18n";
-import { createOAuthClient } from "~/server/oauth/client";
+import { oauthClient } from "~/server/oauth/client";
 import { getSessionUserDid } from "~/server/oauth/session";
 import { createLogger } from "~/utils/logger";
 
@@ -21,7 +21,6 @@ export async function action({ request }: Route.ActionArgs) {
     return { error: t("login.unknown-error") };
   }
   try {
-    const oauthClient = await createOAuthClient();
     const url = await oauthClient.authorize(handle, {
       scope: "atproto transition:generic",
     });
