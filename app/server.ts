@@ -1,6 +1,6 @@
 import { createRequestHandler } from "@react-router/express";
 import express from "express";
-import morgan from "morgan";
+import pinoHttp from "pino-http";
 import type { ServerBuild } from "react-router";
 
 import { jetstream } from "./server/jetstream/subscription.js";
@@ -23,8 +23,21 @@ const viteDevServer =
 const app = express();
 
 app.use(
-  morgan("combined", {
-    skip: () => env.NODE_ENV === "development",
+  pinoHttp({
+    logger: createLogger("http"),
+    customSuccessMessage: (req, res, responseTime) => {
+      return `${req.method} ${res.statusCode} ${req.url} ${responseTime}ms`;
+    },
+    customErrorMessage: (req, res) => {
+      return `${req.method} ${res.statusCode} ${req.url}`;
+    },
+    ...(env.NODE_ENV === "development" && {
+      serializers: {
+        req: () => undefined,
+        res: () => undefined,
+        responseTime: () => undefined,
+      },
+    }),
   }),
 );
 
