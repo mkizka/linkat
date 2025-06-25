@@ -1,6 +1,0 @@
-{
-  "permissions": {
-    "allow": ["Bash(pnpm:*)", "Bash(git commit:*)"],
-    "deny": []
-  }
-}

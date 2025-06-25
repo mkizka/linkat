@@ -27,9 +27,6 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
 };
 
 export const meta = ({ data }: Route.MetaArgs) => {
-  if (!data) {
-    return [];
-  }
   const { title, description, url } = data;
   return createMeta({ title, description, url });
 };

@@ -1,0 +1,22 @@
+diff --git a/dist/node-oauth-client.js b/dist/node-oauth-client.js
+index 07d96954fb869acacf7128efa3788fb9f97eea76..c8ffdb38ee78a4233b33a79a0e3d34b1d7e04163 100644
+--- a/dist/node-oauth-client.js
++++ b/dist/node-oauth-client.js
+@@ -11,7 +11,7 @@ class NodeOAuthClient extends oauth_client_1.OAuthClient {
+         const clientMetadata = await oauth_client_1.OAuthClient.fetchMetadata(options);
+         return new NodeOAuthClient({ ...options, clientMetadata });
+     }
+-    constructor({ fetch, responseMode = 'query', fallbackNameservers, stateStore, sessionStore, requestLock = undefined, ...options }) {
++    constructor({ fetch, responseMode = 'query', fallbackNameservers, stateStore, sessionStore, requestLock = undefined, handleResolver, ...options }) {
+         if (!requestLock) {
+             // Ok if only one instance of the client is running at a time.
+             console.warn('No lock mechanism provided. Credentials might get revoked.');
+@@ -20,7 +20,7 @@ class NodeOAuthClient extends oauth_client_1.OAuthClient {
+             ...options,
+             fetch,
+             responseMode,
+-            handleResolver: new handle_resolver_node_1.AtprotoHandleResolverNode({
++            handleResolver: handleResolver ?? new handle_resolver_node_1.AtprotoHandleResolverNode({
+                 fetch,
+                 fallbackNameservers,
+             }),
