@@ -34,6 +34,7 @@ const oauthClientOptions: NodeOAuthClientOptions = {
 };
 
 if (!isProduction) {
+  // @ts-expect-error
   oauthClientOptions.handleResolver = env.BSKY_PUBLIC_API_URL;
   oauthClientOptions.allowHttp = true; // httpを許可しないとOAuthProtectedResourceMetadataResolverがエラーを投げる
 }
