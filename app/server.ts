@@ -75,7 +75,7 @@ app.all("*", createRequestHandler({ build }));
 const logger = createLogger("server");
 
 app.listen(env.PORT, "0.0.0.0", () => {
-  logger.info(`App listening on ${env.PUBLIC_URL}:${env.PORT}`);
+  logger.info(`App listening on ${env.PUBLIC_URL}`);
   if (!env.DISABLE_JETSTREAM) {
     jetstream.start();
   }

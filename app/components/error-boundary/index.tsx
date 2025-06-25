@@ -70,8 +70,6 @@ export function ErrorBoundary() {
       <ErrorPage title="404" text={t("error-boundary.not-found-message")} />
     );
   }
-  logger.error("ErrorBoundaryがエラーをキャッチしました", {
-    error: String(error),
-  });
+  logger.error(error, "ErrorBoundaryがエラーをキャッチしました");
   return <ErrorPage title="Error" text={t("error-boundary.error-message")} />;
 }

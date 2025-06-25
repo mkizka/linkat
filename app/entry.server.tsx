@@ -89,9 +89,12 @@ export default async function handleRequest(
           // errors encountered during initial shell rendering since they'll
           // reject and get logged in handleDocumentRequest.
           if (shellRendered) {
-            logger.error("renderToPipeableStreamでエラーが発生しました", {
-              error,
-            });
+            logger.error(
+              {
+                error,
+              },
+              "renderToPipeableStreamでエラーが発生しました",
+            );
           }
         },
       },
@@ -115,5 +118,5 @@ export function handleError(
   ) {
     return;
   }
-  logger.error("サーバーエラーが発生しました", { error });
+  logger.error(error, "サーバーエラーが発生しました");
 }

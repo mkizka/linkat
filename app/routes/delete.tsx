@@ -21,7 +21,7 @@ export async function action({ request }: Route.ActionArgs) {
   try {
     await agent.deleteBoard();
   } catch (error) {
-    logger.error("PDSからボードの削除に失敗しました", { error });
+    logger.error(error, "PDSからボードの削除に失敗しました");
   }
   await boardService.deleteBoard(userDid);
   return redirect(`/`);

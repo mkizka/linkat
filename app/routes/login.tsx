@@ -27,7 +27,7 @@ export async function action({ request }: Route.ActionArgs) {
     });
     return redirect(url.toString());
   } catch (error) {
-    logger.info("OAuthログインに失敗しました", { error: String(error) });
+    logger.error(error, "OAuthログインに失敗しました");
     if (error instanceof OAuthResolverError) {
       return { error: t("login.oauth-resolve-error-message") };
     }
