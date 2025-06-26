@@ -1,3 +1,4 @@
+import { ensureValidHandle } from "@atproto/syntax";
 import { getFormProps, getInputProps, useForm } from "@conform-to/react";
 import { getZodConstraint, parseWithZod } from "@conform-to/zod";
 import { AtSymbolIcon } from "@heroicons/react/24/outline";
@@ -8,6 +9,15 @@ import { z } from "zod";
 import { Button } from "~/components/button";
 import { Card } from "~/components/card";
 
+const isValidHandle = (value: string) => {
+  try {
+    ensureValidHandle(value);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
 export function LoginForm() {
   const { t } = useTranslation();
   const navigation = useNavigation();
@@ -15,7 +25,7 @@ export function LoginForm() {
   const schema = z.object({
     identifier: z
       .string({ required_error: t("login-form.required-error-message") })
-      .refine((value) => value.includes(".") && !value.includes("@"), {
+      .refine(isValidHandle, {
         message: t("login-form.invalid-handle-error-message"),
       }),
   });
@@ -56,7 +66,9 @@ export function LoginForm() {
           </div>
         </div>
         {fields.identifier.errors && (
-          <p className="p-1 text-sm text-error">{fields.identifier.errors}</p>
+          <p className="whitespace-pre-line p-1 text-sm text-error">
+            {fields.identifier.errors}
+          </p>
         )}
         <Button
           type="submit"

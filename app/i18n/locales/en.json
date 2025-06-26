@@ -15,7 +15,7 @@
   },
   "login-form": {
     "required-error-message": "Please enter a value",
-    "invalid-handle-error-message": "Enter in the format example.bsky.social",
+    "invalid-handle-error-message": "Please enter a valid handle format\n(e.g., example.bsky.social)",
     "login-title": "Login with ATProto",
     "login-description": "Please enter your Bluesky or Self-hosting PDS account handle.",
     "login-button": "Login (redirects to an authorize page)"
