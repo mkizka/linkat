@@ -16,7 +16,7 @@
   },
   "login-form": {
     "required-error-message": "入力してください",
-    "invalid-handle-error-message": "正しいドメイン形式で入力してください（例: example.bsky.social）",
+    "invalid-handle-error-message": "正しいハンドルの形式で入力してください\n（例: example.bsky.social）",
     "login-title": "ATProtoでログイン",
     "login-description": "Bluesky または Self-hosting PDS アカウントのハンドルを入力してください。",
     "login-button": "ログイン (許可ページに移動します)"

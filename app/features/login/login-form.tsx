@@ -66,7 +66,9 @@ export function LoginForm() {
           </div>
         </div>
         {fields.identifier.errors && (
-          <p className="p-1 text-sm text-error">{fields.identifier.errors}</p>
+          <p className="whitespace-pre-line p-1 text-sm text-error">
+            {fields.identifier.errors}
+          </p>
         )}
         <Button
           type="submit"
