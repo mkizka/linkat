@@ -7,6 +7,7 @@ import { HydratedRouter } from "react-router/dom";
 import { getInitialNamespaces } from "remix-i18next/client";
 
 import { i18nConfig } from "./i18n/config";
+import { createLogger } from "./utils/logger";
 
 async function main() {
   await i18next
@@ -30,5 +31,7 @@ async function main() {
   });
 }
 
+const logger = createLogger("entry.client");
+
 // eslint-disable-next-line
-main().catch((error) => console.error(error));
+main().catch((error) => logger.error(error));
