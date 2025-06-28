@@ -36,11 +36,25 @@ export async function loader({ request }: LoaderFunctionArgs) {
   );
 }
 
+const umamiPlaceholderScript = `\
+if (typeof window !== 'undefined' && !window.umami) {
+  window.umami = {
+    track: function(...args) {
+      console.warn('Umami not loaded yet', args);
+    }
+  };
+}`;
+
 export function Layout({ children }: { children: React.ReactNode }) {
   const loaderData = useRouteLoaderData<typeof loader>("root");
   return (
     <html lang={loaderData?.locale ?? "en"} className="font-murecho">
       <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: umamiPlaceholderScript,
+          }}
+        />
         {loaderData?.umami.scriptUrl && loaderData.umami.websiteId && (
           <script
             defer
