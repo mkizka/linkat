@@ -87,7 +87,7 @@
     "@types/express": "5.0.1",
     "@types/markdown-it": "14.1.2",
     "@types/markdown-it-link-attributes": "3.0.5",
-    "@types/node": "22.15.19",
+    "@types/node": "24.0.7",
     "@types/react": "18.3.12",
     "@types/react-dom": "18.3.1",
     "@types/umami": "2.10.0",
