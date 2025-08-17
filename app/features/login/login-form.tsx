@@ -1,6 +1,6 @@
 import { ensureValidHandle } from "@atproto/syntax";
 import { getFormProps, getInputProps, useForm } from "@conform-to/react";
-import { getZodConstraint, parseWithZod } from "@conform-to/zod";
+import { getZodConstraint, parseWithZod } from "@conform-to/zod/v4";
 import { AtSymbolIcon } from "@heroicons/react/24/outline";
 import { useTranslation } from "react-i18next";
 import { Form, useNavigation } from "react-router";
