@@ -25,7 +25,7 @@ type Props = {
 
 const withId = (card: ValidCard) => ({
   ...card,
-  id: crypto.randomUUID().toString(),
+  id: crypto.randomUUID(),
 });
 
 export function BoardViewer({ user, board, url, editable, isMine }: Props) {

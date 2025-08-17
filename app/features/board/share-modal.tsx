@@ -26,7 +26,9 @@ export function ShareModal({ url }: Props) {
 
   useEffect(() => {
     if (searchParams.has("success")) {
-      dialogRef.current!.showModal();
+      if (dialogRef.current) {
+        dialogRef.current.showModal();
+      }
       setSearchParams(
         (prev) => {
           prev.delete("success");

@@ -76,11 +76,13 @@ app.use((req, res, next) => {
 
 const build = viteDevServer
   ? () =>
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       viteDevServer.ssrLoadModule(
         "virtual:react-router/server-build",
       ) as Promise<ServerBuild>
   : // eslint-disable-next-line
     // @ts-ignore: ビルド成果物はあったりなかったりするのでts-expect-errorを使わない
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     ((await import("../build/server/index.js")) as ServerBuild);
 
 app.all("*", createRequestHandler({ build }));

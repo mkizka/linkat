@@ -34,6 +34,7 @@ export function CardFormProvider({
     },
     onSubmit: async (event, { submission, formData }) => {
       event.preventDefault();
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       const payload = submission?.payload as CardFormPayload;
       if (formData.get("action") === "delete") {
         if (payload.id) await onDelete(payload.id);

@@ -163,8 +163,8 @@ importers:
         specifier: 0.9.1
         version: 0.9.1
       '@mkizka/eslint-config':
-        specifier: 7.1.1
-        version: 7.1.1(@typescript-eslint/eslint-plugin@8.39.1(@typescript-eslint/parser@8.39.1(eslint@9.33.0(jiti@2.5.1))(typescript@5.9.2))(eslint@9.33.0(jiti@2.5.1))(typescript@5.9.2))(eslint@9.33.0(jiti@2.5.1))(typescript@5.9.2)
+        specifier: 7.1.2
+        version: 7.1.2(@typescript-eslint/eslint-plugin@8.39.1(@typescript-eslint/parser@8.39.1(eslint@9.33.0(jiti@2.5.1))(typescript@5.9.2))(eslint@9.33.0(jiti@2.5.1))(typescript@5.9.2))(eslint@9.33.0(jiti@2.5.1))(typescript@5.9.2)
       '@mkizka/eslint-plugin-aaa':
         specifier: 1.0.2
         version: 1.0.2
@@ -1065,8 +1065,8 @@ packages:
   '@mjackson/node-fetch-server@0.7.0':
     resolution: {integrity: sha512-un8diyEBKU3BTVj3GzlTPA1kIjCkGdD+AMYQy31Gf9JCkfoZzwgJ79GUtHrF2BN3XPNMLpubbzPcxys+a3uZEw==}
 
-  '@mkizka/eslint-config@7.1.1':
-    resolution: {integrity: sha512-lqo70hfTpUyGqWiuNKcyLjTIWJRt1JC5ZiP/VUjqGxhpTQMLPNbkX+3w7uMMACQ7vLXFm5K5WV3l1DTkyGSnFw==}
+  '@mkizka/eslint-config@7.1.2':
+    resolution: {integrity: sha512-nSN+j6QcH8GvI1OdviOzRbK2g5odg0YD9aecXZr+NzOmBA74fHP8UrKtWvaWUWe5P8I/r7VG5jSn8zZn2c99pg==}
     peerDependencies:
       eslint: '>= 9'
 
@@ -6177,7 +6177,7 @@ snapshots:
 
   '@mjackson/node-fetch-server@0.7.0': {}
 
-  '@mkizka/eslint-config@7.1.1(@typescript-eslint/eslint-plugin@8.39.1(@typescript-eslint/parser@8.39.1(eslint@9.33.0(jiti@2.5.1))(typescript@5.9.2))(eslint@9.33.0(jiti@2.5.1))(typescript@5.9.2))(eslint@9.33.0(jiti@2.5.1))(typescript@5.9.2)':
+  '@mkizka/eslint-config@7.1.2(@typescript-eslint/eslint-plugin@8.39.1(@typescript-eslint/parser@8.39.1(eslint@9.33.0(jiti@2.5.1))(typescript@5.9.2))(eslint@9.33.0(jiti@2.5.1))(typescript@5.9.2))(eslint@9.33.0(jiti@2.5.1))(typescript@5.9.2)':
     dependencies:
       '@dword-design/eslint-plugin-import-alias': 6.0.3
       '@eslint/js': 9.33.0
