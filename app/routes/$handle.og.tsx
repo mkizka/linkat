@@ -8,7 +8,7 @@ import { userService } from "~/server/service/userService";
 
 import type { Route } from "./+types/$handle.og";
 
-const cache = new LRUCache<string, Buffer>({
+const cache = new LRUCache<string, Uint8Array<ArrayBuffer>>({
   max: 100,
   ttl: 1000 * 60 * 10,
 });
@@ -128,7 +128,8 @@ const createImage = async (user: User) => {
     },
   );
   const resvg = new Resvg(svg);
-  const image = resvg.render().asPng();
+  const buffer = resvg.render().asPng();
+  const image = Uint8Array.from(buffer);
   cache.set(user.did, image);
   return image;
 };
