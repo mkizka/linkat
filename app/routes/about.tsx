@@ -77,9 +77,6 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
 };
 
 export const meta: Route.MetaFunction = ({ loaderData }) => {
-  if (!loaderData) {
-    return [];
-  }
   const { about, atUri } = loaderData;
 
   return [
