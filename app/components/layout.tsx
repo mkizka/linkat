@@ -32,7 +32,12 @@ export function Header({ isLogin }: HeaderProps) {
           className="dropdown dropdown-end"
           ref={detailsRef}
           onClick={(event) => {
-            if ((event.target as HTMLElement).tagName === "BUTTON") return;
+            if (
+              event.target instanceof HTMLElement &&
+              event.target.tagName === "BUTTON"
+            ) {
+              return;
+            }
             void umami.track("click-header-lang", {
               action: "open",
             });

@@ -13,6 +13,7 @@ export class StateStore implements NodeSavedStateStore {
       where: { key },
     });
     if (!authState) return;
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     return JSON.parse(authState.state) as NodeSavedState;
   }
 
@@ -38,6 +39,7 @@ export class SessionStore implements NodeSavedSessionStore {
       where: { key },
     });
     if (!authSession) return;
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     return JSON.parse(authSession.session) as NodeSavedSession;
   }
 

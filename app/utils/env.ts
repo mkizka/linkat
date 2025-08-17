@@ -73,6 +73,7 @@ export const env = (() => {
     // logger.tsなどを通してブラウザでも使用するファイルにimportされた時は
     // バリデーションが通らないので、ブラウザ環境では無視する
     if (typeof window !== "undefined") {
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       return import.meta.env as never;
     }
     throw e;

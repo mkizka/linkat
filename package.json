@@ -79,7 +79,7 @@
   },
   "devDependencies": {
     "@atproto/lex-cli": "0.9.1",
-    "@mkizka/eslint-config": "5.4.1",
+    "@mkizka/eslint-config": "7.1.2",
     "@mkizka/eslint-plugin-aaa": "1.0.2",
     "@playwright/test": "1.54.2",
     "@quramy/prisma-fabbrica": "2.3.0",
