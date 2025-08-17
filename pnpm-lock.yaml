@@ -43,7 +43,7 @@ importers:
         version: 1.8.1(react@18.3.1)
       '@conform-to/zod':
         specifier: 1.8.1
-        version: 1.8.1(zod@3.25.67)
+        version: 1.8.1(zod@4.0.17)
       '@emoji-mart/data':
         specifier: 1.2.1
         version: 1.2.1
@@ -73,7 +73,7 @@ importers:
         version: 0.2.5
       '@t3-oss/env-core':
         specifier: 0.13.8
-        version: 0.13.8(arktype@2.1.20)(typescript@5.8.3)(zod@3.25.67)
+        version: 0.13.8(arktype@2.1.20)(typescript@5.8.3)(zod@4.0.17)
       clsx:
         specifier: 2.1.1
         version: 2.1.1
@@ -139,7 +139,7 @@ importers:
         version: 7.2.1(i18next@25.3.2(typescript@5.8.3))(react-i18next@15.6.0(i18next@25.3.2(typescript@5.8.3))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.8.3))(react-router@7.6.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)
       remix-utils:
         specifier: 8.7.0
-        version: 8.7.0(react-router@7.6.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)(zod@3.25.67)
+        version: 8.7.0(react-router@7.6.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)(zod@4.0.17)
       satori:
         specifier: 0.15.2
         version: 0.15.2
@@ -150,11 +150,11 @@ importers:
         specifier: 8.18.3
         version: 8.18.3
       zod:
-        specifier: 3.25.67
-        version: 3.25.67
+        specifier: 4.0.17
+        version: 4.0.17
       zod-validation-error:
-        specifier: 3.5.3
-        version: 3.5.3(zod@3.25.67)
+        specifier: 4.0.1
+        version: 4.0.1(zod@4.0.17)
     devDependencies:
       '@atproto/lex-cli':
         specifier: 0.9.0
@@ -5160,14 +5160,17 @@ packages:
   yoga-wasm-web@0.3.3:
     resolution: {integrity: sha512-N+d4UJSJbt/R3wqY7Coqs5pcV0aUj2j9IaQ3rNj9bVCLld8tTGKRa2USARjnvZJWVx1NDmQev8EknoczaOQDOA==}
 
-  zod-validation-error@3.5.3:
-    resolution: {integrity: sha512-OT5Y8lbUadqVZCsnyFaTQ4/O2mys4tj7PqhdbBCp7McPwvIEKfPtdA6QfPeFQK2/Rz5LgwmAXRJTugBNBi0btw==}
+  zod-validation-error@4.0.1:
+    resolution: {integrity: sha512-F3rdaCOHs5ViJ5YTz5zzRtfkQdMdIeKudJAoxy7yB/2ZMEHw73lmCAcQw11r7++20MyGl4WV59EVh7A9rNAyog==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
       zod: ^3.25.0 || ^4.0.0
 
   zod@3.25.67:
     resolution: {integrity: sha512-idA2YXwpCdqUSKRCACDE6ItZD9TZzy3OZMtpfLoh6oPR47lipysRrJfjzMqFxQ3uJuUPyUeWe1r9vLH33xO/Qw==}
+
+  zod@4.0.17:
+    resolution: {integrity: sha512-1PHjlYRevNxxdy2JZ8JcNAw7rX8V9P1AKkP+x/xZfxB0K5FYfuV+Ug6P/6NVSR2jHQ+FzDDoDHS04nYUsOIyLQ==}
 
 snapshots:
 
@@ -5771,10 +5774,10 @@ snapshots:
       '@conform-to/dom': 1.8.1
       react: 18.3.1
 
-  '@conform-to/zod@1.8.1(zod@3.25.67)':
+  '@conform-to/zod@1.8.1(zod@4.0.17)':
     dependencies:
       '@conform-to/dom': 1.8.1
-      zod: 3.25.67
+      zod: 4.0.17
 
   '@dword-design/dedent@0.7.0':
     dependencies:
@@ -6635,11 +6638,11 @@ snapshots:
       partysocket: 1.1.4
       tiny-emitter: 2.1.0
 
-  '@t3-oss/env-core@0.13.8(arktype@2.1.20)(typescript@5.8.3)(zod@3.25.67)':
+  '@t3-oss/env-core@0.13.8(arktype@2.1.20)(typescript@5.8.3)(zod@4.0.17)':
     optionalDependencies:
       arktype: 2.1.20
       typescript: 5.8.3
-      zod: 3.25.67
+      zod: 4.0.17
 
   '@tailwindcss/typography@0.5.16(tailwindcss@3.4.17)':
     dependencies:
@@ -9881,13 +9884,13 @@ snapshots:
       react-i18next: 15.6.0(i18next@25.3.2(typescript@5.8.3))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.8.3)
       react-router: 7.6.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
 
-  remix-utils@8.7.0(react-router@7.6.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)(zod@3.25.67):
+  remix-utils@8.7.0(react-router@7.6.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)(zod@4.0.17):
     dependencies:
       type-fest: 4.41.0
     optionalDependencies:
       react: 18.3.1
       react-router: 7.6.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      zod: 3.25.67
+      zod: 4.0.17
 
   require-directory@2.1.1: {}
 
@@ -10903,8 +10906,10 @@ snapshots:
 
   yoga-wasm-web@0.3.3: {}
 
-  zod-validation-error@3.5.3(zod@3.25.67):
+  zod-validation-error@4.0.1(zod@4.0.17):
     dependencies:
-      zod: 3.25.67
+      zod: 4.0.17
 
   zod@3.25.67: {}
+
+  zod@4.0.17: {}

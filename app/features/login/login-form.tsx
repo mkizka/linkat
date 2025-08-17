@@ -24,7 +24,7 @@ export function LoginForm() {
 
   const schema = z.object({
     identifier: z
-      .string({ required_error: t("login-form.required-error-message") })
+      .string({ message: t("login-form.required-error-message") })
       .refine(isValidHandle, {
         message: t("login-form.invalid-handle-error-message"),
       }),
