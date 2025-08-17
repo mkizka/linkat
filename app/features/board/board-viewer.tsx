@@ -25,7 +25,8 @@ type Props = {
 
 const withId = (card: ValidCard) => ({
   ...card,
-  id: crypto.randomUUID(),
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+  id: crypto.randomUUID() as string,
 });
 
 export function BoardViewer({ user, board, url, editable, isMine }: Props) {
