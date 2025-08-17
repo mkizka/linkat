@@ -50,6 +50,7 @@
     "@t3-oss/env-core": "0.13.8",
     "clsx": "2.1.1",
     "emoji-mart": "5.6.0",
+    "emoji-regex": "10.4.0",
     "express": "4.21.2",
     "i18next": "25.3.4",
     "i18next-browser-languagedetector": "8.2.0",
