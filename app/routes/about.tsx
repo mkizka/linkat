@@ -76,11 +76,11 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
   };
 };
 
-export const meta: Route.MetaFunction = ({ data }) => {
-  if (!data) {
+export const meta: Route.MetaFunction = ({ loaderData }) => {
+  if (!loaderData) {
     return [];
   }
-  const { about, atUri } = data;
+  const { about, atUri } = loaderData;
 
   return [
     { title: `${about.title} | Linkat` },
