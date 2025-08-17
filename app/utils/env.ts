@@ -31,35 +31,26 @@ const server = {
   PRIVATE_KEY_ES256_B64: isProduction
     ? z.string()
     : z.string().default(DEVELOPMENT_PRIVATE_KEY),
-  BSKY_PUBLIC_API_URL: z
-    .string()
-    .url()
-    .default(
-      match({
-        prod: "https://public.api.bsky.app",
-        dev: "http://localhost:2584",
-      }),
-    ),
-  JETSTREAM_URL: z
-    .string()
-    .url()
-    .default(
-      match({
-        prod: "wss://jetstream1.us-west.bsky.network/subscribe",
-        dev: "ws://localhost:6008/subscribe",
-      }),
-    ),
+  BSKY_PUBLIC_API_URL: z.url().default(
+    match({
+      prod: "https://public.api.bsky.app",
+      dev: "http://localhost:2584",
+    }),
+  ),
+  JETSTREAM_URL: z.url().default(
+    match({
+      prod: "wss://jetstream1.us-west.bsky.network/subscribe",
+      dev: "ws://localhost:6008/subscribe",
+    }),
+  ),
   // PR環境などJetstreamを使わない場合に無効化出来るようにする
   DISABLE_JETSTREAM: z.coerce.boolean().default(false),
-  ATPROTO_PLC_URL: z
-    .string()
-    .url()
-    .default(
-      match({
-        prod: "https://plc.directory",
-        dev: "http://localhost:2582",
-      }),
-    ),
+  ATPROTO_PLC_URL: z.url().default(
+    match({
+      prod: "https://plc.directory",
+      dev: "http://localhost:2582",
+    }),
+  ),
   UMAMI_SCRIPT_URL: z.string().optional(),
   UMAMI_WEBSITE_ID: z.string().optional(),
   // aboutページで使用するwhitewindの記事情報
