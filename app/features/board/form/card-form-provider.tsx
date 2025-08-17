@@ -1,5 +1,5 @@
 import { FormProvider, useForm } from "@conform-to/react";
-import { getZodConstraint, parseWithZod } from "@conform-to/zod";
+import { getZodConstraint, parseWithZod } from "@conform-to/zod/v4";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
 

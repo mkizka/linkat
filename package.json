@@ -73,8 +73,8 @@
     "satori": "0.16.2",
     "tailwind-merge": "3.3.1",
     "ws": "8.18.3",
-    "zod": "3.25.67",
-    "zod-validation-error": "3.5.3"
+    "zod": "4.0.17",
+    "zod-validation-error": "4.0.1"
   },
   "devDependencies": {
     "@atproto/lex-cli": "0.9.1",

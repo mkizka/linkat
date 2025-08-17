@@ -1,6 +1,6 @@
 import { ensureValidHandle } from "@atproto/syntax";
 import { getFormProps, getInputProps, useForm } from "@conform-to/react";
-import { getZodConstraint, parseWithZod } from "@conform-to/zod";
+import { getZodConstraint, parseWithZod } from "@conform-to/zod/v4";
 import { AtSymbolIcon } from "@heroicons/react/24/outline";
 import { useTranslation } from "react-i18next";
 import { Form, useNavigation } from "react-router";
@@ -24,7 +24,7 @@ export function LoginForm() {
 
   const schema = z.object({
     identifier: z
-      .string({ required_error: t("login-form.required-error-message") })
+      .string({ message: t("login-form.required-error-message") })
       .refine(isValidHandle, {
         message: t("login-form.invalid-handle-error-message"),
       }),
