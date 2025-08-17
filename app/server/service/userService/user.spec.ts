@@ -167,7 +167,7 @@ describe("userService", () => {
       // arrange
       // act
       const actual = await userService.findOrFetchUser({
-        handleOrDid: "did:plc:invalid",
+        handleOrDid: "did:invalid",
       });
       // assert
       expect(actual).toBeNull();
