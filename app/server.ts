@@ -83,7 +83,7 @@ const build = viteDevServer
     // @ts-ignore: ビルド成果物はあったりなかったりするのでts-expect-errorを使わない
     ((await import("../build/server/index.js")) as ServerBuild);
 
-app.all("*", createRequestHandler({ build }));
+app.use(createRequestHandler({ build }));
 
 const logger = createLogger("server");
 
