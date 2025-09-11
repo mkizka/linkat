@@ -1,0 +1,3 @@
+{
+  "extends": ["github>mkizka/renovate-config:js-lib"]
+}
