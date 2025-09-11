@@ -20,62 +20,31 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      pull-requests: write
-      issues: write
+      pull-requests: read
+      issues: read
       id-token: write
+      actions: read # Required for Claude to read CI results on PRs
     steps:
-      - name: React with eyes
-        uses: actions/github-script@v7
+      - name: Checkout repository
+        uses: actions/checkout@v4
         with:
-          script: |
-            let commentId;
-            if (context.eventName === 'issue_comment') {
-              commentId = context.payload.comment.id;
-            } else if (context.eventName === 'pull_request_review_comment') {
-              commentId = context.payload.comment.id;
-            } else if (context.eventName === 'pull_request_review') {
-              // PRレビューの場合、レビュー自体にリアクションする
-              await github.rest.pulls.createReviewComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                pull_number: context.payload.pull_request.number,
-                body: '👀',
-                commit_id: context.payload.pull_request.head.sha,
-                path: '',
-                line: 1
-              });
-              return;
-            } else if (context.eventName === 'issues') {
-              // Issueの場合、Issue自体にリアクションする
-              await github.rest.reactions.createForIssue({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: context.payload.issue.number,
-                content: 'eyes'
-              });
-              return;
-            }
-            if (commentId) {
-              await github.rest.reactions.createForIssueComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                comment_id: commentId,
-                content: 'eyes'
-              });
-            }
-      - uses: actions/checkout@v4
-      - run: |
-          npm i -g corepack@latest
-          corepack enable pnpm
-      - uses: actions/setup-node@v4
-        with:
-          node-version-file: .node-version
-          cache: pnpm
-      - run: pnpm i
+          fetch-depth: 1
+
       - name: Run Claude Code
         id: claude
-        uses: anthropics/claude-code-action@beta
+        uses: anthropics/claude-code-action@v1
         with:
-          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-          allowed_tools: "Bash(pnpm:*)"
-          timeout_minutes: 5
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          
+          # This is an optional setting that allows Claude to read CI results on PRs
+          additional_permissions: |
+            actions: read
+
+          # Optional: Give a custom prompt to Claude. If this is not specified, Claude will perform the instructions specified in the comment that tagged it.
+          # prompt: 'Update the pull request description to include a summary of changes.'
+
+          # Optional: Add claude_args to customize behavior and configuration
+          # See https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md
+          # or https://docs.anthropic.com/en/docs/claude-code/sdk#command-line for available options
+          # claude_args: '--model claude-opus-4-1-20250805 --allowed-tools Bash(gh pr:*)'
+
