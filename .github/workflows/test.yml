@@ -10,11 +10,11 @@ jobs:
   unit-test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
       - run: |
           npm i -g corepack@latest
           corepack enable pnpm
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version-file: .node-version
           cache: pnpm
@@ -25,11 +25,11 @@ jobs:
   e2e-test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
       - run: |
           npm i -g corepack@latest
           corepack enable pnpm
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version-file: .node-version
           cache: pnpm
@@ -38,7 +38,7 @@ jobs:
           echo "ATPROTO_COMMIT=$ATPROTO_COMMIT" >> $GITHUB_ENV
           NODE_VERSION=$(node -v)
           echo "NODE_VERSION=$NODE_VERSION" >> $GITHUB_ENV
-      - uses: actions/cache@v4
+      - uses: actions/cache@0400d5f644dc74513175e3cd8d07132dd4860809 # v4
         with:
           path: atproto
           key: atproto-${{ env.ATPROTO_COMMIT }}-node-${{ env.NODE_VERSION }}
@@ -49,7 +49,7 @@ jobs:
       - run: pnpm build
       - run: pnpm e2e
       # https://www.cloudflarestatus.com/incidents/t5nrjmpxc1cj
-      - uses: unfor19/install-aws-cli-action@v1
+      - uses: unfor19/install-aws-cli-action@f5b46b7f32cf5e7ebd652656c5036bf83dd1e60c # v1
         if: always() && (github.ref == 'refs/heads/main' || github.actor == 'mkizka')
         with:
           version: 2.22.35
