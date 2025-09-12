@@ -2,7 +2,7 @@
   "name": "linkat",
   "type": "module",
   "private": true,
-  "packageManager": "pnpm@10.5.2+sha512.da9dc28cd3ff40d0592188235ab25d3202add8a207afbedc682220e4a0029ffbff4562102b9e6e46b4e3f9e8bd53e6d05de48544b0c57d4b0179e22c76d1199b",
+  "packageManager": "pnpm@10.15.0+sha512.486ebc259d3e999a4e8691ce03b5cac4a71cbeca39372a9b762cb500cfdf0873e2cb16abe3d951b1ee2cf012503f027b98b6584e4df22524e0c7450d9ec7aa7b",
   "engines": {
     "node": ">=22.0.0"
   },
@@ -95,7 +95,7 @@
     "@types/ws": "8.18.1",
     "@vitest/coverage-v8": "3.2.4",
     "autoprefixer": "10.4.21",
-    "daisyui": "4.12.14",
+    "daisyui": "4.12.24",
     "esbuild": "0.25.9",
     "eslint": "9.35.0",
     "giget": "2.0.0",
