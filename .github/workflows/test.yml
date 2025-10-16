@@ -38,7 +38,7 @@ jobs:
           echo "ATPROTO_COMMIT=$ATPROTO_COMMIT" >> $GITHUB_ENV
           NODE_VERSION=$(node -v)
           echo "NODE_VERSION=$NODE_VERSION" >> $GITHUB_ENV
-      - uses: actions/cache@0400d5f644dc74513175e3cd8d07132dd4860809 # v4
+      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
           path: atproto
           key: atproto-${{ env.ATPROTO_COMMIT }}-node-${{ env.NODE_VERSION }}
