@@ -141,8 +141,8 @@ importers:
         specifier: 7.3.0
         version: 7.3.0(i18next@25.5.2(typescript@5.9.2))(react-i18next@15.7.3(i18next@25.5.2(typescript@5.9.2))(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(typescript@5.9.2))(react-router@7.8.2(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react@19.2.0)
       remix-utils:
-        specifier: 8.8.0
-        version: 8.8.0(@standard-schema/spec@1.0.0)(react-router@7.8.2(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react@19.2.0)(zod@4.1.5)
+        specifier: 9.0.0
+        version: 9.0.0(@standard-schema/spec@1.0.0)(react-router@7.8.2(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react@19.2.0)
       satori:
         specifier: 0.18.2
         version: 0.18.2
@@ -4192,8 +4192,8 @@ packages:
       react-i18next: ^13.0.0 || ^14.0.0 || ^15.0.0
       react-router: ^7.0.0
 
-  remix-utils@8.8.0:
-    resolution: {integrity: sha512-5CR4a3YwPaCoPUHg+O69UMek05tnFMrtQsoXTU4KzsyU7heDO94IFTjKVzEFhi+s+SSo+ebRMxWvjf/QiPpqiQ==}
+  remix-utils@9.0.0:
+    resolution: {integrity: sha512-xpDnw6hIjYbHR9/noE4lKNPRzfxvGai3XBQcjOjcwIwZVW9O1bdsnYAl+aqJ2fMXSQTNMjNuR8Cetn76HqwXCg==}
     engines: {node: '>=20.0.0'}
     peerDependencies:
       '@edgefirst-dev/batcher': ^1.0.0
@@ -4206,7 +4206,6 @@ packages:
       is-ip: ^5.0.1
       react: ^18.0.0 || ^19.0.0
       react-router: ^7.0.0
-      zod: ^3.22.4
     peerDependenciesMeta:
       '@edgefirst-dev/batcher':
         optional: true
@@ -4227,8 +4226,6 @@ packages:
       react:
         optional: true
       react-router:
-        optional: true
-      zod:
         optional: true
 
   require-directory@2.1.1:
@@ -9695,14 +9692,13 @@ snapshots:
       react-i18next: 15.7.3(i18next@25.5.2(typescript@5.9.2))(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(typescript@5.9.2)
       react-router: 7.8.2(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
 
-  remix-utils@8.8.0(@standard-schema/spec@1.0.0)(react-router@7.8.2(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react@19.2.0)(zod@4.1.5):
+  remix-utils@9.0.0(@standard-schema/spec@1.0.0)(react-router@7.8.2(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react@19.2.0):
     dependencies:
       type-fest: 4.41.0
     optionalDependencies:
       '@standard-schema/spec': 1.0.0
       react: 19.2.0
       react-router: 7.8.2(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
-      zod: 4.1.5
 
   require-directory@2.1.1: {}
 
