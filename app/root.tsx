@@ -1,5 +1,7 @@
 import "./tailwind.css";
 
+import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import type { LoaderFunctionArgs } from "react-router";
 import {
   data,
@@ -8,11 +10,10 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
-  useLoaderData,
   useRouteLoaderData,
 } from "react-router";
-import { useChangeLanguage } from "remix-i18next/react";
 
+import type { Route } from "./+types/root";
 import { Toaster } from "./features/toast/toaster";
 import { i18nServer, localeCookie } from "./i18n/i18n";
 import { env } from "./utils/env";
@@ -88,8 +89,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
-export default function App() {
-  const { locale } = useLoaderData<typeof loader>();
-  useChangeLanguage(locale);
+export default function App({ loaderData: { locale } }: Route.ComponentProps) {
+  const { i18n } = useTranslation();
+
+  useEffect(() => {
+    if (i18n.language !== locale) {
+      void i18n.changeLanguage(locale);
+    }
+  }, [locale, i18n]);
+
   return <Outlet />;
 }
