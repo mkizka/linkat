@@ -1,0 +1,15 @@
+name: Tangled
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  tangled:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: gwennlbh/to-tangled@v0.3
+        with:
+          repo: linkat.blue/linkat
+          ssh-key: ${{ secrets.TANGLED_PRIVATE_KEY }}
