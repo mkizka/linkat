@@ -9,7 +9,7 @@ jobs:
   tangled:
     runs-on: ubuntu-latest
     steps:
-      - uses: gwennlbh/to-tangled@v0.3
+      - uses: gwennlbh/to-tangled@3817e4edcf39d92605bc1ec9e30a4c5d479d81b4 # v0.3
         with:
           repo: linkat.blue/linkat
           ssh-key: ${{ secrets.TANGLED_PRIVATE_KEY }}
