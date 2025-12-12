@@ -42,7 +42,7 @@ export default async function handleRequest(
   responseStatusCode: number,
   responseHeaders: Headers,
   routerContext: EntryContext,
-  loadContext: AppLoadContext,
+  _loadContext: AppLoadContext,
   // If you have middleware enabled:
   // loadContext: unstable_RouterContextProvider
 ) {
