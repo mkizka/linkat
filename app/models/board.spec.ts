@@ -13,7 +13,7 @@ describe("boardSchema", () => {
   test.each`
     board | description
     ${{}} | ${"配列でなければパース失敗"}
-  `("$description", ({ board, expected }) => {
+  `("$description", ({ board, _expected }) => {
     expect(() => boardScheme.parse(board)).toThrow();
   });
 });
