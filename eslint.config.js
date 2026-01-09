@@ -1,9 +1,8 @@
-import { configs } from "@mkizka/eslint-config";
+import { mkizka } from "@mkizka/eslint-config";
 import { arrangeActAssert } from "@mkizka/eslint-plugin-aaa";
 
 export default [
-  ...configs.typescript(),
-  ...configs.react(),
+  ...mkizka,
   {
     rules: {
       "@typescript-eslint/only-throw-error": "off",
