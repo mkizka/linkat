@@ -46,9 +46,12 @@ export const isGitHubProfileUrl = (url: URL) => {
 // https://bsky.app/profile/example.com/post/hijklmnop...
 // ↓
 // https://bsky.app/profile/did:plc:abcdefg.../post/hijklmnop...
+// https://bsky.app/profile/example.com/feed/hijklmnop...
+// ↓
+// https://bsky.app/profile/did:plc:abcdefg.../feed/hijklmnop...
 export const resolveHandleIfNeeded = async (original: string) => {
   const url = new URL(original);
-  if (!isBlueskyPostUrl(url)) {
+  if (!isBlueskyPostUrl(url) && !isBlueskyFeedUrl(url)) {
     return original;
   }
   const [_, profile, handle, ...rest] = url.pathname.split("/");
