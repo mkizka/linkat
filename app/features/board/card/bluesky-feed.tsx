@@ -32,7 +32,7 @@ export function BlueskyFeed({ feedUri, url }: Props) {
   if (showError) {
     return (
       <div className="card-body">
-        <p>{t("error-message")}</p>
+        <p>{t("bluesky-feed.error-message")}</p>
       </div>
     );
   }
