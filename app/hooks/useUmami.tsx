@@ -1,6 +1,7 @@
 import {
   createContext,
   type ReactNode,
+  useCallback,
   useContext,
   useEffect,
   useRef,
@@ -19,18 +20,24 @@ interface UmamiContextValue {
 const UmamiContext = createContext<UmamiContextValue | null>(null);
 
 export function UmamiProvider({ children }: { children: ReactNode }) {
-  const [isLoaded, setIsLoaded] = useState(false);
+  const isLoadedRef = useRef(false);
   const queueRef = useRef<Array<[string, Record<string, unknown>?]>>([]);
 
+  const track: UmamiTrackFn = useCallback((eventName, eventData) => {
+    if (isLoadedRef.current) {
+      void window.umami.track(eventName, eventData);
+    } else {
+      queueRef.current.push([eventName, eventData]);
+    }
+  }, []);
+
   useEffect(() => {
-    // Poll for umami to be loaded
     const checkInterval = setInterval(() => {
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       if (window.umami && "track" in window.umami) {
-        setIsLoaded(true);
+        isLoadedRef.current = true;
         clearInterval(checkInterval);
 
-        // Process queued calls
         queueRef.current.forEach(([eventName, eventData]) => {
           void window.umami.track(eventName, eventData);
         });
@@ -40,14 +47,6 @@ export function UmamiProvider({ children }: { children: ReactNode }) {
 
     return () => clearInterval(checkInterval);
   }, []);
-
-  const track: UmamiTrackFn = (eventName, eventData) => {
-    if (isLoaded) {
-      void window.umami.track(eventName, eventData);
-    } else {
-      queueRef.current.push([eventName, eventData]);
-    }
-  };
 
   return (
     <UmamiContext.Provider value={{ track }}>{children}</UmamiContext.Provider>
