@@ -9,6 +9,11 @@ import { tryCatch } from "~/utils/tryCatch";
 
 const logger = createLogger("boardService");
 
+// 最後の取得から10分以上経過していたら再取得する
+const shouldRefetch = (updatedAt: Date) => {
+  return updatedAt <= new Date(Date.now() - 10 * 60 * 1000);
+};
+
 // TODO: boardをunknownで受け入れてこの関数内でパースする
 export const createOrUpdateBoard = async ({
   userDid,
@@ -37,8 +42,8 @@ export const createOrUpdateBoard = async ({
   return boardScheme.parse(JSON.parse(newBoard.record));
 };
 
-const findBoard = async (userDid: string) => {
-  const board = await prisma.board.findFirst({
+const findBoardRecord = async (userDid: string) => {
+  return await prisma.board.findFirst({
     where: {
       user: {
         did: userDid,
@@ -51,6 +56,10 @@ const findBoard = async (userDid: string) => {
       },
     },
   });
+};
+
+const findBoard = async (userDid: string) => {
+  const board = await findBoardRecord(userDid);
   if (!board) {
     return null;
   }
@@ -80,12 +89,39 @@ const fetchBoardInPDS = async (userDid: string) => {
   return parsed.data;
 };
 
+// バックグラウンドでボード情報を更新する
+const updateBoardInBackground = (userDid: string) => {
+  // awaitせずにPromiseを開始してバックグラウンドで実行
+  tryCatch(async () => {
+    logger.info({ userDid }, "バックグラウンドでboardを更新します");
+    const boardInPDS = await fetchBoardInPDS(userDid);
+    if (boardInPDS) {
+      await createOrUpdateBoard({
+        userDid,
+        board: boardInPDS,
+      });
+      logger.info({ userDid }, "バックグラウンドでのboard更新が完了しました");
+    }
+  })().catch((error) => {
+    logger.warn(error, "バックグラウンドでのboard更新に失敗しました");
+  });
+};
+
 // TODO: 全部の処理を一つのトランザクションで行う
 export const findOrFetchBoard = async (userDid: string) => {
-  const board = await findBoard(userDid);
-  if (board) {
+  const boardRecord = await findBoardRecord(userDid);
+
+  // ボードが存在する場合
+  if (boardRecord) {
+    const board = boardScheme.parse(JSON.parse(boardRecord.record));
+    // データが古い場合はバックグラウンドで更新
+    if (shouldRefetch(boardRecord.updatedAt)) {
+      updateBoardInBackground(userDid);
+    }
     return board;
   }
+
+  // ボードが存在しない場合(初回訪問)は、PDSから取得してから返す
   const boardInPDS = await fetchBoardInPDS(userDid);
   if (!boardInPDS) {
     return null;

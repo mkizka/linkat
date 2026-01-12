@@ -66,6 +66,22 @@ const fetchBlueskyProfile = async (handleOrDid: string) => {
   return response.data;
 };
 
+// バックグラウンドでユーザー情報を更新する
+const updateUserInBackground = (handleOrDid: string) => {
+  // awaitせずにPromiseを開始してバックグラウンドで実行
+  tryCatch(async () => {
+    logger.info({ actor: handleOrDid }, "バックグラウンドでプロフィールを更新します");
+    const blueskyProfile = await fetchBlueskyProfile(handleOrDid);
+    await createOrUpdateUser({
+      tx: prisma,
+      blueskyProfile,
+    });
+    logger.info({ actor: handleOrDid }, "バックグラウンドでのプロフィール更新が完了しました");
+  })().catch((error) => {
+    logger.warn(error, "バックグラウンドでのプロフィール更新に失敗しました");
+  });
+};
+
 export const findOrFetchUser = async ({
   tx = prisma,
   handleOrDid,
@@ -77,13 +93,21 @@ export const findOrFetchUser = async ({
     return null;
   }
   const user = await findUser({ tx, handleOrDid });
-  if (user && !shouldRefetch(user)) {
+
+  // ユーザーが存在する場合
+  if (user) {
+    // データが古い場合はバックグラウンドで更新
+    if (shouldRefetch(user)) {
+      updateUserInBackground(handleOrDid);
+    }
     return user;
   }
+
+  // ユーザーが存在しない場合(初回訪問)は、PDSから取得してから返す
   const blueskyProfile = await tryCatch(fetchBlueskyProfile)(handleOrDid);
   if (blueskyProfile instanceof Error) {
     logger.warn(blueskyProfile, "プロフィールの取得に失敗しました");
-    return user;
+    return null;
   }
   return await createOrUpdateUser({
     tx,
