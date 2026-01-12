@@ -66,8 +66,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body className="flex h-fit min-h-svh flex-col bg-base-300">
-        {children}
-        <Toaster />
+        <UmamiProvider>
+          {children}
+          <Toaster />
+        </UmamiProvider>
         <ScrollRestoration />
         <Scripts />
         <script async src="https://embed.bsky.app/static/embed.js"></script>
@@ -85,9 +87,5 @@ export default function App({ loaderData: { locale } }: Route.ComponentProps) {
     }
   }, [locale, i18n]);
 
-  return (
-    <UmamiProvider>
-      <Outlet />
-    </UmamiProvider>
-  );
+  return <Outlet />;
 }
