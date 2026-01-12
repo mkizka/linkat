@@ -2,10 +2,12 @@ import { useTranslation } from "react-i18next";
 import { Form, useSubmit } from "react-router";
 
 import { Button } from "~/components/button";
+import { useUmami } from "~/hooks/useUmami";
 
 export function LogoutButton() {
   const { t } = useTranslation();
   const submit = useSubmit();
+  const umami = useUmami();
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -13,7 +15,7 @@ export function LogoutButton() {
     if (ok) {
       void submit(event.currentTarget);
     }
-    void umami.track("handle-logout", {
+    umami.track("handle-logout", {
       action: ok ? "confirm" : "cancel",
     });
   };

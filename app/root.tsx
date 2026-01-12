@@ -15,6 +15,7 @@ import {
 
 import type { Route } from "./+types/root";
 import { Toaster } from "./features/toast/toaster";
+import { UmamiProvider } from "./hooks/useUmami";
 import { i18nServer, localeCookie } from "./i18n/i18n";
 import { env } from "./utils/env";
 
@@ -37,50 +38,11 @@ export async function loader({ request }: LoaderFunctionArgs) {
   );
 }
 
-const umamiPlaceholderScript = `\
-(function() {
-  if (typeof window === 'undefined') return;
-
-  const queue = [];
-  let realUmami = null;
-
-  const placeholder = {
-    track: function(...args) {
-      if (realUmami) {
-        return realUmami.track(...args);
-      } else {
-        queue.push(args);
-      }
-    }
-  };
-
-  Object.defineProperty(window, 'umami', {
-    get() {
-      return realUmami || placeholder;
-    },
-    set(value) {
-      if (value && value.track && value !== placeholder && !realUmami) {
-        realUmami = value;
-
-        // Process queued calls
-        queue.forEach(args => value.track(...args));
-        queue.length = 0;
-      }
-    },
-    configurable: true
-  });
-})();`;
-
 export function Layout({ children }: { children: React.ReactNode }) {
   const loaderData = useRouteLoaderData<typeof loader>("root");
   return (
     <html lang={loaderData?.locale ?? "en"} className="font-murecho">
       <head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: umamiPlaceholderScript,
-          }}
-        />
         {loaderData?.umami.scriptUrl && loaderData.umami.websiteId && (
           <script
             defer
@@ -123,5 +85,9 @@ export default function App({ loaderData: { locale } }: Route.ComponentProps) {
     }
   }, [locale, i18n]);
 
-  return <Outlet />;
+  return (
+    <UmamiProvider>
+      <Outlet />
+    </UmamiProvider>
+  );
 }
