@@ -8,6 +8,7 @@ import { useSearchParams } from "react-router";
 
 import { Button } from "~/components/button";
 import { BlueskyIcon } from "~/components/icons/bluesky";
+import { useUmami } from "~/hooks/useUmami";
 
 const SHARE_MODAL_ID = "share-modal";
 
@@ -23,6 +24,7 @@ export function ShareModal({ url }: Props) {
   const [copied, setCopied] = useState(false);
   const [loading, setLoading] = useState(false);
   const shareText = t("share-modal.share-text", { url });
+  const umami = useUmami();
 
   useEffect(() => {
     if (searchParams.has("success")) {
@@ -43,7 +45,7 @@ export function ShareModal({ url }: Props) {
 
   const trackShareModal = (action: string) => {
     if (!handledRef.current) {
-      void umami.track("handle-share-modal", {
+      umami.track("handle-share-modal", {
         action,
       });
       handledRef.current = true;

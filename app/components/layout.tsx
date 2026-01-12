@@ -4,6 +4,7 @@ import GitHubButton from "react-github-btn";
 import { useTranslation } from "react-i18next";
 import { Form, Link } from "react-router";
 
+import { useUmami } from "~/hooks/useUmami";
 import { cn } from "~/utils/cn";
 
 import { BlueskyIcon } from "./icons/bluesky";
@@ -15,6 +16,7 @@ type HeaderProps = {
 
 export function Header({ isLogin }: HeaderProps) {
   const detailsRef = useRef<HTMLDetailsElement>(null);
+  const umami = useUmami();
   const handleClick = () => {
     if (detailsRef.current) {
       detailsRef.current.removeAttribute("open");
@@ -38,7 +40,7 @@ export function Header({ isLogin }: HeaderProps) {
             ) {
               return;
             }
-            void umami.track("click-header-lang", {
+            umami.track("click-header-lang", {
               action: "open",
             });
           }}

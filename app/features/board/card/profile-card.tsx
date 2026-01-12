@@ -8,6 +8,7 @@ import { Link } from "react-router";
 import { Button } from "~/components/button";
 import { Card } from "~/components/card";
 import { BlueskyIcon } from "~/components/icons/bluesky";
+import { useUmami } from "~/hooks/useUmami";
 
 function Avatar({ avatar }: { avatar: string }) {
   return (
@@ -38,6 +39,7 @@ export type ProfileCardProps = {
 export function ProfileCard({ user, url, showEditButton }: ProfileCardProps) {
   const [loading, setLoading] = useState(false);
   const { t } = useTranslation();
+  const umami = useUmami();
   const shareText = t("profile-card.share-text", {
     url,
     displayName: user.displayName,
@@ -53,7 +55,7 @@ export function ProfileCard({ user, url, showEditButton }: ProfileCardProps) {
     );
     setLoading(false);
 
-    void umami.track("click-share-link");
+    umami.track("click-share-link");
   };
 
   return (

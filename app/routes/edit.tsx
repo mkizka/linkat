@@ -5,6 +5,7 @@ import { redirect, useBeforeUnload, useBlocker } from "react-router";
 import { Main } from "~/components/layout";
 import { BoardViewer } from "~/features/board/board-viewer";
 import { RouteToaster } from "~/features/toast/route";
+import { useUmami } from "~/hooks/useUmami";
 import { i18nServer } from "~/i18n/i18n";
 import { boardScheme } from "~/models/board";
 import { getSessionAgent, getSessionUser } from "~/server/oauth/session";
@@ -58,10 +59,11 @@ export async function loader({ request }: Route.LoaderArgs) {
 export default function Index({ loaderData }: Route.ComponentProps) {
   const { user, board, url } = loaderData;
   const { t } = useTranslation();
+  const umami = useUmami();
 
   // 更新ボタンを押したりしたときに確認ダイアログを出す
   useBeforeUnload((event) => {
-    void umami.track("unload-edit");
+    umami.track("unload-edit");
     event.preventDefault();
   });
 
@@ -79,17 +81,17 @@ export default function Index({ loaderData }: Route.ComponentProps) {
   useEffect(() => {
     if (blocker.state !== "blocked") return;
     if (confirm(t("edit.confirm-leave-message"))) {
-      void umami.track("leave-edit", {
+      umami.track("leave-edit", {
         action: "confirm",
       });
       blocker.proceed();
     } else {
-      void umami.track("leave-edit", {
+      umami.track("leave-edit", {
         action: "cancel",
       });
       blocker.reset();
     }
-  }, [t, blocker]);
+  }, [t, blocker, umami]);
 
   return (
     <>

@@ -15,6 +15,7 @@ import {
 
 import type { Route } from "./+types/root";
 import { Toaster } from "./features/toast/toaster";
+import { UmamiProvider } from "./hooks/useUmami";
 import { i18nServer, localeCookie } from "./i18n/i18n";
 import { env } from "./utils/env";
 
@@ -37,25 +38,11 @@ export async function loader({ request }: LoaderFunctionArgs) {
   );
 }
 
-const umamiPlaceholderScript = `\
-if (typeof window !== 'undefined' && !window.umami) {
-  window.umami = {
-    track: function(...args) {
-      console.warn('Umami not loaded yet', args);
-    }
-  };
-}`;
-
 export function Layout({ children }: { children: React.ReactNode }) {
   const loaderData = useRouteLoaderData<typeof loader>("root");
   return (
     <html lang={loaderData?.locale ?? "en"} className="font-murecho">
       <head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: umamiPlaceholderScript,
-          }}
-        />
         {loaderData?.umami.scriptUrl && loaderData.umami.websiteId && (
           <script
             defer
@@ -79,8 +66,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body className="flex h-fit min-h-svh flex-col bg-base-300">
-        {children}
-        <Toaster />
+        <UmamiProvider>
+          {children}
+          <Toaster />
+        </UmamiProvider>
         <ScrollRestoration />
         <Scripts />
         <script async src="https://embed.bsky.app/static/embed.js"></script>

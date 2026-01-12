@@ -2,6 +2,7 @@ import { useTranslation } from "react-i18next";
 import { Form, useSubmit } from "react-router";
 
 import { Button } from "~/components/button";
+import { useUmami } from "~/hooks/useUmami";
 
 type Props = {
   handle: string;
@@ -10,6 +11,7 @@ type Props = {
 export function DeleteBoardButton({ handle }: Props) {
   const { t } = useTranslation();
   const submit = useSubmit();
+  const umami = useUmami();
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -17,7 +19,7 @@ export function DeleteBoardButton({ handle }: Props) {
     if (ok) {
       void submit(event.currentTarget);
     }
-    void umami.track("handle-delete-board", {
+    umami.track("handle-delete-board", {
       action: ok ? "confirm" : "cancel",
       handle,
     });
