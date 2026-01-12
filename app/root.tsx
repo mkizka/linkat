@@ -38,13 +38,38 @@ export async function loader({ request }: LoaderFunctionArgs) {
 }
 
 const umamiPlaceholderScript = `\
-if (typeof window !== 'undefined' && !window.umami) {
-  window.umami = {
+(function() {
+  if (typeof window === 'undefined') return;
+
+  const queue = [];
+  let realUmami = null;
+
+  const placeholder = {
     track: function(...args) {
-      console.warn('Umami not loaded yet', args);
+      if (realUmami) {
+        return realUmami.track(...args);
+      } else {
+        queue.push(args);
+      }
     }
   };
-}`;
+
+  Object.defineProperty(window, 'umami', {
+    get() {
+      return realUmami || placeholder;
+    },
+    set(value) {
+      if (value && value.track && value !== placeholder && !realUmami) {
+        realUmami = value;
+
+        // Process queued calls
+        queue.forEach(args => value.track(...args));
+        queue.length = 0;
+      }
+    },
+    configurable: true
+  });
+})();`;
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const loaderData = useRouteLoaderData<typeof loader>("root");
