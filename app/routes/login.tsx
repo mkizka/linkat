@@ -22,7 +22,7 @@ export async function action({ request }: Route.ActionArgs) {
   }
   try {
     const url = await oauthClient.authorize(handle, {
-      scope: "atproto include:blue.linkat.basicPermissions",
+      scope: "atproto include:blue.linkat.permissionSet",
     });
     return redirect(url.toString());
   } catch (error) {

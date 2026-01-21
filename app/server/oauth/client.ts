@@ -19,7 +19,7 @@ const oauthClientOptions: NodeOAuthClientOptions = {
     client_uri: baseUrl,
     jwks_uri: `${baseUrl}/jwks.json`,
     redirect_uris: [`${baseUrl}/oauth/callback`],
-    scope: "atproto include:blue.linkat.basicPermissions",
+    scope: "atproto include:blue.linkat.permissionSet",
     grant_types: ["authorization_code", "refresh_token"],
     response_types: ["code"],
     application_type: "web",
