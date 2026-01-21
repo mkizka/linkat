@@ -10,16 +10,25 @@ const baseUrl = isProduction ? env.PUBLIC_URL : "http://127.0.0.1:3000";
 
 const privateKey = Buffer.from(env.PRIVATE_KEY_ES256_B64, "base64").toString();
 
+const scope = "atproto include:blue.linkat.permissionSet";
+
+const getDevClientId = () => {
+  const url = new URL("http://localhost");
+  url.searchParams.set("redirect_uri", `${baseUrl}/oauth/callback`);
+  url.searchParams.set("scope", scope);
+  return url.toString();
+};
+
 const oauthClientOptions: NodeOAuthClientOptions = {
   clientMetadata: {
     client_name: "Linkat",
     client_id: isProduction
       ? `${env.PUBLIC_URL}/client-metadata.json`
-      : `http://localhost?redirect_uri=${encodeURIComponent(`${baseUrl}/oauth/callback`)}`,
+      : getDevClientId(),
     client_uri: baseUrl,
     jwks_uri: `${baseUrl}/jwks.json`,
     redirect_uris: [`${baseUrl}/oauth/callback`],
-    scope: "atproto include:blue.linkat.permissionSet",
+    scope,
     grant_types: ["authorization_code", "refresh_token"],
     response_types: ["code"],
     application_type: "web",
