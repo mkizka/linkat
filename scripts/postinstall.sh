@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-ATPROTO_COMMIT=98711a147a8674337f605c6368f39fc10c2fae93
+# https://github.com/bluesky-social/atproto/commits/@atproto/pds@0.4.204
+ATPROTO_COMMIT=c2615a7eee6da56a43835adb09c5901a1872efd3
 
 # git submoduleを使うとDockerビルド中に動作しないため、gigetを使ってatprotoを取得する
 if [ ! -d atproto ]; then
