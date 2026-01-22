@@ -1,42 +1,52 @@
 import { JoseKey } from "@atproto/jwk-jose";
-import type { NodeOAuthClientOptions } from "@atproto/oauth-client-node";
-import { NodeOAuthClient } from "@atproto/oauth-client-node";
+import type {
+  NodeOAuthClientOptions,
+  OAuthClientMetadataInput,
+} from "@atproto/oauth-client-node";
+import {
+  atprotoLoopbackClientMetadata,
+  NodeOAuthClient,
+} from "@atproto/oauth-client-node";
 
 import { env, isProduction } from "~/utils/env";
 
 import { SessionStore, StateStore } from "./storage";
 
-const baseUrl = isProduction ? env.PUBLIC_URL : "http://127.0.0.1:3000";
-
 const privateKey = Buffer.from(env.PRIVATE_KEY_ES256_B64, "base64").toString();
 
-const scope = "atproto include:blue.linkat.permissionSet";
+const scope = isProduction
+  ? "atproto include:blue.linkat.permissionSet"
+  : "atproto transition:generic";
 
-const getDevClientId = () => {
-  const url = new URL("http://localhost");
-  url.searchParams.set("redirect_uri", `${baseUrl}/oauth/callback`);
-  url.searchParams.set("scope", scope);
-  return url.toString();
-};
+const clientMetadata: OAuthClientMetadataInput = isProduction
+  ? {
+      client_name: "Linkat",
+      client_id: `${env.PUBLIC_URL}/client-metadata.json`,
+      client_uri: env.PUBLIC_URL,
+      jwks_uri: `${env.PUBLIC_URL}/jwks.json`,
+      redirect_uris: [`${env.PUBLIC_URL}/oauth/callback`],
+      scope,
+      grant_types: ["authorization_code", "refresh_token"],
+      response_types: ["code"],
+      application_type: "web",
+      token_endpoint_auth_method: "private_key_jwt",
+      token_endpoint_auth_signing_alg: "ES256",
+      dpop_bound_access_tokens: true,
+    }
+  : atprotoLoopbackClientMetadata(
+      `http://localhost?${new URLSearchParams([
+        ["redirect_uri", `http://127.0.0.1:${env.PORT}/oauth/callback`],
+        ["scope", scope],
+      ])}`,
+    );
+
+const keyset = isProduction
+  ? [await JoseKey.fromImportable(privateKey, "key1")]
+  : undefined;
 
 const oauthClientOptions: NodeOAuthClientOptions = {
-  clientMetadata: {
-    client_name: "Linkat",
-    client_id: isProduction
-      ? `${env.PUBLIC_URL}/client-metadata.json`
-      : getDevClientId(),
-    client_uri: baseUrl,
-    jwks_uri: `${baseUrl}/jwks.json`,
-    redirect_uris: [`${baseUrl}/oauth/callback`],
-    scope,
-    grant_types: ["authorization_code", "refresh_token"],
-    response_types: ["code"],
-    application_type: "web",
-    token_endpoint_auth_method: "private_key_jwt",
-    token_endpoint_auth_signing_alg: "ES256",
-    dpop_bound_access_tokens: true,
-  },
-  keyset: [await JoseKey.fromImportable(privateKey, "key1")],
+  clientMetadata,
+  keyset,
   plcDirectoryUrl: env.ATPROTO_PLC_URL,
   stateStore: new StateStore(),
   sessionStore: new SessionStore(),
