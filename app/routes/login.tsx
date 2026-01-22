@@ -7,6 +7,7 @@ import { RouteToaster } from "~/features/toast/route";
 import { i18nServer } from "~/i18n/i18n";
 import { oauthClient } from "~/server/oauth/client";
 import { getSessionUserDid } from "~/server/oauth/session";
+import { isProduction } from "~/utils/env";
 import { createLogger } from "~/utils/logger";
 
 import type { Route } from "./+types/login";
@@ -21,9 +22,10 @@ export async function action({ request }: Route.ActionArgs) {
     return { error: t("login.unknown-error") };
   }
   try {
-    const url = await oauthClient.authorize(handle, {
-      scope: "atproto include:blue.linkat.permissionSet",
-    });
+    const scope = isProduction
+      ? "atproto include:blue.linkat.permissionSet"
+      : "atproto transition:generic";
+    const url = await oauthClient.authorize(handle, { scope });
     return redirect(url.toString());
   } catch (error) {
     logger.error(error, "OAuthログインに失敗しました");
