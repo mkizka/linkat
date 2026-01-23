@@ -12,8 +12,8 @@ test.describe("ログイン", () => {
       // OAuthログイン
       await page.waitForURL((url) => url.pathname === "/oauth/authorize");
       await page.locator("[name='password']").fill("hunter2");
-      await page.locator("button", { hasText: "Next" }).click();
-      await page.locator("button", { hasText: "Accept" }).click();
+      await page.locator("button", { hasText: "Sign in" }).click();
+      await page.locator("button", { hasText: "Authorize" }).click();
 
       // ログイン完了
       await page.waitForURL((url) => url.pathname === "/edit");
