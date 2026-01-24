@@ -1,4 +1,4 @@
-import { defineConfig, devices } from "@playwright/test";
+import { defineConfig } from "@playwright/test";
 
 export default defineConfig({
   testDir: "./e2e",
@@ -16,16 +16,6 @@ export default defineConfig({
     video: "on",
     trace: "on",
   },
-  projects: [
-    {
-      name: "alice",
-      use: devices["Desktop Chrome"],
-    },
-    {
-      name: "bob",
-      use: devices["iPhone 15 Pro"],
-    },
-  ],
   webServer: {
     command: "pnpm start:local",
     port: 3000,

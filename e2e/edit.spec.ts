@@ -1,14 +1,12 @@
 import { expect, test } from "@playwright/test";
 
 test.describe("編集", () => {
-  test("カードの編集操作を一通り確認", async ({ page }, testInfo) => {
+  test("カードの編集操作を一通り確認", async ({ page }) => {
     page.on("dialog", (dialog) => dialog.accept());
 
     await test.step("ログイン", async () => {
-      const identifier =
-        testInfo.project.name === "alice" ? "alice.test" : "bob.test";
       await page.goto("/login");
-      await page.getByTestId("login-form__identifier").fill(identifier);
+      await page.getByTestId("login-form__identifier").fill("alice.test");
       await page.getByTestId("login-form__submit").click();
       await page.waitForURL((url) => url.pathname === "/oauth/authorize");
       await page.locator("[name='password']").fill("hunter2");
