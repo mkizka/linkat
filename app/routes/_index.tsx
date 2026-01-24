@@ -57,7 +57,11 @@ export default function Index({ loaderData }: Route.ComponentProps) {
                 {t("_index.edit-link")}
               </Link>
             ) : (
-              <Link to="/login" className="btn-bluesky btn w-64 text-base-100">
+              <Link
+                to="/login"
+                className="btn-bluesky btn w-64 text-base-100"
+                data-testid="index__login-link"
+              >
                 <AtSymbolIcon className="-ml-4 size-6" />
                 {t("_index.login-link")}
               </Link>
