@@ -58,9 +58,17 @@ jobs:
         run: |
           E2E_S3_PATH="playwright-report/${{ github.ref == 'refs/heads/main' && 'main' || github.sha }}"
           aws s3 cp playwright-report "s3://$E2E_S3_PATH" --recursive
-          echo "Report: https://${{ vars.S3_BASE_URL }}/$E2E_S3_PATH/index.html"
+          echo "E2E_REPORT_URL=https://${{ vars.S3_BASE_URL }}/$E2E_S3_PATH/index.html" >> $GITHUB_ENV
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_ENDPOINT_URL: ${{ secrets.AWS_ENDPOINT_URL }}
           AWS_DEFAULT_REGION: auto
+      - name: Comment on PR
+        if: always() && github.ref != 'refs/heads/main' && github.actor == 'mkizka'
+        run: |
+          BODY="## E2E Test Report
+          📊 [View Report]($E2E_REPORT_URL)"
+          gh pr comment ${{ github.event.number }} --body "$BODY" --edit-last --create-if-none
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
