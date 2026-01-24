@@ -19,17 +19,11 @@ export default defineConfig({
   projects: [
     {
       name: "alice",
-      use: {
-        ...devices["Desktop Chrome"],
-        locale: "ja-JP",
-      },
+      use: devices["Desktop Chrome"],
     },
     {
       name: "bob",
-      use: {
-        ...devices["iPhone 15 Pro"],
-        locale: "ja-JP",
-      },
+      use: devices["iPhone 15 Pro"],
     },
   ],
   webServer: {
