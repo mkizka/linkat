@@ -1,12 +1,15 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+ATPROTO_COMMIT=$(cat .atproto-version)
+ATPROTO_DIR="$HOME/.cache/atproto/$ATPROTO_COMMIT"
+
 # 1. Setup atproto dev server
-if [ ! -d ./atproto/node_modules ]; then
-  cd atproto
+if [ ! -d "$ATPROTO_DIR/node_modules" ]; then
+  cd "$ATPROTO_DIR"
   make deps
   make build
-  cd ..
+  cd -
 fi
 
 # 2. Start atproto dev server

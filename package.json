@@ -13,7 +13,7 @@
     "build:remix": "react-router build",
     "build:server": "node ./scripts/build-server.js",
     "dev": "./scripts/dev.sh | pino-pretty",
-    "dev-atproto": "cd atproto && make run-dev-env",
+    "dev-atproto": "./scripts/dev-atproto.sh",
     "e2e": "playwright test",
     "format": "pnpm _eslint --fix && prettier . --write",
     "lint": "pnpm _eslint && prettier . --check",
