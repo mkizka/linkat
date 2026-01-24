@@ -2,6 +2,8 @@ import { expect, test } from "@playwright/test";
 
 test.describe("編集", () => {
   test("カードの編集操作を一通り確認", async ({ page }, testInfo) => {
+    page.on("dialog", (dialog) => dialog.accept());
+
     await test.step("ログイン", async () => {
       const identifier =
         testInfo.project.name === "alice" ? "alice.test" : "bob.test";
@@ -92,7 +94,6 @@ test.describe("編集", () => {
 
     await test.step("カードを削除", async () => {
       await page.getByTestId("profile-card__edit").click();
-      page.on("dialog", (dialog) => dialog.accept());
       await card1Edited.getByTestId("sortable-card__edit").click();
       await page.getByTestId("card-form__delete").click();
     });
@@ -119,7 +120,6 @@ test.describe("編集", () => {
 
     await test.step("ログアウト", async () => {
       await page.goto("/settings");
-      page.on("dialog", (dialog) => dialog.accept());
       await page.getByTestId("logout-button").click();
       await page.waitForURL((url) => url.pathname === "/");
       await expect(page.getByTestId("index__login-link")).toBeVisible();
