@@ -3,8 +3,6 @@ import { defineConfig } from "@playwright/test";
 export default defineConfig({
   testDir: "./e2e",
   outputDir: "./node_modules/.cache/playwright",
-  fullyParallel: false,
-  workers: 2,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   reporter: [
