@@ -1,9 +1,5 @@
 import { test } from "@playwright/test";
 
-import { resetStorageState } from "./utils";
-
-resetStorageState();
-
 test.describe("編集(リダイレクト)", () => {
   test("非ログイン時はトップにリダイレクト", async ({ page }) => {
     await page.goto("/edit");

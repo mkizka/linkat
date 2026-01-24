@@ -24,6 +24,8 @@ jobs:
       - run: pnpm test -- --coverage
   e2e-test:
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
       - run: |
@@ -34,13 +36,13 @@ jobs:
           node-version-file: .node-version
           cache: pnpm
       - run: |
-          ATPROTO_COMMIT=$(cat ./scripts/postinstall.sh | grep ATPROTO_COMMIT= | awk -F'=' '{print $2}')
+          ATPROTO_COMMIT=$(cat .atproto-version)
           echo "ATPROTO_COMMIT=$ATPROTO_COMMIT" >> $GITHUB_ENV
           NODE_VERSION=$(node -v)
           echo "NODE_VERSION=$NODE_VERSION" >> $GITHUB_ENV
       - uses: actions/cache@8b402f58fbc84540c8b491a91e594a4576fec3d7 # v5
         with:
-          path: atproto
+          path: ~/.cache/atproto/${{ env.ATPROTO_COMMIT }}
           key: atproto-${{ env.ATPROTO_COMMIT }}-node-${{ env.NODE_VERSION }}
       - run: pnpm i
       - run: pnpm playwright install --with-deps
@@ -58,9 +60,17 @@ jobs:
         run: |
           E2E_S3_PATH="playwright-report/${{ github.ref == 'refs/heads/main' && 'main' || github.sha }}"
           aws s3 cp playwright-report "s3://$E2E_S3_PATH" --recursive
-          echo "Report: https://${{ vars.S3_BASE_URL }}/$E2E_S3_PATH/index.html"
+          echo "E2E_REPORT_URL=${{ vars.S3_BASE_URL }}/$E2E_S3_PATH/index.html" >> $GITHUB_ENV
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_ENDPOINT_URL: ${{ secrets.AWS_ENDPOINT_URL }}
           AWS_DEFAULT_REGION: auto
+      - name: Comment on PR
+        if: always() && github.ref != 'refs/heads/main' && github.actor == 'mkizka'
+        run: |
+          BODY="## E2E Test Report
+          📊 [View Report]($E2E_REPORT_URL)"
+          gh pr comment ${{ github.event.number }} --body "$BODY" --edit-last --create-if-none
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
