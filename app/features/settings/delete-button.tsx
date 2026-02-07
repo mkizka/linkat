@@ -13,7 +13,7 @@ export function DeleteBoardButton({ handle }: Props) {
   const submit = useSubmit();
   const umami = useUmami();
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: React.SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
     const ok = confirm(t("delete-board-button.confirm-message"));
     if (ok) {
