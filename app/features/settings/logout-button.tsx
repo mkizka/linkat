@@ -9,7 +9,7 @@ export function LogoutButton() {
   const submit = useSubmit();
   const umami = useUmami();
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: React.SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
     const ok = confirm(t("logout-button.confirm-message"));
     if (ok) {
