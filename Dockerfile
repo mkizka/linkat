@@ -8,7 +8,7 @@ RUN npm i -g corepack@latest && \
     corepack enable pnpm
 
 FROM base AS build
-COPY --link package.json pnpm-lock.yaml ./
+COPY --link package.json pnpm-lock.yaml .atproto-version ./
 COPY --link scripts ./scripts
 COPY --link prisma ./prisma
 COPY --link lexicons ./lexicons
