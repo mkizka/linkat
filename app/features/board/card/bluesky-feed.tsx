@@ -63,7 +63,9 @@ export function BlueskyFeed({ feedUri, url }: Props) {
             </p>
           </div>
         </div>
-        <p className="whitespace-pre-line">{feed.view.description}</p>
+        <p className="whitespace-pre-line [overflow-wrap:break-word]">
+          {feed.view.description}
+        </p>
       </div>
     </a>
   );
