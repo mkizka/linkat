@@ -97,7 +97,7 @@
     "autoprefixer": "10.4.24",
     "daisyui": "4.12.24",
     "esbuild": "0.27.3",
-    "eslint": "9.39.2",
+    "eslint": "9.39.3",
     "giget": "2.0.0",
     "husky": "9.1.7",
     "lint-staged": "16.2.7",
