@@ -56,7 +56,6 @@ jobs:
         with:
           name: playwright-report
           path: playwright-report/
-          archive: false
       - name: Comment on PR
         if: always() && github.ref != 'refs/heads/main' && github.actor == 'mkizka'
         run: |
