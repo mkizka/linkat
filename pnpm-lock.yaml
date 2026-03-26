@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@atproto/api':
-        specifier: 0.19.3
-        version: 0.19.3
+        specifier: 0.19.4
+        version: 0.19.4
       '@atproto/did':
         specifier: 0.3.0
         version: 0.3.0
@@ -27,17 +27,17 @@ importers:
         specifier: 0.3.17
         version: 0.3.17
       '@atproto/repo':
-        specifier: 0.8.12
-        version: 0.8.12
+        specifier: 0.8.13
+        version: 0.8.13
       '@atproto/syntax':
-        specifier: 0.5.0
-        version: 0.5.0
+        specifier: 0.5.1
+        version: 0.5.1
       '@atproto/xrpc':
         specifier: 0.7.7
         version: 0.7.7
       '@atproto/xrpc-server':
-        specifier: 0.10.15
-        version: 0.10.15
+        specifier: 0.10.17
+        version: 0.10.17
       '@conform-to/react':
         specifier: 1.17.1
         version: 1.17.1(react@19.2.4)
@@ -72,8 +72,8 @@ importers:
         specifier: 0.2.5
         version: 0.2.5(react@19.2.4)
       '@t3-oss/env-core':
-        specifier: 0.13.10
-        version: 0.13.10(typescript@5.9.3)(valibot@1.3.1(typescript@5.9.3))(zod@4.3.6)
+        specifier: 0.13.11
+        version: 0.13.11(typescript@5.9.3)(valibot@1.3.1(typescript@5.9.3))(zod@4.3.6)
       clsx:
         specifier: 2.1.1
         version: 2.1.1
@@ -87,8 +87,8 @@ importers:
         specifier: 5.2.1
         version: 5.2.1
       i18next:
-        specifier: 25.8.18
-        version: 25.8.18(typescript@5.9.3)
+        specifier: 25.10.5
+        version: 25.10.5(typescript@5.9.3)
       i18next-browser-languagedetector:
         specifier: 8.2.1
         version: 8.2.1
@@ -129,8 +129,8 @@ importers:
         specifier: 1.4.0
         version: 1.4.0(react@19.2.4)
       react-i18next:
-        specifier: 16.5.8
-        version: 16.5.8(i18next@25.8.18(typescript@5.9.3))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.9.3)
+        specifier: 16.6.2
+        version: 16.6.2(i18next@25.10.5(typescript@5.9.3))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.9.3)
       react-movable:
         specifier: 3.4.1
         version: 3.4.1(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -139,19 +139,19 @@ importers:
         version: 7.13.1(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       remix-i18next:
         specifier: 7.4.2
-        version: 7.4.2(i18next@25.8.18(typescript@5.9.3))(react-i18next@16.5.8(i18next@25.8.18(typescript@5.9.3))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(react-router@7.13.1(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)
+        version: 7.4.2(i18next@25.10.5(typescript@5.9.3))(react-i18next@16.6.2(i18next@25.10.5(typescript@5.9.3))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(react-router@7.13.1(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)
       remix-utils:
         specifier: 9.3.1
         version: 9.3.1(@standard-schema/spec@1.1.0)(react-router@7.13.1(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)
       satori:
-        specifier: 0.25.0
-        version: 0.25.0
+        specifier: 0.26.0
+        version: 0.26.0
       tailwind-merge:
         specifier: 3.5.0
         version: 3.5.0
       ws:
-        specifier: 8.19.0
-        version: 8.19.0
+        specifier: 8.20.0
+        version: 8.20.0
       zod:
         specifier: 4.3.6
         version: 4.3.6
@@ -206,7 +206,7 @@ importers:
         version: 8.18.1
       '@vitest/coverage-v8':
         specifier: 3.2.4
-        version: 3.2.4(vitest@3.2.4(@types/node@24.12.0)(jiti@1.21.7)(msw@2.12.11(@types/node@24.12.0)(typescript@5.9.3))(tsx@4.21.0)(yaml@2.8.3))
+        version: 3.2.4(vitest@3.2.4(@types/node@24.12.0)(jiti@1.21.7)(msw@2.12.14(@types/node@24.12.0)(typescript@5.9.3))(tsx@4.21.0)(yaml@2.8.3))
       autoprefixer:
         specifier: 10.4.27
         version: 10.4.27(postcss@8.5.8)
@@ -229,8 +229,8 @@ importers:
         specifier: 16.4.0
         version: 16.4.0
       msw:
-        specifier: 2.12.11
-        version: 2.12.11(@types/node@24.12.0)(typescript@5.9.3)
+        specifier: 2.12.14
+        version: 2.12.14(@types/node@24.12.0)(typescript@5.9.3)
       npm-run-all2:
         specifier: 8.0.4
         version: 8.0.4
@@ -241,8 +241,8 @@ importers:
         specifier: 3.8.1
         version: 3.8.1
       prettier-plugin-pkg:
-        specifier: 0.21.2
-        version: 0.21.2(prettier@3.8.1)
+        specifier: 0.22.0
+        version: 0.22.0(prettier@3.8.1)
       tailwindcss:
         specifier: 3.4.19
         version: 3.4.19(tsx@4.21.0)(yaml@2.8.3)
@@ -263,13 +263,13 @@ importers:
         version: 6.1.1(typescript@5.9.3)(vite@7.3.1(@types/node@24.12.0)(jiti@1.21.7)(tsx@4.21.0)(yaml@2.8.3))
       vitest:
         specifier: 3.2.4
-        version: 3.2.4(@types/node@24.12.0)(jiti@1.21.7)(msw@2.12.11(@types/node@24.12.0)(typescript@5.9.3))(tsx@4.21.0)(yaml@2.8.3)
+        version: 3.2.4(@types/node@24.12.0)(jiti@1.21.7)(msw@2.12.14(@types/node@24.12.0)(typescript@5.9.3))(tsx@4.21.0)(yaml@2.8.3)
       vitest-environment-vprisma:
         specifier: 1.3.0
-        version: 1.3.0(@prisma/client@6.19.2(prisma@6.19.2(magicast@0.3.5)(typescript@5.9.3))(typescript@5.9.3))(jest@30.3.0(@types/node@24.12.0))(vitest@3.2.4(@types/node@24.12.0)(jiti@1.21.7)(msw@2.12.11(@types/node@24.12.0)(typescript@5.9.3))(tsx@4.21.0)(yaml@2.8.3))
+        version: 1.3.0(@prisma/client@6.19.2(prisma@6.19.2(magicast@0.3.5)(typescript@5.9.3))(typescript@5.9.3))(jest@30.3.0(@types/node@24.12.0))(vitest@3.2.4(@types/node@24.12.0)(jiti@1.21.7)(msw@2.12.14(@types/node@24.12.0)(typescript@5.9.3))(tsx@4.21.0)(yaml@2.8.3))
       vitest-mock-extended:
         specifier: 3.1.0
-        version: 3.1.0(typescript@5.9.3)(vitest@3.2.4(@types/node@24.12.0)(jiti@1.21.7)(msw@2.12.11(@types/node@24.12.0)(typescript@5.9.3))(tsx@4.21.0)(yaml@2.8.3))
+        version: 3.1.0(typescript@5.9.3)(vitest@3.2.4(@types/node@24.12.0)(jiti@1.21.7)(msw@2.12.14(@types/node@24.12.0)(typescript@5.9.3))(tsx@4.21.0)(yaml@2.8.3))
       wait-on:
         specifier: 9.0.4
         version: 9.0.4
@@ -328,8 +328,8 @@ packages:
   '@atproto-labs/simple-store@0.3.0':
     resolution: {integrity: sha512-nOb6ONKBRJHRlukW1sVawUkBqReLlLx6hT35VS3imaNPwiXDxLnTK7lxw3Lrl9k5yugSBDQAkZAq3MPTEFSUBQ==}
 
-  '@atproto/api@0.19.3':
-    resolution: {integrity: sha512-G8YpBpRouHdTAIagi/QQIUZOhGd1jfBQWkJy9QfxAzjjEpPvaVOSk4e1S85QzGLm/xbzVONzGkmdtiOSfP6wVg==}
+  '@atproto/api@0.19.4':
+    resolution: {integrity: sha512-fYNM62vdXxer0h8a9Jzl4/ag9uFIe0nTO+LkC6KTlx1yUDigrAoQMMbllIiCWj62GhUMxAkHabk/BZjjVAfKng==}
 
   '@atproto/common-web@0.4.19':
     resolution: {integrity: sha512-3BTi58p5WpT+9/zb6UZrdsXcfPo5P45UJm0E4iwHLILr+jc37CuBj9JReDSZ4U0i9RTrI3ZkfySyZ9bd+LnMsw==}
@@ -358,9 +358,6 @@ packages:
   '@atproto/jwk@0.6.0':
     resolution: {integrity: sha512-bDoJPvt7TrQVi/rBfBrSSpGykhtIriKxeYCYQTiPRKFfyRhbgpElF0wPXADjIswnbzZdOwbY63az4E/CFVT3Tw==}
 
-  '@atproto/lex-cbor@0.0.14':
-    resolution: {integrity: sha512-zeqxaKAifR8qlFKg4A6t1RCT8TcjeDnIXLtp3QnDu0QoxslxsmcsrqNrrgmka8w+bYW2+h/rT9MPWglkT7vHyw==}
-
   '@atproto/lex-cbor@0.0.15':
     resolution: {integrity: sha512-3osDicK9bAMXJlKjLKqwYrhLQ60bOguWBNjE+fuNjMuizNzC0aqaClE3d+qMsFuFq9bjEHFw+4Vr9Qmd/m6VYg==}
 
@@ -369,23 +366,17 @@ packages:
     engines: {node: '>=18.7.0'}
     hasBin: true
 
-  '@atproto/lex-client@0.0.15':
-    resolution: {integrity: sha512-j/eZGCdkhABU8Z868Y/gn909hS77rOCdMqtOaQdflEaKUKiAo2/gqeTpoAjHBnL5Rzz255wj9qZMqZTR/Ygwxw==}
-
-  '@atproto/lex-data@0.0.13':
-    resolution: {integrity: sha512-7Z7RwZ1Y/JzBF/Tcn/I4UJ/vIGfh5zn1zjv0KX+flke2JtgFkSE8uh2hOtqgBQMNqE3zdJFM+dcSWln86hR3MQ==}
+  '@atproto/lex-client@0.0.17':
+    resolution: {integrity: sha512-lZ9clUjWgpno1XhSawQP+1/JeIYA9qBh759b/NSU0OiypQqgq7IxDvmzaBsiHK1sqjo0tyEkmG4X5Ym7YXjv0Q==}
 
   '@atproto/lex-data@0.0.14':
     resolution: {integrity: sha512-53DUa9664SS76nGAMYopWsO10OH0AAdf7P/HSKB6Wzx3iqe6lk/K61QZnKxOG1LreYl5CfvIJU6eNf4txI6GlQ==}
 
-  '@atproto/lex-json@0.0.13':
-    resolution: {integrity: sha512-hwLhkKaIHulGJpt0EfXAEWdrxqM2L1tV/tvilzhMp3QxPqYgXchFnrfVmLsyFDx6P6qkH1GsX/XC2V36U0UlPQ==}
-
   '@atproto/lex-json@0.0.14':
     resolution: {integrity: sha512-6lPkDKqe7teEu4WrN5q7400cvZKgYS3uwUMvzG3F9XkgVYhOwSDCtouV/nSLBbpvo3l9OP0kiigtclcNcyekww==}
 
-  '@atproto/lex-schema@0.0.14':
-    resolution: {integrity: sha512-xUxFuXdgVVI1IBDXcQlanH7HuEo9Pk65DYifnhqFDzNRH9SZQxPvPO+rOxMG/bRHygPaI+A+UbXr+S7qpPYOLg==}
+  '@atproto/lex-schema@0.0.16':
+    resolution: {integrity: sha512-O+IorivZHJPeV3kU3NDD2yI8ATfckOphgvDfeiyKHRTxRUKS+lHMCpGUiSTC3fJrfMvYITrruUVViUHVEScrbA==}
 
   '@atproto/lexicon@0.6.2':
     resolution: {integrity: sha512-p3Ly6hinVZW0ETuAXZMeUGwuMm3g8HvQMQ41yyEE6AL0hAkfeKFaZKos6BdBrr6CjkpbrDZqE8M+5+QOceysMw==}
@@ -400,12 +391,9 @@ packages:
   '@atproto/oauth-types@0.6.3':
     resolution: {integrity: sha512-jdKuoPknJuh/WjI+mYk7agSbx9mNVMbS6Dr3k1z2YMY2oRiCQjxYBuo4MLKATbxj05nMQaZRWlHRUazoAu5Cng==}
 
-  '@atproto/repo@0.8.12':
-    resolution: {integrity: sha512-QpVTVulgfz5PUiCTELlDBiRvnsnwrFWi+6CfY88VwXzrRHd9NE8GItK7sfxQ6U65vD/idH8ddCgFrlrsn1REPQ==}
+  '@atproto/repo@0.8.13':
+    resolution: {integrity: sha512-VS8XHaBMGdq60xwRI5zQmXzsMF1hU7NKPjmkdr65tJdrv2z0VW77mG01Ui19Xh9O0mUc/LG6GEhwVrabB9Txow==}
     engines: {node: '>=18.7.0'}
-
-  '@atproto/syntax@0.5.0':
-    resolution: {integrity: sha512-UA2DSpGdOQzUQ4gi5SH+NEJz/YR3a3Fg3y2oh+xETDSiTRmA4VhHRCojhXAVsBxUT6EnItw190C/KN+DWW90kw==}
 
   '@atproto/syntax@0.5.1':
     resolution: {integrity: sha512-J8DJjgKgACIyCTbpfvoTnf7+ofTx1kxTGO7KAftkC+jczaMdQhKdgIBAg2DaYy+80cvYGTHy5q/HI9qMAwGbWw==}
@@ -414,8 +402,8 @@ packages:
     resolution: {integrity: sha512-dox1XIymuC7/ZRhUqKezIGgooZS45C6vHCfu0PnWjfvsLCK2kAlnvX4IBkA/WpcoijDhQ9ejChnFbo/sLmgvAg==}
     engines: {node: '>=18.7.0'}
 
-  '@atproto/xrpc-server@0.10.15':
-    resolution: {integrity: sha512-ryGVAKuLU0Nqkv25gsPzffJhxnCXwPOyBi+sNAfP7n+mDDwcumH6RWySEHoDDrTsGvAP2r8o2ZrLCWuzKm7vSg==}
+  '@atproto/xrpc-server@0.10.17':
+    resolution: {integrity: sha512-FjexO6P/LRTx6/FdiWTzycFF4TgACW9npsFOitnocydTCOLYouP0OvUwdkxkreFC7qerT4+ARKpqrxRzyj0MNA==}
     engines: {node: '>=18.7.0'}
 
   '@atproto/xrpc@0.7.7':
@@ -1508,8 +1496,8 @@ packages:
   '@standard-schema/spec@1.1.0':
     resolution: {integrity: sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w==}
 
-  '@t3-oss/env-core@0.13.10':
-    resolution: {integrity: sha512-NNFfdlJ+HmPHkLi2HKy7nwuat9SIYOxei9K10lO2YlcSObDILY7mHZNSHsieIM3A0/5OOzw/P/b+yLvPdaG52g==}
+  '@t3-oss/env-core@0.13.11':
+    resolution: {integrity: sha512-sM7GYY+KL7H/Hl0BE0inWfk3nRHZOLhmVn7sHGxaZt9FAR6KqREXAE+6TqKfiavfXmpRxO/OZ2QgKRd+oiBYRQ==}
     peerDependencies:
       arktype: ^2.1.0
       typescript: '>=5.0.0'
@@ -2944,8 +2932,8 @@ packages:
   i18next-browser-languagedetector@8.2.1:
     resolution: {integrity: sha512-bZg8+4bdmaOiApD7N7BPT9W8MLZG+nPTOFlLiJiT8uzKXFjhxw4v2ierCXOwB5sFDMtuA5G4kgYZ0AznZxQ/cw==}
 
-  i18next@25.8.18:
-    resolution: {integrity: sha512-lzY5X83BiL5AP77+9DydbrqkQHFN9hUzWGjqjLpPcp5ZOzuu1aSoKaU3xbBLSjWx9dAzW431y+d+aogxOZaKRA==}
+  i18next@25.10.5:
+    resolution: {integrity: sha512-jRnF7eRNsdcnh7AASSgaU3lj/8lJZuHkfsouetnLEDH0xxE1vVi7qhiJ9RhdSPUyzg4ltb7P7aXsFlTk9sxL2w==}
     peerDependencies:
       typescript: ^5
     peerDependenciesMeta:
@@ -3577,8 +3565,8 @@ packages:
   ms@2.1.3:
     resolution: {integrity: sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==}
 
-  msw@2.12.11:
-    resolution: {integrity: sha512-dVg20zi2I2EvnwH/+WupzsOC2mCa7qsIhyMAWtfRikn6RKtwL9+7SaF1IQ5LyZry4tlUtf6KyTVhnlQiZXozTQ==}
+  msw@2.12.14:
+    resolution: {integrity: sha512-4KXa4nVBIBjbDbd7vfQNuQ25eFxug0aropCQFoI0JdOBuJWamkT1yLVIWReFI8SiTRc+H1hKzaNk+cLk2N9rtQ==}
     engines: {node: '>=18'}
     hasBin: true
     peerDependencies:
@@ -3942,8 +3930,8 @@ packages:
     resolution: {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
     engines: {node: '>= 0.8.0'}
 
-  prettier-plugin-pkg@0.21.2:
-    resolution: {integrity: sha512-CSlM5+51B7yTKcoRWT4M3ImcdFHD5NUz0Xu2t8J03B761zu6J3BjSo/XleKp2kB0tH49K7oG5Uuqn6ldI5LRLg==}
+  prettier-plugin-pkg@0.22.0:
+    resolution: {integrity: sha512-jqkbvnIG7YLWRkcu/5Gj04B5Rr+0FeygtsD8g0EvQa86KYWYLjzcMwLbpVY042rBSPsKp88QnMt2b/ndSHIuxA==}
     engines: {node: ^14.18.0 || >=16.0.0}
     peerDependencies:
       prettier: ^3.0.3
@@ -4050,8 +4038,8 @@ packages:
     peerDependencies:
       react: '>=16.3.0'
 
-  react-i18next@16.5.8:
-    resolution: {integrity: sha512-2ABeHHlakxVY+LSirD+OiERxFL6+zip0PaHo979bgwzeHg27Sqc82xxXWIrSFmfWX0ZkrvXMHwhsi/NGUf5VQg==}
+  react-i18next@16.6.2:
+    resolution: {integrity: sha512-/S/GPzElTqEi5o2kzd0/O2627hPDmE6OGhJCCwCfUaQ3syyu+kaYH8/PYFtZeWc25NzfxTN/2fD1QjvrTgrFfA==}
     peerDependencies:
       i18next: '>= 25.6.2'
       react: '>= 16.8.0'
@@ -4252,8 +4240,8 @@ packages:
   safer-buffer@2.1.2:
     resolution: {integrity: sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==}
 
-  satori@0.25.0:
-    resolution: {integrity: sha512-utINfLxrYrmSnLvxFT4ZwgwWa8KOjrz7ans32V5wItgHVmzESl/9i33nE38uG0miycab8hUqQtDlOpqrIpB/iw==}
+  satori@0.26.0:
+    resolution: {integrity: sha512-tkMFrfIs3l2mQ2JEcyW0ADTy3zGggFRFzi6Ef8YozQSFsFKEqaSO1Y8F9wJg4//PJGQauMalHGTUEkPrFwhVPA==}
     engines: {node: '>=16'}
 
   scheduler@0.27.0:
@@ -4937,8 +4925,8 @@ packages:
     resolution: {integrity: sha512-+QU2zd6OTD8XWIJCbffaiQeH9U73qIqafo1x6V1snCWYGJf6cVE0cDR4D8xRzcEnfI21IFrUPzPGtcPf8AC+Rw==}
     engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0}
 
-  ws@8.19.0:
-    resolution: {integrity: sha512-blAT2mjOEIi0ZzruJfIhb3nps74PRWTCz1IjglWEEpQl5XS/UNama6u2/rjFkDDouqr4L67ry+1aGIALViWjDg==}
+  ws@8.20.0:
+    resolution: {integrity: sha512-sAt8BhgNbzCtgGbt2OxmpuryO63ZoDk/sqaB/znQm94T4fCEsy/yV+7CdC1kJhOU9lboAEU7R3kquuycDoibVA==}
     engines: {node: '>=10.0.0'}
     peerDependencies:
       bufferutil: ^4.0.1
@@ -5079,11 +5067,11 @@ snapshots:
 
   '@atproto-labs/simple-store@0.3.0': {}
 
-  '@atproto/api@0.19.3':
+  '@atproto/api@0.19.4':
     dependencies:
       '@atproto/common-web': 0.4.19
       '@atproto/lexicon': 0.6.2
-      '@atproto/syntax': 0.5.0
+      '@atproto/syntax': 0.5.1
       '@atproto/xrpc': 0.7.7
       await-lock: 2.2.2
       multiformats: 9.9.0
@@ -5136,11 +5124,6 @@ snapshots:
       multiformats: 9.9.0
       zod: 3.25.76
 
-  '@atproto/lex-cbor@0.0.14':
-    dependencies:
-      '@atproto/lex-data': 0.0.13
-      tslib: 2.8.1
-
   '@atproto/lex-cbor@0.0.15':
     dependencies:
       '@atproto/lex-data': 0.0.14
@@ -5149,7 +5132,7 @@ snapshots:
   '@atproto/lex-cli@0.9.9':
     dependencies:
       '@atproto/lexicon': 0.6.2
-      '@atproto/syntax': 0.5.0
+      '@atproto/syntax': 0.5.1
       chalk: 4.1.2
       commander: 9.5.0
       prettier: 3.8.1
@@ -5157,19 +5140,12 @@ snapshots:
       yesno: 0.4.0
       zod: 3.25.76
 
-  '@atproto/lex-client@0.0.15':
+  '@atproto/lex-client@0.0.17':
     dependencies:
-      '@atproto/lex-data': 0.0.13
-      '@atproto/lex-json': 0.0.13
-      '@atproto/lex-schema': 0.0.14
+      '@atproto/lex-data': 0.0.14
+      '@atproto/lex-json': 0.0.14
+      '@atproto/lex-schema': 0.0.16
       tslib: 2.8.1
-
-  '@atproto/lex-data@0.0.13':
-    dependencies:
-      multiformats: 9.9.0
-      tslib: 2.8.1
-      uint8arrays: 3.0.0
-      unicode-segmenter: 0.14.5
 
   '@atproto/lex-data@0.0.14':
     dependencies:
@@ -5178,26 +5154,23 @@ snapshots:
       uint8arrays: 3.0.0
       unicode-segmenter: 0.14.5
 
-  '@atproto/lex-json@0.0.13':
-    dependencies:
-      '@atproto/lex-data': 0.0.13
-      tslib: 2.8.1
-
   '@atproto/lex-json@0.0.14':
     dependencies:
       '@atproto/lex-data': 0.0.14
       tslib: 2.8.1
 
-  '@atproto/lex-schema@0.0.14':
+  '@atproto/lex-schema@0.0.16':
     dependencies:
-      '@atproto/lex-data': 0.0.13
-      '@atproto/syntax': 0.5.0
+      '@atproto/lex-data': 0.0.14
+      '@atproto/syntax': 0.5.1
+      '@standard-schema/spec': 1.1.0
+      iso-datestring-validator: 2.2.2
       tslib: 2.8.1
 
   '@atproto/lexicon@0.6.2':
     dependencies:
       '@atproto/common-web': 0.4.19
-      '@atproto/syntax': 0.5.0
+      '@atproto/syntax': 0.5.1
       iso-datestring-validator: 2.2.2
       multiformats: 9.9.0
       zod: 3.25.76
@@ -5236,7 +5209,7 @@ snapshots:
       '@atproto/jwk': 0.6.0
       zod: 3.25.76
 
-  '@atproto/repo@0.8.12':
+  '@atproto/repo@0.8.13':
     dependencies:
       '@atproto/common': 0.5.15
       '@atproto/common-web': 0.4.19
@@ -5248,10 +5221,6 @@ snapshots:
       varint: 6.0.0
       zod: 3.25.76
 
-  '@atproto/syntax@0.5.0':
-    dependencies:
-      tslib: 2.8.1
-
   '@atproto/syntax@0.5.1':
     dependencies:
       tslib: 2.8.1
@@ -5259,20 +5228,20 @@ snapshots:
   '@atproto/ws-client@0.0.4':
     dependencies:
       '@atproto/common': 0.5.15
-      ws: 8.19.0
+      ws: 8.20.0
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
 
-  '@atproto/xrpc-server@0.10.15':
+  '@atproto/xrpc-server@0.10.17':
     dependencies:
       '@atproto/common': 0.5.15
       '@atproto/crypto': 0.4.5
-      '@atproto/lex-cbor': 0.0.14
-      '@atproto/lex-client': 0.0.15
-      '@atproto/lex-data': 0.0.13
-      '@atproto/lex-json': 0.0.13
-      '@atproto/lex-schema': 0.0.14
+      '@atproto/lex-cbor': 0.0.15
+      '@atproto/lex-client': 0.0.17
+      '@atproto/lex-data': 0.0.14
+      '@atproto/lex-json': 0.0.14
+      '@atproto/lex-schema': 0.0.16
       '@atproto/lexicon': 0.6.2
       '@atproto/ws-client': 0.0.4
       '@atproto/xrpc': 0.7.7
@@ -5280,7 +5249,7 @@ snapshots:
       http-errors: 2.0.1
       mime-types: 2.1.35
       rate-limiter-flexible: 2.4.2
-      ws: 8.19.0
+      ws: 8.20.0
     transitivePeerDependencies:
       - bufferutil
       - supports-color
@@ -6409,7 +6378,7 @@ snapshots:
 
   '@standard-schema/spec@1.1.0': {}
 
-  '@t3-oss/env-core@0.13.10(typescript@5.9.3)(valibot@1.3.1(typescript@5.9.3))(zod@4.3.6)':
+  '@t3-oss/env-core@0.13.11(typescript@5.9.3)(valibot@1.3.1(typescript@5.9.3))(zod@4.3.6)':
     optionalDependencies:
       typescript: 5.9.3
       valibot: 1.3.1(typescript@5.9.3)
@@ -6703,7 +6672,7 @@ snapshots:
   '@unrs/resolver-binding-win32-x64-msvc@1.11.1':
     optional: true
 
-  '@vitest/coverage-v8@3.2.4(vitest@3.2.4(@types/node@24.12.0)(jiti@1.21.7)(msw@2.12.11(@types/node@24.12.0)(typescript@5.9.3))(tsx@4.21.0)(yaml@2.8.3))':
+  '@vitest/coverage-v8@3.2.4(vitest@3.2.4(@types/node@24.12.0)(jiti@1.21.7)(msw@2.12.14(@types/node@24.12.0)(typescript@5.9.3))(tsx@4.21.0)(yaml@2.8.3))':
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@bcoe/v8-coverage': 1.0.2
@@ -6718,7 +6687,7 @@ snapshots:
       std-env: 3.10.0
       test-exclude: 7.0.2
       tinyrainbow: 2.0.0
-      vitest: 3.2.4(@types/node@24.12.0)(jiti@1.21.7)(msw@2.12.11(@types/node@24.12.0)(typescript@5.9.3))(tsx@4.21.0)(yaml@2.8.3)
+      vitest: 3.2.4(@types/node@24.12.0)(jiti@1.21.7)(msw@2.12.14(@types/node@24.12.0)(typescript@5.9.3))(tsx@4.21.0)(yaml@2.8.3)
     transitivePeerDependencies:
       - supports-color
 
@@ -6730,13 +6699,13 @@ snapshots:
       chai: 5.3.3
       tinyrainbow: 2.0.0
 
-  '@vitest/mocker@3.2.4(msw@2.12.11(@types/node@24.12.0)(typescript@5.9.3))(vite@7.3.1(@types/node@24.12.0)(jiti@1.21.7)(tsx@4.21.0)(yaml@2.8.3))':
+  '@vitest/mocker@3.2.4(msw@2.12.14(@types/node@24.12.0)(typescript@5.9.3))(vite@7.3.1(@types/node@24.12.0)(jiti@1.21.7)(tsx@4.21.0)(yaml@2.8.3))':
     dependencies:
       '@vitest/spy': 3.2.4
       estree-walker: 3.0.3
       magic-string: 0.30.21
     optionalDependencies:
-      msw: 2.12.11(@types/node@24.12.0)(typescript@5.9.3)
+      msw: 2.12.14(@types/node@24.12.0)(typescript@5.9.3)
       vite: 7.3.1(@types/node@24.12.0)(jiti@1.21.7)(tsx@4.21.0)(yaml@2.8.3)
 
   '@vitest/pretty-format@3.2.4':
@@ -8055,7 +8024,7 @@ snapshots:
     dependencies:
       '@babel/runtime': 7.29.2
 
-  i18next@25.8.18(typescript@5.9.3):
+  i18next@25.10.5(typescript@5.9.3):
     dependencies:
       '@babel/runtime': 7.29.2
     optionalDependencies:
@@ -8835,7 +8804,7 @@ snapshots:
 
   ms@2.1.3: {}
 
-  msw@2.12.11(@types/node@24.12.0)(typescript@5.9.3):
+  msw@2.12.14(@types/node@24.12.0)(typescript@5.9.3):
     dependencies:
       '@inquirer/confirm': 5.1.21(@types/node@24.12.0)
       '@mswjs/interceptors': 0.41.3
@@ -9212,7 +9181,7 @@ snapshots:
 
   prelude-ls@1.2.1: {}
 
-  prettier-plugin-pkg@0.21.2(prettier@3.8.1):
+  prettier-plugin-pkg@0.22.0(prettier@3.8.1):
     dependencies:
       prettier: 3.8.1
 
@@ -9315,11 +9284,11 @@ snapshots:
       github-buttons: 2.31.1
       react: 19.2.4
 
-  react-i18next@16.5.8(i18next@25.8.18(typescript@5.9.3))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.9.3):
+  react-i18next@16.6.2(i18next@25.10.5(typescript@5.9.3))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.9.3):
     dependencies:
       '@babel/runtime': 7.29.2
       html-parse-stringify: 3.0.1
-      i18next: 25.8.18(typescript@5.9.3)
+      i18next: 25.10.5(typescript@5.9.3)
       react: 19.2.4
       use-sync-external-store: 1.6.0(react@19.2.4)
     optionalDependencies:
@@ -9392,11 +9361,11 @@ snapshots:
       gopd: 1.2.0
       set-function-name: 2.0.2
 
-  remix-i18next@7.4.2(i18next@25.8.18(typescript@5.9.3))(react-i18next@16.5.8(i18next@25.8.18(typescript@5.9.3))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(react-router@7.13.1(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4):
+  remix-i18next@7.4.2(i18next@25.10.5(typescript@5.9.3))(react-i18next@16.6.2(i18next@25.10.5(typescript@5.9.3))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(react-router@7.13.1(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4):
     dependencies:
-      i18next: 25.8.18(typescript@5.9.3)
+      i18next: 25.10.5(typescript@5.9.3)
       react: 19.2.4
-      react-i18next: 16.5.8(i18next@25.8.18(typescript@5.9.3))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.9.3)
+      react-i18next: 16.6.2(i18next@25.10.5(typescript@5.9.3))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.9.3)
       react-router: 7.13.1(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
 
   remix-utils@9.3.1(@standard-schema/spec@1.1.0)(react-router@7.13.1(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4):
@@ -9519,7 +9488,7 @@ snapshots:
 
   safer-buffer@2.1.2: {}
 
-  satori@0.25.0:
+  satori@0.26.0:
     dependencies:
       '@shuding/opentype.js': 1.4.0-beta.0
       css-background-parser: 0.1.0
@@ -10182,25 +10151,25 @@ snapshots:
       tsx: 4.21.0
       yaml: 2.8.3
 
-  vitest-environment-vprisma@1.3.0(@prisma/client@6.19.2(prisma@6.19.2(magicast@0.3.5)(typescript@5.9.3))(typescript@5.9.3))(jest@30.3.0(@types/node@24.12.0))(vitest@3.2.4(@types/node@24.12.0)(jiti@1.21.7)(msw@2.12.11(@types/node@24.12.0)(typescript@5.9.3))(tsx@4.21.0)(yaml@2.8.3)):
+  vitest-environment-vprisma@1.3.0(@prisma/client@6.19.2(prisma@6.19.2(magicast@0.3.5)(typescript@5.9.3))(typescript@5.9.3))(jest@30.3.0(@types/node@24.12.0))(vitest@3.2.4(@types/node@24.12.0)(jiti@1.21.7)(msw@2.12.14(@types/node@24.12.0)(typescript@5.9.3))(tsx@4.21.0)(yaml@2.8.3)):
     dependencies:
       '@prisma/client': 6.19.2(prisma@6.19.2(magicast@0.3.5)(typescript@5.9.3))(typescript@5.9.3)
       '@quramy/jest-prisma-core': 1.8.2(jest@30.3.0(@types/node@24.12.0))
-      vitest: 3.2.4(@types/node@24.12.0)(jiti@1.21.7)(msw@2.12.11(@types/node@24.12.0)(typescript@5.9.3))(tsx@4.21.0)(yaml@2.8.3)
+      vitest: 3.2.4(@types/node@24.12.0)(jiti@1.21.7)(msw@2.12.14(@types/node@24.12.0)(typescript@5.9.3))(tsx@4.21.0)(yaml@2.8.3)
     transitivePeerDependencies:
       - jest
 
-  vitest-mock-extended@3.1.0(typescript@5.9.3)(vitest@3.2.4(@types/node@24.12.0)(jiti@1.21.7)(msw@2.12.11(@types/node@24.12.0)(typescript@5.9.3))(tsx@4.21.0)(yaml@2.8.3)):
+  vitest-mock-extended@3.1.0(typescript@5.9.3)(vitest@3.2.4(@types/node@24.12.0)(jiti@1.21.7)(msw@2.12.14(@types/node@24.12.0)(typescript@5.9.3))(tsx@4.21.0)(yaml@2.8.3)):
     dependencies:
       ts-essentials: 10.1.1(typescript@5.9.3)
       typescript: 5.9.3
-      vitest: 3.2.4(@types/node@24.12.0)(jiti@1.21.7)(msw@2.12.11(@types/node@24.12.0)(typescript@5.9.3))(tsx@4.21.0)(yaml@2.8.3)
+      vitest: 3.2.4(@types/node@24.12.0)(jiti@1.21.7)(msw@2.12.14(@types/node@24.12.0)(typescript@5.9.3))(tsx@4.21.0)(yaml@2.8.3)
 
-  vitest@3.2.4(@types/node@24.12.0)(jiti@1.21.7)(msw@2.12.11(@types/node@24.12.0)(typescript@5.9.3))(tsx@4.21.0)(yaml@2.8.3):
+  vitest@3.2.4(@types/node@24.12.0)(jiti@1.21.7)(msw@2.12.14(@types/node@24.12.0)(typescript@5.9.3))(tsx@4.21.0)(yaml@2.8.3):
     dependencies:
       '@types/chai': 5.2.3
       '@vitest/expect': 3.2.4
-      '@vitest/mocker': 3.2.4(msw@2.12.11(@types/node@24.12.0)(typescript@5.9.3))(vite@7.3.1(@types/node@24.12.0)(jiti@1.21.7)(tsx@4.21.0)(yaml@2.8.3))
+      '@vitest/mocker': 3.2.4(msw@2.12.14(@types/node@24.12.0)(typescript@5.9.3))(vite@7.3.1(@types/node@24.12.0)(jiti@1.21.7)(tsx@4.21.0)(yaml@2.8.3))
       '@vitest/pretty-format': 3.2.4
       '@vitest/runner': 3.2.4
       '@vitest/snapshot': 3.2.4
@@ -10340,7 +10309,7 @@ snapshots:
       imurmurhash: 0.1.4
       signal-exit: 4.1.0
 
-  ws@8.19.0: {}
+  ws@8.20.0: {}
 
   y18n@5.0.8: {}
 
