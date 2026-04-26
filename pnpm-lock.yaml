@@ -57,13 +57,13 @@ importers:
         specifier: 6.19.3
         version: 6.19.3(prisma@6.19.3(magicast@0.3.5)(typescript@5.9.3))(typescript@5.9.3)
       '@react-router/express':
-        specifier: ^7.12.0
+        specifier: 7.14.2
         version: 7.14.2(express@5.2.1)(react-router@7.14.2(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(typescript@5.9.3)
       '@react-router/fs-routes':
         specifier: 7.14.2
         version: 7.14.2(@react-router/dev@7.14.2(@types/node@24.12.2)(jiti@1.21.7)(react-router@7.14.2(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(tsx@4.21.0)(typescript@5.9.3)(vite@7.3.2(@types/node@24.12.2)(jiti@1.21.7)(tsx@4.21.0)(yaml@2.8.3))(yaml@2.8.3))(typescript@5.9.3)
       '@react-router/node':
-        specifier: ^7.12.0
+        specifier: 7.14.2
         version: 7.14.2(react-router@7.14.2(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(typescript@5.9.3)
       '@resvg/resvg-js':
         specifier: 2.6.2
@@ -135,7 +135,7 @@ importers:
         specifier: 3.4.1
         version: 3.4.1(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       react-router:
-        specifier: ^7.12.0
+        specifier: 7.14.2
         version: 7.14.2(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       remix-i18next:
         specifier: 7.5.0
