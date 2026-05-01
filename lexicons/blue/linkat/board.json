@@ -26,18 +26,15 @@
       "properties": {
         "url": {
           "type": "string",
-          "description": "URL of the link",
-          "maxLength": 2048
+          "description": "URL of the link"
         },
         "text": {
           "type": "string",
-          "description": "Text of the card",
-          "maxLength": 300
+          "description": "Text of the card"
         },
         "emoji": {
           "type": "string",
-          "description": "Emoji of the card",
-          "maxLength": 64
+          "description": "Emoji of the card"
         }
       }
     }
