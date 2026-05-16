@@ -41,8 +41,6 @@ export function CardForm() {
         label="URL"
         errors={fields.url.errors}
         placeholder="https://example.com"
-        // https://github.com/edmundhung/conform/issues/600
-        key={fields.url.key}
         data-testid="card-form__url"
       />
       <Input
@@ -50,8 +48,6 @@ export function CardForm() {
         label={t("card-form.text-label")}
         errors={fields.text.errors}
         placeholder={t("card-form.text-placeholder")}
-        // https://github.com/edmundhung/conform/issues/600
-        key={fields.text.key}
         data-testid="card-form__text"
       />
       <p className="text-sm text-gray-400">
@@ -62,10 +58,7 @@ export function CardForm() {
           <div className="label">
             <span className="label-text">{t("card-form.emoji-label")}</span>
           </div>
-          <input
-            {...getInputProps(fields.emoji, { type: "hidden" })}
-            key={fields.emoji.key}
-          />
+          <input {...getInputProps(fields.emoji, { type: "hidden" })} />
         </label>
         <div className="flex gap-2">
           <Button
@@ -107,10 +100,7 @@ export function CardForm() {
           }}
         />
       )}
-      <input
-        {...getInputProps(fields.id, { type: "hidden" })}
-        key={fields.id.key}
-      />
+      <input {...getInputProps(fields.id, { type: "hidden" })} />
       <div className="mt-2 flex flex-col gap-2">
         <Button
           type="submit"
