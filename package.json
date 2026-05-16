@@ -100,7 +100,7 @@
     "eslint": "9.39.4",
     "giget": "3.2.0",
     "husky": "9.1.7",
-    "lint-staged": "16.4.0",
+    "lint-staged": "17.0.4",
     "msw": "2.14.6",
     "npm-run-all2": "8.0.4",
     "postcss": "8.5.14",
