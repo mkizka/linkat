@@ -7,7 +7,6 @@ export const i18nConfig = {
   supportedLngs: ["en", "ja"],
   fallbackLng: "en",
   defaultNS: "translation",
-  showSupportNotice: false,
   interpolation: {
     escapeValue: false,
   },
