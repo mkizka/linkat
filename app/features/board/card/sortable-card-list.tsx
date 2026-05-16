@@ -25,20 +25,23 @@ export function SortableCardList({ cards, setCards, sortable }: Props) {
           {children}
         </ul>
       )}
-      renderItem={({ value, props, isDragged }) => (
-        <li
-          {...props}
-          key={props.key}
-          className="list-none"
-          data-testid={`sortable-card`}
-        >
-          <SortableCard
-            card={value}
-            isDragging={isDragged}
-            sortable={sortable}
-          />
-        </li>
-      )}
+      renderItem={({ value, props, isDragged }) => {
+        const { key, ...rest } = props;
+        return (
+          <li
+            key={key}
+            {...rest}
+            className="list-none"
+            data-testid={`sortable-card`}
+          >
+            <SortableCard
+              card={value}
+              isDragging={isDragged}
+              sortable={sortable}
+            />
+          </li>
+        );
+      }}
     />
   );
 }
