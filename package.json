@@ -26,7 +26,7 @@
     "typecheck": "react-router typegen && tsc"
   },
   "dependencies": {
-    "@atproto/api": "0.19.17",
+    "@atproto/api": "0.19.18",
     "@atproto/did": "0.3.0",
     "@atproto/identity": "0.4.12",
     "@atproto/jwk-jose": "0.1.11",
