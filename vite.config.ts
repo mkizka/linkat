@@ -8,6 +8,7 @@ export default defineConfig({
   build: {
     target: "es2022",
   },
+  // @ts-expect-error vitest@3 types don't extend vite@8's UserConfig yet
   test: {
     include: ["app/**/*.spec.ts"],
     coverage: {
