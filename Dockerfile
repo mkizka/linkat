@@ -25,7 +25,7 @@ COPY --from=build /app/build /app/build
 COPY --from=build /app/fonts /app/fonts
 COPY --from=build /app/dist /app/dist
 COPY --from=build /app/prisma /app/prisma
-COPY --from=build /app/package.json /app/pnpm-workspace.yaml /app/
+COPY --from=build /app/package.json /app/
 
 EXPOSE 3000
 CMD [ "node", "./dist/server.js" ]

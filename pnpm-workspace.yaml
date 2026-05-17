@@ -6,4 +6,3 @@ allowBuilds:
   msw: false
   prisma: false
   unrs-resolver: false
-verifyDepsBeforeRun: false
