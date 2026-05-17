@@ -15,7 +15,6 @@
       "@react-router/node",
       "vite/client",
       "vitest/globals",
-      "vitest-environment-vprisma",
       "@types/umami"
     ],
     "isolatedModules": true,
