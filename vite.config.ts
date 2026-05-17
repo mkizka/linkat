@@ -15,13 +15,9 @@ export default defineConfig({
       include: ["app/server/**/*.ts"],
       exclude: ["app/**/*.spec.ts", "app/generated/**/*.ts"],
     },
-    // vitest-environment-vprisma
     globals: true,
-    environment: "vprisma",
-    setupFiles: [
-      "vitest-environment-vprisma/setup",
-      "./vitest/vitest.setup.ts",
-    ],
+    setupFiles: ["./vitest/vitest.setup.ts"],
     globalSetup: ["./vitest/global-setup.ts"],
+    fileParallelism: false,
   },
 });
