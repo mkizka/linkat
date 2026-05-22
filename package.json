@@ -102,7 +102,7 @@
     "husky": "9.1.7",
     "lint-staged": "17.0.4",
     "msw": "2.14.6",
-    "npm-run-all2": "8.0.4",
+    "npm-run-all2": "9.0.0",
     "postcss": "8.5.14",
     "prettier": "3.8.3",
     "prettier-plugin-pkg": "0.22.1",
