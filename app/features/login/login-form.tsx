@@ -72,7 +72,7 @@ export function LoginForm() {
         )}
         <Button
           type="submit"
-          className="btn-bluesky text-base-100"
+          className="btn-bluesky text-blue-100"
           loading={navigation.state !== "idle"}
           data-testid="login-form__submit"
         >
