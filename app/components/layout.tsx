@@ -134,7 +134,7 @@ export function Footer({ withNavigation }: FooterProps) {
           rel="noreferrer"
           data-umami-event="click-footer-bsky-link"
         >
-          <BlueskyIcon className="size-7 text-base-100" />
+          <BlueskyIcon className="size-7 text-white" />
         </a>
         <a
           href="https://github.com/mkizka/linkat"
@@ -142,7 +142,7 @@ export function Footer({ withNavigation }: FooterProps) {
           rel="noreferrer"
           data-umami-event="click-footer-github-link"
         >
-          <GitHubIcon className="size-7 text-base-100" />
+          <GitHubIcon className="size-7 text-white" />
         </a>
         <div className="relative size-7">
           <div className="loading loading-spinner absolute top-1.5 size-4"></div>

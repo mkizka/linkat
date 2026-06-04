@@ -85,7 +85,7 @@ export function ShareModal({ url }: Props) {
           <p>{t("share-modal.description")}</p>
           <div className="flex flex-col gap-4 py-4 sm:flex-row">
             <Button
-              className="btn-bluesky btn flex-1 text-base-100"
+              className="btn-bluesky btn flex-1 text-white"
               loading={loading}
               onClick={handlePost}
             >

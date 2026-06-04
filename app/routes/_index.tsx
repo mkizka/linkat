@@ -59,7 +59,7 @@ export default function Index({ loaderData }: Route.ComponentProps) {
             ) : (
               <Link
                 to="/login"
-                className="btn-bluesky btn w-64 text-base-100"
+                className="btn-bluesky btn w-64 text-blue-100"
                 data-testid="index__login-link"
               >
                 <AtSymbolIcon className="-ml-4 size-6" />
