@@ -90,7 +90,7 @@
     "@types/react-dom": "19.2.3",
     "@types/umami": "2.10.1",
     "@types/ws": "8.18.1",
-    "@vitest/coverage-v8": "4.1.7",
+    "@vitest/coverage-v8": "4.1.8",
     "autoprefixer": "10.5.0",
     "daisyui": "4.12.24",
     "esbuild": "0.28.0",
@@ -109,7 +109,7 @@
     "typescript": "6.0.3",
     "vite": "8.0.14",
     "vite-tsconfig-paths": "6.1.1",
-    "vitest": "4.1.7",
+    "vitest": "4.1.8",
     "vitest-mock-extended": "4.0.0",
     "wait-on": "9.0.10"
   },
