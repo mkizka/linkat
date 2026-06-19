@@ -10,7 +10,7 @@ jobs:
   lex-publish:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       - uses: mkizka/lex-publish@27d56dd1a20f37a3c7957ddf1ab836c05f3c74a3 # v1.1.1
         with:
           lint: false
