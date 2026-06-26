@@ -141,8 +141,8 @@ importers:
         specifier: 7.5.0
         version: 7.5.0(i18next@26.3.1(typescript@6.0.3))(react-i18next@17.0.8(i18next@26.3.1(typescript@6.0.3))(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(typescript@6.0.3))(react-router@7.18.0(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react@19.2.7)
       remix-utils:
-        specifier: 9.3.1
-        version: 9.3.1(@standard-schema/spec@1.1.0)(react-router@7.18.0(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react@19.2.7)
+        specifier: 10.0.0
+        version: 10.0.0(@standard-schema/spec@1.1.0)(react-router@7.18.0(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react@19.2.7)
       satori:
         specifier: 0.26.0
         version: 0.26.0
@@ -3712,9 +3712,9 @@ packages:
       react-i18next: ^13.0.0 || ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
       react-router: ^7.0.0
 
-  remix-utils@9.3.1:
-    resolution: {integrity: sha512-Z/CVE9mPKYOKxhSV5q2IeXd5W4zl/B4q9YLQfuR3EYNSOop8riQso6QXGJXd+71S96Ox8/haMl34GyV/WBnoVg==}
-    engines: {node: '>=20.0.0'}
+  remix-utils@10.0.0:
+    resolution: {integrity: sha512-v5voIsJQof6e/1m8te4qyH5YXATWxv+zEgbxd98CwtVxRLCXVc+P9rQ2uDRRYPLCvF9A2ZBOizK0ZTUfm4qJpw==}
+    engines: {node: '>=22.22.0'}
     peerDependencies:
       '@edgefirst-dev/batcher': ^1.0.0
       '@edgefirst-dev/jwt': ^1.2.0
@@ -3724,8 +3724,8 @@ packages:
       '@standard-schema/spec': ^1.0.0
       intl-parse-accept-language: ^1.0.0
       is-ip: ^5.0.1
-      react: ^18.0.0 || ^19.0.0
-      react-router: ^7.0.0
+      react: '>=19.2.7'
+      react-router: ^8.0.0
     peerDependenciesMeta:
       '@edgefirst-dev/batcher':
         optional: true
@@ -7826,9 +7826,7 @@ snapshots:
       react-i18next: 17.0.8(i18next@26.3.1(typescript@6.0.3))(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(typescript@6.0.3)
       react-router: 7.18.0(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
 
-  remix-utils@9.3.1(@standard-schema/spec@1.1.0)(react-router@7.18.0(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react@19.2.7):
-    dependencies:
-      type-fest: 5.6.0
+  remix-utils@10.0.0(@standard-schema/spec@1.1.0)(react-router@7.18.0(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react@19.2.7):
     optionalDependencies:
       '@standard-schema/spec': 1.1.0
       react: 19.2.7
