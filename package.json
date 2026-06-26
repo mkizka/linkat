@@ -67,7 +67,7 @@
     "react-movable": "3.4.1",
     "react-router": "7.18.0",
     "remix-i18next": "7.5.0",
-    "remix-utils": "9.3.1",
+    "remix-utils": "10.0.0",
     "satori": "0.26.0",
     "tailwind-merge": "3.6.0",
     "ws": "8.21.0",
