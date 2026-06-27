@@ -8,9 +8,9 @@ import { renderToPipeableStream } from "react-dom/server";
 import { I18nextProvider, initReactI18next } from "react-i18next";
 import type {
   ActionFunctionArgs,
-  AppLoadContext,
   EntryContext,
   LoaderFunctionArgs,
+  RouterContextProvider,
 } from "react-router";
 import { isRouteErrorResponse, ServerRouter } from "react-router";
 
@@ -42,9 +42,7 @@ export default async function handleRequest(
   responseStatusCode: number,
   responseHeaders: Headers,
   routerContext: EntryContext,
-  _loadContext: AppLoadContext,
-  // If you have middleware enabled:
-  // loadContext: unstable_RouterContextProvider
+  _loadContext: RouterContextProvider,
 ) {
   const instance = await createI18nInstance(request, routerContext);
   return new Promise((resolve, reject) => {
