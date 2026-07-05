@@ -4,7 +4,7 @@ import { redirect } from "react-router";
 import { Main, RootLayout } from "~/components/layout";
 import { LoginForm } from "~/features/login/login-form";
 import { RouteToaster } from "~/features/toast/route";
-import { i18nServer } from "~/i18n/i18n";
+import { getInstance } from "~/i18n/i18n";
 import { oauthClient } from "~/server/oauth/client";
 import { getSessionUserDid } from "~/server/oauth/session";
 import { isProduction } from "~/utils/env";
@@ -14,12 +14,12 @@ import type { Route } from "./+types/login";
 
 const logger = createLogger("login");
 
-export async function action({ request }: Route.ActionArgs) {
-  const t = await i18nServer.getFixedT(request);
+export async function action({ request, context }: Route.ActionArgs) {
+  const i18next = getInstance(context);
   const form = await request.formData();
   const handle = form.get("identifier");
   if (typeof handle !== "string") {
-    return { error: t("login.unknown-error") };
+    return { error: i18next.t("login.unknown-error") };
   }
   try {
     const scope = isProduction
@@ -30,9 +30,9 @@ export async function action({ request }: Route.ActionArgs) {
   } catch (error) {
     logger.error(error, "OAuthログインに失敗しました");
     if (error instanceof OAuthResolverError) {
-      return { error: t("login.oauth-resolve-error-message") };
+      return { error: i18next.t("login.oauth-resolve-error-message") };
     }
-    return { error: t("login.default-error-message") };
+    return { error: i18next.t("login.default-error-message") };
   }
 }
 

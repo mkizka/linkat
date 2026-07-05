@@ -6,7 +6,7 @@ import { Main } from "~/components/layout";
 import { BoardViewer } from "~/features/board/board-viewer";
 import { RouteToaster } from "~/features/toast/route";
 import { useUmami } from "~/hooks/useUmami";
-import { i18nServer } from "~/i18n/i18n";
+import { getInstance } from "~/i18n/i18n";
 import { boardScheme } from "~/models/board";
 import { getSessionAgent, getSessionUser } from "~/server/oauth/session";
 import { boardService } from "~/server/service/boardService";
@@ -17,19 +17,19 @@ import type { Route } from "./+types/edit";
 
 const logger = createLogger("edit");
 
-export async function action({ request }: Route.ActionArgs) {
-  const t = await i18nServer.getFixedT(request);
+export async function action({ request, context }: Route.ActionArgs) {
+  const i18next = getInstance(context);
   const [user, agent] = await Promise.all([
     getSessionUser(request),
     getSessionAgent(request),
   ]);
   if (!user || !agent) {
-    return { error: t("login.invalid-session-error-message") };
+    return { error: i18next.t("login.invalid-session-error-message") };
   }
   const form = await request.formData();
   const rawBoard = form.get("board");
   if (typeof rawBoard !== "string") {
-    return { error: t("edit.invalid-form-error-message") };
+    return { error: i18next.t("edit.invalid-form-error-message") };
   }
   // 1. 楽観的にDBを更新
   const parsedBoard = boardScheme.parse(JSON.parse(rawBoard));
