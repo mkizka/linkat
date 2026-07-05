@@ -42,10 +42,7 @@ export type ParsedFeedCard = {
 };
 
 type ParsedCard =
-  | ParsedLinkCard
-  | ParsedTextCard
-  | ParsedEmbedCard
-  | ParsedFeedCard;
+  ParsedLinkCard | ParsedTextCard | ParsedEmbedCard | ParsedFeedCard;
 
 const cardIcons: Record<string, CardIconComponent | undefined> = {
   "bsky.app": BlueskyIcon,
