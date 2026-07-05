@@ -1,11 +1,10 @@
 import { PassThrough } from "node:stream";
 
 import { createReadableStreamFromReadable } from "@react-router/node";
-import { createInstance } from "i18next";
 import { isbot } from "isbot";
 import type { RenderToPipeableStreamOptions } from "react-dom/server";
 import { renderToPipeableStream } from "react-dom/server";
-import { I18nextProvider, initReactI18next } from "react-i18next";
+import { I18nextProvider } from "react-i18next";
 import type {
   ActionFunctionArgs,
   EntryContext,
@@ -14,26 +13,10 @@ import type {
 } from "react-router";
 import { isRouteErrorResponse, ServerRouter } from "react-router";
 
-import { i18nConfig } from "./i18n/config";
-import { i18nServer } from "./i18n/i18n";
+import { getInstance } from "./i18n/i18n";
 import { createLogger } from "./utils/logger";
 
 export const streamTimeout = 5_000;
-
-const createI18nInstance = async (
-  request: Request,
-  routerContext: EntryContext,
-) => {
-  const instance = createInstance();
-  const lng = await i18nServer.getLocale(request);
-  const ns = i18nServer.getRouteNamespaces(routerContext);
-  await instance.use(initReactI18next).init({
-    ...i18nConfig,
-    lng,
-    ns,
-  });
-  return instance;
-};
 
 const logger = createLogger("entry.server");
 
@@ -42,9 +25,9 @@ export default async function handleRequest(
   responseStatusCode: number,
   responseHeaders: Headers,
   routerContext: EntryContext,
-  _loadContext: RouterContextProvider,
+  loadContext: RouterContextProvider,
 ) {
-  const instance = await createI18nInstance(request, routerContext);
+  const instance = getInstance(loadContext);
   return new Promise((resolve, reject) => {
     let shellRendered = false;
     const userAgent = request.headers.get("user-agent");

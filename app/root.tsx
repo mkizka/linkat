@@ -16,16 +16,16 @@ import {
 import type { Route } from "./+types/root";
 import { Toaster } from "./features/toast/toaster";
 import { UmamiProvider } from "./hooks/useUmami";
-import { i18nServer, localeCookie } from "./i18n/i18n";
+import { getLocale, i18nextMiddleware, localeCookie } from "./i18n/i18n";
 import { env } from "./utils/env";
 
 export { ErrorBoundary } from "~/components/error-boundary";
 export { HydrateFallback } from "~/components/hydate-fallback";
 
-export const handle = { i18n: ["translation"] };
+export const middleware = [i18nextMiddleware];
 
-export async function loader({ request }: LoaderFunctionArgs) {
-  const locale = await i18nServer.getLocale(request);
+export async function loader({ context }: LoaderFunctionArgs) {
+  const locale = getLocale(context);
   return data(
     {
       locale,

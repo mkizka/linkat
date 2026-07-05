@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 
 import { Main, RootLayout } from "~/components/layout";
-import { i18nServer } from "~/i18n/i18n";
+import { getInstance } from "~/i18n/i18n";
 import { getSessionUserDid } from "~/server/oauth/session";
 import { cn } from "~/utils/cn";
 import { env } from "~/utils/env";
@@ -15,13 +15,13 @@ import { createMeta } from "~/utils/meta";
 
 import type { Route } from "./+types/_index";
 
-export const loader = async ({ request }: Route.LoaderArgs) => {
+export const loader = async ({ request, context }: Route.LoaderArgs) => {
   const userDid = await getSessionUserDid(request);
-  const t = await i18nServer.getFixedT(request);
+  const i18next = getInstance(context);
   return {
     isLogin: !!userDid,
-    title: t("_index.meta-title"),
-    description: t("_index.meta-description"),
+    title: i18next.t("_index.meta-title"),
+    description: i18next.t("_index.meta-description"),
     url: env.PUBLIC_URL,
   };
 };

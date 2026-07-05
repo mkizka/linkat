@@ -1,7 +1,7 @@
 import { Footer, Main } from "~/components/layout";
 import { BoardViewer } from "~/features/board/board-viewer";
 import { ShareModal } from "~/features/board/share-modal";
-import { i18nServer } from "~/i18n/i18n";
+import { getInstance } from "~/i18n/i18n";
 import { getSessionUserDid } from "~/server/oauth/session";
 import { boardService } from "~/server/service/boardService";
 import { userService } from "~/server/service/userService";
@@ -14,7 +14,7 @@ const notFound = () => {
   throw new Response("Not Found", { status: 404 });
 };
 
-export async function loader({ request, params }: Route.LoaderArgs) {
+export async function loader({ request, params, context }: Route.LoaderArgs) {
   // この順で処理した場合ボードを持たない(=このサービスのユーザーでない)ユーザーの
   // データも作られてしまうが、一旦このままにしておく
   const user = await userService.findOrFetchUser({
@@ -27,8 +27,8 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   if (!board) {
     return notFound();
   }
-  const t = await i18nServer.getFixedT(request);
-  const title = t("board.meta-title", {
+  const i18next = getInstance(context);
+  const title = i18next.t("board.meta-title", {
     displayName: user.displayName,
     handle: user.handle,
   });
