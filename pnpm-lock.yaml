@@ -138,8 +138,8 @@ importers:
         specifier: 8.0.1
         version: 8.0.1(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       remix-i18next:
-        specifier: 7.5.0
-        version: 7.5.0(i18next@26.3.1(typescript@6.0.3))(react-i18next@17.0.8(i18next@26.3.1(typescript@6.0.3))(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(typescript@6.0.3))(react-router@8.0.1(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react@19.2.7)
+        specifier: 8.0.0
+        version: 8.0.0(i18next@26.3.1(typescript@6.0.3))(react-router@8.0.1(react-dom@19.2.7(react@19.2.7))(react@19.2.7))
       remix-utils:
         specifier: 10.0.0
         version: 10.0.0(@standard-schema/spec@1.1.0)(react-router@8.0.1(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react@19.2.7)
@@ -2695,11 +2695,6 @@ packages:
   js-tokens@4.0.0:
     resolution: {integrity: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==}
 
-  jsesc@3.0.2:
-    resolution: {integrity: sha512-xKqzzWXDttJuOcawBt4KnKHHIf5oQ/Cxax+0PWFG+DFDgHNAdi+TXECADI+RYiFUMmx8792xsMbbgXj4CwnP4g==}
-    engines: {node: '>=6'}
-    hasBin: true
-
   jsesc@3.1.0:
     resolution: {integrity: sha512-/sM3dO2FOzXjKQhJuo0Q173wf2KOo8t4I8vHy6lF9poUp7bKT0/NHE8fPX23PwfhnykfqnC2xRxOnVw5XuGIaA==}
     engines: {node: '>=6'}
@@ -3400,14 +3395,12 @@ packages:
   real-require@1.0.0:
     resolution: {integrity: sha512-P4nbQYQfePJxRSmY+v/KINxVucm4NF3p3s7pJveMTtom52FR4YGltUQLB8idDXwDDWW+eYrWDFbuzUnjoWHF7g==}
 
-  remix-i18next@7.5.0:
-    resolution: {integrity: sha512-7vAwnNkAXzr/YQwFkV1FHrY+3utgGrDwn7oP/aM2gFHrwbGT0+uVtuUx3USpTrJvhzAN+2YU/mnmgyBi9EhYyw==}
-    engines: {node: '>=20.0.0'}
+  remix-i18next@8.0.0:
+    resolution: {integrity: sha512-+QbCBo3VP6JH2zCbPoRPhgYErY89vDnr4Sy66tlzANwyRnEIHEA2o6HlEuz0iCoDn9f8I88cknNrHGsc4n77zg==}
+    engines: {node: '>=22.22.0'}
     peerDependencies:
       i18next: ^24.0.0 || ^25.0.0 || ^26.0.0
-      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
-      react-i18next: ^13.0.0 || ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
-      react-router: ^7.0.0
+      react-router: ^8.0.0
 
   remix-utils@10.0.0:
     resolution: {integrity: sha512-v5voIsJQof6e/1m8te4qyH5YXATWxv+zEgbxd98CwtVxRLCXVc+P9rQ2uDRRYPLCvF9A2ZBOizK0ZTUfm4qJpw==}
@@ -4380,7 +4373,7 @@ snapshots:
       '@babel/types': 7.29.7
       '@jridgewell/gen-mapping': 0.3.13
       '@jridgewell/trace-mapping': 0.3.31
-      jsesc: 3.0.2
+      jsesc: 3.1.0
 
   '@babel/helper-annotate-as-pure@7.29.7':
     dependencies:
@@ -6631,8 +6624,6 @@ snapshots:
 
   js-tokens@4.0.0: {}
 
-  jsesc@3.0.2: {}
-
   jsesc@3.1.0: {}
 
   json-buffer@3.0.1: {}
@@ -7266,11 +7257,9 @@ snapshots:
 
   real-require@1.0.0: {}
 
-  remix-i18next@7.5.0(i18next@26.3.1(typescript@6.0.3))(react-i18next@17.0.8(i18next@26.3.1(typescript@6.0.3))(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(typescript@6.0.3))(react-router@8.0.1(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react@19.2.7):
+  remix-i18next@8.0.0(i18next@26.3.1(typescript@6.0.3))(react-router@8.0.1(react-dom@19.2.7(react@19.2.7))(react@19.2.7)):
     dependencies:
       i18next: 26.3.1(typescript@6.0.3)
-      react: 19.2.7
-      react-i18next: 17.0.8(i18next@26.3.1(typescript@6.0.3))(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(typescript@6.0.3)
       react-router: 8.0.1(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
 
   remix-utils@10.0.0(@standard-schema/spec@1.1.0)(react-router@8.0.1(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react@19.2.7):

@@ -7,7 +7,7 @@ import { z } from "zod";
 import { BackButton } from "~/components/back-button";
 import { Card } from "~/components/card";
 import { Footer, Main } from "~/components/layout";
-import { i18nServer } from "~/i18n/i18n";
+import { getLocale } from "~/i18n/i18n";
 import { LinkatAgent } from "~/libs/agent";
 import { env } from "~/utils/env";
 
@@ -46,8 +46,8 @@ const getRkey = (locale: string) => {
   }
 };
 
-export const loader = async ({ request }: Route.LoaderArgs) => {
-  const locale = await i18nServer.getLocale(request);
+export const loader = async ({ context }: Route.LoaderArgs) => {
+  const locale = getLocale(context);
   const atUri = new AtUri(
     `at://${env.ABOUT_WHTWND_REPO}/com.whtwnd.blog.entry/${getRkey(locale)}`,
   );

@@ -4,7 +4,6 @@ import { startTransition, StrictMode } from "react";
 import { hydrateRoot } from "react-dom/client";
 import { I18nextProvider, initReactI18next } from "react-i18next";
 import { HydratedRouter } from "react-router/dom";
-import { getInitialNamespaces } from "remix-i18next/client";
 
 import { i18nConfig } from "./i18n/config";
 
@@ -14,7 +13,6 @@ async function main() {
     .use(I18nextBrowserLanguageDetector)
     .init({
       ...i18nConfig,
-      ns: getInitialNamespaces(),
       detection: { order: ["htmlTag"], caches: [] },
     });
 
