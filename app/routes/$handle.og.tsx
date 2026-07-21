@@ -3,7 +3,6 @@ import { Resvg } from "@resvg/resvg-js";
 import fs from "fs";
 import { LRUCache } from "lru-cache";
 import satori from "satori";
-import sharp from "sharp";
 
 import { userService } from "~/server/service/userService";
 import { createLogger } from "~/utils/logger";
@@ -19,16 +18,9 @@ const cache = new LRUCache<string, Uint8Array<ArrayBuffer>>({
 
 const fontData = fs.readFileSync("./fonts/Murecho-Bold.ttf");
 
-// satoriは画像を自前でfetch/デコードするが対応形式が限られる(webp等は非対応)ため、
-// 事前にfetchしてsharpでPNGに変換してから渡す
-const fetchAvatarAsPngDataUri = async (avatarUrl: string) => {
-  const response = await fetch(avatarUrl);
-  const buffer = Buffer.from(await response.arrayBuffer());
-  const png = await sharp(buffer).png().toBuffer();
-  return `data:image/png;base64,${png.toString("base64")}`;
-};
-
-const renderImage = async (user: User, avatar: string | null) => {
+const renderImage = async (user: User) => {
+  // satoriが対応していないwebp等を避けるため、CDNにjpegでの配信を要求する
+  const avatar = user.avatar ? `${user.avatar}@jpeg` : null;
   //
   // カード内の割合
   // 100px(padding) + 200px(avatar) + 50px(mariginLeft) + 650px(handle/displayName) + 100px(padding) = 1100px
@@ -146,10 +138,7 @@ const renderImage = async (user: User, avatar: string | null) => {
 };
 
 const createImage = async (user: User) => {
-  const avatar = user.avatar
-    ? await fetchAvatarAsPngDataUri(user.avatar)
-    : null;
-  const image = await renderImage(user, avatar);
+  const image = await renderImage(user);
   cache.set(user.did, image);
   return image;
 };
