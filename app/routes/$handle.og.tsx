@@ -3,10 +3,14 @@ import { Resvg } from "@resvg/resvg-js";
 import fs from "fs";
 import { LRUCache } from "lru-cache";
 import satori from "satori";
+import sharp from "sharp";
 
 import { userService } from "~/server/service/userService";
+import { createLogger } from "~/utils/logger";
 
 import type { Route } from "./+types/$handle.og";
+
+const logger = createLogger("$handle.og");
 
 const cache = new LRUCache<string, Uint8Array<ArrayBuffer>>({
   max: 100,
@@ -15,7 +19,16 @@ const cache = new LRUCache<string, Uint8Array<ArrayBuffer>>({
 
 const fontData = fs.readFileSync("./fonts/Murecho-Bold.ttf");
 
-const createImage = async (user: User) => {
+// satoriは画像を自前でfetch/デコードするが対応形式が限られる(webp等は非対応)ため、
+// 事前にfetchしてsharpでPNGに変換してから渡す
+const fetchAvatarAsPngDataUri = async (avatarUrl: string) => {
+  const response = await fetch(avatarUrl);
+  const buffer = Buffer.from(await response.arrayBuffer());
+  const png = await sharp(buffer).png().toBuffer();
+  return `data:image/png;base64,${png.toString("base64")}`;
+};
+
+const renderImage = async (user: User, avatar: string | null) => {
   //
   // カード内の割合
   // 100px(padding) + 200px(avatar) + 50px(mariginLeft) + 650px(handle/displayName) + 100px(padding) = 1100px
@@ -52,9 +65,9 @@ const createImage = async (user: User) => {
             alignItems: "center",
           }}
         >
-          {user.avatar ? (
+          {avatar ? (
             <img
-              src={user.avatar}
+              src={avatar}
               style={{
                 width: "200px",
                 height: "200px",
@@ -129,7 +142,14 @@ const createImage = async (user: User) => {
   );
   const resvg = new Resvg(svg);
   const buffer = resvg.render().asPng();
-  const image = Uint8Array.from(buffer);
+  return Uint8Array.from(buffer);
+};
+
+const createImage = async (user: User) => {
+  const avatar = user.avatar
+    ? await fetchAvatarAsPngDataUri(user.avatar)
+    : null;
+  const image = await renderImage(user, avatar);
   cache.set(user.did, image);
   return image;
 };
@@ -141,7 +161,13 @@ export async function loader({ params }: Route.LoaderArgs) {
   if (!user) {
     throw new Response(null, { status: 404 });
   }
-  const image = cache.get(user.did) ?? (await createImage(user));
+  const cached = cache.get(user.did);
+  const image =
+    cached ??
+    (await createImage(user).catch((error: unknown) => {
+      logger.warn(error, "OGP画像の生成に失敗しました");
+      throw new Response(null, { status: 404 });
+    }));
   return new Response(image, {
     headers: {
       "Content-Type": "image/png",

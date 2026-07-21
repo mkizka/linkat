@@ -69,6 +69,7 @@
     "remix-i18next": "8.0.0",
     "remix-utils": "10.0.0",
     "satori": "0.28.0",
+    "sharp": "0.35.3",
     "tailwind-merge": "3.6.0",
     "ws": "8.21.1",
     "zod": "4.4.3",
