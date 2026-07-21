@@ -161,13 +161,15 @@ export async function loader({ params }: Route.LoaderArgs) {
   if (!user) {
     throw new Response(null, { status: 404 });
   }
-  const cached = cache.get(user.did);
-  const image =
-    cached ??
-    (await createImage(user).catch((error: unknown) => {
+  let image = cache.get(user.did);
+  if (!image) {
+    try {
+      image = await createImage(user);
+    } catch (error) {
       logger.warn(error, "OGP画像の生成に失敗しました");
       throw new Response(null, { status: 404 });
-    }));
+    }
+  }
   return new Response(image, {
     headers: {
       "Content-Type": "image/png",
