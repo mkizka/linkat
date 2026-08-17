@@ -1,7 +1,6 @@
 import { AtUri } from "@atproto/api";
 import { LRUCache } from "lru-cache";
 import markdownit from "markdown-it";
-import linkAttributes from "markdown-it-link-attributes";
 import { z } from "zod";
 
 import { BackButton } from "~/components/back-button";
@@ -9,6 +8,7 @@ import { Card } from "~/components/card";
 import { Footer, Main } from "~/components/layout";
 import { getLocale } from "~/i18n/i18n";
 import { LinkatAgent } from "~/libs/agent";
+import { externalLinkAttributes } from "~/libs/markdown";
 import { env } from "~/utils/env";
 
 import type { Route } from "./+types/about";
@@ -28,12 +28,7 @@ const whtwndSchema = z.object({
   content: z.string(),
 });
 
-const md = markdownit().use(linkAttributes, {
-  attrs: {
-    target: "_blank",
-    rel: "noopener noreferrer",
-  },
-});
+const md = markdownit().use(externalLinkAttributes);
 
 const getRkey = (locale: string) => {
   switch (locale) {
