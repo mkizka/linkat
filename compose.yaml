@@ -17,7 +17,6 @@ services:
       retries: 10
   jetstream:
     image: ghcr.io/bluesky-social/jetstream:sha-011b545
-    restart: always
     network_mode: host
     environment:
       - JETSTREAM_WS_URL=ws://localhost:2583/xrpc/com.atproto.sync.subscribeRepos
