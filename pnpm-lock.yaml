@@ -54,8 +54,8 @@ importers:
         specifier: 2.2.0
         version: 2.2.0(react@19.2.8)
       '@prisma/client':
-        specifier: 6.19.3
-        version: 6.19.3(prisma@6.19.3(typescript@6.0.3))(typescript@6.0.3)
+        specifier: 7.10.0
+        version: 7.10.0(prisma@6.19.3(typescript@6.0.3))(typescript@6.0.3)
       '@react-router/express':
         specifier: 8.3.0
         version: 8.3.0(express@5.2.1(supports-color@7.2.0))(react-router@8.3.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(typescript@6.0.3)
@@ -170,7 +170,7 @@ importers:
         version: 1.62.1
       '@quramy/prisma-fabbrica':
         specifier: 2.3.3
-        version: 2.3.3(@prisma/client@6.19.3(prisma@6.19.3(typescript@6.0.3))(typescript@6.0.3))(typescript@6.0.3)
+        version: 2.3.3(@prisma/client@7.10.0(prisma@6.19.3(typescript@6.0.3))(typescript@6.0.3))(typescript@6.0.3)
       '@react-router/dev':
         specifier: 8.3.0
         version: 8.3.0(react-router@8.3.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(supports-color@7.2.0)(typescript@6.0.3)(vite@8.2.2(@types/node@24.13.3)(esbuild@0.28.2)(jiti@1.21.7)(tsx@4.23.12)(yaml@2.9.0))
@@ -1133,12 +1133,15 @@ packages:
     engines: {node: '>=20'}
     hasBin: true
 
-  '@prisma/client@6.19.3':
-    resolution: {integrity: sha512-mKq3jQFhjvko5LTJFHGilsuQs+W+T3Gm451NzuTDGQxwCzwXHYnIu2zGkRoW+Exq3Rob7yp2MfzSrdIiZVhrBg==}
-    engines: {node: '>=18.18'}
+  '@prisma/client-runtime-utils@7.10.0':
+    resolution: {integrity: sha512-cnCy7lUV8/CctgKVEmqAbSLAmwqJdE/qAlqTBk/0NDk59zEb2cZ0M0M0E4vVPnqbSEYudRroQDvOWfUZH6RIfw==}
+
+  '@prisma/client@7.10.0':
+    resolution: {integrity: sha512-Ubw/QS9JGIBSBUsyxAUQuK/Jcu0Tsva7le7QbLd91Kix9yJvYDdj5QkwgEbbZniH80dd+sziQcALPc+HnvQC8Q==}
+    engines: {node: ^20.19 || ^22.12 || >=24.0}
     peerDependencies:
       prisma: '*'
-      typescript: '>=5.1.0'
+      typescript: '>=5.4.0'
     peerDependenciesMeta:
       prisma:
         optional: true
@@ -4796,7 +4799,11 @@ snapshots:
     dependencies:
       playwright: 1.62.1
 
-  '@prisma/client@6.19.3(prisma@6.19.3(typescript@6.0.3))(typescript@6.0.3)':
+  '@prisma/client-runtime-utils@7.10.0': {}
+
+  '@prisma/client@7.10.0(prisma@6.19.3(typescript@6.0.3))(typescript@6.0.3)':
+    dependencies:
+      '@prisma/client-runtime-utils': 7.10.0
     optionalDependencies:
       prisma: 6.19.3(typescript@6.0.3)
       typescript: 6.0.3
@@ -4875,9 +4882,9 @@ snapshots:
       '@prisma/prisma-schema-wasm': 7.1.1-3.c2990dca591cba766e3b7ef5d9e8a84796e47ab7
       fs-extra: 11.3.0
 
-  '@quramy/prisma-fabbrica@2.3.3(@prisma/client@6.19.3(prisma@6.19.3(typescript@6.0.3))(typescript@6.0.3))(typescript@6.0.3)':
+  '@quramy/prisma-fabbrica@2.3.3(@prisma/client@7.10.0(prisma@6.19.3(typescript@6.0.3))(typescript@6.0.3))(typescript@6.0.3)':
     dependencies:
-      '@prisma/client': 6.19.3(prisma@6.19.3(typescript@6.0.3))(typescript@6.0.3)
+      '@prisma/client': 7.10.0(prisma@6.19.3(typescript@6.0.3))(typescript@6.0.3)
       '@prisma/generator-helper': 6.19.3
       '@prisma/internals': 6.19.3(typescript@6.0.3)
       short-uuid: 5.2.0
