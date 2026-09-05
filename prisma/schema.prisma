@@ -48,7 +48,6 @@ model AuthState {
   state String
 }
 
-// Jetstream再接続時に取りこぼしなく再開するための購読位置
 model JetstreamCursor {
   id     Int    @id @default(1)
   cursor BigInt
