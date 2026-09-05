@@ -47,3 +47,8 @@ model AuthState {
   key   String @id
   state String
 }
+
+model JetstreamCursor {
+  id     Int    @id @default(1)
+  cursor BigInt
+}
