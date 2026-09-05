@@ -23,7 +23,7 @@ export async function loader({ request, params, context }: Route.LoaderArgs) {
   if (!user) {
     return notFound();
   }
-  const board = await boardService.findOrFetchBoard(user.did);
+  const board = await boardService.findBoard(user.did);
   if (!board) {
     return notFound();
   }
