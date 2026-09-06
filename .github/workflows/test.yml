@@ -27,6 +27,7 @@ jobs:
     concurrency:
       group: e2e-test
       cancel-in-progress: false
+      queue: max
     permissions:
       pull-requests: write
     steps:
