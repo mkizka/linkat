@@ -16,7 +16,7 @@ test.describe("編集(リダイレクト)", () => {
         name: "__session",
         value:
           "eyJkaWQiOiJkaWQ6cGxjOnRpd2h6NWdiZTVqZGt2cmdjbHB1Z2oybCJ9.09GaE2lRKbto%2FraoDdda4pGnsQNvsIRfuBHErKE1qU",
-        domain: "linkat.localhost",
+        domain: "localhost",
         path: "/",
       },
     ]);

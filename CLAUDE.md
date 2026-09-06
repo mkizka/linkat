@@ -80,7 +80,7 @@ pnpm prisma generate
 
 - `DATABASE_URL`: PostgreSQL接続文字列
 - `PRIVATE_JETSTREAM_URL`: JetstreamサービスURL
-- `ORIGIN`: アプリケーションURL (開発環境: http://linkat.localhost:3000)
+- `ORIGIN`: アプリケーションURL (開発環境: http://localhost:3000)
 
 ### エラーハンドリング
 

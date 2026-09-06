@@ -57,7 +57,7 @@ if (viteDevServer) {
 }
 
 // 開発環境でのOAuthログイン時 http://127.0.0.1/oauth/callback にリダイレクトされるので、
-// そこからさらに http://linkat.localhost にリダイレクトさせる
+// そこからさらに env.PUBLIC_URL (開発環境: http://localhost:3000) にリダイレクトさせる
 app.use((req, res, next) => {
   if (env.NODE_ENV === "development" && req.hostname === "127.0.0.1") {
     res.redirect(new URL(req.originalUrl, env.PUBLIC_URL).toString());
