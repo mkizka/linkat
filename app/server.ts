@@ -7,8 +7,6 @@ import { jetstream } from "./server/jetstream/subscription.js";
 import { env } from "./utils/env.js";
 import { createLogger } from "./utils/logger.js";
 
-// import { createServer } from "./generated/server/index.js";
-
 // OAuthログインを行うためにE2Eテスト実行時のprocess.env.NODE_ENVはdevelopmentになっている
 // 代わりにprocess.env.E2Eが設定されているので、その場合はviteを使わない
 const viteDevServer =
@@ -65,17 +63,6 @@ app.use((req, res, next) => {
     next();
   }
 });
-
-// const server = createServer();
-// server.dev.mkizka.sample.sampleMethod(() => {
-//   return {
-//     encoding: "application/json",
-//     body: {
-//       foo: "bar",
-//     },
-//   };
-// });
-// app.use(server.xrpc.router);
 
 const build = viteDevServer
   ? () =>

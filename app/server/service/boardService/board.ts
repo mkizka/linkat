@@ -72,7 +72,7 @@ const fetchBoardInPDS = async (userDid: string) => {
     logger.warn({ userDid, response }, "PDSからのboardの取得に失敗しました");
     return null;
   }
-  const parsed = boardScheme.safeParse(response.value);
+  const parsed = boardScheme.safeParse(response.data.value);
   if (!parsed.success) {
     logger.warn({ userDid, parsed }, "PDSからのboardの形式が不正でした");
     return null;

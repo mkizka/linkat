@@ -9,7 +9,6 @@ coverage/
 # atproto
 generated/
 atproto/
-lexicons/com/
 nohup.out
 
 # playwright

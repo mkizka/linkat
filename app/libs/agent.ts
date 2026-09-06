@@ -1,16 +1,9 @@
 import { Agent, CredentialSession } from "@atproto/api";
 
-import { BlueNS } from "~/generated/api";
+import boardLexicon from "~/generated/blue/linkat/board";
 import { boardScheme } from "~/models/board";
 
 export class LinkatAgent extends Agent {
-  blue: BlueNS;
-
-  constructor(options: ConstructorParameters<typeof Agent>[0]) {
-    super(options);
-    this.blue = new BlueNS(this);
-  }
-
   static credential(serviceUrl: string = "https://public.api.bsky.app") {
     const session = new CredentialSession(new URL(serviceUrl));
     return new LinkatAgent(session);
@@ -20,11 +13,10 @@ export class LinkatAgent extends Agent {
     return await this.getProfile({ actor: this.assertDid });
   }
 
-  async getBoard(
-    params: Omit<Parameters<typeof this.blue.linkat.board.get>[0], "rkey">,
-  ) {
-    return await this.blue.linkat.board.get({
+  async getBoard(params: { repo: string }) {
+    return await this.com.atproto.repo.getRecord({
       ...params,
+      collection: boardLexicon.$type,
       rkey: "self",
     });
   }
@@ -38,15 +30,16 @@ export class LinkatAgent extends Agent {
     return await this.com.atproto.repo.putRecord({
       repo: this.assertDid,
       validate: false,
-      collection: "blue.linkat.board",
+      collection: boardLexicon.$type,
       rkey: "self",
       record: boardScheme.parse(board),
     });
   }
 
   async deleteBoard() {
-    return await this.blue.linkat.board.delete({
+    return await this.com.atproto.repo.deleteRecord({
       repo: this.assertDid,
+      collection: boardLexicon.$type,
       rkey: "self",
     });
   }

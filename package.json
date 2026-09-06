@@ -26,6 +26,7 @@
     "@atproto/did": "0.5.4",
     "@atproto/identity": "0.5.10",
     "@atproto/jwk-jose": "0.2.4",
+    "@atproto/lex": "0.3.8",
     "@atproto/lexicon": "0.7.12",
     "@atproto/oauth-client-node": "0.5.4",
     "@atproto/repo": "0.10.12",
@@ -73,7 +74,6 @@
     "zod-validation-error": "5.0.0"
   },
   "devDependencies": {
-    "@atproto/lex-cli": "0.10.11",
     "@mkizka/eslint-config": "10.0.0",
     "@mkizka/eslint-plugin-aaa": "1.0.2",
     "@playwright/test": "1.62.1",
@@ -91,7 +91,6 @@
     "daisyui": "4.12.24",
     "esbuild": "0.28.2",
     "eslint": "10.9.1",
-    "giget": "3.3.1",
     "husky": "9.1.7",
     "lint-staged": "17.4.1",
     "msw": "2.15.0",

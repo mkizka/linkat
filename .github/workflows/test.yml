@@ -38,15 +38,6 @@ jobs:
         with:
           node-version-file: .node-version
           cache: pnpm
-      - run: |
-          ATPROTO_COMMIT=$(cat .atproto-version)
-          echo "ATPROTO_COMMIT=$ATPROTO_COMMIT" >> $GITHUB_ENV
-          NODE_VERSION=$(node -v)
-          echo "NODE_VERSION=$NODE_VERSION" >> $GITHUB_ENV
-      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: ~/.cache/atproto/${{ env.ATPROTO_COMMIT }}
-          key: atproto-${{ env.ATPROTO_COMMIT }}-node-${{ env.NODE_VERSION }}
       - run: pnpm i
       - run: pnpm playwright install --with-deps
       - run: cp .env.example .env
