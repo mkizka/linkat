@@ -21,6 +21,9 @@ const viteDevServer =
       );
 
 const app = express();
+// RailwayのエッジでTLS終端されるため、X-Forwarded-Protoを信頼しないとreq.protocolが常にhttpになり、
+// react-routerのCSRFチェック(Origin: httpsとrequest.url: httpの不一致)でログインが400になる
+app.set("trust proxy", true);
 
 app.use(
   pinoHttp({
