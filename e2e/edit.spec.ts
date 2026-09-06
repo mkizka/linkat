@@ -1,15 +1,21 @@
 import { expect, test } from "@playwright/test";
 
+const E2E_HANDLE = process.env.E2E_HANDLE;
+const E2E_PASSWORD = process.env.E2E_PASSWORD;
+if (!E2E_HANDLE || !E2E_PASSWORD) {
+  throw new Error("環境変数E2E_HANDLE, E2E_PASSWORDを設定してください");
+}
+
 test.describe("編集", () => {
   test("カードの編集操作を一通り確認", async ({ page }) => {
     page.on("dialog", (dialog) => dialog.accept());
 
     await test.step("ログイン", async () => {
       await page.goto("/login");
-      await page.getByTestId("login-form__identifier").fill("alice.test");
+      await page.getByTestId("login-form__identifier").fill(E2E_HANDLE);
       await page.getByTestId("login-form__submit").click();
       await page.waitForURL((url) => url.pathname === "/oauth/authorize");
-      await page.locator("[name='password']").fill("hunter2");
+      await page.locator("[name='password']").fill(E2E_PASSWORD);
       await page.locator("button", { hasText: "Sign in" }).click();
       await page.locator("button", { hasText: "Authorize" }).click();
       await page.waitForURL((url) => url.pathname === "/edit");

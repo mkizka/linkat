@@ -50,6 +50,9 @@ jobs:
       - run: pnpm setup-dev
       - run: pnpm build
       - run: pnpm e2e
+        env:
+          E2E_HANDLE: ${{ secrets.E2E_HANDLE }}
+          E2E_PASSWORD: ${{ secrets.E2E_PASSWORD }}
       # https://www.cloudflarestatus.com/incidents/t5nrjmpxc1cj
       - uses: unfor19/install-aws-cli-action@f5b46b7f32cf5e7ebd652656c5036bf83dd1e60c # 1.0.8
         if: always() && (github.ref == 'refs/heads/main' || github.actor == 'mkizka')

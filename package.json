@@ -10,7 +10,6 @@
     "build:remix": "react-router build",
     "build:server": "node ./scripts/build-server.js",
     "dev": "./scripts/dev.sh | pino-pretty",
-    "dev-atproto": "./scripts/dev-atproto.sh",
     "e2e": "playwright test",
     "format": "pnpm _eslint --fix && prettier . --write",
     "postinstall": "./scripts/postinstall.sh",
@@ -18,7 +17,7 @@
     "prepare": "husky",
     "setup-dev": "./scripts/setup-dev.sh",
     "start": "NODE_ENV=production node ./dist/server.js",
-    "start:local": "NODE_ENV=development E2E=1 node --env-file .env ./dist/server.js",
+    "start:local": "NODE_ENV=development E2E=1 PUBLIC_URL=http://localhost:3000 DISABLE_JETSTREAM=true node --env-file .env ./dist/server.js",
     "test": "vitest run",
     "typecheck": "react-router typegen && tsc"
   },
@@ -107,8 +106,7 @@
     "vite": "8.2.2",
     "vite-tsconfig-paths": "6.1.1",
     "vitest": "4.1.11",
-    "vitest-mock-extended": "5.1.1",
-    "wait-on": "9.1.0"
+    "vitest-mock-extended": "5.1.1"
   },
   "sideEffects": false,
   "lint-staged": {

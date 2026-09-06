@@ -1,5 +1,11 @@
 import { defineConfig } from "@playwright/test";
 
+try {
+  process.loadEnvFile(".env");
+} catch {
+  // .envが無い場合は環境変数が既に設定されている前提で無視する
+}
+
 export default defineConfig({
   testDir: "./e2e",
   outputDir: "./node_modules/.cache/playwright",
@@ -10,7 +16,7 @@ export default defineConfig({
     ["html", { open: "always" }],
   ],
   use: {
-    baseURL: "http://linkat.localhost:3000",
+    baseURL: "http://localhost:3000",
     video: "on",
     trace: "on",
   },
