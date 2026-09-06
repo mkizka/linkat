@@ -23,9 +23,9 @@ jobs:
           TARGET_SHA="${{ github.event.workflow_run.head_sha }}"
           for i in $(seq 1 60); do
             STATUS=$(railway deployment list \
-              --project 81d77ca1-0b0e-4624-a7ce-fdb671c77e91 \
-              --environment fed1d56e-170e-4f27-a4ce-c3f785d320e0 \
-              --service 972d8099-1814-4289-b463-3dab020fb573 \
+              --project "$RAILWAY_PROJECT_ID" \
+              --environment "$RAILWAY_ENVIRONMENT_ID" \
+              --service "$RAILWAY_SERVICE_ID" \
               --json | jq -r --arg sha "$TARGET_SHA" '[.[] | select(.meta.commitHash == $sha)][0].status // empty')
             echo "deployment status: ${STATUS:-<not found yet>}"
             case "$STATUS" in
@@ -38,6 +38,9 @@ jobs:
           exit 1
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+          RAILWAY_PROJECT_ID: ${{ vars.RAILWAY_PROJECT_ID }}
+          RAILWAY_ENVIRONMENT_ID: ${{ vars.RAILWAY_ENVIRONMENT_ID }}
+          RAILWAY_SERVICE_ID: ${{ vars.RAILWAY_SERVICE_ID }}
       - run: |
           npm i -g corepack@latest
           corepack enable pnpm
