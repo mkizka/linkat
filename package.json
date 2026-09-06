@@ -100,7 +100,7 @@
     "tailwindcss": "3.4.19",
     "tailwindcss-animate": "1.0.7",
     "tsx": "4.23.13",
-    "typescript": "6.0.3",
+    "typescript": "7.0.2",
     "vite": "8.2.2",
     "vite-tsconfig-paths": "6.1.1",
     "vitest": "4.1.11",
