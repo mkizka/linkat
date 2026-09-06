@@ -210,9 +210,6 @@ importers:
       eslint:
         specifier: 10.9.1
         version: 10.9.1(jiti@1.21.7)(supports-color@7.2.0)
-      giget:
-        specifier: 3.3.1
-        version: 3.3.1
       husky:
         specifier: 9.1.7
         version: 9.1.7
@@ -2120,10 +2117,6 @@ packages:
 
   giget@2.0.0:
     resolution: {integrity: sha512-L5bGsVkxJbJgdnwyuheIunkGatUF/zssUoxxjACCseZYAVbaqdh9Tsmmlkl8vYan09H7sbvKt4pS8GqKLBrEzA==}
-    hasBin: true
-
-  giget@3.3.1:
-    resolution: {integrity: sha512-r+mvuDjrjMpsdw46Kmeydb8bdHm7wOKw8wNBtTndkjbPjgAp5oUJUxRE76wZFknxIPokfWvep2qSXK37aXE6zg==}
     hasBin: true
 
   github-buttons@2.32.0:
@@ -5718,8 +5711,6 @@ snapshots:
       node-fetch-native: 1.6.7
       nypm: 0.6.6
       pathe: 2.0.3
-
-  giget@3.3.1: {}
 
   github-buttons@2.32.0: {}
 
