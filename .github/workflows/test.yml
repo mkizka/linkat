@@ -24,6 +24,9 @@ jobs:
       - run: pnpm test -- --coverage
   e2e-test:
     runs-on: ubuntu-latest
+    concurrency:
+      group: e2e-test
+      cancel-in-progress: false
     permissions:
       pull-requests: write
     steps:
