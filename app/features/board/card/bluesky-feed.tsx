@@ -1,7 +1,10 @@
-import type { AppBskyFeedGetFeedGenerator } from "@atproto/api";
+import { asAtUriString } from "@atproto/syntax";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import getFeedGenerator, {
+  type $OutputBody,
+} from "~/generated/app/bsky/feed/getFeedGenerator";
 import { LinkatAgent } from "~/libs/agent";
 
 type Props = {
@@ -11,16 +14,15 @@ type Props = {
 
 export function BlueskyFeed({ feedUri, url }: Props) {
   const { t } = useTranslation();
-  const [feed, setFeed] =
-    useState<AppBskyFeedGetFeedGenerator.OutputSchema | null>(null);
+  const [feed, setFeed] = useState<$OutputBody | null>(null);
   const [showError, setShowError] = useState(false);
 
   useEffect(() => {
     const agent = LinkatAgent.credential();
-    agent.app.bsky.feed
-      .getFeedGenerator({ feed: feedUri })
+    agent
+      .call(getFeedGenerator, { feed: asAtUriString(feedUri) })
       .then((response) => {
-        setFeed(response.data);
+        setFeed(response);
       })
       .catch((error: unknown) => {
         // eslint-disable-next-line no-console

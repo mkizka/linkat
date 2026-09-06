@@ -1,23 +1,17 @@
-import { Agent, CredentialSession } from "@atproto/api";
+import { Client } from "@atproto/lex";
+import { asAtIdentifierString } from "@atproto/syntax";
 
 import boardLexicon from "~/generated/blue/linkat/board";
 import { boardScheme } from "~/models/board";
 
-export class LinkatAgent extends Agent {
+export class LinkatAgent extends Client {
   static credential(serviceUrl: string = "https://public.api.bsky.app") {
-    const session = new CredentialSession(new URL(serviceUrl));
-    return new LinkatAgent(session);
-  }
-
-  async getSessionProfile() {
-    return await this.getProfile({ actor: this.assertDid });
+    return new LinkatAgent(serviceUrl);
   }
 
   async getBoard(params: { repo: string }) {
-    return await this.com.atproto.repo.getRecord({
-      ...params,
-      collection: boardLexicon.$type,
-      rkey: "self",
+    return await this.getRecord(boardLexicon.$type, "self", {
+      repo: asAtIdentifierString(params.repo),
     });
   }
 
@@ -26,21 +20,16 @@ export class LinkatAgent extends Agent {
   }
 
   async updateBoard(board: unknown) {
-    // blue.linkat.profile.boardにはなぜかputがないので、com.atproto.repoを使う
-    return await this.com.atproto.repo.putRecord({
-      repo: this.assertDid,
-      validate: false,
-      collection: boardLexicon.$type,
-      rkey: "self",
-      record: boardScheme.parse(board),
-    });
+    return await this.putRecord(
+      { $type: boardLexicon.$type, ...boardScheme.parse(board) },
+      "self",
+      { repo: this.assertDid, validate: false },
+    );
   }
 
   async deleteBoard() {
-    return await this.com.atproto.repo.deleteRecord({
+    return await this.deleteRecord(boardLexicon.$type, "self", {
       repo: this.assertDid,
-      collection: boardLexicon.$type,
-      rkey: "self",
     });
   }
 }

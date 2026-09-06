@@ -1,3 +1,6 @@
+import { ensureValidHandle } from "@atproto/syntax";
+
+import resolveHandle from "~/generated/com/atproto/identity/resolveHandle";
 import { LinkatAgent } from "~/libs/agent";
 
 // https://bsky.app/profile/example.com
@@ -58,10 +61,11 @@ export const resolveHandleIfNeeded = async (original: string) => {
   if (!handle || handle.startsWith("did:")) {
     return original;
   }
+  ensureValidHandle(handle);
   const publicAgent = LinkatAgent.credential();
-  const response = await publicAgent.resolveHandle({ handle });
+  const response = await publicAgent.call(resolveHandle, { handle });
   const resolvedUrl = new URL(url.origin);
-  resolvedUrl.pathname = "/" + [profile, response.data.did, ...rest].join("/");
+  resolvedUrl.pathname = "/" + [profile, response.did, ...rest].join("/");
   return resolvedUrl.toString();
 };
 
