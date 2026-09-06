@@ -55,11 +55,6 @@ jobs:
           PLAYWRIGHT_TEST_BASE_URL: https://linkat.blue
           E2E_HANDLE: ${{ secrets.E2E_HANDLE }}
           E2E_PASSWORD: ${{ secrets.E2E_PASSWORD }}
-      # https://www.cloudflarestatus.com/incidents/t5nrjmpxc1cj
-      - uses: unfor19/install-aws-cli-action@f5b46b7f32cf5e7ebd652656c5036bf83dd1e60c # 1.0.8
-        if: always()
-        with:
-          version: 2.22.35
       - name: Upload Report
         if: always()
         run: |
