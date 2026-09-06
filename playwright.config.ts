@@ -16,14 +16,16 @@ export default defineConfig({
     ["html", { open: "always" }],
   ],
   use: {
-    baseURL: "http://localhost:3000",
+    baseURL: process.env.PLAYWRIGHT_TEST_BASE_URL ?? "http://localhost:3000",
     video: "on",
     trace: "on",
   },
-  webServer: {
-    command: "pnpm start:local",
-    port: 3000,
-    stdout: "pipe",
-    reuseExistingServer: !process.env.CI,
-  },
+  webServer: process.env.PLAYWRIGHT_TEST_BASE_URL
+    ? undefined
+    : {
+        command: "pnpm start:local",
+        port: 3000,
+        stdout: "pipe",
+        reuseExistingServer: !process.env.CI,
+      },
 });
