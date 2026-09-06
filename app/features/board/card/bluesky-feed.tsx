@@ -2,8 +2,9 @@ import { asAtUriString } from "@atproto/syntax";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import type { $OutputBody } from "~/generated/app/bsky/feed/getFeedGenerator";
-import getFeedGenerator from "~/generated/app/bsky/feed/getFeedGenerator";
+import getFeedGenerator, {
+  type $OutputBody,
+} from "~/generated/app/bsky/feed/getFeedGenerator";
 import { LinkatAgent } from "~/libs/agent";
 
 type Props = {
