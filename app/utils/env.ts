@@ -18,11 +18,9 @@ const server = {
     .enum(["debug", "info", "warn", "error"])
     .default(match({ prod: "info", dev: "debug" })),
   DATABASE_URL: z.string(),
-  // 開発環境でも実PDSに対してOAuthログインするため、Cloudflare tunnel経由でHTTPSアクセス出来る
-  // localhost-3000.mkizka.devをデフォルトにする
   PUBLIC_URL: isProduction
     ? z.string()
-    : z.string().default("https://localhost-3000.mkizka.dev"),
+    : z.string().default("http://localhost:3000"),
   // openssl rand -base64 33
   COOKIE_SECRET: isProduction
     ? z.string()
