@@ -37,14 +37,8 @@ const findUser = async ({
 
 type MinimalProfile = Pick<
   AppBskyActorDefs.ProfileViewDetailed,
-  "did" | "handle"
-> &
-  Partial<
-    Pick<
-      AppBskyActorDefs.ProfileViewDetailed,
-      "avatar" | "description" | "displayName"
-    >
-  >;
+  "did" | "handle" | "avatar" | "description" | "displayName"
+>;
 
 const createOrUpdateUser = async ({
   tx,
@@ -55,9 +49,9 @@ const createOrUpdateUser = async ({
 }) => {
   const data = {
     did: blueskyProfile.did,
-    avatar: blueskyProfile.avatar ?? null,
-    description: blueskyProfile.description ?? null,
-    displayName: blueskyProfile.displayName ?? null,
+    avatar: blueskyProfile.avatar,
+    description: blueskyProfile.description,
+    displayName: blueskyProfile.displayName,
     handle: blueskyProfile.handle,
   } satisfies Prisma.UserUpsertArgs["create"];
   return await tx.user.upsert({
