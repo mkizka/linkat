@@ -78,7 +78,8 @@ jobs:
             --arg message "$MESSAGE" \
             --arg report "$E2E_REPORT_URL" \
             --arg run "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
-            '{content: "\($message)\n📊 \($report)\n🔗 \($run)"}' |
+            --arg commit "${{ github.server_url }}/${{ github.repository }}/commit/${{ github.event.workflow_run.head_sha }}" \
+            '{content: "\($message)\n\n📊 \($report)\n🔗 \($run)\n📝 \($commit)"}' |
             curl -sf -X POST -H "Content-Type: application/json" -d @- "$DISCORD_WEBHOOK_URL"
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
