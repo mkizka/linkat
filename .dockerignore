@@ -8,8 +8,7 @@ coverage/
 
 # atproto
 generated/
-atproto/
-lexicons/com/
+/atproto/
 
 # playwright
 playwright-report/

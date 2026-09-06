@@ -20,7 +20,6 @@ export class LinkatAgent extends Client {
   }
 
   async updateBoard(board: unknown) {
-    // blue.linkat.profile.boardにはなぜかputがないので、com.atproto.repoを使う
     return await this.putRecord(
       { $type: boardLexicon.$type, ...boardScheme.parse(board) },
       "self",
