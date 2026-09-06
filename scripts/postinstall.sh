@@ -8,11 +8,6 @@ ATPROTO_DIR="$HOME/.cache/atproto/$ATPROTO_COMMIT"
 if [ ! -d "$ATPROTO_DIR" ]; then
   pnpm giget gh:bluesky-social/atproto#$ATPROTO_COMMIT "$ATPROTO_DIR"
 fi
-mkdir -p ./lexicons/com/atproto
-cp -r "$ATPROTO_DIR/lexicons/com/atproto/repo" ./lexicons/com/atproto
-
-LEXICONS=$(find ./lexicons -name '*.json' -type f)
-echo y | pnpm lex gen-api ./app/generated/api $LEXICONS
-echo y | pnpm lex gen-server ./app/generated/server $LEXICONS
+pnpm lex build --lexicons ./lexicons --out ./app/generated --clear
 
 pnpm prisma generate
