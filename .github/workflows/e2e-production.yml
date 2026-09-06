@@ -1,0 +1,72 @@
+name: E2E Test (Production)
+
+on:
+  workflow_run:
+    workflows: ["Test"]
+    types: [completed]
+    branches: [main]
+
+jobs:
+  e2e-test-production:
+    if: github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    concurrency:
+      group: e2e-test-production
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+      - run: npm i -g @railway/cli
+      - name: Wait for Railway deployment
+        run: |
+          TARGET_SHA="${{ github.event.workflow_run.head_sha }}"
+          for i in $(seq 1 60); do
+            STATUS=$(railway deployment list \
+              --project "$RAILWAY_PROJECT_ID" \
+              --environment "$RAILWAY_ENVIRONMENT_ID" \
+              --service "$RAILWAY_SERVICE_ID" \
+              --json | jq -r --arg sha "$TARGET_SHA" '[.[] | select(.meta.commitHash == $sha)][0].status // empty')
+            echo "deployment status: ${STATUS:-<not found yet>}"
+            case "$STATUS" in
+              SUCCESS) exit 0 ;;
+              FAILED|CRASHED) echo "Railway deployment failed"; exit 1 ;;
+            esac
+            sleep 10
+          done
+          echo "Timed out waiting for Railway deployment"
+          exit 1
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+          RAILWAY_PROJECT_ID: ${{ vars.RAILWAY_PROJECT_ID }}
+          RAILWAY_ENVIRONMENT_ID: ${{ vars.RAILWAY_ENVIRONMENT_ID }}
+          RAILWAY_SERVICE_ID: ${{ vars.RAILWAY_SERVICE_ID }}
+      - run: |
+          npm i -g corepack@latest
+          corepack enable pnpm
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+      - run: pnpm i
+      - run: pnpm playwright install --with-deps
+      - run: pnpm e2e
+        env:
+          PLAYWRIGHT_TEST_BASE_URL: https://linkat.blue
+          E2E_HANDLE: ${{ secrets.E2E_HANDLE }}
+          E2E_PASSWORD: ${{ secrets.E2E_PASSWORD }}
+      # https://www.cloudflarestatus.com/incidents/t5nrjmpxc1cj
+      - uses: unfor19/install-aws-cli-action@f5b46b7f32cf5e7ebd652656c5036bf83dd1e60c # 1.0.8
+        if: always()
+        with:
+          version: 2.22.35
+      - name: Upload Report
+        if: always()
+        run: |
+          E2E_S3_PATH="playwright-report/production"
+          aws s3 cp playwright-report "s3://$E2E_S3_PATH" --recursive
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_ENDPOINT_URL: ${{ secrets.AWS_ENDPOINT_URL }}
+          AWS_DEFAULT_REGION: auto
