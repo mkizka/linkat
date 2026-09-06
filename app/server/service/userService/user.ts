@@ -3,6 +3,7 @@ import { isDid } from "@atproto/did";
 import type { Prisma, User } from "@prisma/client";
 
 import { LinkatAgent } from "~/libs/agent";
+import { didService } from "~/server/service/didService";
 import { prisma } from "~/server/service/prisma";
 import { env } from "~/utils/env";
 import { createLogger } from "~/utils/logger";
@@ -34,18 +35,29 @@ const findUser = async ({
   return user;
 };
 
+type MinimalProfile = Pick<
+  AppBskyActorDefs.ProfileViewDetailed,
+  "did" | "handle"
+> &
+  Partial<
+    Pick<
+      AppBskyActorDefs.ProfileViewDetailed,
+      "avatar" | "description" | "displayName"
+    >
+  >;
+
 const createOrUpdateUser = async ({
   tx,
   blueskyProfile,
 }: {
   tx: Prisma.TransactionClient;
-  blueskyProfile: AppBskyActorDefs.ProfileViewDetailed;
+  blueskyProfile: MinimalProfile;
 }) => {
   const data = {
     did: blueskyProfile.did,
-    avatar: blueskyProfile.avatar,
-    description: blueskyProfile.description,
-    displayName: blueskyProfile.displayName,
+    avatar: blueskyProfile.avatar ?? null,
+    description: blueskyProfile.description ?? null,
+    displayName: blueskyProfile.displayName ?? null,
     handle: blueskyProfile.handle,
   } satisfies Prisma.UserUpsertArgs["create"];
   return await tx.user.upsert({
@@ -66,6 +78,23 @@ const fetchBlueskyProfile = async (handleOrDid: string) => {
   return response.data;
 };
 
+// app.bsky.actor.profileレコードが存在しないアカウントはgetProfileが失敗するため、
+// DID解決だけでdid/handleを補って最低限のユーザーを作成する
+const fetchMinimalProfile = async (
+  handleOrDid: string,
+): Promise<MinimalProfile> => {
+  if (isDid(handleOrDid)) {
+    const handle = await didService.resolveHandle(handleOrDid);
+    if (!handle) {
+      throw new Error(`handleを解決できませんでした: ${handleOrDid}`);
+    }
+    return { did: handleOrDid, handle };
+  }
+  const agent = LinkatAgent.credential(env.BSKY_PUBLIC_API_URL);
+  const response = await agent.resolveHandle({ handle: handleOrDid });
+  return { did: response.data.did, handle: handleOrDid };
+};
+
 export const findOrFetchUser = async ({
   tx = prisma,
   handleOrDid,
@@ -83,7 +112,15 @@ export const findOrFetchUser = async ({
   const blueskyProfile = await tryCatch(fetchBlueskyProfile)(handleOrDid);
   if (blueskyProfile instanceof Error) {
     logger.warn(blueskyProfile, "プロフィールの取得に失敗しました");
-    return user;
+    if (user) {
+      return user;
+    }
+    const minimalProfile = await tryCatch(fetchMinimalProfile)(handleOrDid);
+    if (minimalProfile instanceof Error) {
+      logger.warn(minimalProfile, "最低限のユーザー作成にも失敗しました");
+      return null;
+    }
+    return await createOrUpdateUser({ tx, blueskyProfile: minimalProfile });
   }
   return await createOrUpdateUser({
     tx,

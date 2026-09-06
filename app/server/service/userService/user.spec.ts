@@ -146,6 +146,10 @@ describe("userService", () => {
           "https://public.api.example.com/xrpc/app.bsky.actor.getProfile",
           () => HttpResponse.json("", { status: 500 }),
         ),
+        http.get(
+          "https://public.api.example.com/xrpc/com.atproto.identity.resolveHandle",
+          () => HttpResponse.json("", { status: 500 }),
+        ),
       );
       // act
       const actual = await userService.findOrFetchUser({
@@ -153,6 +157,37 @@ describe("userService", () => {
       });
       // assert
       expect(actual).toBeNull();
+    });
+    test("DBにユーザーがなく、getProfileが失敗してもDIDが解決できればhandleのみのユーザーを作成する", async () => {
+      // arrange
+      server.use(
+        http.get(
+          "https://public.api.example.com/xrpc/app.bsky.actor.getProfile",
+          () => HttpResponse.json("Profile not found", { status: 400 }),
+        ),
+        http.get(
+          `https://plc.example.com/${encodeURIComponent("did:plc:dfbe2uvzisfdxwscnwcxdta6")}`,
+          () =>
+            HttpResponse.json({
+              id: "did:plc:dfbe2uvzisfdxwscnwcxdta6",
+              alsoKnownAs: ["at://example.com"],
+            }),
+        ),
+      );
+      // act
+      const actual = await userService.findOrFetchUser({
+        handleOrDid: "did:plc:dfbe2uvzisfdxwscnwcxdta6",
+      });
+      // assert
+      expect(actual).toEqual({
+        avatar: null,
+        description: null,
+        displayName: null,
+        did: "did:plc:dfbe2uvzisfdxwscnwcxdta6",
+        handle: "example.com",
+        createdAt: expect.any(Date),
+        updatedAt: expect.any(Date),
+      });
     });
     test("入力が明らかにドメインでなければnullを返す", async () => {
       // arrange

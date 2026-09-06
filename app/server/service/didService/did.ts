@@ -1,5 +1,5 @@
 import type { DidDocument } from "@atproto/identity";
-import { IdResolver } from "@atproto/identity";
+import { getHandle, IdResolver } from "@atproto/identity";
 
 import { env } from "~/utils/env";
 import { createLogger } from "~/utils/logger";
@@ -33,4 +33,18 @@ export const resolveServiceUrl = async (userDid: string) => {
     return null;
   }
   return serviceUrl;
+};
+
+export const resolveHandle = async (userDid: string) => {
+  const didDocument = await resolver.did.resolve(userDid);
+  if (!didDocument) {
+    logger.warn({ userDid }, "DIDの解決に失敗しました");
+    return null;
+  }
+  const handle = getHandle(didDocument);
+  if (!handle) {
+    logger.warn({ didDocument }, "DID解決後にhandleが取得できませんでした");
+    return null;
+  }
+  return handle;
 };
