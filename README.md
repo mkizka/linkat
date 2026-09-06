@@ -20,8 +20,6 @@ pnpm install
 pnpm dev
 ```
 
-This connects to the real Bluesky network (no local PDS is started), so log in with a real Bluesky account.
-
 After running the commands, open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## Contributing

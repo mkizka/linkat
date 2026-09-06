@@ -29,7 +29,6 @@ const server = {
   PRIVATE_KEY_ES256_B64: isProduction
     ? z.string()
     : z.string().default(DEVELOPMENT_PRIVATE_KEY),
-  // 開発環境も実PDS/実ネットワークに繋ぐため本番と同じ値をデフォルトにする
   BSKY_PUBLIC_API_URL: z.url().default("https://public.api.bsky.app"),
   JETSTREAM_URL: z
     .url()
