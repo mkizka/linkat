@@ -1,5 +1,5 @@
 import { isDid } from "@atproto/did";
-import type { AtIdentifierString } from "@atproto/lex";
+import { asAtIdentifierString } from "@atproto/syntax";
 import type { Prisma, User } from "@prisma/client";
 
 import type { ProfileViewDetailed } from "~/generated/app/bsky/actor/defs";
@@ -63,8 +63,7 @@ const fetchBlueskyProfile = async (handleOrDid: string) => {
   logger.info({ actor: handleOrDid }, "プロフィールを取得します");
   const agent = LinkatAgent.credential(env.BSKY_PUBLIC_API_URL);
   return await agent.call(getProfile, {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-    actor: handleOrDid as AtIdentifierString,
+    actor: asAtIdentifierString(handleOrDid),
   });
 };
 

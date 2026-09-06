@@ -1,4 +1,4 @@
-import type { AtUriString } from "@atproto/lex";
+import { asAtUriString } from "@atproto/syntax";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -19,10 +19,7 @@ export function BlueskyFeed({ feedUri, url }: Props) {
   useEffect(() => {
     const agent = LinkatAgent.credential();
     agent
-      .call(getFeedGenerator, {
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-        feed: feedUri as AtUriString,
-      })
+      .call(getFeedGenerator, { feed: asAtUriString(feedUri) })
       .then((response) => {
         setFeed(response);
       })

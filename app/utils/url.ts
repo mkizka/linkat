@@ -1,4 +1,4 @@
-import type { HandleString } from "@atproto/lex";
+import { ensureValidHandle } from "@atproto/syntax";
 
 import resolveHandle from "~/generated/com/atproto/identity/resolveHandle";
 import { LinkatAgent } from "~/libs/agent";
@@ -61,11 +61,9 @@ export const resolveHandleIfNeeded = async (original: string) => {
   if (!handle || handle.startsWith("did:")) {
     return original;
   }
+  ensureValidHandle(handle);
   const publicAgent = LinkatAgent.credential();
-  const response = await publicAgent.call(resolveHandle, {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-    handle: handle as HandleString,
-  });
+  const response = await publicAgent.call(resolveHandle, { handle });
   const resolvedUrl = new URL(url.origin);
   resolvedUrl.pathname = "/" + [profile, response.did, ...rest].join("/");
   return resolvedUrl.toString();

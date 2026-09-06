@@ -1,5 +1,5 @@
-import type { AtIdentifierString } from "@atproto/lex";
 import { Client } from "@atproto/lex";
+import { asAtIdentifierString } from "@atproto/syntax";
 
 import boardLexicon from "~/generated/blue/linkat/board";
 import { boardScheme } from "~/models/board";
@@ -11,8 +11,7 @@ export class LinkatAgent extends Client {
 
   async getBoard(params: { repo: string }) {
     return await this.getRecord(boardLexicon.$type, "self", {
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-      repo: params.repo as AtIdentifierString,
+      repo: asAtIdentifierString(params.repo),
     });
   }
 
