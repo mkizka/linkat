@@ -26,6 +26,7 @@
     "@atproto/did": "0.5.4",
     "@atproto/identity": "0.5.10",
     "@atproto/jwk-jose": "0.2.4",
+    "@atproto/lex": "0.3.8",
     "@atproto/lexicon": "0.7.12",
     "@atproto/oauth-client-node": "0.5.4",
     "@atproto/repo": "0.10.12",
@@ -73,7 +74,6 @@
     "zod-validation-error": "5.0.0"
   },
   "devDependencies": {
-    "@atproto/lex": "0.3.8",
     "@mkizka/eslint-config": "10.0.0",
     "@mkizka/eslint-plugin-aaa": "1.0.2",
     "@playwright/test": "1.62.1",
