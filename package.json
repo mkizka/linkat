@@ -20,7 +20,7 @@
     "start:local": "NODE_ENV=development E2E=1 DISABLE_JETSTREAM=true node --env-file .env ./dist/server.js",
     "test": "vitest run",
     "typecheck": "react-router typegen && tsc",
-    "update-lexicons": "lex install --update --lexicons ./lexicons"
+    "update-lexicons": "lex install --update"
   },
   "dependencies": {
     "@atproto/did": "0.5.4",
