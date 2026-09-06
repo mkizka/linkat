@@ -8,7 +8,7 @@ coverage/
 
 # atproto
 generated/
-atproto/
+/atproto/
 nohup.out
 
 # playwright

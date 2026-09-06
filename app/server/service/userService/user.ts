@@ -1,7 +1,9 @@
-import type { AppBskyActorDefs } from "@atproto/api";
 import { isDid } from "@atproto/did";
+import type { AtIdentifierString } from "@atproto/lex";
 import type { Prisma, User } from "@prisma/client";
 
+import type { ProfileViewDetailed } from "~/generated/app/bsky/actor/defs";
+import getProfile from "~/generated/app/bsky/actor/getProfile";
 import { LinkatAgent } from "~/libs/agent";
 import { prisma } from "~/server/service/prisma";
 import { env } from "~/utils/env";
@@ -39,7 +41,7 @@ const createOrUpdateUser = async ({
   blueskyProfile,
 }: {
   tx: Prisma.TransactionClient;
-  blueskyProfile: AppBskyActorDefs.ProfileViewDetailed;
+  blueskyProfile: ProfileViewDetailed;
 }) => {
   const data = {
     did: blueskyProfile.did,
@@ -60,10 +62,10 @@ const createOrUpdateUser = async ({
 const fetchBlueskyProfile = async (handleOrDid: string) => {
   logger.info({ actor: handleOrDid }, "プロフィールを取得します");
   const agent = LinkatAgent.credential(env.BSKY_PUBLIC_API_URL);
-  const response = await agent.getProfile({
-    actor: handleOrDid,
+  return await agent.call(getProfile, {
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+    actor: handleOrDid as AtIdentifierString,
   });
-  return response.data;
 };
 
 export const findOrFetchUser = async ({

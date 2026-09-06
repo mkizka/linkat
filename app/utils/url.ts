@@ -1,3 +1,6 @@
+import type { HandleString } from "@atproto/lex";
+
+import resolveHandle from "~/generated/com/atproto/identity/resolveHandle";
 import { LinkatAgent } from "~/libs/agent";
 
 // https://bsky.app/profile/example.com
@@ -59,9 +62,12 @@ export const resolveHandleIfNeeded = async (original: string) => {
     return original;
   }
   const publicAgent = LinkatAgent.credential();
-  const response = await publicAgent.resolveHandle({ handle });
+  const response = await publicAgent.call(resolveHandle, {
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+    handle: handle as HandleString,
+  });
   const resolvedUrl = new URL(url.origin);
-  resolvedUrl.pathname = "/" + [profile, response.data.did, ...rest].join("/");
+  resolvedUrl.pathname = "/" + [profile, response.did, ...rest].join("/");
   return resolvedUrl.toString();
 };
 

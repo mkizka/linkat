@@ -1,4 +1,4 @@
-import { AtUri } from "@atproto/api";
+import { AtUri } from "@atproto/syntax";
 import { LRUCache } from "lru-cache";
 import markdownit from "markdown-it";
 import { z } from "zod";
@@ -54,12 +54,10 @@ export const loader = async ({ context }: Route.LoaderArgs) => {
     };
   }
   const agent = LinkatAgent.credential(env.ABOUT_WHTWND_PDS_URL);
-  const response = await agent.com.atproto.repo.getRecord({
+  const response = await agent.getRecord(atUri.collectionSafe, atUri.rkey, {
     repo: atUri.host,
-    collection: atUri.collection,
-    rkey: atUri.rkey,
   });
-  const whtwnd = whtwndSchema.parse(response.data.value);
+  const whtwnd = whtwndSchema.parse(response.body.value);
   const about = {
     title: whtwnd.title,
     content: md.render(whtwnd.content),
