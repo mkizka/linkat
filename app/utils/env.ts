@@ -18,11 +18,9 @@ const server = {
     .enum(["debug", "info", "warn", "error"])
     .default(match({ prod: "info", dev: "debug" })),
   DATABASE_URL: z.string(),
-  // 開発環境でのOAuthログイン時にlocalhost:2583にリダイレクトされるが、
-  // ドメインが同じだとOAuthログインに失敗するためlinkat.localhostを使う
   PUBLIC_URL: isProduction
     ? z.string()
-    : z.string().default("http://linkat.localhost:3000"),
+    : z.string().default("http://localhost:3000"),
   // openssl rand -base64 33
   COOKIE_SECRET: isProduction
     ? z.string()
@@ -31,26 +29,13 @@ const server = {
   PRIVATE_KEY_ES256_B64: isProduction
     ? z.string()
     : z.string().default(DEVELOPMENT_PRIVATE_KEY),
-  BSKY_PUBLIC_API_URL: z.url().default(
-    match({
-      prod: "https://public.api.bsky.app",
-      dev: "http://localhost:2584",
-    }),
-  ),
-  JETSTREAM_URL: z.url().default(
-    match({
-      prod: "wss://jetstream1.us-west.bsky.network/subscribe",
-      dev: "ws://localhost:6008/subscribe",
-    }),
-  ),
+  BSKY_PUBLIC_API_URL: z.url().default("https://public.api.bsky.app"),
+  JETSTREAM_URL: z
+    .url()
+    .default("wss://jetstream1.us-west.bsky.network/subscribe"),
   // PR環境などJetstreamを使わない場合に無効化出来るようにする
   DISABLE_JETSTREAM: z.coerce.boolean().default(false),
-  ATPROTO_PLC_URL: z.url().default(
-    match({
-      prod: "https://plc.directory",
-      dev: "http://localhost:2582",
-    }),
-  ),
+  ATPROTO_PLC_URL: z.url().default("https://plc.directory"),
   UMAMI_SCRIPT_URL: z.string().optional(),
   UMAMI_WEBSITE_ID: z.string().optional(),
   // aboutページで使用するwhitewindの記事情報

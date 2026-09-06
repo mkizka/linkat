@@ -20,7 +20,7 @@ pnpm install
 pnpm dev
 ```
 
-After running the commands, open [http://linkat.localhost:3000](http://linkat.localhost:3000) in your browser.
+After running the commands, open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## Contributing
 
