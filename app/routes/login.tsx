@@ -7,7 +7,6 @@ import { RouteToaster } from "~/features/toast/route";
 import { getInstance } from "~/i18n/i18n";
 import { oauthClient } from "~/server/oauth/client";
 import { getSessionUserDid } from "~/server/oauth/session";
-import { isProduction } from "~/utils/env";
 import { createLogger } from "~/utils/logger";
 
 import type { Route } from "./+types/login";
@@ -22,9 +21,7 @@ export async function action({ request, context }: Route.ActionArgs) {
     return { error: i18next.t("login.unknown-error") };
   }
   try {
-    const scope = isProduction
-      ? "atproto include:blue.linkat.permissionSet"
-      : "atproto transition:generic";
+    const scope = "atproto include:blue.linkat.permissionSet";
     const url = await oauthClient.authorize(handle, { scope });
     return redirect(url.toString());
   } catch (error) {
