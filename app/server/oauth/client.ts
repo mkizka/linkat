@@ -52,8 +52,4 @@ const oauthClientOptions: NodeOAuthClientOptions = {
   sessionStore: new SessionStore(),
 };
 
-if (!isProduction) {
-  oauthClientOptions.handleResolver = env.BSKY_PUBLIC_API_URL;
-}
-
 export const oauthClient = new NodeOAuthClient(oauthClientOptions);
