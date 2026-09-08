@@ -14,9 +14,7 @@ import { SessionStore, StateStore } from "./storage";
 
 const privateKey = Buffer.from(env.PRIVATE_KEY_ES256_B64, "base64").toString();
 
-const scope = isProduction
-  ? "atproto include:blue.linkat.permissionSet"
-  : "atproto transition:generic";
+const scope = "atproto include:blue.linkat.permissionSet";
 
 const clientMetadata: OAuthClientMetadataInput = isProduction
   ? {
