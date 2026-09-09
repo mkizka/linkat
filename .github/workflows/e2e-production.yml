@@ -7,19 +7,19 @@ on:
     branches: [main]
 
 jobs:
-  e2e-test-production:
+  wait-for-deployment:
     if: github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     concurrency:
       group: e2e-test-production
       cancel-in-progress: false
       queue: max
+    outputs:
+      status: ${{ steps.wait.outputs.status }}
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          ref: ${{ github.event.workflow_run.head_sha }}
       - run: npm i -g @railway/cli
       - name: Wait for Railway deployment
+        id: wait
         run: |
           TARGET_SHA="${{ github.event.workflow_run.head_sha }}"
           for i in $(seq 1 60); do
@@ -30,18 +30,31 @@ jobs:
               --json | jq -r --arg sha "$TARGET_SHA" '[.[] | select(.meta.commitHash == $sha)][0].status // empty')
             echo "deployment status: ${STATUS:-<not found yet>}"
             case "$STATUS" in
-              SUCCESS) exit 0 ;;
-              FAILED|CRASHED) echo "Railway deployment failed"; exit 1 ;;
+              SUCCESS) echo "status=success" >> "$GITHUB_OUTPUT"; exit 0 ;;
+              SKIPPED) echo "Railway deployment skipped"; echo "status=skipped" >> "$GITHUB_OUTPUT"; exit 0 ;;
+              FAILED|CRASHED) echo "Railway deployment failed"; echo "status=failed" >> "$GITHUB_OUTPUT"; exit 1 ;;
             esac
             sleep 10
           done
           echo "Timed out waiting for Railway deployment"
+          echo "status=timeout" >> "$GITHUB_OUTPUT"
           exit 1
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
           RAILWAY_PROJECT_ID: ${{ vars.RAILWAY_PROJECT_ID }}
           RAILWAY_ENVIRONMENT_ID: ${{ vars.RAILWAY_ENVIRONMENT_ID }}
           RAILWAY_SERVICE_ID: ${{ vars.RAILWAY_SERVICE_ID }}
+
+  e2e-test:
+    needs: wait-for-deployment
+    if: needs.wait-for-deployment.outputs.status == 'success'
+    runs-on: ubuntu-latest
+    outputs:
+      report_url: ${{ steps.upload-report.outputs.report_url }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
       - run: |
           npm i -g corepack@latest
           corepack enable pnpm
@@ -57,30 +70,42 @@ jobs:
           E2E_HANDLE: ${{ secrets.E2E_HANDLE }}
           E2E_PASSWORD: ${{ secrets.E2E_PASSWORD }}
       - name: Upload Report
+        id: upload-report
         if: always()
         run: |
           E2E_S3_PATH="playwright-report/production"
           aws s3 cp playwright-report "s3://$E2E_S3_PATH" --recursive
-          echo "E2E_REPORT_URL=${{ vars.S3_BASE_URL }}/$E2E_S3_PATH/index.html" >> $GITHUB_ENV
+          echo "report_url=${{ vars.S3_BASE_URL }}/$E2E_S3_PATH/index.html" >> "$GITHUB_OUTPUT"
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_ENDPOINT_URL: ${{ secrets.AWS_ENDPOINT_URL }}
           AWS_DEFAULT_REGION: auto
+
+  notify:
+    needs: [wait-for-deployment, e2e-test]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
       - name: Notify Discord
-        if: always()
         run: |
-          if [ "${{ job.status }}" = "success" ]; then
-            MESSAGE="✅ E2E Test (Production) succeeded"
-          else
-            MESSAGE="❌ E2E Test (Production) failed"
-          fi
+          case "${{ needs.wait-for-deployment.outputs.status }}" in
+            skipped) MESSAGE="⏭️ E2E Test (Production) skipped (Railway deployment skipped)" ;;
+            success)
+              if [ "${{ needs.e2e-test.result }}" = "success" ]; then
+                MESSAGE="✅ E2E Test (Production) succeeded"
+              else
+                MESSAGE="❌ E2E Test (Production) failed"
+              fi
+              ;;
+            *) MESSAGE="❌ E2E Test (Production) failed (Railway deployment not ready)" ;;
+          esac
           jq -n \
             --arg message "$MESSAGE" \
-            --arg report "$E2E_REPORT_URL" \
+            --arg report "${{ needs.e2e-test.outputs.report_url }}" \
             --arg run "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
             --arg commit "${{ github.server_url }}/${{ github.repository }}/commit/${{ github.event.workflow_run.head_sha }}" \
-            '{content: "\($message)\n\n📊 \($report)\n🔗 \($run)\n📝 \($commit)"}' |
+            '{content: ("\($message)\n\n" + (if $report == "" then "" else "📊 \($report)\n" end) + "🔗 \($run)\n📝 \($commit)")}' |
             curl -sf -X POST -H "Content-Type: application/json" -d @- "$DISCORD_WEBHOOK_URL"
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
