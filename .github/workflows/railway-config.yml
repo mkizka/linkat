@@ -37,13 +37,21 @@ jobs:
       - name: Comment plan on PR
         if: always()
         run: |
+          MARKER="<!-- railway-config-plan -->"
           {
+            echo "$MARKER"
             echo "## Railway config plan"
             echo '```'
             cat plan-output.txt
             echo '```'
           } > comment.md
-          gh pr comment ${{ github.event.pull_request.number }} --body-file comment.md --edit-last --create-if-none
+          COMMENT_ID=$(gh api "repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments" \
+            --paginate --jq "[.[] | select(.body | startswith(\"$MARKER\"))][-1].id // empty")
+          if [ -n "$COMMENT_ID" ]; then
+            gh api -X PATCH "repos/${{ github.repository }}/issues/comments/$COMMENT_ID" -f body=@comment.md
+          else
+            gh pr comment ${{ github.event.pull_request.number }} --body-file comment.md
+          fi
         env:
           GH_TOKEN: ${{ github.token }}
 
