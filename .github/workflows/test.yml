@@ -62,8 +62,16 @@ jobs:
       - name: Comment on PR
         if: always() && github.ref != 'refs/heads/main' && github.actor == 'mkizka'
         run: |
-          BODY="## E2E Test Report
+          MARKER="<!-- e2e-test-report -->"
+          BODY="$MARKER
+          ## E2E Test Report
           📊 [View Report]($E2E_REPORT_URL)"
-          gh pr comment ${{ github.event.number }} --body "$BODY" --edit-last --create-if-none
+          COMMENT_ID=$(gh api "repos/${{ github.repository }}/issues/${{ github.event.number }}/comments" \
+            --paginate --jq "[.[] | select(.body | startswith(\"$MARKER\"))][-1].id // empty")
+          if [ -n "$COMMENT_ID" ]; then
+            gh api -X PATCH "repos/${{ github.repository }}/issues/comments/$COMMENT_ID" -f body="$BODY"
+          else
+            gh pr comment ${{ github.event.number }} --body "$BODY"
+          fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
