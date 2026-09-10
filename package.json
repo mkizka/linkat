@@ -104,7 +104,6 @@
     "tsx": "4.23.13",
     "typescript": "6.0.3",
     "vite": "8.2.2",
-    "vite-tsconfig-paths": "6.1.1",
     "vitest": "4.1.11",
     "vitest-mock-extended": "5.1.1"
   },
