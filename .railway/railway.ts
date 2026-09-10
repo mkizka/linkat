@@ -32,6 +32,9 @@ export default defineRailway((ctx) => {
 
   const linkat = service("linkat", {
     source: github("mkizka/linkat", { checkSuites: true }),
+    build: {
+      builder: "DOCKERFILE",
+    },
     healthcheck: "/health",
     healthcheckTimeout: 60,
     preDeploy: "node_modules/.bin/prisma migrate deploy",
