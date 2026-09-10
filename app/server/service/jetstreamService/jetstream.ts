@@ -14,7 +14,7 @@ const logger = createLogger("jetstream");
 
 const CURSOR_SAVE_INTERVAL_MS = 30_000;
 
-export const jetstream = new Jetstream({
+const jetstream = new Jetstream({
   ws: WebSocket,
   endpoint: env.JETSTREAM_URL,
   wantedCollections: ["blue.linkat.board"],
