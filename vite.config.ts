@@ -1,10 +1,12 @@
 import { reactRouter } from "@react-router/dev/vite";
 import { defineConfig } from "vite";
-import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
   base: process.env.VITE_CONFIG_BASE ?? "/",
-  plugins: [reactRouter(), tsconfigPaths()],
+  plugins: [reactRouter()],
+  resolve: {
+    tsconfigPaths: true,
+  },
   build: {
     target: "es2022",
   },
