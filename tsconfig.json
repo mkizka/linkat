@@ -6,6 +6,7 @@
     "**/.server/**/*.tsx",
     "**/.client/**/*.ts",
     "**/.client/**/*.tsx",
+    ".railway/**/*.ts",
     ".react-router/types/**/*"
   ],
   "exclude": ["atproto"],
