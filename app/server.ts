@@ -3,7 +3,8 @@ import express from "express";
 import pinoHttp from "pino-http";
 import type { ServerBuild } from "react-router";
 
-import { jetstream } from "./server/jetstream/subscription.js";
+import { jetstreamService } from "~/server/service/jetstreamService";
+
 import { env } from "./utils/env.js";
 import { createLogger } from "./utils/logger.js";
 
@@ -82,6 +83,8 @@ const logger = createLogger("server");
 app.listen(env.PORT, "0.0.0.0", () => {
   logger.info(`App listening on ${env.PUBLIC_URL}`);
   if (!env.DISABLE_JETSTREAM) {
-    jetstream.start();
+    jetstreamService.startJetstream().catch((error: unknown) => {
+      logger.error(error, "Jetstreamの起動に失敗しました");
+    });
   }
 });
