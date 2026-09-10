@@ -4,6 +4,9 @@ import { arrangeActAssert } from "@mkizka/eslint-plugin-aaa";
 export default [
   ...mkizka,
   {
+    ignores: [".railway/**"],
+  },
+  {
     rules: {
       "@typescript-eslint/only-throw-error": "off",
     },
