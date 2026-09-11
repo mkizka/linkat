@@ -2,7 +2,7 @@
   "name": "linkat",
   "type": "module",
   "private": true,
-  "packageManager": "pnpm@11.25.0",
+  "packageManager": "pnpm@12.4.0",
   "scripts": {
     "_eslint": "eslint --cache --cache-location ./node_modules/.cache/eslint",
     "all": "run-s typecheck format test",
