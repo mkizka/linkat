@@ -52,7 +52,7 @@
     "i18next": "26.4.2",
     "i18next-browser-languagedetector": "8.2.1",
     "isbot": "5.2.2",
-    "jotai": "2.20.3",
+    "jotai": "3.0.0",
     "lru-cache": "11.5.2",
     "markdown-it": "15.0.1",
     "pino": "10.3.1",
