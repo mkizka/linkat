@@ -1,7 +1,7 @@
 {
   "_index": {
     "meta-title": "Linkat | Blueskyのためのリンク集を作ろう",
-    "meta-description": "Linkat（リンクアット）は、Blueskyのためのリンク集を作成できるATProtoサービスです。作成したリンク集はあなたのアカウントのPDSに保存されます。",
+    "meta-description": "Linkat（リンクアット）は、Blueskyのためのリンク集を作成できるAT Protocolサービスです。作成したリンク集はあなたのアカウントのPDSに保存されます。",
     "hero-text": "Blueskyのための\nリンク集を作ろう",
     "edit-link": "ボードを編集",
     "login-link": "ログイン",
@@ -17,7 +17,7 @@
   "login-form": {
     "required-error-message": "入力してください",
     "invalid-handle-error-message": "正しいハンドルの形式で入力してください\n（例: example.bsky.social）",
-    "login-title": "ATProtoでログイン",
+    "login-title": "AT Protocolでログイン",
     "login-description": "Bluesky または Self-hosting PDS アカウントのハンドルを入力してください。",
     "login-button": "ログイン (許可ページに移動します)",
     "or-divider": "または",

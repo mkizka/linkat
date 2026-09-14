@@ -4,7 +4,7 @@
 
 ## プロジェクト概要
 
-LinkatはBlueskyアカウントを使用してリンク集を整理・共有できるWebアプリケーションです。ATProtocol/Blueskyエコシステムと深く統合されており、データはローカルとユーザーのPersonal Data Server (PDS)の両方に保存されます。
+LinkatはBlueskyアカウントを使用してリンク集を整理・共有できるWebアプリケーションです。AT Protocol/Blueskyエコシステムと深く統合されており、データはローカルとユーザーのPersonal Data Server (PDS)の両方に保存されます。
 
 ## 開発コマンド
 
@@ -30,7 +30,7 @@ pnpm all              # typecheck、format、testを全て実行
 - **フレームワーク**: React Router v7 (旧Remix)
 - **言語**: TypeScript
 - **データベース**: PostgreSQL (Prisma経由)
-- **認証**: ATProtocol OAuth 2.0
+- **認証**: AT Protocol OAuth 2.0
 - **状態管理**: Jotai (トースト通知などのクライアント状態)
 - **スタイリング**: Tailwind CSS
 - **テスト**: Vitest (ユニット)、Playwright (E2E)
@@ -46,11 +46,11 @@ pnpm all              # typecheck、format、testを全て実行
 ### データフロー
 
 1. ユーザーデータは楽観的にローカルのPostgreSQLに保存
-2. 変更はATProtoレコードとしてユーザーのBluesky PDSに同期
+2. 変更はatprotoレコードとしてユーザーのBluesky PDSに同期
 3. JetstreamがPDSの更新を監視してローカルDBに同期
 4. ボードデータは`blue.linkat.board`レキシコンスキーマに従う
 
-### ATProto統合
+### atproto統合
 
 - レコードは`blue.linkat.board`コレクションに保存
 - OAuthクライアント認証情報はDBに保存
