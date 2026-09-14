@@ -102,14 +102,27 @@ export function LoginForm() {
         >
           {t("login-form.login-button")}
         </Button>
+        <div className="divider text-sm my-0">{t("login-form.or-divider")}</div>
         <Button
           type="button"
-          className="btn-outline"
+          className="bg-base-300"
           onClick={() => void handleAtpassportClick()}
           data-testid="login-form__atpassport"
         >
           {t("login-form.atpassport-button")}
         </Button>
+        <p className="text-center text-sm text-base-content/70">
+          {t("login-form.atpassport-description")}
+          <br />
+          <a
+            href="https://atpassport.net/about"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="link"
+          >
+            {t("login-form.atpassport-link")}
+          </a>
+        </p>
       </Form>
     </Card>
   );

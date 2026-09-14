@@ -20,7 +20,10 @@
     "login-title": "ATProtoでログイン",
     "login-description": "Bluesky または Self-hosting PDS アカウントのハンドルを入力してください。",
     "login-button": "ログイン (許可ページに移動します)",
-    "atpassport-button": "@passportでログイン"
+    "or-divider": "または",
+    "atpassport-button": "@passportでログイン",
+    "atpassport-description": "ハンドル入力不要でログインできます。",
+    "atpassport-link": "@passportとは？"
   },
   "sample": {
     "user-name": "サンプル",
