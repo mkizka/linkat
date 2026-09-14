@@ -12,7 +12,7 @@ test.describe("編集", () => {
 
     await test.step("ログイン", async () => {
       await page.goto("/login");
-      await page.getByTestId("login-form__identifier").fill(E2E_HANDLE);
+      await page.getByTestId("login-form__handle").fill(E2E_HANDLE);
       await page.getByTestId("login-form__submit").click();
       await page.waitForURL((url) => url.pathname === "/oauth/authorize");
       await page.locator("[name='password']").fill(E2E_PASSWORD);

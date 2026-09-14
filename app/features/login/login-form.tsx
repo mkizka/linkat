@@ -24,11 +24,11 @@ export function LoginForm() {
   const { t, i18n } = useTranslation();
   const navigation = useNavigation();
   const submit = useSubmit();
-  const identifierInputRef = useRef<HTMLInputElement>(null);
+  const handleInputRef = useRef<HTMLInputElement>(null);
   const atpassportLang = i18n.language === "ja" ? "ja" : "en";
 
   const schema = z.object({
-    identifier: z
+    handle: z
       .string({ message: t("login-form.required-error-message") })
       .refine(isValidHandle, {
         message: t("login-form.invalid-handle-error-message"),
@@ -49,7 +49,7 @@ export function LoginForm() {
       fedcm: true,
     });
     const result = await atpassport.requestHandleAssist({
-      targetInput: identifierInputRef.current ?? undefined,
+      targetInput: handleInputRef.current ?? undefined,
       // FedCM未対応ブラウザではサーバー側のリダイレクトフローにフォールバックする
       fallback: () => {
         window.location.href = "/login/atpassport";
@@ -57,7 +57,7 @@ export function LoginForm() {
       },
     });
     if (result) {
-      void submit({ identifier: result.username }, { method: "post" });
+      void submit({ handle: result.username }, { method: "post" });
     }
   };
 
@@ -81,18 +81,20 @@ export function LoginForm() {
               <AtSymbolIcon className="size-5" />
             </div>
             <input
-              ref={identifierInputRef}
+              ref={handleInputRef}
               className="input join-item input-bordered w-full"
               placeholder="example.bsky.social"
               autoComplete="username"
-              data-testid="login-form__identifier"
-              {...getInputProps(fields.identifier, { type: "text" })}
+              data-testid="login-form__handle"
+              {...getInputProps(fields.handle, { type: "text" })}
+              // @passportブラウザ拡張機能がhandle入力欄を認識するための属性
+              id="handle"
             />
           </div>
         </div>
-        {fields.identifier.errors && (
+        {fields.handle.errors && (
           <p className="whitespace-pre-line p-1 text-sm text-error">
-            {fields.identifier.errors}
+            {fields.handle.errors}
           </p>
         )}
         <Button

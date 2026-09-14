@@ -16,7 +16,7 @@ const logger = createLogger("login");
 export async function action({ request, context }: Route.ActionArgs) {
   const i18next = getInstance(context);
   const form = await request.formData();
-  const handle = form.get("identifier");
+  const handle = form.get("handle");
   if (typeof handle !== "string") {
     return { error: i18next.t("login.unknown-error") };
   }
