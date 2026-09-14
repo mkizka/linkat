@@ -19,7 +19,10 @@
     "invalid-handle-error-message": "正しいハンドルの形式で入力してください\n（例: example.bsky.social）",
     "login-title": "ATProtoでログイン",
     "login-description": "Bluesky または Self-hosting PDS アカウントのハンドルを入力してください。",
-    "login-button": "ログイン (許可ページに移動します)"
+    "login-button": "ログイン (許可ページに移動します)",
+    "or-divider": "または",
+    "atpassport-description": "ハンドル入力不要でログインできます。",
+    "atpassport-link": "@passportとは？"
   },
   "sample": {
     "user-name": "サンプル",

@@ -1,9 +1,11 @@
+import { AtPassport, AtPassportIcon, AtPassportUI } from "@atpassport/client";
 import { ensureValidHandle } from "@atproto/syntax";
 import { getFormProps, getInputProps, useForm } from "@conform-to/react";
 import { getZodConstraint, parseWithZod } from "@conform-to/zod/v4";
 import { AtSymbolIcon } from "@heroicons/react/24/outline";
+import { useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { Form, useNavigation } from "react-router";
+import { Form, useNavigation, useSubmit } from "react-router";
 import { z } from "zod";
 
 import { Button } from "~/components/button";
@@ -19,8 +21,11 @@ const isValidHandle = (value: string) => {
 };
 
 export function LoginForm() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigation = useNavigation();
+  const submit = useSubmit();
+  const identifierInputRef = useRef<HTMLInputElement>(null);
+  const atpassportLang = i18n.language === "ja" ? "ja" : "en";
 
   const schema = z.object({
     identifier: z
@@ -36,6 +41,25 @@ export function LoginForm() {
       return parseWithZod(formData, { schema });
     },
   });
+
+  const handleAtpassportClick = async () => {
+    const atpassport = new AtPassport({
+      callbackUrl: `${window.location.origin}/login/atpassport/callback`,
+      lang: atpassportLang,
+      fedcm: true,
+    });
+    const result = await atpassport.requestHandleAssist({
+      targetInput: identifierInputRef.current ?? undefined,
+      // FedCM未対応ブラウザではサーバー側のリダイレクトフローにフォールバックする
+      fallback: () => {
+        window.location.href = "/login/atpassport";
+        return null;
+      },
+    });
+    if (result) {
+      void submit({ identifier: result.username }, { method: "post" });
+    }
+  };
 
   return (
     <Card className="flex w-full max-w-screen-sm flex-row justify-center">
@@ -57,6 +81,7 @@ export function LoginForm() {
               <AtSymbolIcon className="size-5" />
             </div>
             <input
+              ref={identifierInputRef}
               className="input join-item input-bordered w-full"
               placeholder="example.bsky.social"
               autoComplete="username"
@@ -78,6 +103,28 @@ export function LoginForm() {
         >
           {t("login-form.login-button")}
         </Button>
+        <div className="divider text-sm my-0">{t("login-form.or-divider")}</div>
+        <Button
+          type="button"
+          className="bg-base-300"
+          onClick={() => void handleAtpassportClick()}
+          data-testid="login-form__atpassport"
+        >
+          <AtPassportIcon size={20} />
+          {AtPassportUI[atpassportLang].title}
+        </Button>
+        <p className="text-center text-sm text-base-content/70">
+          {t("login-form.atpassport-description")}
+          <br />
+          <a
+            href="https://atpassport.net/about"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="link"
+          >
+            {t("login-form.atpassport-link")}
+          </a>
+        </p>
       </Form>
     </Card>
   );
