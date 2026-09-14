@@ -13,7 +13,6 @@ export async function loader({ request }: Route.LoaderArgs) {
     request.headers.get("Cookie"),
   );
   if (typeof savedAtpstate !== "string") {
-    // atpstateがnullだとCSRF検証がスキップされるため、Cookieが無い場合は拒否する
     logger.warn(
       "atpstate Cookieが見つからないため、コールバックを拒否しました",
     );
