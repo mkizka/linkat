@@ -12,13 +12,16 @@ export async function loader({ request }: Route.LoaderArgs) {
   const savedAtpstate: unknown = await atpstateCookie.parse(
     request.headers.get("Cookie"),
   );
+  if (typeof savedAtpstate !== "string") {
+    logger.warn(
+      "atpstate Cookieが見つからないため、コールバックを拒否しました",
+    );
+    return redirect("/login");
+  }
 
   let handle;
   try {
-    const result = atpassport.parseCallback(
-      request.url,
-      typeof savedAtpstate === "string" ? savedAtpstate : null,
-    );
+    const result = atpassport.parseCallback(request.url, savedAtpstate);
     handle = result.username;
   } catch (error) {
     logger.error(error, "ATPassportのコールバック検証に失敗しました");
