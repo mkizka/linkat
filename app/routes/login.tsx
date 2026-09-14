@@ -5,7 +5,7 @@ import { Main, RootLayout } from "~/components/layout";
 import { LoginForm } from "~/features/login/login-form";
 import { RouteToaster } from "~/features/toast/route";
 import { getInstance } from "~/i18n/i18n";
-import { oauthClient } from "~/server/oauth/client";
+import { oauthClient, scope } from "~/server/oauth/client";
 import { getSessionUserDid } from "~/server/oauth/session";
 import { createLogger } from "~/utils/logger";
 
@@ -21,7 +21,6 @@ export async function action({ request, context }: Route.ActionArgs) {
     return { error: i18next.t("login.unknown-error") };
   }
   try {
-    const scope = "atproto include:blue.linkat.permissionSet";
     const url = await oauthClient.authorize(handle, { scope });
     return redirect(url.toString());
   } catch (error) {

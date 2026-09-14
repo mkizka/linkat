@@ -23,6 +23,7 @@
     "update-lexicons": "lex install --update"
   },
   "dependencies": {
+    "@atpassport/client": "^0.2.3",
     "@atproto/did": "0.5.4",
     "@atproto/identity": "0.5.10",
     "@atproto/jwk-jose": "0.2.4",

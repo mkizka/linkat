@@ -1,9 +1,11 @@
+import { AtPassport } from "@atpassport/client/core";
 import { ensureValidHandle } from "@atproto/syntax";
 import { getFormProps, getInputProps, useForm } from "@conform-to/react";
 import { getZodConstraint, parseWithZod } from "@conform-to/zod/v4";
 import { AtSymbolIcon } from "@heroicons/react/24/outline";
+import { useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { Form, useNavigation } from "react-router";
+import { Form, useNavigation, useSubmit } from "react-router";
 import { z } from "zod";
 
 import { Button } from "~/components/button";
@@ -19,8 +21,10 @@ const isValidHandle = (value: string) => {
 };
 
 export function LoginForm() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigation = useNavigation();
+  const submit = useSubmit();
+  const identifierInputRef = useRef<HTMLInputElement>(null);
 
   const schema = z.object({
     identifier: z
@@ -36,6 +40,25 @@ export function LoginForm() {
       return parseWithZod(formData, { schema });
     },
   });
+
+  const handleAtpassportClick = async () => {
+    const atpassport = new AtPassport({
+      callbackUrl: `${window.location.origin}/login/atpassport/callback`,
+      lang: i18n.language === "ja" ? "ja" : "en",
+      fedcm: true,
+    });
+    const result = await atpassport.requestHandleAssist({
+      targetInput: identifierInputRef.current ?? undefined,
+      // FedCM未対応ブラウザではサーバー側のリダイレクトフローにフォールバックする
+      fallback: () => {
+        window.location.href = "/login/atpassport";
+        return null;
+      },
+    });
+    if (result) {
+      void submit({ identifier: result.username }, { method: "post" });
+    }
+  };
 
   return (
     <Card className="flex w-full max-w-screen-sm flex-row justify-center">
@@ -57,6 +80,7 @@ export function LoginForm() {
               <AtSymbolIcon className="size-5" />
             </div>
             <input
+              ref={identifierInputRef}
               className="input join-item input-bordered w-full"
               placeholder="example.bsky.social"
               autoComplete="username"
@@ -77,6 +101,14 @@ export function LoginForm() {
           data-testid="login-form__submit"
         >
           {t("login-form.login-button")}
+        </Button>
+        <Button
+          type="button"
+          className="btn-outline"
+          onClick={() => void handleAtpassportClick()}
+          data-testid="login-form__atpassport"
+        >
+          {t("login-form.atpassport-button")}
         </Button>
       </Form>
     </Card>

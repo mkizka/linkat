@@ -6,3 +6,5 @@ allowBuilds:
   msw: false
   prisma: false
   unrs-resolver: false
+minimumReleaseAgeExclude:
+  - "@atpassport/client@0.2.3"
