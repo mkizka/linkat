@@ -1,4 +1,4 @@
-import { AtPassport } from "@atpassport/client/core";
+import { AtPassport, AtPassportIcon, AtPassportUI } from "@atpassport/client";
 import { ensureValidHandle } from "@atproto/syntax";
 import { getFormProps, getInputProps, useForm } from "@conform-to/react";
 import { getZodConstraint, parseWithZod } from "@conform-to/zod/v4";
@@ -25,6 +25,7 @@ export function LoginForm() {
   const navigation = useNavigation();
   const submit = useSubmit();
   const identifierInputRef = useRef<HTMLInputElement>(null);
+  const atpassportLang = i18n.language === "ja" ? "ja" : "en";
 
   const schema = z.object({
     identifier: z
@@ -44,7 +45,7 @@ export function LoginForm() {
   const handleAtpassportClick = async () => {
     const atpassport = new AtPassport({
       callbackUrl: `${window.location.origin}/login/atpassport/callback`,
-      lang: i18n.language === "ja" ? "ja" : "en",
+      lang: atpassportLang,
       fedcm: true,
     });
     const result = await atpassport.requestHandleAssist({
@@ -109,7 +110,8 @@ export function LoginForm() {
           onClick={() => void handleAtpassportClick()}
           data-testid="login-form__atpassport"
         >
-          {t("login-form.atpassport-button")}
+          <AtPassportIcon size={20} />
+          {AtPassportUI[atpassportLang].title}
         </Button>
         <p className="text-center text-sm text-base-content/70">
           {t("login-form.atpassport-description")}
