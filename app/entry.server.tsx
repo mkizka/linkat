@@ -1,6 +1,7 @@
 import { PassThrough } from "node:stream";
 
 import { createReadableStreamFromReadable } from "@react-router/node";
+import * as Sentry from "@sentry/react-router";
 import { isbot } from "isbot";
 import type { RenderToPipeableStreamOptions } from "react-dom/server";
 import { renderToPipeableStream } from "react-dom/server";
@@ -20,7 +21,7 @@ export const streamTimeout = 5_000;
 
 const logger = createLogger("entry.server");
 
-export default async function handleRequest(
+async function handleRequest(
   request: Request,
   responseStatusCode: number,
   responseHeaders: Headers,
@@ -58,7 +59,7 @@ export default async function handleRequest(
             }),
           );
 
-          pipe(body);
+          pipe(Sentry.getMetaTagTransformer(body));
         },
         onShellError(error: unknown) {
           // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
@@ -87,12 +88,17 @@ export default async function handleRequest(
   });
 }
 
+export default Sentry.wrapSentryHandleRequest(handleRequest);
+
 // デフォルトのハンドラはこれ
 // https://github.com/remix-run/remix/blob/8f38118e44298d609224c6074ae6519d385196f1/packages/remix-server-runtime/server.ts#L71-L78
 export function handleError(
   error: unknown,
   { request }: LoaderFunctionArgs | ActionFunctionArgs,
 ) {
+  if (!request.signal.aborted) {
+    Sentry.captureException(error);
+  }
   if (
     (isRouteErrorResponse(error) && error.status === 404) ||
     request.signal.aborted
@@ -101,3 +107,5 @@ export function handleError(
   }
   logger.error(error, "サーバーエラーが発生しました");
 }
+
+export const instrumentations = [Sentry.createSentryServerInstrumentation()];

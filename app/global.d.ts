@@ -8,4 +8,7 @@ interface Window {
   bluesky?: {
     scan?: () => void;
   };
+  ENV: {
+    SENTRY_DSN?: string;
+  };
 }
