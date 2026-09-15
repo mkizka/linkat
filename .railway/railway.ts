@@ -17,12 +17,16 @@ const env = {
 export default defineRailway((ctx) => {
   const prod = ctx.isEnvironment("production");
 
-  const postgres = database("Postgres", "postgres", {
-    image: "ghcr.io/railwayapp-templates/postgres-ssl:16",
-    output: "DATABASE_URL",
-    defaultMountPath: "/var/lib/postgresql/data",
-    region: "asia-southeast1-eqsg3a",
-  });
+  const postgres = database(
+    prod ? "Postgres" : `Postgres-${ctx.environment}`,
+    "postgres",
+    {
+      image: "ghcr.io/railwayapp-templates/postgres-ssl:16",
+      output: "DATABASE_URL",
+      defaultMountPath: "/var/lib/postgresql/data",
+      region: "asia-southeast1-eqsg3a",
+    },
+  );
   postgres.networking = {
     privateNetworkEndpoint: "postgres-lbyr",
     tcpProxies: { "5432": {} },
@@ -31,7 +35,7 @@ export default defineRailway((ctx) => {
     restartPolicyType: "ALWAYS",
   };
 
-  const linkat = service("linkat", {
+  const linkat = service("Linkat", {
     source: github("mkizka/linkat", {
       branch: env.RAILWAY_CONFIG_BRANCH,
       checkSuites: prod,
