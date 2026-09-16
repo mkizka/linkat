@@ -5,16 +5,28 @@ import {
   preserve,
   project,
   service,
-  volume,
 } from "railway/iac";
 
+const env = {
+  RAILWAY_CONFIG_DOMAINS: process.env.RAILWAY_CONFIG_DOMAINS
+    ? process.env.RAILWAY_CONFIG_DOMAINS.split(",")
+    : ["linkat.blue"],
+  RAILWAY_CONFIG_BRANCH: process.env.RAILWAY_CONFIG_BRANCH,
+};
+
 export default defineRailway((ctx) => {
-  const postgres = database("Postgres", "postgres", {
-    image: "ghcr.io/railwayapp-templates/postgres-ssl:16",
-    output: "DATABASE_URL",
-    defaultMountPath: "/var/lib/postgresql/data",
-    region: "asia-southeast1-eqsg3a",
-  });
+  const prod = ctx.isEnvironment("production");
+
+  const postgres = database(
+    prod ? "Postgres" : `Postgres-${ctx.environment}`,
+    "postgres",
+    {
+      image: "ghcr.io/railwayapp-templates/postgres-ssl:16",
+      output: "DATABASE_URL",
+      defaultMountPath: "/var/lib/postgresql/data",
+      region: "asia-southeast1-eqsg3a",
+    },
+  );
   postgres.networking = {
     privateNetworkEndpoint: "postgres-lbyr",
     tcpProxies: { "5432": {} },
@@ -23,15 +35,11 @@ export default defineRailway((ctx) => {
     restartPolicyType: "ALWAYS",
   };
 
-  const postgresVolume = volume("postgres-volume", {
-    alerts: { usage: { "100": {}, "80": {}, "95": {} } },
-    allowOnlineResize: true,
-    region: "asia-southeast1-eqsg3a",
-    sizeMB: 5900,
-  });
-
-  const linkat = service("linkat", {
-    source: github("mkizka/linkat", { checkSuites: true }),
+  const linkat = service("Linkat", {
+    source: github("mkizka/linkat", {
+      branch: env.RAILWAY_CONFIG_BRANCH,
+      checkSuites: prod,
+    }),
     build: {
       builder: "DOCKERFILE",
     },
@@ -39,7 +47,10 @@ export default defineRailway((ctx) => {
     healthcheckTimeout: 60,
     preDeploy: "node_modules/.bin/prisma migrate deploy",
     replicas: { "asia-southeast1-eqsg3a": 1 },
-    domains: ["linkat.blue"],
+    domains: prod ? env.RAILWAY_CONFIG_DOMAINS : [],
+    deploy: {
+      sleepApplication: !prod,
+    },
     env: {
       COOKIE_SECRET: preserve(),
       DATABASE_URL: postgres.env.DATABASE_URL,
@@ -56,6 +67,6 @@ export default defineRailway((ctx) => {
   });
 
   return project("Linkat", {
-    resources: [postgres, linkat, postgresVolume],
+    resources: [postgres, linkat],
   });
 });
