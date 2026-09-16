@@ -4,8 +4,8 @@ import WebSocket from "ws";
 import { fromZodError } from "zod-validation-error";
 
 import { boardScheme } from "~/models/board";
+import { jetstreamCursorRepository } from "~/server/infrastructure/jetstreamCursorRepository";
 import { boardService } from "~/server/service/boardService";
-import { jetstreamCursorService } from "~/server/service/jetstreamCursorService";
 import { userService } from "~/server/service/userService";
 import { env } from "~/utils/env";
 import { createLogger } from "~/utils/logger";
@@ -68,15 +68,15 @@ jetstream.onDelete("blue.linkat.board", async (event) => {
 });
 
 export const startJetstream = async () => {
-  const savedCursor = await jetstreamCursorService.loadCursor();
+  const savedCursor = await jetstreamCursorRepository.load();
   if (savedCursor !== undefined) {
     jetstream.cursor = savedCursor;
   }
   jetstream.start();
   setInterval(() => {
     if (jetstream.cursor !== undefined) {
-      jetstreamCursorService
-        .saveCursor(jetstream.cursor)
+      jetstreamCursorRepository
+        .save(jetstream.cursor)
         .catch((error: unknown) => {
           logger.error(error, "cursorの保存に失敗しました");
         });
