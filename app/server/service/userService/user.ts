@@ -49,6 +49,7 @@ const createOrUpdateUser = async ({
     description: blueskyProfile.description,
     displayName: blueskyProfile.displayName,
     handle: blueskyProfile.handle,
+    updatedAt: new Date(),
   } satisfies Prisma.UserUpsertArgs["create"];
   return await tx.user.upsert({
     where: {
