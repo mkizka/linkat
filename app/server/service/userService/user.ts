@@ -5,7 +5,7 @@ import type { User } from "@prisma/client";
 import getProfile from "~/generated/app/bsky/actor/getProfile";
 import { LinkatAgent } from "~/libs/agent";
 import type { UserRepository } from "~/server/infrastructure/userRepository";
-import { prismaUserRepository } from "~/server/infrastructure/userRepository";
+import { userRepository } from "~/server/infrastructure/userRepository";
 import { env } from "~/utils/env";
 import { createLogger } from "~/utils/logger";
 import { tryCatch } from "~/utils/tryCatch";
@@ -26,7 +26,7 @@ const fetchBlueskyProfile = async (handleOrDid: string) => {
 };
 
 export const findOrFetchUser = async ({
-  repository = prismaUserRepository,
+  repository = userRepository,
   handleOrDid,
 }: {
   repository?: UserRepository;
@@ -44,7 +44,7 @@ export const findOrFetchUser = async ({
     logger.warn(blueskyProfile, "プロフィールの取得に失敗しました");
     return user;
   }
-  return await repository.upsertUser({
+  return await repository.save({
     did: blueskyProfile.did,
     avatar: blueskyProfile.avatar,
     description: blueskyProfile.description,

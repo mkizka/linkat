@@ -10,13 +10,12 @@ type UserWriteData = {
   handle: string;
 };
 
-// userServiceが差し替え可能なDBアクセスの抽象。Prisma固有の型に依存しない
 export type UserRepository = {
   findUser: (handleOrDid: string) => Promise<User | null>;
-  upsertUser: (data: UserWriteData) => Promise<User>;
+  save: (data: UserWriteData) => Promise<User>;
 };
 
-export const prismaUserRepository: UserRepository = {
+export const userRepository: UserRepository = {
   findUser: (handleOrDid) => {
     const where = handleOrDid.startsWith("did:")
       ? { did: handleOrDid }
@@ -28,7 +27,7 @@ export const prismaUserRepository: UserRepository = {
       },
     });
   },
-  upsertUser: (data) =>
+  save: (data) =>
     prisma.user.upsert({
       where: { did: data.did },
       create: data,
