@@ -71,6 +71,24 @@ describe("boardService", () => {
       expect(actual).not.toEqual(board);
       expect(actual).toEqual(dummyBoard);
     });
+    test("既存のボードを更新するとupdatedAtが更新される", async () => {
+      // arrange
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date("2024-01-01T00:00:00.000Z"));
+      const board = await BoardFactory.create({
+        updatedAt: new Date("2024-01-01T00:00:00.000Z"),
+      });
+      vi.setSystemTime(new Date("2024-01-02T00:00:00.000Z"));
+      // act
+      await boardService.createOrUpdateBoard({
+        userDid: board.userDid,
+        board: dummyBoard,
+      });
+      // assert
+      expect(await prisma.board.findFirst()).toMatchObject({
+        updatedAt: new Date("2024-01-02T00:00:00.000Z"),
+      });
+    });
   });
   describe("findOrFetchBoard", () => {
     test("既存のボードがある場合はそのまま返す", async () => {

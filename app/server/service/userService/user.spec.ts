@@ -114,7 +114,7 @@ describe("userService", () => {
         displayName: "Alice",
         handle: "example.com",
         createdAt: new Date("2024-01-01T00:00:00.000Z"),
-        updatedAt: expect.any(Date),
+        updatedAt: new Date("2024-01-01T00:10:00.000Z"),
       });
     });
     test("DBにユーザーがいて最終更新から一定時間経過しているが、Blueskyからも取得出来なかった場合、そのまま返す", async () => {
