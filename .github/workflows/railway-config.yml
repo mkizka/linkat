@@ -42,7 +42,7 @@ jobs:
             echo "$MARKER"
             echo "## Railway config plan"
             echo '```'
-            cat plan-output.txt
+            sed '/./,$!d' plan-output.txt
             echo '```'
           } > comment.md
           COMMENT_ID=$(gh api "repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments" \
