@@ -1,6 +1,12 @@
-import type { Board } from "@prisma/client";
-
 import { prisma } from "~/server/service/prisma";
+
+export type Board = {
+  id: number;
+  userDid: string;
+  record: string;
+  createdAt: Date;
+  updatedAt: Date;
+};
 
 export interface BoardRepository {
   findByUserDid: (userDid: string) => Promise<Board | null>;
