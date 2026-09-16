@@ -35,7 +35,9 @@ export const findOrFetchUser = async ({
   if (!handleOrDid.includes(".") && !isDid(handleOrDid)) {
     return null;
   }
-  const user = await repository.findUser(handleOrDid);
+  const user = await (isDid(handleOrDid)
+    ? repository.findByDid(handleOrDid)
+    : repository.findByHandle(handleOrDid));
   if (user && !shouldRefetch(user)) {
     return user;
   }

@@ -10,23 +10,27 @@ type UserWriteData = {
   handle: string;
 };
 
-export type UserRepository = {
-  findUser: (handleOrDid: string) => Promise<User | null>;
+export interface UserRepository {
+  findByDid: (did: string) => Promise<User | null>;
+  findByHandle: (handle: string) => Promise<User | null>;
   save: (data: UserWriteData) => Promise<User>;
-};
+}
 
 export const userRepository: UserRepository = {
-  findUser: (handleOrDid) => {
-    const where = handleOrDid.startsWith("did:")
-      ? { did: handleOrDid }
-      : { handle: handleOrDid };
-    return prisma.user.findFirst({
-      where,
+  findByDid: (did) =>
+    prisma.user.findFirst({
+      where: { did },
       orderBy: {
         createdAt: "desc",
       },
-    });
-  },
+    }),
+  findByHandle: (handle) =>
+    prisma.user.findFirst({
+      where: { handle },
+      orderBy: {
+        createdAt: "desc",
+      },
+    }),
   save: (data) =>
     prisma.user.upsert({
       where: { did: data.did },
