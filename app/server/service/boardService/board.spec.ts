@@ -73,11 +73,10 @@ describe("boardService", () => {
     });
     test("既存のボードを更新するとupdatedAtが更新される", async () => {
       // arrange
-      vi.useFakeTimers();
-      vi.setSystemTime(new Date("2024-01-01T00:00:00.000Z"));
       const board = await BoardFactory.create({
         updatedAt: new Date("2024-01-01T00:00:00.000Z"),
       });
+      vi.useFakeTimers();
       vi.setSystemTime(new Date("2024-01-02T00:00:00.000Z"));
       // act
       await boardService.createOrUpdateBoard({
