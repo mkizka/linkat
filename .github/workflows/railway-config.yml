@@ -48,7 +48,7 @@ jobs:
           COMMENT_ID=$(gh api "repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments" \
             --paginate --jq "[.[] | select(.body | startswith(\"$MARKER\"))][-1].id // empty")
           if [ -n "$COMMENT_ID" ]; then
-            gh api -X PATCH "repos/${{ github.repository }}/issues/comments/$COMMENT_ID" -f body=@comment.md
+            gh api -X PATCH "repos/${{ github.repository }}/issues/comments/$COMMENT_ID" -F body=@comment.md
           else
             gh pr comment ${{ github.event.pull_request.number }} --body-file comment.md
           fi
