@@ -1,10 +1,12 @@
 import { isDid } from "@atproto/did";
 import { asAtIdentifierString } from "@atproto/syntax";
-import type { User } from "@prisma/client";
 
 import getProfile from "~/generated/app/bsky/actor/getProfile";
 import { LinkatAgent } from "~/libs/agent";
-import type { UserRepository } from "~/server/infrastructure/userRepository";
+import type {
+  User,
+  UserRepository,
+} from "~/server/infrastructure/userRepository";
 import { userRepository } from "~/server/infrastructure/userRepository";
 import { env } from "~/utils/env";
 import { createLogger } from "~/utils/logger";
