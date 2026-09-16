@@ -1,6 +1,6 @@
 import { isDid } from "@atproto/did";
 import { asAtIdentifierString } from "@atproto/syntax";
-import type { Prisma, User } from "@prisma/client";
+import type { User } from "@prisma/client";
 
 import type { ProfileViewDetailed } from "~/generated/app/bsky/actor/defs";
 import getProfile from "~/generated/app/bsky/actor/getProfile";
@@ -12,6 +12,29 @@ import { tryCatch } from "~/utils/tryCatch";
 
 const logger = createLogger("userService");
 
+type UserWriteData = {
+  did: string;
+  avatar?: string | null;
+  description?: string | null;
+  displayName?: string | null;
+  handle: string;
+};
+
+// findOrFetchUserなどが受け取るDBクライアント/トランザクションの抽象。Prisma固有の型に依存しない
+export type UserDbClient = {
+  user: {
+    findFirst: (args: {
+      where: { did: string } | { handle: string };
+      orderBy: { createdAt: "desc" };
+    }) => Promise<User | null>;
+    upsert: (args: {
+      where: { did: string };
+      create: UserWriteData;
+      update: UserWriteData;
+    }) => Promise<User>;
+  };
+};
+
 // 最後の取得から10分以上経過していたら再取得する
 const shouldRefetch = (user: User) => {
   return user.updatedAt <= new Date(Date.now() - 10 * 60 * 1000);
@@ -21,7 +44,7 @@ const findUser = async ({
   tx,
   handleOrDid,
 }: {
-  tx: Prisma.TransactionClient;
+  tx: UserDbClient;
   handleOrDid: string;
 }) => {
   const where = handleOrDid.startsWith("did:")
@@ -40,7 +63,7 @@ const createOrUpdateUser = async ({
   tx,
   blueskyProfile,
 }: {
-  tx: Prisma.TransactionClient;
+  tx: UserDbClient;
   blueskyProfile: ProfileViewDetailed;
 }) => {
   const data = {
@@ -49,7 +72,7 @@ const createOrUpdateUser = async ({
     description: blueskyProfile.description,
     displayName: blueskyProfile.displayName,
     handle: blueskyProfile.handle,
-  } satisfies Prisma.UserUpsertArgs["create"];
+  } satisfies UserWriteData;
   return await tx.user.upsert({
     where: {
       did: blueskyProfile.did,
@@ -71,7 +94,7 @@ export const findOrFetchUser = async ({
   tx = prisma,
   handleOrDid,
 }: {
-  tx?: Prisma.TransactionClient;
+  tx?: UserDbClient;
   handleOrDid: string;
 }) => {
   if (!handleOrDid.includes(".") && !isDid(handleOrDid)) {
