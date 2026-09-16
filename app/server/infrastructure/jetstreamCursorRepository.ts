@@ -1,0 +1,20 @@
+import { prisma } from "~/server/service/prisma";
+
+export interface JetstreamCursorRepository {
+  load: () => Promise<number | undefined>;
+  save: (cursor: number) => Promise<void>;
+}
+
+export const jetstreamCursorRepository: JetstreamCursorRepository = {
+  load: async () => {
+    const row = await prisma.jetstreamCursor.findUnique({ where: { id: 1 } });
+    return row ? Number(row.cursor) : undefined;
+  },
+  save: async (cursor) => {
+    await prisma.jetstreamCursor.upsert({
+      where: { id: 1 },
+      create: { id: 1, cursor: BigInt(cursor) },
+      update: { cursor: BigInt(cursor) },
+    });
+  },
+};
