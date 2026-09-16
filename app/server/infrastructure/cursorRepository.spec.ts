@@ -1,37 +1,37 @@
 import { prisma } from "~/server/service/prisma";
 
-import { jetstreamCursorService } from ".";
+import { cursorRepository } from "./cursorRepository";
 
-describe("jetstreamCursorService", () => {
+describe("cursorRepository", () => {
   beforeEach(async () => {
     await prisma.jetstreamCursor.deleteMany();
   });
 
-  describe("loadCursor", () => {
+  describe("load", () => {
     test("保存されていない場合はundefinedを返す", async () => {
       // arrange
       // act
-      const actual = await jetstreamCursorService.loadCursor();
+      const actual = await cursorRepository.load();
       // assert
       expect(actual).toBeUndefined();
     });
   });
 
-  describe("saveCursor", () => {
+  describe("save", () => {
     test("保存したcursorを読み込める", async () => {
       // arrange
       // act
-      await jetstreamCursorService.saveCursor(123);
+      await cursorRepository.save(123);
       // assert
-      expect(await jetstreamCursorService.loadCursor()).toBe(123);
+      expect(await cursorRepository.load()).toBe(123);
     });
     test("既存のcursorを上書きできる", async () => {
       // arrange
-      await jetstreamCursorService.saveCursor(123);
+      await cursorRepository.save(123);
       // act
-      await jetstreamCursorService.saveCursor(456);
+      await cursorRepository.save(456);
       // assert
-      expect(await jetstreamCursorService.loadCursor()).toBe(456);
+      expect(await cursorRepository.load()).toBe(456);
     });
   });
 });
