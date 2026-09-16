@@ -2,7 +2,6 @@ import { isDid } from "@atproto/did";
 import { asAtIdentifierString } from "@atproto/syntax";
 import type { User } from "@prisma/client";
 
-import type { ProfileViewDetailed } from "~/generated/app/bsky/actor/defs";
 import getProfile from "~/generated/app/bsky/actor/getProfile";
 import { LinkatAgent } from "~/libs/agent";
 import { prisma } from "~/server/service/prisma";
@@ -20,66 +19,35 @@ type UserWriteData = {
   handle: string;
 };
 
-// findOrFetchUserなどが受け取るDBクライアント/トランザクションの抽象。Prisma固有の型に依存しない
+// findOrFetchUserが受け取るDBクライアントの抽象。Prisma固有の型に依存しない
 export type UserDbClient = {
-  user: {
-    findFirst: (args: {
-      where: { did: string } | { handle: string };
-      orderBy: { createdAt: "desc" };
-    }) => Promise<User | null>;
-    upsert: (args: {
-      where: { did: string };
-      create: UserWriteData;
-      update: UserWriteData;
-    }) => Promise<User>;
-  };
+  findUser: (handleOrDid: string) => Promise<User | null>;
+  upsertUser: (data: UserWriteData) => Promise<User>;
+};
+
+const defaultUserDbClient: UserDbClient = {
+  findUser: (handleOrDid) => {
+    const where = handleOrDid.startsWith("did:")
+      ? { did: handleOrDid }
+      : { handle: handleOrDid };
+    return prisma.user.findFirst({
+      where,
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+  },
+  upsertUser: (data) =>
+    prisma.user.upsert({
+      where: { did: data.did },
+      create: data,
+      update: data,
+    }),
 };
 
 // 最後の取得から10分以上経過していたら再取得する
 const shouldRefetch = (user: User) => {
   return user.updatedAt <= new Date(Date.now() - 10 * 60 * 1000);
-};
-
-const findUser = async ({
-  tx,
-  handleOrDid,
-}: {
-  tx: UserDbClient;
-  handleOrDid: string;
-}) => {
-  const where = handleOrDid.startsWith("did:")
-    ? { did: handleOrDid }
-    : { handle: handleOrDid };
-  const user = await tx.user.findFirst({
-    where,
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
-  return user;
-};
-
-const createOrUpdateUser = async ({
-  tx,
-  blueskyProfile,
-}: {
-  tx: UserDbClient;
-  blueskyProfile: ProfileViewDetailed;
-}) => {
-  const data = {
-    did: blueskyProfile.did,
-    avatar: blueskyProfile.avatar,
-    description: blueskyProfile.description,
-    displayName: blueskyProfile.displayName,
-    handle: blueskyProfile.handle,
-  } satisfies UserWriteData;
-  return await tx.user.upsert({
-    where: {
-      did: blueskyProfile.did,
-    },
-    create: data,
-    update: data,
-  });
 };
 
 const fetchBlueskyProfile = async (handleOrDid: string) => {
@@ -91,7 +59,7 @@ const fetchBlueskyProfile = async (handleOrDid: string) => {
 };
 
 export const findOrFetchUser = async ({
-  tx = prisma,
+  tx = defaultUserDbClient,
   handleOrDid,
 }: {
   tx?: UserDbClient;
@@ -100,7 +68,7 @@ export const findOrFetchUser = async ({
   if (!handleOrDid.includes(".") && !isDid(handleOrDid)) {
     return null;
   }
-  const user = await findUser({ tx, handleOrDid });
+  const user = await tx.findUser(handleOrDid);
   if (user && !shouldRefetch(user)) {
     return user;
   }
@@ -109,8 +77,11 @@ export const findOrFetchUser = async ({
     logger.warn(blueskyProfile, "プロフィールの取得に失敗しました");
     return user;
   }
-  return await createOrUpdateUser({
-    tx,
-    blueskyProfile,
+  return await tx.upsertUser({
+    did: blueskyProfile.did,
+    avatar: blueskyProfile.avatar,
+    description: blueskyProfile.description,
+    displayName: blueskyProfile.displayName,
+    handle: blueskyProfile.handle,
   });
 };
