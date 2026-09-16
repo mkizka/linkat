@@ -43,6 +43,7 @@ export default defineRailway((ctx) => {
     env: {
       COOKIE_SECRET: preserve(),
       DATABASE_URL: postgres.env.DATABASE_URL,
+      JETSTREAM_URL: preserve(),
       PRIVATE_KEY_ES256_B64: preserve(),
       PUBLIC_URL: "https://${{RAILWAY_PUBLIC_DOMAIN}}",
       UMAMI_SCRIPT_URL: preserve(),
