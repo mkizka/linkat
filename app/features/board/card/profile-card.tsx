@@ -1,6 +1,5 @@
 import { PencilSquareIcon, ShareIcon } from "@heroicons/react/24/outline";
 import { UserIcon } from "@heroicons/react/24/solid";
-import type { User } from "@prisma/client";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
@@ -9,6 +8,7 @@ import { Button } from "~/components/button";
 import { Card } from "~/components/card";
 import { BlueskyIcon } from "~/components/icons/bluesky";
 import { useUmami } from "~/hooks/useUmami";
+import type { User } from "~/models/user";
 
 function Avatar({ avatar }: { avatar: string }) {
   return (
