@@ -1,9 +1,8 @@
-import type { Prisma } from "@prisma/client";
-
 import { LinkatAgent } from "~/libs/agent";
 import { boardScheme, type ValidBoard } from "~/models/board";
+import type { BoardRepository } from "~/server/infrastructure/boardRepository";
+import { boardRepository } from "~/server/infrastructure/boardRepository";
 import { didService } from "~/server/service/didService";
-import { prisma } from "~/server/service/prisma";
 import { createLogger } from "~/utils/logger";
 import { tryCatch } from "~/utils/tryCatch";
 
@@ -11,47 +10,25 @@ const logger = createLogger("boardService");
 
 // TODO: boardをunknownで受け入れてこの関数内でパースする
 export const createOrUpdateBoard = async ({
+  repository = boardRepository,
   userDid,
   board,
 }: {
+  repository?: BoardRepository;
   userDid: string;
   board: ValidBoard;
 }) => {
-  const data = {
-    user: {
-      connect: {
-        did: userDid,
-      },
-    },
-    record: JSON.stringify(board),
-    updatedAt: new Date(),
-  } satisfies Prisma.BoardUpsertArgs["create"];
   logger.info({ userDid }, "boardを保存します");
-  const newBoard = await prisma.board.upsert({
-    where: {
-      userDid,
-    },
-    update: data,
-    create: data,
+  const newBoard = await repository.save({
+    userDid,
+    record: JSON.stringify(board),
   });
   // 保存前にバリデーションをかけているのでエラーが起きるのは異常
   return boardScheme.parse(JSON.parse(newBoard.record));
 };
 
-const findBoard = async (userDid: string) => {
-  const board = await prisma.board.findFirst({
-    where: {
-      user: {
-        did: userDid,
-      },
-    },
-    orderBy: {
-      // ユーザーはハンドルの変更などで複数存在する可能性があるので、後から作成されたものを優先する
-      user: {
-        createdAt: "desc",
-      },
-    },
-  });
+const findBoard = async (repository: BoardRepository, userDid: string) => {
+  const board = await repository.findByUserDid(userDid);
   if (!board) {
     return null;
   }
@@ -82,8 +59,11 @@ const fetchBoardInPDS = async (userDid: string) => {
 };
 
 // TODO: 全部の処理を一つのトランザクションで行う
-export const findOrFetchBoard = async (userDid: string) => {
-  const board = await findBoard(userDid);
+export const findOrFetchBoard = async (
+  userDid: string,
+  { repository = boardRepository }: { repository?: BoardRepository } = {},
+) => {
+  const board = await findBoard(repository, userDid);
   if (board) {
     return board;
   }
@@ -92,15 +72,15 @@ export const findOrFetchBoard = async (userDid: string) => {
     return null;
   }
   return createOrUpdateBoard({
+    repository,
     userDid,
     board: boardInPDS,
   });
 };
 
-export const deleteBoard = async (userDid: string) => {
-  await prisma.board.deleteMany({
-    where: {
-      userDid,
-    },
-  });
+export const deleteBoard = async (
+  userDid: string,
+  { repository = boardRepository }: { repository?: BoardRepository } = {},
+) => {
+  await repository.deleteByUserDid(userDid);
 };
