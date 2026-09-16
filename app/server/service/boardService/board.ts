@@ -24,6 +24,7 @@ export const createOrUpdateBoard = async ({
       },
     },
     record: JSON.stringify(board),
+    updatedAt: new Date(),
   } satisfies Prisma.BoardUpsertArgs["create"];
   logger.info({ userDid }, "boardを保存します");
   const newBoard = await prisma.board.upsert({

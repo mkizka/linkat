@@ -8,6 +8,7 @@ type UserWriteData = {
   description?: string | null;
   displayName?: string | null;
   handle: string;
+  updatedAt: Date;
 };
 
 export interface UserRepository {

@@ -52,5 +52,6 @@ export const findOrFetchUser = async ({
     description: blueskyProfile.description,
     displayName: blueskyProfile.displayName,
     handle: blueskyProfile.handle,
+    updatedAt: new Date(),
   });
 };
