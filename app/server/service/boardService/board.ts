@@ -1,4 +1,4 @@
-import { asDid } from "@atproto/did";
+import type { Did } from "@atproto/did";
 
 import { LinkatAgent } from "~/libs/agent";
 import { Board } from "~/models/board";
@@ -10,7 +10,7 @@ import { tryCatch } from "~/utils/tryCatch";
 
 const logger = createLogger("boardService");
 
-const fetchBoardInPDS = async (userDid: string) => {
+const fetchBoardInPDS = async (userDid: Did) => {
   logger.info({ userDid }, "DIDからPDSのURLを解決します");
   const serviceUrl = await didService.resolveServiceUrl(userDid);
   if (!serviceUrl) {
@@ -37,10 +37,10 @@ const fetchBoardInPDS = async (userDid: string) => {
 
 // TODO: 全部の処理を一つのトランザクションで行う
 export const findOrFetchBoard = async (
-  userDid: string,
+  userDid: Did,
   { repository = boardRepository }: { repository?: BoardRepository } = {},
 ) => {
-  const board = await repository.find(asDid(userDid));
+  const board = await repository.find(userDid);
   if (board) {
     return board;
   }
@@ -53,8 +53,8 @@ export const findOrFetchBoard = async (
 };
 
 export const deleteBoard = async (
-  userDid: string,
+  userDid: Did,
   { repository = boardRepository }: { repository?: BoardRepository } = {},
 ) => {
-  await repository.delete(asDid(userDid));
+  await repository.delete(userDid);
 };

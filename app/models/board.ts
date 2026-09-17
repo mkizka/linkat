@@ -1,3 +1,4 @@
+import type { Did } from "@atproto/did";
 import { z } from "zod";
 
 import { cardSchema, type ValidCard } from "./card";
@@ -26,7 +27,7 @@ export class BoardParseError extends Error {
 
 export class Board {
   constructor(
-    readonly userDid: string,
+    readonly userDid: Did,
     readonly cards: ValidCard[],
   ) {}
 

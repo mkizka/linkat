@@ -1,3 +1,4 @@
+import type { Did } from "@atproto/did";
 import type { DidDocument } from "@atproto/identity";
 import { IdResolver } from "@atproto/identity";
 
@@ -21,7 +22,7 @@ const getServiceEndpoint = (document: DidDocument) => {
   return serviceUrl;
 };
 
-export const resolveServiceUrl = async (userDid: string) => {
+export const resolveServiceUrl = async (userDid: Did) => {
   const didDocument = await resolver.did.resolve(userDid);
   if (!didDocument) {
     logger.warn({ userDid }, "DIDの解決に失敗しました");

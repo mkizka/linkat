@@ -1,3 +1,4 @@
+import { asDid } from "@atproto/did";
 import { http, HttpResponse } from "msw";
 
 import { mockedLogger } from "~/mocks/logger";
@@ -45,9 +46,13 @@ describe("boardService", () => {
       // arrange
       const existing = await BoardFactory.create();
       // act
-      const actual = await boardService.findOrFetchBoard(existing.userDid);
+      const actual = await boardService.findOrFetchBoard(
+        asDid(existing.userDid),
+      );
       // assert
-      expect(actual).toEqual(new Board(existing.userDid, cardsFromFactory));
+      expect(actual).toEqual(
+        new Board(asDid(existing.userDid), cardsFromFactory),
+      );
     });
     test("DBにボードがなくてもPDSから取得できればDBに保存して返す", async () => {
       // arrange
@@ -63,9 +68,9 @@ describe("boardService", () => {
         ),
       );
       // act
-      const actual = await boardService.findOrFetchBoard(user.did);
+      const actual = await boardService.findOrFetchBoard(asDid(user.did));
       // assert
-      expect(actual).toEqual(new Board(user.did, dummyCards));
+      expect(actual).toEqual(new Board(asDid(user.did), dummyCards));
     });
     test("DBにボードがなくPDSから取得したボードが不正ならnullを返す", async () => {
       // arrange
@@ -85,7 +90,7 @@ describe("boardService", () => {
         ),
       );
       // act
-      const actual = await boardService.findOrFetchBoard(user.did);
+      const actual = await boardService.findOrFetchBoard(asDid(user.did));
       // assert
       expect(mockedLogger.warn).toHaveBeenCalledWith(
         expect.anything(),
@@ -107,7 +112,7 @@ describe("boardService", () => {
         ),
       );
       // act
-      const actual = await boardService.findOrFetchBoard(user.did);
+      const actual = await boardService.findOrFetchBoard(asDid(user.did));
       // assert
       expect(mockedLogger.warn).toHaveBeenCalledWith(
         expect.anything(),
