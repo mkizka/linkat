@@ -3,6 +3,7 @@ import { asAtIdentifierString } from "@atproto/syntax";
 
 import getProfile from "~/generated/app/bsky/actor/getProfile";
 import { LinkatAgent } from "~/libs/agent";
+import { User } from "~/models/user";
 import type { UserRepository } from "~/server/infrastructure/userRepository";
 import { userRepository } from "~/server/infrastructure/userRepository";
 import { env } from "~/utils/env";
@@ -40,12 +41,9 @@ export const findOrFetchUser = async ({
     logger.warn(blueskyProfile, "プロフィールの取得に失敗しました");
     return user;
   }
-  return await repository.save({
-    did: blueskyProfile.did,
-    avatar: blueskyProfile.avatar,
-    description: blueskyProfile.description,
-    displayName: blueskyProfile.displayName,
-    handle: blueskyProfile.handle,
-    updatedAt: new Date(),
-  });
+  const newUser = user
+    ? user.withProfile(blueskyProfile)
+    : User.fromProfile(blueskyProfile);
+  await repository.save(newUser);
+  return newUser;
 };
