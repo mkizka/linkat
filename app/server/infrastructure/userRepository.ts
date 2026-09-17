@@ -1,4 +1,4 @@
-import { prisma } from "~/server/service/prisma";
+import { prisma } from "~/server/infrastructure/prisma";
 
 export type User = {
   did: string;

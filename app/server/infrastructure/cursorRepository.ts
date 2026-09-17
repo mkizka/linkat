@@ -1,4 +1,4 @@
-import { prisma } from "~/server/service/prisma";
+import { prisma } from "~/server/infrastructure/prisma";
 
 export interface CursorRepository {
   load: () => Promise<number | undefined>;
