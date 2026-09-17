@@ -53,7 +53,11 @@ export async function loader({ request }: Route.LoaderArgs) {
     throw redirect("/login");
   }
   const board = await boardService.findOrFetchBoard(user.did);
-  return { user, board, url: `${env.PUBLIC_URL}/${user.handle}` };
+  return {
+    user,
+    board: board && { cards: board.cards },
+    url: `${env.PUBLIC_URL}/${user.handle}`,
+  };
 }
 
 export default function Index({ loaderData }: Route.ComponentProps) {

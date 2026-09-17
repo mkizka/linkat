@@ -4,7 +4,6 @@ import { useTranslation } from "react-i18next";
 import { Form, useNavigation } from "react-router";
 
 import { Button } from "~/components/button";
-import type { Board } from "~/models/board";
 import type { ValidCard } from "~/models/card";
 import { resolveHandleIfNeeded } from "~/utils/url";
 
@@ -17,8 +16,8 @@ import { CardFormProvider } from "./form/card-form-provider";
 
 type Props = {
   user: ProfileCardProps["user"];
-  // loaderDataはシリアライズされるためBoardのメソッドは失われる
-  board: Pick<Board, "cards"> | null;
+  // loaderDataはシリアライズされるためプレーンなデータ構造で受け取る
+  board: { cards: ValidCard[] } | null;
   url: string;
   editable?: boolean;
   isMine?: boolean;
