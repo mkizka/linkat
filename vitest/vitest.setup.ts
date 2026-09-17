@@ -1,6 +1,6 @@
 import { initialize, resetSequence } from "~/generated/fabbrica";
 import { server } from "~/mocks/server";
-import { prisma } from "~/server/service/prisma";
+import { prisma } from "~/server/infrastructure/prisma";
 
 import { disconnectTruncatePool, truncateAllTables } from "./truncate";
 

@@ -1,5 +1,5 @@
 import { Board } from "~/models/board";
-import { prisma } from "~/server/service/prisma";
+import { prisma } from "~/server/infrastructure/prisma";
 
 export interface BoardRepository {
   findByUserDid: (userDid: string) => Promise<Board | null>;

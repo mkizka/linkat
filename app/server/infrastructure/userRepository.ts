@@ -1,14 +1,5 @@
-import { prisma } from "~/server/service/prisma";
-
-export type User = {
-  did: string;
-  avatar: string | null;
-  description: string | null;
-  displayName: string | null;
-  handle: string;
-  createdAt: Date;
-  updatedAt: Date;
-};
+import { User } from "~/models/user";
+import { prisma } from "~/server/infrastructure/prisma";
 
 type UserWriteData = {
   did: string;
@@ -26,24 +17,30 @@ export interface UserRepository {
 }
 
 export const userRepository: UserRepository = {
-  findByDid: (did) =>
-    prisma.user.findFirst({
+  findByDid: async (did) => {
+    const row = await prisma.user.findFirst({
       where: { did },
       orderBy: {
         createdAt: "desc",
       },
-    }),
-  findByHandle: (handle) =>
-    prisma.user.findFirst({
+    });
+    return row && new User(row);
+  },
+  findByHandle: async (handle) => {
+    const row = await prisma.user.findFirst({
       where: { handle },
       orderBy: {
         createdAt: "desc",
       },
-    }),
-  save: (data) =>
-    prisma.user.upsert({
+    });
+    return row && new User(row);
+  },
+  save: async (data) => {
+    const row = await prisma.user.upsert({
       where: { did: data.did },
       create: data,
       update: data,
-    }),
+    });
+    return new User(row);
+  },
 };
