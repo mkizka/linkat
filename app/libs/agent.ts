@@ -2,7 +2,7 @@ import { Client } from "@atproto/lex";
 import { asAtIdentifierString } from "@atproto/syntax";
 
 import boardLexicon from "~/generated/blue/linkat/board";
-import { boardScheme } from "~/models/board";
+import type { Board } from "~/models/board";
 
 export class LinkatAgent extends Client {
   static credential(serviceUrl: string = "https://public.api.bsky.app") {
@@ -19,9 +19,9 @@ export class LinkatAgent extends Client {
     return await this.getBoard({ repo: this.assertDid });
   }
 
-  async updateBoard(board: unknown) {
+  async updateBoard(board: Board) {
     return await this.putRecord(
-      { $type: boardLexicon.$type, ...boardScheme.parse(board) },
+      { $type: boardLexicon.$type, cards: board.cards },
       "self",
       { repo: this.assertDid, validate: false },
     );

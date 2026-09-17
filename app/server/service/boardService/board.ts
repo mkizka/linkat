@@ -1,5 +1,5 @@
 import { LinkatAgent } from "~/libs/agent";
-import { boardScheme, type ValidBoard } from "~/models/board";
+import { Board } from "~/models/board";
 import type { BoardRepository } from "~/server/infrastructure/boardRepository";
 import { boardRepository } from "~/server/infrastructure/boardRepository";
 import { didService } from "~/server/service/didService";
@@ -8,7 +8,6 @@ import { tryCatch } from "~/utils/tryCatch";
 
 const logger = createLogger("boardService");
 
-// TODO: boardをunknownで受け入れてこの関数内でパースする
 export const createOrUpdateBoard = async ({
   repository = boardRepository,
   userDid,
@@ -16,15 +15,14 @@ export const createOrUpdateBoard = async ({
 }: {
   repository?: BoardRepository;
   userDid: string;
-  board: ValidBoard;
+  board: Board;
 }) => {
   logger.info({ userDid }, "boardを保存します");
-  const newBoard = await repository.save({
+  await repository.save({
     userDid,
-    record: JSON.stringify(board),
+    record: board.toRecordJSON(),
   });
-  // 保存前にバリデーションをかけているのでエラーが起きるのは異常
-  return boardScheme.parse(JSON.parse(newBoard.record));
+  return board;
 };
 
 const findBoard = async (repository: BoardRepository, userDid: string) => {
@@ -32,7 +30,7 @@ const findBoard = async (repository: BoardRepository, userDid: string) => {
   if (!board) {
     return null;
   }
-  return boardScheme.parse(JSON.parse(board.record));
+  return Board.fromRecordJSON(board.record);
 };
 
 const fetchBoardInPDS = async (userDid: string) => {
@@ -50,12 +48,12 @@ const fetchBoardInPDS = async (userDid: string) => {
     logger.warn({ userDid, response }, "PDSからのboardの取得に失敗しました");
     return null;
   }
-  const parsed = boardScheme.safeParse(response.body.value);
-  if (!parsed.success) {
-    logger.warn({ userDid, parsed }, "PDSからのboardの形式が不正でした");
+  const board = Board.safeParse(response.body.value);
+  if (!board) {
+    logger.warn({ userDid }, "PDSからのboardの形式が不正でした");
     return null;
   }
-  return parsed.data;
+  return board;
 };
 
 // TODO: 全部の処理を一つのトランザクションで行う

@@ -1,9 +1,8 @@
 import type { CommitCreateEvent, CommitUpdateEvent } from "@skyware/jetstream";
 import { Jetstream } from "@skyware/jetstream";
 import WebSocket from "ws";
-import { fromZodError } from "zod-validation-error";
 
-import { boardScheme } from "~/models/board";
+import { Board } from "~/models/board";
 import { cursorRepository } from "~/server/infrastructure/cursorRepository";
 import { boardService } from "~/server/service/boardService";
 import { userService } from "~/server/service/userService";
@@ -37,13 +36,10 @@ const handleCreateOrUpdate = async (
     | CommitCreateEvent<"blue.linkat.board">
     | CommitUpdateEvent<"blue.linkat.board">,
 ) => {
-  const parsed = boardScheme.safeParse(event.commit.record);
-  if (!parsed.success) {
+  const board = Board.safeParse(event.commit.record);
+  if (!board) {
     logger.warn(
-      {
-        record: event.commit.record,
-        error: fromZodError(parsed.error).toString(),
-      },
+      { record: event.commit.record },
       "ボードのパースに失敗しました",
     );
     return;
@@ -51,9 +47,9 @@ const handleCreateOrUpdate = async (
   const user = await userService.findOrFetchUser({
     handleOrDid: event.did,
   });
-  const board = await boardService.createOrUpdateBoard({
+  await boardService.createOrUpdateBoard({
     userDid: event.did,
-    board: parsed.data,
+    board,
   });
   logger.info({ user, board }, "ボードを更新しました");
 };

@@ -2,21 +2,21 @@ import { http, HttpResponse } from "msw";
 
 import { mockedLogger } from "~/mocks/logger";
 import { server } from "~/mocks/server";
-import type { ValidBoard } from "~/models/board";
+import { Board } from "~/models/board";
 import { BoardFactory, cardsFromFactory } from "~/server/factories/board";
 import { UserFactory } from "~/server/factories/user";
 import { prisma } from "~/server/service/prisma";
 
 import { boardService } from ".";
 
-const dummyBoard = {
+const dummyBoard = Board.parse({
   cards: [
     {
       url: "https://example.com",
       text: "board.spec.tsのカード",
     },
   ],
-} satisfies ValidBoard;
+});
 
 const dummyBoardRecord = {
   uri: "at://did:plc:fuphupq2ha3kk45osfummw42/blue.linkat.board/self",

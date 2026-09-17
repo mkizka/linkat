@@ -7,7 +7,7 @@ import { BoardViewer } from "~/features/board/board-viewer";
 import { RouteToaster } from "~/features/toast/route";
 import { useUmami } from "~/hooks/useUmami";
 import { getInstance } from "~/i18n/i18n";
-import { boardScheme } from "~/models/board";
+import { Board } from "~/models/board";
 import { getSessionAgent, getSessionUser } from "~/server/oauth/session";
 import { boardService } from "~/server/service/boardService";
 import { env } from "~/utils/env";
@@ -32,7 +32,7 @@ export async function action({ request, context }: Route.ActionArgs) {
     return { error: i18next.t("edit.invalid-form-error-message") };
   }
   // 1. 楽観的にDBを更新
-  const parsedBoard = boardScheme.parse(JSON.parse(rawBoard));
+  const parsedBoard = Board.parse(JSON.parse(rawBoard));
   await boardService.createOrUpdateBoard({
     userDid: user.did,
     board: parsedBoard,
