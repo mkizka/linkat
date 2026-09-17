@@ -25,7 +25,7 @@ export const boardRepository: BoardRepository = {
     if (!row) {
       return null;
     }
-    return Board.of(userDid, Board.parseCards(JSON.parse(row.record)));
+    return new Board(userDid, Board.parseCards(JSON.parse(row.record)));
   },
   save: async (board) => {
     const createData = {

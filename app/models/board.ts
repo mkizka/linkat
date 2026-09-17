@@ -25,7 +25,7 @@ export class BoardParseError extends Error {
 }
 
 export class Board {
-  private constructor(
+  constructor(
     readonly userDid: string,
     readonly cards: ValidCard[],
   ) {}
@@ -36,10 +36,6 @@ export class Board {
       throw new BoardParseError(result.error);
     }
     return result.data.cards;
-  }
-
-  static of(userDid: string, cards: ValidCard[]): Board {
-    return new Board(userDid, cards);
   }
 
   toRecordJSON(): string {

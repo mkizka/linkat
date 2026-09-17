@@ -41,7 +41,7 @@ const fetchBoardInPDS = async (userDid: string) => {
     logger.warn({ userDid }, "PDSからのboardの形式が不正でした");
     return null;
   }
-  return Board.of(userDid, cards);
+  return new Board(userDid, cards);
 };
 
 // TODO: 全部の処理を一つのトランザクションで行う

@@ -47,7 +47,7 @@ const handleCreateOrUpdate = async (
     );
     return;
   }
-  const board = Board.of(event.did, cards);
+  const board = new Board(event.did, cards);
   const user = await userService.findOrFetchUser({
     handleOrDid: event.did,
   });

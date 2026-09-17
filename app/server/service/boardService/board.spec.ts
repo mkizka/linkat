@@ -45,7 +45,7 @@ describe("boardService", () => {
     test("ボードがない場合は新規作成する", async () => {
       // arrange
       const user = await UserFactory.create(); // findOrFetchUserが作成するユーザー
-      const board = Board.of(user.did, dummyCards);
+      const board = new Board(user.did, dummyCards);
       // act
       const actual = await boardService.createOrUpdateBoard({ board });
       // assert
@@ -55,7 +55,7 @@ describe("boardService", () => {
     test("既存のボードがある場合は更新する", async () => {
       // arrange
       const existing = await BoardFactory.create();
-      const board = Board.of(existing.userDid, dummyCards);
+      const board = new Board(existing.userDid, dummyCards);
       // act
       const actual = await boardService.createOrUpdateBoard({ board });
       // assert
@@ -70,7 +70,7 @@ describe("boardService", () => {
       const existing = await BoardFactory.create({
         updatedAt: new Date("2024-01-01T00:00:00.000Z"),
       });
-      const board = Board.of(existing.userDid, dummyCards);
+      const board = new Board(existing.userDid, dummyCards);
       vi.useFakeTimers();
       vi.setSystemTime(new Date("2024-01-02T00:00:00.000Z"));
       // act
@@ -88,7 +88,7 @@ describe("boardService", () => {
       // act
       const actual = await boardService.findOrFetchBoard(existing.userDid);
       // assert
-      expect(actual).toEqual(Board.of(existing.userDid, cardsFromFactory));
+      expect(actual).toEqual(new Board(existing.userDid, cardsFromFactory));
     });
     test("DBにボードがなくてもPDSから取得できればDBに保存して返す", async () => {
       // arrange
@@ -106,7 +106,7 @@ describe("boardService", () => {
       // act
       const actual = await boardService.findOrFetchBoard(user.did);
       // assert
-      expect(actual).toEqual(Board.of(user.did, dummyCards));
+      expect(actual).toEqual(new Board(user.did, dummyCards));
     });
     test("DBにボードがなくPDSから取得したボードが不正ならnullを返す", async () => {
       // arrange
