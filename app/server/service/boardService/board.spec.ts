@@ -5,7 +5,6 @@ import { server } from "~/mocks/server";
 import { Board } from "~/models/board";
 import { BoardFactory, cardsFromFactory } from "~/server/factories/board";
 import { UserFactory } from "~/server/factories/user";
-import { prisma } from "~/server/service/prisma";
 
 import { boardService } from ".";
 
@@ -41,46 +40,6 @@ const dummyDidDocument = (did: string) => ({
 });
 
 describe("boardService", () => {
-  describe("createBoard", () => {
-    test("ボードがない場合は新規作成する", async () => {
-      // arrange
-      const user = await UserFactory.create(); // findOrFetchUserが作成するユーザー
-      const board = new Board(user.did, dummyCards);
-      // act
-      const actual = await boardService.createOrUpdateBoard({ board });
-      // assert
-      expect(await prisma.user.findFirst()).toEqual(user);
-      expect(actual).toEqual(board);
-    });
-    test("既存のボードがある場合は更新する", async () => {
-      // arrange
-      const existing = await BoardFactory.create();
-      const board = new Board(existing.userDid, dummyCards);
-      // act
-      const actual = await boardService.createOrUpdateBoard({ board });
-      // assert
-      expect(await prisma.user.findFirst()).toMatchObject({
-        did: existing.userDid,
-      });
-      expect(actual).not.toEqual(existing);
-      expect(actual).toEqual(board);
-    });
-    test("既存のボードを更新するとupdatedAtが更新される", async () => {
-      // arrange
-      const existing = await BoardFactory.create({
-        updatedAt: new Date("2024-01-01T00:00:00.000Z"),
-      });
-      const board = new Board(existing.userDid, dummyCards);
-      vi.useFakeTimers();
-      vi.setSystemTime(new Date("2024-01-02T00:00:00.000Z"));
-      // act
-      await boardService.createOrUpdateBoard({ board });
-      // assert
-      expect(await prisma.board.findFirst()).toMatchObject({
-        updatedAt: new Date("2024-01-02T00:00:00.000Z"),
-      });
-    });
-  });
   describe("findOrFetchBoard", () => {
     test("既存のボードがある場合はそのまま返す", async () => {
       // arrange

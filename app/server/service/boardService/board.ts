@@ -8,17 +8,6 @@ import { tryCatch } from "~/utils/tryCatch";
 
 const logger = createLogger("boardService");
 
-export const createOrUpdateBoard = async ({
-  repository = boardRepository,
-  board,
-}: {
-  repository?: BoardRepository;
-  board: Board;
-}) => {
-  logger.info({ userDid: board.userDid }, "boardを保存します");
-  return await repository.save(board);
-};
-
 const fetchBoardInPDS = async (userDid: string) => {
   logger.info({ userDid }, "DIDからPDSのURLを解決します");
   const serviceUrl = await didService.resolveServiceUrl(userDid);
@@ -57,10 +46,8 @@ export const findOrFetchBoard = async (
   if (!boardInPDS) {
     return null;
   }
-  return createOrUpdateBoard({
-    repository,
-    board: boardInPDS,
-  });
+  await repository.save(boardInPDS);
+  return boardInPDS;
 };
 
 export const deleteBoard = async (

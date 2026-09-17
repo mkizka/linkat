@@ -8,6 +8,7 @@ import { RouteToaster } from "~/features/toast/route";
 import { useUmami } from "~/hooks/useUmami";
 import { getInstance } from "~/i18n/i18n";
 import { Board } from "~/models/board";
+import { boardRepository } from "~/server/infrastructure/boardRepository";
 import { getSessionAgent, getSessionUser } from "~/server/oauth/session";
 import { boardService } from "~/server/service/boardService";
 import { env } from "~/utils/env";
@@ -36,9 +37,7 @@ export async function action({ request, context }: Route.ActionArgs) {
     user.did,
     Board.parseCards(JSON.parse(rawBoard)),
   );
-  await boardService.createOrUpdateBoard({
-    board: parsedBoard,
-  });
+  await boardRepository.save(parsedBoard);
   try {
     // 2. PDSにも保存
     await agent.updateBoard(parsedBoard);

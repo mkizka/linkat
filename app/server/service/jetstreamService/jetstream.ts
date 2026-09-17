@@ -3,6 +3,7 @@ import { Jetstream } from "@skyware/jetstream";
 import WebSocket from "ws";
 
 import { Board } from "~/models/board";
+import { boardRepository } from "~/server/infrastructure/boardRepository";
 import { cursorRepository } from "~/server/infrastructure/cursorRepository";
 import { boardService } from "~/server/service/boardService";
 import { userService } from "~/server/service/userService";
@@ -51,9 +52,7 @@ const handleCreateOrUpdate = async (
   const user = await userService.findOrFetchUser({
     handleOrDid: event.did,
   });
-  await boardService.createOrUpdateBoard({
-    board,
-  });
+  await boardRepository.save(board);
   logger.info({ user, board }, "ボードを更新しました");
 };
 

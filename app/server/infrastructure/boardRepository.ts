@@ -3,7 +3,7 @@ import { prisma } from "~/server/service/prisma";
 
 export interface BoardRepository {
   findByUserDid: (userDid: string) => Promise<Board | null>;
-  save: (board: Board) => Promise<Board>;
+  save: (board: Board) => Promise<void>;
   deleteByUserDid: (userDid: string) => Promise<void>;
 }
 
@@ -44,7 +44,6 @@ export const boardRepository: BoardRepository = {
       update: createData,
       create: createData,
     });
-    return board;
   },
   deleteByUserDid: async (userDid) => {
     await prisma.board.deleteMany({
