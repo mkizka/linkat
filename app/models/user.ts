@@ -38,7 +38,7 @@ export class User {
     return this.did === viewerDid;
   }
 
-  update(profile: ProfileViewDetailed) {
+  withProfile(profile: ProfileViewDetailed) {
     return new User({
       did: profile.did,
       avatar: profile.avatar ?? null,

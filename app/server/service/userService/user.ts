@@ -42,7 +42,7 @@ export const findOrFetchUser = async ({
     return user;
   }
   const newUser = user
-    ? user.update(blueskyProfile)
+    ? user.withProfile(blueskyProfile)
     : new User({
         did: blueskyProfile.did,
         avatar: blueskyProfile.avatar ?? null,
