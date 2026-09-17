@@ -50,9 +50,7 @@ describe("boardService", () => {
         asDid(existing.userDid),
       );
       // assert
-      expect(actual).toEqual(
-        new Board(asDid(existing.userDid), cardsFromFactory),
-      );
+      expect(actual).toEqual(new Board(existing.userDid, cardsFromFactory));
     });
     test("DBにボードがなくてもPDSから取得できればDBに保存して返す", async () => {
       // arrange
@@ -70,7 +68,7 @@ describe("boardService", () => {
       // act
       const actual = await boardService.findOrFetchBoard(asDid(user.did));
       // assert
-      expect(actual).toEqual(new Board(asDid(user.did), dummyCards));
+      expect(actual).toEqual(new Board(user.did, dummyCards));
     });
     test("DBにボードがなくPDSから取得したボードが不正ならnullを返す", async () => {
       // arrange

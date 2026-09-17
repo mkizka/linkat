@@ -1,4 +1,4 @@
-import type { Did } from "@atproto/did";
+import { asDid, type Did } from "@atproto/did";
 
 const REFETCH_INTERVAL_MS = 10 * 60 * 1000;
 
@@ -12,7 +12,7 @@ export class User {
   readonly updatedAt: Date;
 
   constructor(props: {
-    did: Did;
+    did: string;
     avatar: string | null;
     description: string | null;
     displayName: string | null;
@@ -20,7 +20,7 @@ export class User {
     createdAt: Date;
     updatedAt: Date;
   }) {
-    this.did = props.did;
+    this.did = asDid(props.did);
     this.avatar = props.avatar;
     this.description = props.description;
     this.displayName = props.displayName;

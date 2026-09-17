@@ -1,5 +1,4 @@
 import type { Did } from "@atproto/did";
-import { asDid } from "@atproto/did";
 
 import { User } from "~/models/user";
 import { prisma } from "~/server/infrastructure/prisma";
@@ -27,7 +26,7 @@ export const userRepository: UserRepository = {
         createdAt: "desc",
       },
     });
-    return row && new User({ ...row, did: asDid(row.did) });
+    return row && new User(row);
   },
   findByHandle: async (handle) => {
     const row = await prisma.user.findFirst({
@@ -36,7 +35,7 @@ export const userRepository: UserRepository = {
         createdAt: "desc",
       },
     });
-    return row && new User({ ...row, did: asDid(row.did) });
+    return row && new User(row);
   },
   save: async (data) => {
     const row = await prisma.user.upsert({
@@ -44,6 +43,6 @@ export const userRepository: UserRepository = {
       create: data,
       update: data,
     });
-    return new User({ ...row, did: asDid(row.did) });
+    return new User(row);
   },
 };
