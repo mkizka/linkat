@@ -1,14 +1,5 @@
+import type { User } from "~/models/user";
 import { prisma } from "~/server/service/prisma";
-
-export type User = {
-  did: string;
-  avatar: string | null;
-  description: string | null;
-  displayName: string | null;
-  handle: string;
-  createdAt: Date;
-  updatedAt: Date;
-};
 
 type UserWriteData = {
   did: string;

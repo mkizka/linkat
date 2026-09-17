@@ -3,21 +3,14 @@ import { asAtIdentifierString } from "@atproto/syntax";
 
 import getProfile from "~/generated/app/bsky/actor/getProfile";
 import { LinkatAgent } from "~/libs/agent";
-import type {
-  User,
-  UserRepository,
-} from "~/server/infrastructure/userRepository";
+import { shouldRefetchUser } from "~/models/user";
+import type { UserRepository } from "~/server/infrastructure/userRepository";
 import { userRepository } from "~/server/infrastructure/userRepository";
 import { env } from "~/utils/env";
 import { createLogger } from "~/utils/logger";
 import { tryCatch } from "~/utils/tryCatch";
 
 const logger = createLogger("userService");
-
-// 最後の取得から10分以上経過していたら再取得する
-const shouldRefetch = (user: User) => {
-  return user.updatedAt <= new Date(Date.now() - 10 * 60 * 1000);
-};
 
 const fetchBlueskyProfile = async (handleOrDid: string) => {
   logger.info({ actor: handleOrDid }, "プロフィールを取得します");
@@ -40,7 +33,7 @@ export const findOrFetchUser = async ({
   const user = await (isDid(handleOrDid)
     ? repository.findByDid(handleOrDid)
     : repository.findByHandle(handleOrDid));
-  if (user && !shouldRefetch(user)) {
+  if (user && !shouldRefetchUser(user)) {
     return user;
   }
   const blueskyProfile = await tryCatch(fetchBlueskyProfile)(handleOrDid);
