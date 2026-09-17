@@ -8,6 +8,7 @@ import { boardService } from "~/server/service/boardService";
 import { userService } from "~/server/service/userService";
 import { env } from "~/utils/env";
 import { createLogger } from "~/utils/logger";
+import { tryCatch } from "~/utils/tryCatch";
 
 const logger = createLogger("jetstream");
 
@@ -36,8 +37,10 @@ const handleCreateOrUpdate = async (
     | CommitCreateEvent<"blue.linkat.board">
     | CommitUpdateEvent<"blue.linkat.board">,
 ) => {
-  const board = Board.safeParse(event.commit.record);
-  if (!board) {
+  const board = await tryCatch((input: unknown) => Board.parse(input))(
+    event.commit.record,
+  );
+  if (board instanceof Error) {
     logger.warn(
       { record: event.commit.record },
       "ボードのパースに失敗しました",

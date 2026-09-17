@@ -18,20 +18,21 @@ const boardSchema = z.object({
     ),
 });
 
+export class BoardParseError extends Error {
+  constructor(cause: unknown) {
+    super("Boardのパースに失敗しました", { cause });
+  }
+}
+
 export class Board {
   private constructor(readonly cards: ValidCard[]) {}
 
   static parse(input: unknown): Board {
-    return new Board(boardSchema.parse(input).cards);
-  }
-
-  static safeParse(input: unknown): Board | null {
     const result = boardSchema.safeParse(input);
-    return result.success ? new Board(result.data.cards) : null;
-  }
-
-  static fromRecordJSON(json: string): Board {
-    return Board.parse(JSON.parse(json));
+    if (!result.success) {
+      throw new BoardParseError(result.error);
+    }
+    return new Board(result.data.cards);
   }
 
   toRecordJSON(): string {

@@ -30,7 +30,7 @@ const findBoard = async (repository: BoardRepository, userDid: string) => {
   if (!board) {
     return null;
   }
-  return Board.fromRecordJSON(board.record);
+  return Board.parse(JSON.parse(board.record));
 };
 
 const fetchBoardInPDS = async (userDid: string) => {
@@ -48,8 +48,10 @@ const fetchBoardInPDS = async (userDid: string) => {
     logger.warn({ userDid, response }, "PDSからのboardの取得に失敗しました");
     return null;
   }
-  const board = Board.safeParse(response.body.value);
-  if (!board) {
+  const board = await tryCatch((input: unknown) => Board.parse(input))(
+    response.body.value,
+  );
+  if (board instanceof Error) {
     logger.warn({ userDid }, "PDSからのboardの形式が不正でした");
     return null;
   }

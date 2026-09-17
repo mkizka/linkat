@@ -1,4 +1,4 @@
-import { Board } from "./board";
+import { Board, BoardParseError } from "./board";
 
 describe("Board", () => {
   test.each`
@@ -8,12 +8,12 @@ describe("Board", () => {
     ${{ cards: [{ url: "https://example.com", id: "dummy" }] }}                           | ${{ cards: [{ url: "https://example.com" }] }} | ${"不要なフィールドは削除する"}
     ${{ cards: [{ url: "https://example.com" }, { url: "mailto:example@example.com" }] }} | ${{ cards: [{ url: "https://example.com" }] }} | ${"不正なカードがあればフィルタする"}
   `("$description", ({ board, expected }) => {
-    expect(Board.safeParse(board)).toEqual(expected);
+    expect(Board.parse(board)).toEqual(expected);
   });
   test.each`
     board | description
     ${{}} | ${"配列でなければパース失敗"}
   `("$description", ({ board, _expected }) => {
-    expect(() => Board.parse(board)).toThrow();
+    expect(() => Board.parse(board)).toThrow(BoardParseError);
   });
 });
