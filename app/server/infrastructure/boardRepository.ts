@@ -1,6 +1,7 @@
+import type { Board } from "~/models/board";
 import { prisma } from "~/server/service/prisma";
 
-export type Board = {
+export type BoardRow = {
   id: number;
   userDid: string;
   record: string;
@@ -9,8 +10,8 @@ export type Board = {
 };
 
 export interface BoardRepository {
-  findByUserDid: (userDid: string) => Promise<Board | null>;
-  save: (data: { userDid: string; record: string }) => Promise<Board>;
+  findByUserDid: (userDid: string) => Promise<BoardRow | null>;
+  save: (data: { userDid: string; board: Board }) => Promise<BoardRow>;
   deleteByUserDid: (userDid: string) => Promise<void>;
 }
 
@@ -36,7 +37,7 @@ export const boardRepository: BoardRepository = {
           did: data.userDid,
         },
       },
-      record: data.record,
+      record: data.board.toRecordJSON(),
       updatedAt: new Date(),
     };
     return prisma.board.upsert({

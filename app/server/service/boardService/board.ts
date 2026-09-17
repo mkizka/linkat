@@ -18,10 +18,7 @@ export const createOrUpdateBoard = async ({
   board: Board;
 }) => {
   logger.info({ userDid }, "boardを保存します");
-  await repository.save({
-    userDid,
-    record: board.toRecordJSON(),
-  });
+  await repository.save({ userDid, board });
   return board;
 };
 
