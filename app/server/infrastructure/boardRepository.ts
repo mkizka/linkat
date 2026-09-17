@@ -1,22 +1,15 @@
+import { Board } from "~/models/board";
 import { prisma } from "~/server/infrastructure/prisma";
-
-export type Board = {
-  id: number;
-  userDid: string;
-  record: string;
-  createdAt: Date;
-  updatedAt: Date;
-};
 
 export interface BoardRepository {
   findByUserDid: (userDid: string) => Promise<Board | null>;
-  save: (data: { userDid: string; record: string }) => Promise<Board>;
+  save: (board: Board) => Promise<void>;
   deleteByUserDid: (userDid: string) => Promise<void>;
 }
 
 export const boardRepository: BoardRepository = {
-  findByUserDid: (userDid) =>
-    prisma.board.findFirst({
+  findByUserDid: async (userDid) => {
+    const row = await prisma.board.findFirst({
       where: {
         user: {
           did: userDid,
@@ -28,20 +21,25 @@ export const boardRepository: BoardRepository = {
           createdAt: "desc",
         },
       },
-    }),
-  save: (data) => {
+    });
+    if (!row) {
+      return null;
+    }
+    return new Board(userDid, Board.parseCards(JSON.parse(row.record)));
+  },
+  save: async (board) => {
     const createData = {
       user: {
         connect: {
-          did: data.userDid,
+          did: board.userDid,
         },
       },
-      record: data.record,
+      record: board.toRecordJSON(),
       updatedAt: new Date(),
     };
-    return prisma.board.upsert({
+    await prisma.board.upsert({
       where: {
-        userDid: data.userDid,
+        userDid: board.userDid,
       },
       update: createData,
       create: createData,

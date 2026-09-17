@@ -7,7 +7,8 @@ import { BoardViewer } from "~/features/board/board-viewer";
 import { RouteToaster } from "~/features/toast/route";
 import { useUmami } from "~/hooks/useUmami";
 import { getInstance } from "~/i18n/i18n";
-import { boardScheme } from "~/models/board";
+import { Board } from "~/models/board";
+import { boardRepository } from "~/server/infrastructure/boardRepository";
 import { getSessionAgent, getSessionUser } from "~/server/oauth/session";
 import { boardService } from "~/server/service/boardService";
 import { env } from "~/utils/env";
@@ -32,11 +33,11 @@ export async function action({ request, context }: Route.ActionArgs) {
     return { error: i18next.t("edit.invalid-form-error-message") };
   }
   // 1. 楽観的にDBを更新
-  const parsedBoard = boardScheme.parse(JSON.parse(rawBoard));
-  await boardService.createOrUpdateBoard({
-    userDid: user.did,
-    board: parsedBoard,
-  });
+  const parsedBoard = new Board(
+    user.did,
+    Board.parseCards(JSON.parse(rawBoard)),
+  );
+  await boardRepository.save(parsedBoard);
   try {
     // 2. PDSにも保存
     await agent.updateBoard(parsedBoard);
@@ -53,7 +54,11 @@ export async function loader({ request }: Route.LoaderArgs) {
     throw redirect("/login");
   }
   const board = await boardService.findOrFetchBoard(user.did);
-  return { user, board, url: `${env.PUBLIC_URL}/${user.handle}` };
+  return {
+    user,
+    board: board && { cards: board.cards },
+    url: `${env.PUBLIC_URL}/${user.handle}`,
+  };
 }
 
 export default function Index({ loaderData }: Route.ComponentProps) {
