@@ -1,6 +1,18 @@
-import { isOwnedBy, shouldRefetchUser } from "./user";
+import { User } from "./user";
 
-describe("shouldRefetchUser", () => {
+const createUser = (props: Partial<ConstructorParameters<typeof User>[0]>) =>
+  new User({
+    did: "did:plc:dummy",
+    avatar: null,
+    description: null,
+    displayName: null,
+    handle: "example.com",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    ...props,
+  });
+
+describe("shouldRefetch", () => {
   test.each`
     updatedAt                                | expected | description
     ${new Date()}                            | ${false} | ${"直近に取得済み"}
@@ -8,7 +20,7 @@ describe("shouldRefetchUser", () => {
   `(
     "$description",
     ({ updatedAt, expected }: { updatedAt: Date; expected: boolean }) => {
-      expect(shouldRefetchUser({ updatedAt })).toBe(expected);
+      expect(createUser({ updatedAt }).shouldRefetch()).toBe(expected);
     },
   );
 });
@@ -30,7 +42,7 @@ describe("isOwnedBy", () => {
       viewerDid: string | null;
       expected: boolean;
     }) => {
-      expect(isOwnedBy({ did }, viewerDid)).toBe(expected);
+      expect(createUser({ did }).isOwnedBy(viewerDid)).toBe(expected);
     },
   );
 });

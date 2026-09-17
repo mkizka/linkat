@@ -3,7 +3,6 @@ import { asAtIdentifierString } from "@atproto/syntax";
 
 import getProfile from "~/generated/app/bsky/actor/getProfile";
 import { LinkatAgent } from "~/libs/agent";
-import { shouldRefetchUser } from "~/models/user";
 import type { UserRepository } from "~/server/infrastructure/userRepository";
 import { userRepository } from "~/server/infrastructure/userRepository";
 import { env } from "~/utils/env";
@@ -33,7 +32,7 @@ export const findOrFetchUser = async ({
   const user = await (isDid(handleOrDid)
     ? repository.findByDid(handleOrDid)
     : repository.findByHandle(handleOrDid));
-  if (user && !shouldRefetchUser(user)) {
+  if (user && !user.shouldRefetch()) {
     return user;
   }
   const blueskyProfile = await tryCatch(fetchBlueskyProfile)(handleOrDid);

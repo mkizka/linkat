@@ -2,7 +2,6 @@ import { Footer, Main } from "~/components/layout";
 import { BoardViewer } from "~/features/board/board-viewer";
 import { ShareModal } from "~/features/board/share-modal";
 import { getInstance } from "~/i18n/i18n";
-import { isOwnedBy } from "~/models/user";
 import { getSessionUserDid } from "~/server/oauth/session";
 import { boardService } from "~/server/service/boardService";
 import { userService } from "~/server/service/userService";
@@ -36,7 +35,7 @@ export async function loader({ request, params, context }: Route.LoaderArgs) {
   return {
     user,
     board,
-    isMine: isOwnedBy(user, await getSessionUserDid(request)),
+    isMine: user.isOwnedBy(await getSessionUserDid(request)),
     title: `${title} | Linkat`,
     url: `${env.PUBLIC_URL}/${user.handle}`,
     ogImageUrl: `${env.PUBLIC_URL}/${user.handle}/og`,
