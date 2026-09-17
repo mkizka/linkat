@@ -1,3 +1,5 @@
+import type { ProfileViewDetailed } from "~/generated/app/bsky/actor/defs";
+
 const REFETCH_INTERVAL_MS = 10 * 60 * 1000;
 
 export class User {
@@ -34,5 +36,17 @@ export class User {
 
   isOwnedBy(viewerDid: string | null) {
     return this.did === viewerDid;
+  }
+
+  update(profile: ProfileViewDetailed) {
+    return new User({
+      did: profile.did,
+      avatar: profile.avatar ?? null,
+      description: profile.description ?? null,
+      displayName: profile.displayName ?? null,
+      handle: profile.handle,
+      createdAt: this.createdAt,
+      updatedAt: new Date(),
+    });
   }
 }

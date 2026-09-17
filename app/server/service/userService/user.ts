@@ -41,15 +41,17 @@ export const findOrFetchUser = async ({
     logger.warn(blueskyProfile, "プロフィールの取得に失敗しました");
     return user;
   }
-  const newUser = new User({
-    did: blueskyProfile.did,
-    avatar: blueskyProfile.avatar ?? null,
-    description: blueskyProfile.description ?? null,
-    displayName: blueskyProfile.displayName ?? null,
-    handle: blueskyProfile.handle,
-    createdAt: user?.createdAt ?? new Date(),
-    updatedAt: new Date(),
-  });
+  const newUser = user
+    ? user.update(blueskyProfile)
+    : new User({
+        did: blueskyProfile.did,
+        avatar: blueskyProfile.avatar ?? null,
+        description: blueskyProfile.description ?? null,
+        displayName: blueskyProfile.displayName ?? null,
+        handle: blueskyProfile.handle,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
   await repository.save(newUser);
   return newUser;
 };
