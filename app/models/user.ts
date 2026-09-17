@@ -52,7 +52,7 @@ export class User {
 
   withProfile(profile: ProfileViewDetailed) {
     return new User({
-      did: profile.did,
+      did: this.did,
       avatar: profile.avatar ?? null,
       description: profile.description ?? null,
       displayName: profile.displayName ?? null,
