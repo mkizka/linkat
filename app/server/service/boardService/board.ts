@@ -1,3 +1,5 @@
+import { asDid } from "@atproto/did";
+
 import { LinkatAgent } from "~/libs/agent";
 import { Board } from "~/models/board";
 import type { BoardRepository } from "~/server/infrastructure/boardRepository";
@@ -38,7 +40,7 @@ export const findOrFetchBoard = async (
   userDid: string,
   { repository = boardRepository }: { repository?: BoardRepository } = {},
 ) => {
-  const board = await repository.findByUserDid(userDid);
+  const board = await repository.find(asDid(userDid));
   if (board) {
     return board;
   }
@@ -54,5 +56,5 @@ export const deleteBoard = async (
   userDid: string,
   { repository = boardRepository }: { repository?: BoardRepository } = {},
 ) => {
-  await repository.deleteByUserDid(userDid);
+  await repository.delete(asDid(userDid));
 };
