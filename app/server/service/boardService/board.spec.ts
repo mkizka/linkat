@@ -5,7 +5,7 @@ import { server } from "~/mocks/server";
 import type { ValidBoard } from "~/models/board";
 import { BoardFactory, cardsFromFactory } from "~/server/factories/board";
 import { UserFactory } from "~/server/factories/user";
-import { prisma } from "~/server/service/prisma";
+import { prisma } from "~/server/infrastructure/prisma";
 
 import { boardService } from ".";
 

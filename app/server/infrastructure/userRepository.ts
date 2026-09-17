@@ -1,5 +1,5 @@
 import { User } from "~/models/user";
-import { prisma } from "~/server/service/prisma";
+import { prisma } from "~/server/infrastructure/prisma";
 
 type UserWriteData = {
   did: string;

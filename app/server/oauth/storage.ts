@@ -5,7 +5,7 @@ import type {
   NodeSavedStateStore,
 } from "@atproto/oauth-client-node";
 
-import { prisma } from "~/server/service/prisma";
+import { prisma } from "~/server/infrastructure/prisma";
 
 export class StateStore implements NodeSavedStateStore {
   async get(key: string): Promise<NodeSavedState | undefined> {
