@@ -1,19 +1,10 @@
 import { User } from "~/models/user";
 import { prisma } from "~/server/infrastructure/prisma";
 
-type UserWriteData = {
-  did: string;
-  avatar?: string | null;
-  description?: string | null;
-  displayName?: string | null;
-  handle: string;
-  updatedAt: Date;
-};
-
 export interface UserRepository {
   findByDid: (did: string) => Promise<User | null>;
   findByHandle: (handle: string) => Promise<User | null>;
-  save: (data: UserWriteData) => Promise<User>;
+  save: (user: User) => Promise<void>;
 }
 
 export const userRepository: UserRepository = {
@@ -35,12 +26,19 @@ export const userRepository: UserRepository = {
     });
     return row && new User(row);
   },
-  save: async (data) => {
-    const row = await prisma.user.upsert({
-      where: { did: data.did },
+  save: async (user) => {
+    const data = {
+      did: user.did,
+      avatar: user.avatar,
+      description: user.description,
+      displayName: user.displayName,
+      handle: user.handle,
+      updatedAt: user.updatedAt,
+    };
+    await prisma.user.upsert({
+      where: { did: user.did },
       create: data,
       update: data,
     });
-    return new User(row);
   },
 };
