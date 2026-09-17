@@ -1,7 +1,9 @@
+import { asDid, type Did } from "@atproto/did";
+
 const REFETCH_INTERVAL_MS = 10 * 60 * 1000;
 
 export class User {
-  readonly did: string;
+  readonly did: Did;
   readonly avatar: string | null;
   readonly description: string | null;
   readonly displayName: string | null;
@@ -18,7 +20,7 @@ export class User {
     createdAt: Date;
     updatedAt: Date;
   }) {
-    this.did = props.did;
+    this.did = asDid(props.did);
     this.avatar = props.avatar;
     this.description = props.description;
     this.displayName = props.displayName;
@@ -32,7 +34,7 @@ export class User {
     return this.updatedAt.getTime() <= Date.now() - REFETCH_INTERVAL_MS;
   }
 
-  isOwnedBy(viewerDid: string | null) {
+  isOwnedBy(viewerDid: Did | null) {
     return this.did === viewerDid;
   }
 }

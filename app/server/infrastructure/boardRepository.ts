@@ -1,14 +1,16 @@
+import type { Did } from "@atproto/did";
+
 import { Board } from "~/models/board";
 import { prisma } from "~/server/infrastructure/prisma";
 
 export interface BoardRepository {
-  findByUserDid: (userDid: string) => Promise<Board | null>;
+  find: (userDid: Did) => Promise<Board | null>;
   save: (board: Board) => Promise<void>;
-  deleteByUserDid: (userDid: string) => Promise<void>;
+  delete: (userDid: Did) => Promise<void>;
 }
 
 export const boardRepository: BoardRepository = {
-  findByUserDid: async (userDid) => {
+  find: async (userDid) => {
     const row = await prisma.board.findFirst({
       where: {
         user: {
@@ -45,7 +47,7 @@ export const boardRepository: BoardRepository = {
       create: createData,
     });
   },
-  deleteByUserDid: async (userDid) => {
+  delete: async (userDid) => {
     await prisma.board.deleteMany({
       where: {
         userDid,

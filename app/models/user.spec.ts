@@ -1,3 +1,5 @@
+import type { Did } from "@atproto/did";
+
 import { User } from "./user";
 
 const createUser = (props: Partial<ConstructorParameters<typeof User>[0]>) =>
@@ -27,10 +29,10 @@ describe("shouldRefetch", () => {
 
 describe("isOwnedBy", () => {
   test.each`
-    did      | viewerDid  | expected | description
-    ${"did"} | ${"did"}   | ${true}  | ${"同じDID"}
-    ${"did"} | ${"other"} | ${false} | ${"異なるDID"}
-    ${"did"} | ${null}    | ${false} | ${"未ログイン"}
+    did                | viewerDid          | expected | description
+    ${"did:plc:dummy"} | ${"did:plc:dummy"} | ${true}  | ${"同じDID"}
+    ${"did:plc:dummy"} | ${"did:plc:other"} | ${false} | ${"異なるDID"}
+    ${"did:plc:dummy"} | ${null}            | ${false} | ${"未ログイン"}
   `(
     "$description",
     ({
@@ -38,8 +40,8 @@ describe("isOwnedBy", () => {
       viewerDid,
       expected,
     }: {
-      did: string;
-      viewerDid: string | null;
+      did: Did;
+      viewerDid: Did | null;
       expected: boolean;
     }) => {
       expect(createUser({ did }).isOwnedBy(viewerDid)).toBe(expected);
