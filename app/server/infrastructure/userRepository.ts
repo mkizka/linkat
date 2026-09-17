@@ -1,8 +1,10 @@
+import type { Did } from "@atproto/did";
+
 import { User } from "~/models/user";
 import { prisma } from "~/server/infrastructure/prisma";
 
 export interface UserRepository {
-  findByDid: (did: string) => Promise<User | null>;
+  findByDid: (did: Did) => Promise<User | null>;
   findByHandle: (handle: string) => Promise<User | null>;
   save: (user: User) => Promise<void>;
 }

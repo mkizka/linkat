@@ -1,3 +1,4 @@
+import { asDid, type Did } from "@atproto/did";
 import { z } from "zod";
 
 import { cardSchema, type ValidCard } from "./card";
@@ -25,10 +26,13 @@ export class BoardParseError extends Error {
 }
 
 export class Board {
-  constructor(
-    readonly userDid: string,
-    readonly cards: ValidCard[],
-  ) {}
+  readonly userDid: Did;
+  readonly cards: ValidCard[];
+
+  constructor(userDid: string, cards: ValidCard[]) {
+    this.userDid = asDid(userDid);
+    this.cards = cards;
+  }
 
   static parseCards(input: unknown): ValidCard[] {
     const result = boardSchema.safeParse(input);

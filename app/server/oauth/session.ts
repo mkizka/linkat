@@ -1,3 +1,4 @@
+import type { Did } from "@atproto/did";
 import { createCookieSessionStorage } from "react-router"; // or cloudflare/deno
 
 import { LinkatAgent } from "~/libs/agent";
@@ -7,7 +8,7 @@ import { env } from "~/utils/env";
 import { oauthClient } from "./client";
 
 type SessionData = {
-  did: string;
+  did: Did;
 };
 
 type SessionFlashData = {

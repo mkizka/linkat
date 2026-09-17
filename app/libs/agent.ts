@@ -1,3 +1,4 @@
+import type { Did } from "@atproto/did";
 import { Client } from "@atproto/lex";
 import { asAtIdentifierString } from "@atproto/syntax";
 
@@ -9,7 +10,7 @@ export class LinkatAgent extends Client {
     return new LinkatAgent(serviceUrl);
   }
 
-  async getBoard(params: { repo: string }) {
+  async getBoard(params: { repo: Did }) {
     return await this.getRecord(boardLexicon.$type, "self", {
       repo: asAtIdentifierString(params.repo),
     });
