@@ -10,24 +10,13 @@ const logger = createLogger("boardService");
 
 export const createOrUpdateBoard = async ({
   repository = boardRepository,
-  userDid,
   board,
 }: {
   repository?: BoardRepository;
-  userDid: string;
   board: Board;
 }) => {
-  logger.info({ userDid }, "boardを保存します");
-  await repository.save({ userDid, board });
-  return board;
-};
-
-const findBoard = async (repository: BoardRepository, userDid: string) => {
-  const board = await repository.findByUserDid(userDid);
-  if (!board) {
-    return null;
-  }
-  return Board.parse(JSON.parse(board.record));
+  logger.info({ userDid: board.userDid }, "boardを保存します");
+  return await repository.save(board);
 };
 
 const fetchBoardInPDS = async (userDid: string) => {
@@ -45,7 +34,7 @@ const fetchBoardInPDS = async (userDid: string) => {
     logger.warn({ userDid, response }, "PDSからのboardの取得に失敗しました");
     return null;
   }
-  const board = await tryCatch((input: unknown) => Board.parse(input))(
+  const board = await tryCatch((input: unknown) => Board.parse(userDid, input))(
     response.body.value,
   );
   if (board instanceof Error) {
@@ -60,7 +49,7 @@ export const findOrFetchBoard = async (
   userDid: string,
   { repository = boardRepository }: { repository?: BoardRepository } = {},
 ) => {
-  const board = await findBoard(repository, userDid);
+  const board = await repository.findByUserDid(userDid);
   if (board) {
     return board;
   }
@@ -70,7 +59,6 @@ export const findOrFetchBoard = async (
   }
   return createOrUpdateBoard({
     repository,
-    userDid,
     board: boardInPDS,
   });
 };

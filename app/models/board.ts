@@ -25,17 +25,20 @@ export class BoardParseError extends Error {
 }
 
 export class Board {
-  private constructor(readonly cards: ValidCard[]) {}
+  private constructor(
+    readonly userDid: string,
+    readonly cards: ValidCard[],
+  ) {}
 
-  static parse(input: unknown): Board {
+  static parse(userDid: string, input: unknown): Board {
     const result = boardSchema.safeParse(input);
     if (!result.success) {
       throw new BoardParseError(result.error);
     }
-    return new Board(result.data.cards);
+    return new Board(userDid, result.data.cards);
   }
 
   toRecordJSON(): string {
-    return JSON.stringify(this);
+    return JSON.stringify({ cards: this.cards });
   }
 }

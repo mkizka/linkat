@@ -37,9 +37,9 @@ const handleCreateOrUpdate = async (
     | CommitCreateEvent<"blue.linkat.board">
     | CommitUpdateEvent<"blue.linkat.board">,
 ) => {
-  const board = await tryCatch((input: unknown) => Board.parse(input))(
-    event.commit.record,
-  );
+  const board = await tryCatch((input: unknown) =>
+    Board.parse(event.did, input),
+  )(event.commit.record);
   if (board instanceof Error) {
     logger.warn(
       { record: event.commit.record },
@@ -51,7 +51,6 @@ const handleCreateOrUpdate = async (
     handleOrDid: event.did,
   });
   await boardService.createOrUpdateBoard({
-    userDid: event.did,
     board,
   });
   logger.info({ user, board }, "ボードを更新しました");
