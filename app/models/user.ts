@@ -38,6 +38,18 @@ export class User {
     return this.did === viewerDid;
   }
 
+  static fromProfile(profile: ProfileViewDetailed) {
+    return new User({
+      did: profile.did,
+      avatar: profile.avatar ?? null,
+      description: profile.description ?? null,
+      displayName: profile.displayName ?? null,
+      handle: profile.handle,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+  }
+
   withProfile(profile: ProfileViewDetailed) {
     return new User({
       did: profile.did,

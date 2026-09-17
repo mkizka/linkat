@@ -43,15 +43,7 @@ export const findOrFetchUser = async ({
   }
   const newUser = user
     ? user.withProfile(blueskyProfile)
-    : new User({
-        did: blueskyProfile.did,
-        avatar: blueskyProfile.avatar ?? null,
-        description: blueskyProfile.description ?? null,
-        displayName: blueskyProfile.displayName ?? null,
-        handle: blueskyProfile.handle,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      });
+    : User.fromProfile(blueskyProfile);
   await repository.save(newUser);
   return newUser;
 };
