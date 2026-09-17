@@ -1,24 +1,19 @@
 import { Board, BoardParseError } from "./board";
 
-const dummyUserDid = "did:plc:fuphupq2ha3kk45osfummw42";
-
-describe("Board", () => {
+describe("Board.parseCards", () => {
   test.each`
-    board                                                                                 | expected                                       | description
-    ${{ cards: [] }}                                                                      | ${{ cards: [] }}                               | ${"カードが0個"}
-    ${{ cards: [{ url: "https://example.com" }] }}                                        | ${{ cards: [{ url: "https://example.com" }] }} | ${"カードが1個"}
-    ${{ cards: [{ url: "https://example.com", id: "dummy" }] }}                           | ${{ cards: [{ url: "https://example.com" }] }} | ${"不要なフィールドは削除する"}
-    ${{ cards: [{ url: "https://example.com" }, { url: "mailto:example@example.com" }] }} | ${{ cards: [{ url: "https://example.com" }] }} | ${"不正なカードがあればフィルタする"}
-  `("$description", ({ board, expected }) => {
-    expect(Board.parse(dummyUserDid, board)).toEqual({
-      userDid: dummyUserDid,
-      ...expected,
-    });
+    input                                                                                 | expected                            | description
+    ${{ cards: [] }}                                                                      | ${[]}                               | ${"カードが0個"}
+    ${{ cards: [{ url: "https://example.com" }] }}                                        | ${[{ url: "https://example.com" }]} | ${"カードが1個"}
+    ${{ cards: [{ url: "https://example.com", id: "dummy" }] }}                           | ${[{ url: "https://example.com" }]} | ${"不要なフィールドは削除する"}
+    ${{ cards: [{ url: "https://example.com" }, { url: "mailto:example@example.com" }] }} | ${[{ url: "https://example.com" }]} | ${"不正なカードがあればフィルタする"}
+  `("$description", ({ input, expected }) => {
+    expect(Board.parseCards(input)).toEqual(expected);
   });
   test.each`
-    board | description
+    input | description
     ${{}} | ${"配列でなければパース失敗"}
-  `("$description", ({ board, _expected }) => {
-    expect(() => Board.parse(dummyUserDid, board)).toThrow(BoardParseError);
+  `("$description", ({ input }) => {
+    expect(() => Board.parseCards(input)).toThrow(BoardParseError);
   });
 });

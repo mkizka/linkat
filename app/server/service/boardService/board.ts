@@ -34,14 +34,14 @@ const fetchBoardInPDS = async (userDid: string) => {
     logger.warn({ userDid, response }, "PDSからのboardの取得に失敗しました");
     return null;
   }
-  const board = await tryCatch((input: unknown) => Board.parse(userDid, input))(
+  const cards = await tryCatch((input: unknown) => Board.parseCards(input))(
     response.body.value,
   );
-  if (board instanceof Error) {
+  if (cards instanceof Error) {
     logger.warn({ userDid }, "PDSからのboardの形式が不正でした");
     return null;
   }
-  return board;
+  return Board.of(userDid, cards);
 };
 
 // TODO: 全部の処理を一つのトランザクションで行う

@@ -30,12 +30,16 @@ export class Board {
     readonly cards: ValidCard[],
   ) {}
 
-  static parse(userDid: string, input: unknown): Board {
+  static parseCards(input: unknown): ValidCard[] {
     const result = boardSchema.safeParse(input);
     if (!result.success) {
       throw new BoardParseError(result.error);
     }
-    return new Board(userDid, result.data.cards);
+    return result.data.cards;
+  }
+
+  static of(userDid: string, cards: ValidCard[]): Board {
+    return new Board(userDid, cards);
   }
 
   toRecordJSON(): string {

@@ -32,7 +32,10 @@ export async function action({ request, context }: Route.ActionArgs) {
     return { error: i18next.t("edit.invalid-form-error-message") };
   }
   // 1. 楽観的にDBを更新
-  const parsedBoard = Board.parse(user.did, JSON.parse(rawBoard));
+  const parsedBoard = Board.of(
+    user.did,
+    Board.parseCards(JSON.parse(rawBoard)),
+  );
   await boardService.createOrUpdateBoard({
     board: parsedBoard,
   });

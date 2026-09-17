@@ -37,16 +37,17 @@ const handleCreateOrUpdate = async (
     | CommitCreateEvent<"blue.linkat.board">
     | CommitUpdateEvent<"blue.linkat.board">,
 ) => {
-  const board = await tryCatch((input: unknown) =>
-    Board.parse(event.did, input),
-  )(event.commit.record);
-  if (board instanceof Error) {
+  const cards = await tryCatch((input: unknown) => Board.parseCards(input))(
+    event.commit.record,
+  );
+  if (cards instanceof Error) {
     logger.warn(
       { record: event.commit.record },
       "ボードのパースに失敗しました",
     );
     return;
   }
+  const board = Board.of(event.did, cards);
   const user = await userService.findOrFetchUser({
     handleOrDid: event.did,
   });
