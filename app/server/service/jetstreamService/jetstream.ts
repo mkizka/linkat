@@ -33,7 +33,7 @@ jetstream.on("error", (error) => {
   logger.error(error, "Jetstreamでエラーが発生しました");
 });
 
-const handleCreateOrUpdate = async (
+export const handleCreateOrUpdate = async (
   event:
     | CommitCreateEvent<"blue.linkat.board">
     | CommitUpdateEvent<"blue.linkat.board">,
@@ -52,6 +52,13 @@ const handleCreateOrUpdate = async (
   const user = await userService.findOrFetchUser({
     handleOrDid: event.did,
   });
+  if (!user) {
+    logger.warn(
+      { did: event.did },
+      "ユーザーが見つからないためボードの更新をスキップしました",
+    );
+    return;
+  }
   await boardRepository.save(board);
   logger.info({ user, board }, "ボードを更新しました");
 };
