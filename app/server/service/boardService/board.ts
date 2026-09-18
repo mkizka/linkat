@@ -35,6 +35,13 @@ const fetchBoardInPDS = async (userDid: Did) => {
   return new Board(userDid, cards);
 };
 
+export const saveBoard = async (
+  board: Board,
+  { repository = boardRepository }: { repository?: BoardRepository } = {},
+) => {
+  await repository.save(board);
+};
+
 // TODO: 全部の処理を一つのトランザクションで行う
 export const findOrFetchBoard = async (
   userDid: Did,
