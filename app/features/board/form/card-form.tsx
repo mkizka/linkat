@@ -54,9 +54,11 @@ export function CardForm() {
         {t("card-form.help-input-message")}
       </p>
       <div>
-        <label className="form-control">
-          <div className="label">
-            <span className="label-text">{t("card-form.emoji-label")}</span>
+        <label className="flex flex-col">
+          <div className="flex items-center justify-between px-1 py-2">
+            <span className="text-sm text-base-content">
+              {t("card-form.emoji-label")}
+            </span>
           </div>
           <input {...getInputProps(fields.emoji, { type: "hidden" })} />
         </label>

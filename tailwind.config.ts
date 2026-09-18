@@ -1,5 +1,4 @@
 import typography from "@tailwindcss/typography";
-import daisyui from "daisyui";
 import type { Config } from "tailwindcss";
 import plugin from "tailwindcss/plugin";
 import animate from "tailwindcss-animate";
@@ -21,9 +20,6 @@ export default {
       murecho: ["murecho", "sans-serif"],
     },
   },
-  plugins: [typography, daisyui, animate, lightSelectorPlugin],
-  // https://daisyui.com/docs/config/
-  daisyui: {
-    logs: false,
-  },
+  // daisyuiはdaisyui v5に型定義が無いため app/tailwind.css の @plugin で読み込む
+  plugins: [typography, animate, lightSelectorPlugin],
 } satisfies Config;

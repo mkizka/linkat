@@ -75,14 +75,14 @@ export function LoginForm() {
             {form.errors}
           </div>
         )}
-        <div className="form-control">
+        <div className="flex flex-col">
           <div className="join">
             <div className="join-item flex w-12 items-center justify-center rounded-r-full bg-neutral text-neutral-content">
               <AtSymbolIcon className="size-5" />
             </div>
             <input
               ref={handleInputRef}
-              className="input join-item input-bordered w-full"
+              className="input join-item w-full"
               placeholder="example.bsky.social"
               autoComplete="username"
               data-testid="login-form__handle"
