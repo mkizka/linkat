@@ -2,4 +2,8 @@
 set -euo pipefail
 
 docker compose up -d --wait
-pnpm prisma migrate deploy
+set -a
+source .env
+set +a
+node ./scripts/ensure-database.js
+NODE_ENV=development pnpm drizzle-kit migrate
