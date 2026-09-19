@@ -1,9 +1,7 @@
 import type { Did } from "@atproto/did";
-import { eq } from "drizzle-orm";
 
 import { Board } from "~/models/board";
-import { db } from "~/server/infrastructure/drizzle";
-import { boardTable } from "~/server/infrastructure/schema";
+import { prisma } from "~/server/infrastructure/prisma";
 
 export interface BoardRepository {
   find: (userDid: Did) => Promise<Board | null>;
@@ -13,27 +11,47 @@ export interface BoardRepository {
 
 export const boardRepository: BoardRepository = {
   find: async (userDid) => {
-    const [row] = await db
-      .select()
-      .from(boardTable)
-      .where(eq(boardTable.userDid, userDid));
+    const row = await prisma.board.findFirst({
+      where: {
+        user: {
+          did: userDid,
+        },
+      },
+      orderBy: {
+        // ユーザーはハンドルの変更などで複数存在する可能性があるので、後から作成されたものを優先する
+        user: {
+          createdAt: "desc",
+        },
+      },
+    });
     if (!row) {
       return null;
     }
     return new Board(userDid, Board.parseCards(JSON.parse(row.record)));
   },
   save: async (board) => {
-    const data = {
-      userDid: board.userDid,
+    const createData = {
+      user: {
+        connect: {
+          did: board.userDid,
+        },
+      },
       record: board.toRecordJSON(),
       updatedAt: new Date(),
     };
-    await db
-      .insert(boardTable)
-      .values(data)
-      .onConflictDoUpdate({ target: boardTable.userDid, set: data });
+    await prisma.board.upsert({
+      where: {
+        userDid: board.userDid,
+      },
+      update: createData,
+      create: createData,
+    });
   },
   delete: async (userDid) => {
-    await db.delete(boardTable).where(eq(boardTable.userDid, userDid));
+    await prisma.board.deleteMany({
+      where: {
+        userDid,
+      },
+    });
   },
 };

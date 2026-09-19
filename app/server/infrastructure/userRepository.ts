@@ -1,9 +1,7 @@
 import type { Did } from "@atproto/did";
-import { desc, eq } from "drizzle-orm";
 
 import { User } from "~/models/user";
-import { db } from "~/server/infrastructure/drizzle";
-import { userTable } from "~/server/infrastructure/schema";
+import { prisma } from "~/server/infrastructure/prisma";
 
 export interface UserRepository {
   findByDid: (did: Did) => Promise<User | null>;
@@ -13,22 +11,22 @@ export interface UserRepository {
 
 export const userRepository: UserRepository = {
   findByDid: async (did) => {
-    const [row] = await db
-      .select()
-      .from(userTable)
-      .where(eq(userTable.did, did))
-      .orderBy(desc(userTable.createdAt))
-      .limit(1);
-    return row ? new User(row) : null;
+    const row = await prisma.user.findFirst({
+      where: { did },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+    return row && new User(row);
   },
   findByHandle: async (handle) => {
-    const [row] = await db
-      .select()
-      .from(userTable)
-      .where(eq(userTable.handle, handle))
-      .orderBy(desc(userTable.createdAt))
-      .limit(1);
-    return row ? new User(row) : null;
+    const row = await prisma.user.findFirst({
+      where: { handle },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+    return row && new User(row);
   },
   save: async (user) => {
     const data = {
@@ -39,9 +37,10 @@ export const userRepository: UserRepository = {
       handle: user.handle,
       updatedAt: user.updatedAt,
     };
-    await db
-      .insert(userTable)
-      .values(data)
-      .onConflictDoUpdate({ target: userTable.did, set: data });
+    await prisma.user.upsert({
+      where: { did: user.did },
+      create: data,
+      update: data,
+    });
   },
 };
