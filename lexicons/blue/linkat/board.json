@@ -35,6 +35,10 @@
         "emoji": {
           "type": "string",
           "description": "Emoji of the card"
+        },
+        "verification": {
+          "type": "boolean",
+          "description": "Whether the link should be marked as rel=\"me\" for identity verification (https://microformats.org/wiki/rel-me)"
         }
       }
     }

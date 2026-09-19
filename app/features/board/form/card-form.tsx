@@ -100,6 +100,21 @@ export function CardForm() {
           }}
         />
       )}
+      <div>
+        <label className="label cursor-pointer justify-start gap-2">
+          <input
+            {...getInputProps(fields.verification, { type: "checkbox" })}
+            className="checkbox"
+            data-testid="card-form__verification"
+          />
+          <span className="label-text">
+            {t("card-form.verification-label")}
+          </span>
+        </label>
+        <p className="text-sm text-gray-400">
+          {t("card-form.verification-help-message")}
+        </p>
+      </div>
       <input {...getInputProps(fields.id, { type: "hidden" })} />
       <div className="mt-2 flex flex-col gap-2">
         <Button

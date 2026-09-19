@@ -74,6 +74,7 @@ export function SortableCard({
     form.update({ name: "text", value: card.text });
     form.update({ name: "url", value: card.url });
     form.update({ name: "emoji", value: card.emoji });
+    form.update({ name: "verification", value: card.verification });
     form.update({ name: "id", value: card.id });
     cardModal.open();
   };
@@ -83,7 +84,7 @@ export function SortableCard({
       <a
         href={card.url}
         target="_blank"
-        rel="noreferrer"
+        rel={card.verification ? "me noreferrer" : "noreferrer"}
         className="relative block"
         data-umami-event="click-card-link"
       >

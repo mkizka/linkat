@@ -14,6 +14,7 @@ export const cardSchema = z.object({
     .optional(),
   text: z.string().optional(),
   emoji: z.string().refine(isOnlySingleEmoji).or(z.literal("")).optional(),
+  verification: z.boolean().optional(),
 });
 
 export type ValidCard = z.infer<typeof cardSchema>;

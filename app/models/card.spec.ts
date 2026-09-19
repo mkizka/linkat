@@ -19,6 +19,8 @@ describe("cardSchema", () => {
     ${{ emoji: "👨‍👩‍👧‍👦" }}                | ${{ emoji: "👨‍👩‍👧‍👦" }}                | ${"複数コードポイントの絵文字（家族）をパースできる"}
     ${{ emoji: "🏳️‍🌈" }}                | ${{ emoji: "🏳️‍🌈" }}                | ${"複数コードポイントの絵文字（虹色の旗）をパースできる"}
     ${{ emoji: "👨🏿‍💻" }}                | ${{ emoji: "👨🏿‍💻" }}                | ${"肌色修飾子付き絵文字をパースできる"}
+    ${{ verification: true }}         | ${{ verification: true }}         | ${"verificationがtrueでもパース成功"}
+    ${{ verification: false }}        | ${{ verification: false }}        | ${"verificationがfalseでもパース成功"}
   `("$description", ({ card, expected }) => {
     expect(cardSchema.safeParse(card).data).toEqual(expected);
   });
@@ -31,6 +33,7 @@ describe("cardSchema", () => {
     ${{ emoji: "😀😀" }}                     | ${"2文字の絵文字はパース失敗"}
     ${{ emoji: "👍🏻👍🏻" }}                     | ${"2文字の絵文字（肌色修飾子付き）はパース失敗"}
     ${{ emoji: "😀😀😀" }}                   | ${"3文字以上の絵文字はパース失敗"}
+    ${{ verification: "true" }}              | ${"verificationが文字列だとパース失敗"}
     ${[]}                                    | ${"オブジェクトでなければパース失敗"}
   `("$description", ({ card }) => {
     expect(() => cardSchema.parse(card)).toThrow();

@@ -45,6 +45,7 @@ export function BoardViewer({ user, board, url, editable, isMine }: Props) {
               id: payload.id,
               text: payload.text,
               emoji: payload.emoji,
+              verification: payload.verification,
               url: resolvedUrl,
             };
           }

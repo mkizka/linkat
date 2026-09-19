@@ -64,7 +64,9 @@
     "emoji-select-button": "絵文字を選択",
     "emoji-reset-button": "未選択に戻す",
     "help-input-message": "URLかテキストはどちらか空欄でもOKです。",
-    "help-emoji-message": "未選択時はURLに応じて自動で決まります。"
+    "help-emoji-message": "未選択時はURLに応じて自動で決まります。",
+    "verification-label": "本人確認用リンクにする",
+    "verification-help-message": "オンにするとリンクに rel=\"me\" が付与され、MastodonやMisskeyなどのプロフィール確認機能で本人確認に利用できます。"
   },
   "card-form-modal": {
     "add-card": "カードを追加"

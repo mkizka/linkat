@@ -63,7 +63,9 @@
     "emoji-select-button": "Select emoji",
     "emoji-reset-button": "Reset selection",
     "help-input-message": "Either the URL or text can be left blank.",
-    "help-emoji-message": "When not selected, it will be automatically determined based on the URL."
+    "help-emoji-message": "When not selected, it will be automatically determined based on the URL.",
+    "verification-label": "Mark as verification link",
+    "verification-help-message": "When enabled, the link gets rel=\"me\" so services like Mastodon or Misskey can use it to verify your identity."
   },
   "card-form-modal": {
     "add-card": "Add Card"
