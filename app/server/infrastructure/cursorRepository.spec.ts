@@ -1,15 +1,19 @@
-import { prisma } from "~/server/infrastructure/prisma";
+import { Pool } from "pg";
+
+import { env } from "~/utils/env";
 
 import { cursorRepository } from "./cursorRepository";
 
+const pool = new Pool({ connectionString: env.DATABASE_URL });
+
 describe("cursorRepository", () => {
   beforeEach(async () => {
-    await prisma.jetstreamCursor.deleteMany();
+    await pool.query(
+      `TRUNCATE TABLE "JetstreamCursor" RESTART IDENTITY CASCADE;`,
+    );
   });
 
-  afterAll(async () => {
-    await prisma.$disconnect();
-  });
+  afterAll(() => pool.end());
 
   describe("load", () => {
     test("保存されていない場合はundefinedを返す", async () => {
