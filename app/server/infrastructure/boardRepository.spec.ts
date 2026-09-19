@@ -1,11 +1,18 @@
 import { asDid } from "@atproto/did";
+import { Pool } from "pg";
 
 import { Board } from "~/models/board";
 import { BoardFactory, cardsFromFactory } from "~/server/factories/board";
 import { UserFactory } from "~/server/factories/user";
-import { prisma } from "~/server/infrastructure/prisma";
+import { env } from "~/utils/env";
 
 import { boardRepository } from "./boardRepository";
+
+const pool = new Pool({ connectionString: env.DATABASE_URL });
+
+afterAll(async () => {
+  await pool.end();
+});
 
 describe("boardRepository", () => {
   describe("find", () => {
@@ -51,9 +58,10 @@ describe("boardRepository", () => {
       // assert
       const actual = await boardRepository.find(asDid(existing.userDid));
       expect(actual).toEqual(updated);
-      const rows = await prisma.board.findMany({
-        where: { userDid: existing.userDid },
-      });
+      const { rows } = await pool.query(
+        `SELECT id FROM "Board" WHERE "userDid" = $1`,
+        [existing.userDid],
+      );
       expect(rows).toHaveLength(1);
     });
   });
