@@ -11,30 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: Publish lexicon (attempt 1)
-        id: lex-publish-1
-        uses: mkizka/lex-publish@27d56dd1a20f37a3c7957ddf1ab836c05f3c74a3 # v1.1.1
-        continue-on-error: true
-        with:
-          lint: false
-          publish: ${{ github.ref == 'refs/heads/main' }}
-        env:
-          GOAT_USERNAME: ${{ secrets.GOAT_USERNAME }}
-          GOAT_PASSWORD: ${{ secrets.GOAT_PASSWORD }}
-      - name: Publish lexicon (attempt 2)
-        id: lex-publish-2
-        if: steps.lex-publish-1.outcome == 'failure'
-        uses: mkizka/lex-publish@27d56dd1a20f37a3c7957ddf1ab836c05f3c74a3 # v1.1.1
-        continue-on-error: true
-        with:
-          lint: false
-          publish: ${{ github.ref == 'refs/heads/main' }}
-        env:
-          GOAT_USERNAME: ${{ secrets.GOAT_USERNAME }}
-          GOAT_PASSWORD: ${{ secrets.GOAT_PASSWORD }}
-      - name: Publish lexicon (attempt 3)
-        if: steps.lex-publish-2.outcome == 'failure'
-        uses: mkizka/lex-publish@27d56dd1a20f37a3c7957ddf1ab836c05f3c74a3 # v1.1.1
+      - uses: mkizka/lex-publish@27d56dd1a20f37a3c7957ddf1ab836c05f3c74a3 # v1.1.1
         with:
           lint: false
           publish: ${{ github.ref == 'refs/heads/main' }}
