@@ -1,10 +1,12 @@
 import { asDid } from "@atproto/did";
 import { CommitType, EventType } from "@skyware/jetstream";
+import { eq } from "drizzle-orm";
 import { http, HttpResponse } from "msw";
 
 import { mockedLogger } from "~/mocks/logger";
 import { server } from "~/mocks/server";
-import { prisma } from "~/server/infrastructure/prisma";
+import { db } from "~/server/infrastructure/drizzle";
+import { boardTable } from "~/server/infrastructure/schema";
 
 import { handleCreateOrUpdate } from "./jetstream";
 
@@ -45,8 +47,11 @@ describe("jetstreamService", () => {
         { did },
         "ユーザーが見つからないためボードの更新をスキップしました",
       );
-      const board = await prisma.board.findFirst({ where: { userDid: did } });
-      expect(board).toBeNull();
+      const [board] = await db
+        .select()
+        .from(boardTable)
+        .where(eq(boardTable.userDid, did));
+      expect(board).toBeUndefined();
     });
   });
 });
