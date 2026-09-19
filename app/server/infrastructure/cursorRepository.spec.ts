@@ -7,6 +7,10 @@ describe("cursorRepository", () => {
     await prisma.jetstreamCursor.deleteMany();
   });
 
+  afterAll(async () => {
+    await prisma.$disconnect();
+  });
+
   describe("load", () => {
     test("保存されていない場合はundefinedを返す", async () => {
       // arrange

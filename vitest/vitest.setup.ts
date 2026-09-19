@@ -1,5 +1,4 @@
 import { server } from "~/mocks/server";
-import { prisma } from "~/server/infrastructure/prisma";
 
 import { disconnectTruncatePool, truncateAllTables } from "./truncate";
 
@@ -13,7 +12,6 @@ beforeEach(async () => {
 });
 
 afterAll(async () => {
-  await prisma.$disconnect();
   await disconnectTruncatePool();
 });
 
