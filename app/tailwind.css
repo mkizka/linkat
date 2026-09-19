@@ -2,7 +2,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-/* .client/.server はReact Routerの規約用ディレクトリで、自動コンテンツ検出の対象外(隠しディレクトリ扱い)になるため明示 */
 @source "./**/{**,.client,.server}/**/*.{js,jsx,ts,tsx}";
 
 @plugin "daisyui" {
@@ -26,7 +25,6 @@ body {
   height: 100%;
 }
 
-/* daisyUI v5のデフォルトneutral色(ほぼ黒)が濃すぎるため、v4相当の色味に戻す */
 :root {
   --color-neutral: oklch(32.18% 0.0248 255.7);
 }
