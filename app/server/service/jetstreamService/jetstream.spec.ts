@@ -1,12 +1,16 @@
 import { asDid } from "@atproto/did";
 import { CommitType, EventType } from "@skyware/jetstream";
 import { http, HttpResponse } from "msw";
+import { Pool } from "pg";
 
 import { mockedLogger } from "~/mocks/logger";
 import { server } from "~/mocks/server";
-import { prisma } from "~/server/infrastructure/prisma";
+import { env } from "~/utils/env";
 
 import { handleCreateOrUpdate } from "./jetstream";
+
+const pool = new Pool({ connectionString: env.DATABASE_URL });
+afterAll(() => pool.end());
 
 const dummyEvent = (did: string) =>
   ({
@@ -45,8 +49,11 @@ describe("jetstreamService", () => {
         { did },
         "ユーザーが見つからないためボードの更新をスキップしました",
       );
-      const board = await prisma.board.findFirst({ where: { userDid: did } });
-      expect(board).toBeNull();
+      const { rows } = await pool.query(
+        `SELECT * FROM "Board" WHERE "userDid" = $1`,
+        [did],
+      );
+      expect(rows).toHaveLength(0);
     });
   });
 });
