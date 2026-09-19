@@ -1,4 +1,3 @@
-import { initialize, resetSequence } from "~/generated/fabbrica";
 import { server } from "~/mocks/server";
 import { prisma } from "~/server/infrastructure/prisma";
 
@@ -9,13 +8,7 @@ afterEach(() => {
   vi.useRealTimers();
 });
 
-// prisma
-beforeAll(() => {
-  initialize({ prisma: () => prisma });
-});
-
 beforeEach(async () => {
-  resetSequence();
   await truncateAllTables();
 });
 
