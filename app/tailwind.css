@@ -27,7 +27,6 @@ body {
 
 :root {
   --color-neutral: oklch(32.18% 0.0248 255.7);
-  --card-p: 2rem;
   background-color: var(--color-base-300);
 }
 
