@@ -1,10 +1,11 @@
-import { prisma } from "~/server/infrastructure/prisma";
+import { db } from "~/server/infrastructure/drizzle";
+import { jetstreamCursorTable } from "~/server/infrastructure/schema";
 
 import { cursorRepository } from "./cursorRepository";
 
 describe("cursorRepository", () => {
   beforeEach(async () => {
-    await prisma.jetstreamCursor.deleteMany();
+    await db.delete(jetstreamCursorTable);
   });
 
   describe("load", () => {
