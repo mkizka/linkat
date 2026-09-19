@@ -78,7 +78,6 @@
     "@mkizka/eslint-config": "10.0.0",
     "@mkizka/eslint-plugin-aaa": "1.0.2",
     "@playwright/test": "1.63.0",
-    "@quramy/prisma-fabbrica": "2.3.3",
     "@react-router/dev": "8.3.1",
     "@tailwindcss/typography": "0.5.20",
     "@types/express": "5.0.6",
