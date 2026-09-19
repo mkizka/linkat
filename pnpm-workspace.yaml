@@ -8,3 +8,4 @@ allowBuilds:
   unrs-resolver: false
 minimumReleaseAgeExclude:
   - "@atpassport/client@0.2.3"
+  - daisyui@5.7.42

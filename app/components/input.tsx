@@ -8,11 +8,9 @@ type Props = ComponentProps<"input"> & {
 export function Input({ label, errors, ...props }: Props) {
   return (
     <div>
-      <label className="form-control">
-        <div className="label">
-          <span className="label-text">{label}</span>
-        </div>
-        <input className="input input-bordered" {...props} />
+      <label className="fieldset">
+        <span className="label">{label}</span>
+        <input className="input" {...props} />
       </label>
       {errors && <p className="p-1 text-sm text-error">{errors}</p>}
     </div>
