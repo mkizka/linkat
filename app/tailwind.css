@@ -26,6 +26,11 @@ body {
   height: 100%;
 }
 
+/* daisyUI v5のデフォルトneutral色(ほぼ黒)が濃すぎるため、v4相当の色味に戻す */
+:root {
+  --color-neutral: oklch(32.18% 0.0248 255.7);
+}
+
 .utils--center {
   @apply flex h-full w-full items-center justify-center;
 }
