@@ -9,7 +9,24 @@ jobs:
   tangled:
     runs-on: ubuntu-latest
     steps:
-      - uses: gwennlbh/to-tangled@c2895c0be7bac6c87ca03ed04a649d66072a026e # v0.4
+      - name: Push to Tangled (attempt 1)
+        id: tangled-1
+        uses: gwennlbh/to-tangled@c2895c0be7bac6c87ca03ed04a649d66072a026e # v0.4
+        continue-on-error: true
+        with:
+          repo: linkat.blue/linkat
+          ssh-key: ${{ secrets.TANGLED_PRIVATE_KEY }}
+      - name: Push to Tangled (attempt 2)
+        id: tangled-2
+        if: steps.tangled-1.outcome == 'failure'
+        uses: gwennlbh/to-tangled@c2895c0be7bac6c87ca03ed04a649d66072a026e # v0.4
+        continue-on-error: true
+        with:
+          repo: linkat.blue/linkat
+          ssh-key: ${{ secrets.TANGLED_PRIVATE_KEY }}
+      - name: Push to Tangled (attempt 3)
+        if: steps.tangled-2.outcome == 'failure'
+        uses: gwennlbh/to-tangled@c2895c0be7bac6c87ca03ed04a649d66072a026e # v0.4
         with:
           repo: linkat.blue/linkat
           ssh-key: ${{ secrets.TANGLED_PRIVATE_KEY }}
