@@ -2,4 +2,4 @@
 set -euo pipefail
 
 docker compose up db -d --wait > /dev/null
-pnpm prisma migrate deploy
+NODE_ENV=test pnpm drizzle-kit migrate

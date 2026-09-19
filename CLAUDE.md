@@ -29,7 +29,7 @@ pnpm all              # typecheck、format、testを全て実行
 
 - **フレームワーク**: React Router v7 (旧Remix)
 - **言語**: TypeScript
-- **データベース**: PostgreSQL (Prisma経由)
+- **データベース**: PostgreSQL (Drizzle ORM経由)
 - **認証**: AT Protocol OAuth 2.0
 - **状態管理**: Jotai (トースト通知などのクライアント状態)
 - **スタイリング**: Tailwind CSS
@@ -41,7 +41,8 @@ pnpm all              # typecheck、format、testを全て実行
 - `app/server/`: サーバーサイドロジックとサービス
 - `app/features/`: 機能別コンポーネント
 - `app/models/`: データ検証用Zodスキーマ
-- `prisma/`: データベーススキーマとマイグレーション
+- `app/server/infrastructure/schema.ts`: Drizzleのテーブルスキーマ定義
+- `drizzle/`: Drizzleのマイグレーションファイル
 
 ### データフロー
 
@@ -62,16 +63,16 @@ pnpm all              # typecheck、format、testを全て実行
 ### テスト
 
 - モデルとサービスのユニットテストはVitestで記述
-- テストではPrismaモッククライアントを使用（自動設定済み）
+- テストは実際のPostgreSQLに接続し、各テスト前にテーブルをTRUNCATEして初期化（自動設定済み）
 - E2EテストはPlaywrightで複数ブラウザをサポート
 - テストファイルはソースファイルと同じ場所に`*.spec.ts`として配置
 
 ### データベース変更
 
 ```bash
-# prisma/schema.prismaを変更した後
-pnpm prisma migrate dev --name 変更内容の説明
-pnpm prisma generate
+# app/server/infrastructure/schema.tsを変更した後
+pnpm drizzle-kit generate --name 変更内容の説明
+pnpm drizzle-kit migrate
 ```
 
 ### 環境変数

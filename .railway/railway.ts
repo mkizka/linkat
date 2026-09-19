@@ -45,7 +45,7 @@ export default defineRailway((ctx) => {
     },
     healthcheck: "/health",
     healthcheckTimeout: 60,
-    preDeploy: "node_modules/.bin/prisma migrate deploy",
+    preDeploy: "node ./dist/migrate.js",
     replicas: { "asia-southeast1-eqsg3a": 1 },
     domains: prod ? env.RAILWAY_CONFIG_DOMAINS : [],
     deploy: {
