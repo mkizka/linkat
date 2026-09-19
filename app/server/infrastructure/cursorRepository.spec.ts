@@ -1,12 +1,19 @@
-import { db } from "~/server/infrastructure/drizzle";
-import { jetstreamCursorTable } from "~/server/infrastructure/schema";
+import { Pool } from "pg";
+
+import { env } from "~/utils/env";
 
 import { cursorRepository } from "./cursorRepository";
 
+const pool = new Pool({ connectionString: env.DATABASE_URL });
+
 describe("cursorRepository", () => {
   beforeEach(async () => {
-    await db.delete(jetstreamCursorTable);
+    await pool.query(
+      `TRUNCATE TABLE "JetstreamCursor" RESTART IDENTITY CASCADE;`,
+    );
   });
+
+  afterAll(() => pool.end());
 
   describe("load", () => {
     test("保存されていない場合はundefinedを返す", async () => {
