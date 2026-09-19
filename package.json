@@ -89,7 +89,7 @@
     "@types/umami": "2.10.1",
     "@types/ws": "8.18.1",
     "@vitest/coverage-v8": "5.0.0",
-    "daisyui": "5.7.42",
+    "daisyui": "5.7.40",
     "drizzle-kit": "0.31.10",
     "esbuild": "0.28.2",
     "eslint": "10.10.0",

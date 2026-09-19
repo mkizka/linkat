@@ -10,7 +10,6 @@
 }
 @plugin "@tailwindcss/typography";
 
-/* https://stackoverflow.com/questions/77742654/tailwindcss-how-to-do-a-light-mode-only-modification */
 @custom-variant light (@media (prefers-color-scheme: light));
 
 @theme {
