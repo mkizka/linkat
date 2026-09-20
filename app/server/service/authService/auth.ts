@@ -1,37 +1,18 @@
-import type { Did } from "@atproto/did";
-import { createCookie, createCookieSessionStorage } from "react-router"; // or cloudflare/deno
-
 import { LinkatAgent } from "~/libs/agent";
 import { atpassportClient } from "~/server/infrastructure/atpassportClient";
-import { oauthClient } from "~/server/infrastructure/oauthClient";
-import { userService } from "~/server/service/userService";
-import { env } from "~/utils/env";
-
-type SessionData = {
-  did: Did;
-};
-
-type SessionFlashData = {
-  error: string;
-};
-
-const {
-  getSession: _getSession,
+import {
+  atpstateCookie,
   commitSession,
   destroySession,
-} = createCookieSessionStorage<SessionData, SessionFlashData>({
-  cookie: {
-    httpOnly: true,
-    maxAge: 30 * 24 * 60 * 60,
-    secure: process.env.NODE_ENV === "production",
-    secrets: [env.COOKIE_SECRET],
-  },
-});
+  getSession as getCookieSession,
+} from "~/server/infrastructure/cookie";
+import { oauthClient } from "~/server/infrastructure/oauthClient";
+import { userService } from "~/server/service/userService";
 
-export { commitSession, destroySession };
+export { atpstateCookie, commitSession, destroySession };
 
 export const getSession = (request: Request) => {
-  return _getSession(request.headers.get("Cookie"));
+  return getCookieSession(request.headers.get("Cookie"));
 };
 
 export const getSessionUserDid = async (request: Request) => {
@@ -69,13 +50,6 @@ export const handleCallback = (params: URLSearchParams) =>
 export const getClientMetadata = () => oauthClient.clientMetadata;
 
 export const getJwks = () => oauthClient.jwks;
-
-export const atpstateCookie = createCookie("atpstate", {
-  httpOnly: true,
-  maxAge: 60 * 5, // CSRF対策用の一時的な値を保持するだけなので短め
-  secure: process.env.NODE_ENV === "production",
-  secrets: [env.COOKIE_SECRET],
-});
 
 export const generateAtpassportAuthUrl = () =>
   atpassportClient.generateAuthUrl();

@@ -2,7 +2,15 @@ import { AtPassport } from "@atpassport/client/core";
 
 import { env } from "~/utils/env";
 
-export class ATPassportClient {
+export interface ATPassportClient {
+  generateAuthUrl: () => ReturnType<AtPassport["generateAuthUrl"]>;
+  parseCallback: (
+    url: string,
+    atpstate: string,
+  ) => ReturnType<AtPassport["parseCallback"]>;
+}
+
+class ATPassportClientImpl implements ATPassportClient {
   private readonly atpassport = new AtPassport({
     callbackUrl: `${env.PUBLIC_URL}/login/atpassport/callback`,
   });
@@ -16,4 +24,4 @@ export class ATPassportClient {
   }
 }
 
-export const atpassportClient = new ATPassportClient();
+export const atpassportClient: ATPassportClient = new ATPassportClientImpl();
