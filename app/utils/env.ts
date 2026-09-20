@@ -38,6 +38,7 @@ const server = {
   ATPROTO_PLC_URL: z.url().default("https://plc.directory"),
   UMAMI_SCRIPT_URL: z.string().optional(),
   UMAMI_WEBSITE_ID: z.string().optional(),
+  SENTRY_DSN: z.string().optional(),
   // aboutページで使用するwhitewindの記事情報
   ABOUT_WHTWND_PDS_URL: z
     .string()
