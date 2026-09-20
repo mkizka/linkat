@@ -12,6 +12,7 @@ import { getSessionAgent, getSessionUser } from "~/server/oauth/session";
 import { boardService } from "~/server/service/boardService";
 import { env } from "~/utils/env";
 import { createLogger } from "~/utils/logger";
+import { tryCatch } from "~/utils/tryCatch";
 
 import type { Route } from "./+types/edit";
 
@@ -32,10 +33,14 @@ export async function action({ request, context }: Route.ActionArgs) {
     return { error: i18next.t("edit.invalid-form-error-message") };
   }
   // 1. 楽観的にDBを更新
-  const parsedBoard = new Board(
-    user.did,
-    Board.parseCards(JSON.parse(rawBoard)),
-  );
+  const cards = await tryCatch((input: string) =>
+    Board.parseCards(JSON.parse(input)),
+  )(rawBoard);
+  if (cards instanceof Error) {
+    logger.warn({ error: cards }, "boardの形式が不正でした");
+    return { error: i18next.t("edit.invalid-form-error-message") };
+  }
+  const parsedBoard = new Board(user.did, cards);
   await boardService.saveBoard(parsedBoard);
   try {
     // 2. PDSにも保存
