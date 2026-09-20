@@ -1,4 +1,5 @@
-import { prisma } from "~/server/infrastructure/prisma";
+import { db } from "~/server/infrastructure/drizzle";
+import { jetstreamCursorTable } from "~/server/infrastructure/schema";
 
 export interface CursorRepository {
   load: () => Promise<number | undefined>;
@@ -7,14 +8,16 @@ export interface CursorRepository {
 
 export const cursorRepository: CursorRepository = {
   load: async () => {
-    const row = await prisma.jetstreamCursor.findUnique({ where: { id: 1 } });
-    return row ? Number(row.cursor) : undefined;
+    const [row] = await db.select().from(jetstreamCursorTable);
+    return row?.cursor;
   },
   save: async (cursor) => {
-    await prisma.jetstreamCursor.upsert({
-      where: { id: 1 },
-      create: { id: 1, cursor: BigInt(cursor) },
-      update: { cursor: BigInt(cursor) },
-    });
+    await db
+      .insert(jetstreamCursorTable)
+      .values({ id: 1, cursor })
+      .onConflictDoUpdate({
+        target: jetstreamCursorTable.id,
+        set: { cursor },
+      });
   },
 };
