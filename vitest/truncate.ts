@@ -2,7 +2,13 @@ import { Pool } from "pg";
 
 import { env } from "~/utils/env";
 
-const tablesToTruncate = ["Board", "User", "AuthSession", "AuthState"];
+const tablesToTruncate = [
+  "Board",
+  "User",
+  "AuthSession",
+  "AuthState",
+  "JetstreamCursor",
+];
 
 const pool = new Pool({ connectionString: env.DATABASE_URL });
 
