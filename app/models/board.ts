@@ -3,10 +3,13 @@ import { z } from "zod";
 
 import { cardSchema, type ValidCard } from "./card";
 
+export const BOARD_CARDS_MAX_LENGTH = 100;
+
 const boardSchema = z.object({
   cards: z
     .unknown()
     .array()
+    .max(BOARD_CARDS_MAX_LENGTH)
     .transform((val) =>
       // パースが通るならパース結果、そうでなければフィルタする
       val.flatMap((card) => {

@@ -6,13 +6,15 @@ const isOnlySingleEmoji = (val: string) => {
   return emojis?.length === 1 && val === emojis[0];
 };
 
+export const CARD_TEXT_MAX_LENGTH = 200;
+
 export const cardSchema = z.object({
   url: z
     .url()
     .refine((val) => val.startsWith("https://") || val.startsWith("http://"))
     .or(z.literal(""))
     .optional(),
-  text: z.string().optional(),
+  text: z.string().max(CARD_TEXT_MAX_LENGTH).optional(),
   emoji: z.string().refine(isOnlySingleEmoji).or(z.literal("")).optional(),
 });
 
