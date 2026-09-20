@@ -51,11 +51,11 @@ describe("isBlueskyFeedUrl", () => {
 
 describe("isTwitterProfileUrl", () => {
   test.each`
-    url                              | expected | description
-    ${"https://twitter.com/example"} | ${true}  | ${"twitter.comのプロフィールURLならtrue"}
-    ${"https://x.com/example"}       | ${true}  | ${"x.comのプロフィールURLならtrue"}
-    ${"https://twitter.com/"}        | ${false} | ${"パスが足りなければfalse"}
-    ${"https://example.com/example"} | ${false} | ${"ホストが違えばfalse"}
+    url                                    | expected | description
+    ${"https://twitter.com/example"}       | ${true}  | ${"twitter.comのプロフィールURLならtrue"}
+    ${"https://x.com/example"}             | ${true}  | ${"x.comのプロフィールURLならtrue"}
+    ${"https://twitter.com/example/extra"} | ${false} | ${"パスが多ければfalse"}
+    ${"https://example.com/example"}       | ${false} | ${"ホストが違えばfalse"}
   `("$description", ({ url, expected }: { url: string; expected: boolean }) => {
     expect(isTwitterProfileUrl(new URL(url))).toBe(expected);
   });
@@ -63,10 +63,10 @@ describe("isTwitterProfileUrl", () => {
 
 describe("isGitHubProfileUrl", () => {
   test.each`
-    url                              | expected | description
-    ${"https://github.com/example"}  | ${true}  | ${"GitHubのプロフィールURLならtrue"}
-    ${"https://github.com/"}         | ${false} | ${"パスが足りなければfalse"}
-    ${"https://example.com/example"} | ${false} | ${"ホストが違えばfalse"}
+    url                                   | expected | description
+    ${"https://github.com/example"}       | ${true}  | ${"GitHubのプロフィールURLならtrue"}
+    ${"https://github.com/example/extra"} | ${false} | ${"パスが多ければfalse"}
+    ${"https://example.com/example"}      | ${false} | ${"ホストが違えばfalse"}
   `("$description", ({ url, expected }: { url: string; expected: boolean }) => {
     expect(isGitHubProfileUrl(new URL(url))).toBe(expected);
   });
