@@ -1,9 +1,9 @@
-import type { User } from "@prisma/client";
 import { Resvg } from "@resvg/resvg-js";
 import fs from "fs";
 import { LRUCache } from "lru-cache";
 import satori from "satori";
 
+import type { User } from "~/models/user";
 import { userService } from "~/server/service/userService";
 import { createLogger } from "~/utils/logger";
 

@@ -1,80 +1,26 @@
-import type { ValidBoard } from "~/models/board";
+import { asDid } from "@atproto/did";
+
+import { Board } from "~/models/board";
 import { BoardFactory, cardsFromFactory } from "~/server/factories/board";
 import { UserFactory } from "~/server/factories/user";
-import { prisma } from "~/server/service/prisma";
 
 import { boardService } from ".";
 
-const dummyBoard = {
-  cards: [
-    {
-      url: "https://example.com",
-      text: "board.spec.tsのカード",
-    },
-  ],
-} satisfies ValidBoard;
-
 describe("boardService", () => {
-  describe("createBoard", () => {
-    test("ボードがない場合は新規作成する", async () => {
-      // arrange
-      const user = await UserFactory.create(); // findOrFetchUserが作成するユーザー
-      // act
-      const actual = await boardService.createOrUpdateBoard({
-        userDid: user.did,
-        board: dummyBoard,
-      });
-      // assert
-      expect(await prisma.user.findFirst()).toEqual(user);
-      expect(actual).toEqual(dummyBoard);
-    });
-    test("既存のボードがある場合は更新する", async () => {
-      // arrange
-      const board = await BoardFactory.create();
-      // act
-      const actual = await boardService.createOrUpdateBoard({
-        userDid: board.userDid,
-        board: dummyBoard,
-      });
-      // assert
-      expect(await prisma.user.findFirst()).toMatchObject({
-        did: board.userDid,
-      });
-      expect(actual).not.toEqual(board);
-      expect(actual).toEqual(dummyBoard);
-    });
-    test("既存のボードを更新するとupdatedAtが更新される", async () => {
-      // arrange
-      const board = await BoardFactory.create({
-        updatedAt: new Date("2024-01-01T00:00:00.000Z"),
-      });
-      vi.useFakeTimers();
-      vi.setSystemTime(new Date("2024-01-02T00:00:00.000Z"));
-      // act
-      await boardService.createOrUpdateBoard({
-        userDid: board.userDid,
-        board: dummyBoard,
-      });
-      // assert
-      expect(await prisma.board.findFirst()).toMatchObject({
-        updatedAt: new Date("2024-01-02T00:00:00.000Z"),
-      });
-    });
-  });
   describe("findBoard", () => {
     test("既存のボードがある場合はそのまま返す", async () => {
       // arrange
-      const board = await BoardFactory.create();
+      const existing = await BoardFactory.create();
       // act
-      const actual = await boardService.findBoard(board.userDid);
+      const actual = await boardService.findBoard(asDid(existing.userDid));
       // assert
-      expect(actual).toEqual({ cards: cardsFromFactory });
+      expect(actual).toEqual(new Board(existing.userDid, cardsFromFactory));
     });
-    test("DBにboardが無ければnullを返す", async () => {
+    test("DBにボードが無ければnullを返す", async () => {
       // arrange
       const user = await UserFactory.create();
       // act
-      const actual = await boardService.findBoard(user.did);
+      const actual = await boardService.findBoard(asDid(user.did));
       // assert
       expect(actual).toBeNull();
     });

@@ -1,10 +1,10 @@
 allowBuilds:
-  "@prisma/client": false
-  "@prisma/engines": false
   core-js: false
+  cpu-features: false
   esbuild: false
   msw: false
-  prisma: false
+  protobufjs: false
+  ssh2: false
   unrs-resolver: false
 minimumReleaseAgeExclude:
   - "@atpassport/client@0.2.3"
