@@ -10,7 +10,6 @@ RUN npm i -g corepack@latest && \
 FROM base AS build
 COPY --link package.json pnpm-lock.yaml pnpm-workspace.yaml lexicons.json ./
 COPY --link scripts ./scripts
-COPY --link drizzle ./drizzle
 COPY --link lexicons ./lexicons
 RUN pnpm install --frozen-lockfile
 COPY --link . .
