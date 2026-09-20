@@ -238,6 +238,9 @@ importers:
       clsx:
         specifier: 2.1.1
         version: 2.1.1
+      drizzle-kit:
+        specifier: 0.31.10
+        version: 0.31.10
       drizzle-orm:
         specifier: 0.45.2
         version: 0.45.2(@prisma/client@6.19.3(prisma@6.19.3(typescript@6.0.3))(typescript@6.0.3))(@types/pg@8.23.1)(pg@8.23.0)(prisma@6.19.3(typescript@6.0.3))
@@ -362,9 +365,6 @@ importers:
       daisyui:
         specifier: 4.12.24
         version: 4.12.24(postcss@8.5.28)
-      drizzle-kit:
-        specifier: 0.31.10
-        version: 0.31.10
       esbuild:
         specifier: 0.28.2
         version: 0.28.2
