@@ -33,6 +33,9 @@ export async function loader({ context }: LoaderFunctionArgs) {
         scriptUrl: env.UMAMI_SCRIPT_URL,
         websiteId: env.UMAMI_WEBSITE_ID,
       },
+      ENV: {
+        SENTRY_DSN: env.SENTRY_DSN,
+      },
     },
     { headers: { "Set-Cookie": await localeCookie.serialize(locale) } },
   );
@@ -71,6 +74,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
           <Toaster />
         </UmamiProvider>
         <ScrollRestoration />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `window.ENV = ${JSON.stringify(loaderData?.ENV)}`,
+          }}
+        />
         <Scripts />
         <script async src="https://embed.bsky.app/static/embed.js"></script>
       </body>

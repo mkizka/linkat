@@ -7,7 +7,6 @@ import { BoardViewer } from "~/features/board/board-viewer";
 import { RouteToaster } from "~/features/toast/route";
 import { useUmami } from "~/hooks/useUmami";
 import { getInstance } from "~/i18n/i18n";
-import { Board } from "~/models/board";
 import { getSessionAgent, getSessionUser } from "~/server/oauth/session";
 import { boardService } from "~/server/service/boardService";
 import { env } from "~/utils/env";
@@ -32,10 +31,11 @@ export async function action({ request, context }: Route.ActionArgs) {
     return { error: i18next.t("edit.invalid-form-error-message") };
   }
   // 1. 楽観的にDBを更新
-  const parsedBoard = new Board(
-    user.did,
-    Board.parseCards(JSON.parse(rawBoard)),
-  );
+  const parsedBoard = await boardService.parseBoardFromForm(user.did, rawBoard);
+  if (parsedBoard instanceof Error) {
+    logger.warn({ error: parsedBoard }, "boardの形式が不正でした");
+    return { error: i18next.t("edit.invalid-form-error-message") };
+  }
   await boardService.saveBoard(parsedBoard);
   try {
     // 2. PDSにも保存

@@ -1,17 +1,28 @@
 import { reactRouter } from "@react-router/dev/vite";
+import type { SentryReactRouterBuildOptions } from "@sentry/react-router";
+import { sentryReactRouter } from "@sentry/react-router";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "vite";
 
-export default defineConfig({
+const sentryConfig: SentryReactRouterBuildOptions = {
+  org: process.env.SENTRY_ORG,
+  project: process.env.SENTRY_PROJECT,
+  authToken: process.env.SENTRY_AUTH_TOKEN,
+};
+
+export default defineConfig((configEnv) => ({
   base: process.env.VITE_CONFIG_BASE ?? "/",
-  plugins: [tailwindcss(), reactRouter()],
+  plugins: [
+    tailwindcss(),
+    reactRouter(),
+    !process.env.VITEST && sentryReactRouter(sentryConfig, configEnv),
+  ],
   resolve: {
     tsconfigPaths: true,
   },
   build: {
     target: "es2022",
   },
-  // @ts-expect-error vitest@3 types don't extend vite@8's UserConfig yet
   test: {
     include: ["app/**/*.spec.ts"],
     coverage: {
@@ -23,4 +34,7 @@ export default defineConfig({
     globalSetup: ["./vitest/global-setup.ts"],
     fileParallelism: false,
   },
-});
+  optimizeDeps: {
+    exclude: ["@sentry/react-router"],
+  },
+}));
