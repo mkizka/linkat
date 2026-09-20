@@ -2,5 +2,9 @@
 set -euo pipefail
 
 docker compose up db -d --wait > /dev/null
-docker compose exec -T db createdb -U postgres test 2>/dev/null || true
-node --env-file=.env.test node_modules/drizzle-kit/bin.cjs migrate
+echo "SELECT 'CREATE DATABASE test' WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'test')\gexec" |
+  docker compose exec -T db psql -q -U postgres > /dev/null
+set -a
+source .env.test
+set +a
+pnpm drizzle-kit migrate
