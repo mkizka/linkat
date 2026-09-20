@@ -34,8 +34,8 @@ export async function loader({ request, params, context }: Route.LoaderArgs) {
   });
   return {
     user,
-    board,
-    isMine: user.did === (await getSessionUserDid(request)),
+    board: { cards: board.cards },
+    isMine: user.isOwnedBy(await getSessionUserDid(request)),
     title: `${title} | Linkat`,
     url: `${env.PUBLIC_URL}/${user.handle}`,
     ogImageUrl: `${env.PUBLIC_URL}/${user.handle}/og`,

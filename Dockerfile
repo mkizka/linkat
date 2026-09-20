@@ -10,7 +10,6 @@ RUN npm i -g corepack@latest && \
 FROM base AS build
 COPY --link package.json pnpm-lock.yaml pnpm-workspace.yaml lexicons.json ./
 COPY --link scripts ./scripts
-COPY --link prisma ./prisma
 COPY --link lexicons ./lexicons
 RUN pnpm install --frozen-lockfile
 COPY --link . .
@@ -24,7 +23,8 @@ COPY --from=build /app/node_modules /app/node_modules
 COPY --from=build /app/build /app/build
 COPY --from=build /app/fonts /app/fonts
 COPY --from=build /app/dist /app/dist
-COPY --from=build /app/prisma /app/prisma
+COPY --from=build /app/drizzle /app/drizzle
+COPY --from=build /app/drizzle.config.ts /app/
 COPY --from=build /app/package.json /app/
 
 EXPOSE 3000

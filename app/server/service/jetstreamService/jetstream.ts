@@ -1,17 +1,20 @@
 import type { CommitCreateEvent, CommitUpdateEvent } from "@skyware/jetstream";
 import { Jetstream } from "@skyware/jetstream";
 import WebSocket from "ws";
-import { fromZodError } from "zod-validation-error";
 
-import { boardScheme } from "~/models/board";
+import { Board } from "~/models/board";
+import { cursorRepository } from "~/server/infrastructure/cursorRepository";
 import { boardService } from "~/server/service/boardService";
 import { userService } from "~/server/service/userService";
 import { env } from "~/utils/env";
 import { createLogger } from "~/utils/logger";
+import { tryCatch } from "~/utils/tryCatch";
 
 const logger = createLogger("jetstream");
 
-export const jetstream = new Jetstream({
+const CURSOR_SAVE_INTERVAL_MS = 30_000;
+
+const jetstream = new Jetstream({
   ws: WebSocket,
   endpoint: env.JETSTREAM_URL,
   wantedCollections: ["blue.linkat.board"],
@@ -29,29 +32,33 @@ jetstream.on("error", (error) => {
   logger.error(error, "Jetstreamでエラーが発生しました");
 });
 
-const handleCreateOrUpdate = async (
+export const handleCreateOrUpdate = async (
   event:
     | CommitCreateEvent<"blue.linkat.board">
     | CommitUpdateEvent<"blue.linkat.board">,
 ) => {
-  const parsed = boardScheme.safeParse(event.commit.record);
-  if (!parsed.success) {
+  const cards = await tryCatch((input: unknown) => Board.parseCards(input))(
+    event.commit.record,
+  );
+  if (cards instanceof Error) {
     logger.warn(
-      {
-        record: event.commit.record,
-        error: fromZodError(parsed.error).toString(),
-      },
+      { record: event.commit.record },
       "ボードのパースに失敗しました",
     );
     return;
   }
+  const board = new Board(event.did, cards);
   const user = await userService.findOrFetchUser({
     handleOrDid: event.did,
   });
-  const board = await boardService.createOrUpdateBoard({
-    userDid: event.did,
-    board: parsed.data,
-  });
+  if (!user) {
+    logger.warn(
+      { did: event.did },
+      "ユーザーが見つからないためボードの更新をスキップしました",
+    );
+    return;
+  }
+  await boardService.saveBoard(board);
   logger.info({ user, board }, "ボードを更新しました");
 };
 
@@ -63,3 +70,18 @@ jetstream.onDelete("blue.linkat.board", async (event) => {
   await boardService.deleteBoard(event.did);
   logger.info({ userDid: event.did }, "ボードを削除しました");
 });
+
+export const startJetstream = async () => {
+  const savedCursor = await cursorRepository.load();
+  if (savedCursor !== undefined) {
+    jetstream.cursor = savedCursor;
+  }
+  jetstream.start();
+  setInterval(() => {
+    if (jetstream.cursor !== undefined) {
+      cursorRepository.save(jetstream.cursor).catch((error: unknown) => {
+        logger.error(error, "cursorの保存に失敗しました");
+      });
+    }
+  }, CURSOR_SAVE_INTERVAL_MS).unref();
+};

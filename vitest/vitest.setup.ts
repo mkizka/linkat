@@ -1,30 +1,18 @@
-import { initialize, resetSequence } from "~/generated/fabbrica";
 import { server } from "~/mocks/server";
-import { prisma } from "~/server/service/prisma";
+
+import { disconnectTruncatePool, truncateAllTables } from "./truncate";
 
 // common
 afterEach(() => {
   vi.useRealTimers();
 });
 
-// prisma
-beforeAll(() => {
-  initialize({ prisma: () => prisma });
-});
-
-const tablesToTruncate = ["Board", "User", "AuthSession", "AuthState"];
-
 beforeEach(async () => {
-  resetSequence();
-  await prisma.$executeRawUnsafe(
-    `TRUNCATE TABLE ${tablesToTruncate
-      .map((t) => `"${t}"`)
-      .join(", ")} RESTART IDENTITY CASCADE;`,
-  );
+  await truncateAllTables();
 });
 
 afterAll(async () => {
-  await prisma.$disconnect();
+  await disconnectTruncatePool();
 });
 
 // msw
