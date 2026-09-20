@@ -268,6 +268,9 @@ importers:
       markdown-it:
         specifier: 15.0.1
         version: 15.0.1
+      pg:
+        specifier: 8.23.0
+        version: 8.23.0
       pino:
         specifier: 10.3.1
         version: 10.3.1
@@ -380,9 +383,6 @@ importers:
       npm-run-all2:
         specifier: 9.0.3
         version: 9.0.3
-      pg:
-        specifier: 8.23.0
-        version: 8.23.0
       postcss:
         specifier: 8.5.28
         version: 8.5.28
