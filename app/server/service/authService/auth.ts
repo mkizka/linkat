@@ -1,7 +1,8 @@
 import type { Did } from "@atproto/did";
-import { createCookieSessionStorage } from "react-router"; // or cloudflare/deno
+import { createCookie, createCookieSessionStorage } from "react-router"; // or cloudflare/deno
 
 import { LinkatAgent } from "~/libs/agent";
+import { atpassportClient } from "~/server/infrastructure/atpassportClient";
 import { oauthClient } from "~/server/infrastructure/oauthClient";
 import { userService } from "~/server/service/userService";
 import { env } from "~/utils/env";
@@ -68,3 +69,16 @@ export const handleCallback = (params: URLSearchParams) =>
 export const getClientMetadata = () => oauthClient.clientMetadata;
 
 export const getJwks = () => oauthClient.jwks;
+
+export const atpstateCookie = createCookie("atpstate", {
+  httpOnly: true,
+  maxAge: 60 * 5, // CSRF対策用の一時的な値を保持するだけなので短め
+  secure: process.env.NODE_ENV === "production",
+  secrets: [env.COOKIE_SECRET],
+});
+
+export const generateAtpassportAuthUrl = () =>
+  atpassportClient.generateAuthUrl();
+
+export const parseAtpassportCallback = (url: string, atpstate: string) =>
+  atpassportClient.parseCallback(url, atpstate);

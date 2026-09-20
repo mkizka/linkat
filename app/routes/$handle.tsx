@@ -32,10 +32,11 @@ export async function loader({ request, params, context }: Route.LoaderArgs) {
     displayName: user.displayName,
     handle: user.handle,
   });
+  const userDid = await authService.getSessionUserDid(request);
   return {
     user,
     board: { cards: board.cards },
-    isMine: user.isOwnedBy(await authService.getSessionUserDid(request)),
+    isMine: user.isOwnedBy(userDid),
     title: `${title} | Linkat`,
     url: `${env.PUBLIC_URL}/${user.handle}`,
     ogImageUrl: `${env.PUBLIC_URL}/${user.handle}/og`,
