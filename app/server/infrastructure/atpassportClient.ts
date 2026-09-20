@@ -10,18 +10,11 @@ export interface ATPassportClient {
   ) => ReturnType<AtPassport["parseCallback"]>;
 }
 
-class ATPassportClientImpl implements ATPassportClient {
-  private readonly atpassport = new AtPassport({
-    callbackUrl: `${env.PUBLIC_URL}/login/atpassport/callback`,
-  });
+const atpassport = new AtPassport({
+  callbackUrl: `${env.PUBLIC_URL}/login/atpassport/callback`,
+});
 
-  generateAuthUrl() {
-    return this.atpassport.generateAuthUrl();
-  }
-
-  parseCallback(url: string, atpstate: string) {
-    return this.atpassport.parseCallback(url, atpstate);
-  }
-}
-
-export const atpassportClient: ATPassportClient = new ATPassportClientImpl();
+export const atpassportClient: ATPassportClient = {
+  generateAuthUrl: () => atpassport.generateAuthUrl(),
+  parseCallback: (url, atpstate) => atpassport.parseCallback(url, atpstate),
+};
