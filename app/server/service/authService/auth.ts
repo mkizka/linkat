@@ -2,10 +2,9 @@ import type { Did } from "@atproto/did";
 import { createCookieSessionStorage } from "react-router"; // or cloudflare/deno
 
 import { LinkatAgent } from "~/libs/agent";
+import { oauthClient, scope } from "~/server/infrastructure/oauthClient";
 import { userService } from "~/server/service/userService";
 import { env } from "~/utils/env";
-
-import { oauthClient } from "./client";
 
 type SessionData = {
   did: Did;
@@ -60,3 +59,16 @@ export const getSessionAgent = async (request: Request) => {
   const oauthSession = await oauthClient.restore(userDid);
   return new LinkatAgent(oauthSession);
 };
+
+export const authorize = async (handle: string) => {
+  return await oauthClient.authorize(handle, { scope });
+};
+
+export const handleCallback = async (params: URLSearchParams) => {
+  const { session } = await oauthClient.callback(params);
+  return session.did;
+};
+
+export const getClientMetadata = () => oauthClient.clientMetadata;
+
+export const getJwks = () => oauthClient.jwks;

@@ -1,6 +1,6 @@
 import { redirect } from "react-router";
 
-import { atpassport, atpstateCookie } from "~/server/oauth/atpassport";
+import { atpassport, atpstateCookie } from "~/server/service/authService";
 
 import type { Route } from "./+types/login.atpassport";
 

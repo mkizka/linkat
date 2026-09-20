@@ -7,7 +7,7 @@ import { BoardViewer } from "~/features/board/board-viewer";
 import { RouteToaster } from "~/features/toast/route";
 import { useUmami } from "~/hooks/useUmami";
 import { getInstance } from "~/i18n/i18n";
-import { getSessionAgent, getSessionUser } from "~/server/oauth/session";
+import { authService } from "~/server/service/authService";
 import { boardService } from "~/server/service/boardService";
 import { env } from "~/utils/env";
 import { createLogger } from "~/utils/logger";
@@ -19,8 +19,8 @@ const logger = createLogger("edit");
 export async function action({ request, context }: Route.ActionArgs) {
   const i18next = getInstance(context);
   const [user, agent] = await Promise.all([
-    getSessionUser(request),
-    getSessionAgent(request),
+    authService.getSessionUser(request),
+    authService.getSessionAgent(request),
   ]);
   if (!user || !agent) {
     return { error: i18next.t("login.invalid-session-error-message") };
@@ -48,7 +48,7 @@ export async function action({ request, context }: Route.ActionArgs) {
 }
 
 export async function loader({ request }: Route.LoaderArgs) {
-  const user = await getSessionUser(request);
+  const user = await authService.getSessionUser(request);
   if (!user) {
     throw redirect("/login");
   }

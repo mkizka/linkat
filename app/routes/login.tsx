@@ -5,8 +5,7 @@ import { Main, RootLayout } from "~/components/layout";
 import { LoginForm } from "~/features/login/login-form";
 import { RouteToaster } from "~/features/toast/route";
 import { getInstance } from "~/i18n/i18n";
-import { oauthClient, scope } from "~/server/oauth/client";
-import { getSessionUserDid } from "~/server/oauth/session";
+import { authService } from "~/server/service/authService";
 import { createLogger } from "~/utils/logger";
 
 import type { Route } from "./+types/login";
@@ -21,7 +20,7 @@ export async function action({ request, context }: Route.ActionArgs) {
     return { error: i18next.t("login.unknown-error") };
   }
   try {
-    const url = await oauthClient.authorize(handle, { scope });
+    const url = await authService.authorize(handle);
     return redirect(url.toString());
   } catch (error) {
     logger.error(error, "OAuthログインに失敗しました");
@@ -33,7 +32,7 @@ export async function action({ request, context }: Route.ActionArgs) {
 }
 
 export const loader = async ({ request }: Route.LoaderArgs) => {
-  const userDid = await getSessionUserDid(request);
+  const userDid = await authService.getSessionUserDid(request);
   if (userDid) {
     return redirect("/");
   }
