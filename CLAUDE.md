@@ -62,7 +62,7 @@ pnpm all              # typecheck、format、testを全て実行
 ### テスト
 
 - モデルとサービスのユニットテストはVitestで記述
-- テストは実際のPostgreSQL(`.env.test`のDB)を使用し、各テスト前に全テーブルをTRUNCATEする
+- テストはtestcontainersで起動した実際のPostgreSQLを使用し、各テスト前に全テーブルをTRUNCATEする(Dockerが必要)
 - E2EテストはPlaywrightで複数ブラウザをサポート
 - テストファイルはソースファイルと同じ場所に`*.spec.ts`として配置
 
