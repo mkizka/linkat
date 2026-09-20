@@ -35,6 +35,11 @@ const fetchBoardInPDS = async (userDid: Did) => {
   return new Board(userDid, cards);
 };
 
+export const parseBoardFromForm = tryCatch(
+  (userDid: Did, rawBoard: string) =>
+    new Board(userDid, Board.parseCards(JSON.parse(rawBoard))),
+);
+
 export const saveBoard = async (
   board: Board,
   { repository = boardRepository }: { repository?: BoardRepository } = {},

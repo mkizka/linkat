@@ -3,7 +3,7 @@ import { http, HttpResponse } from "msw";
 
 import { mockedLogger } from "~/mocks/logger";
 import { server } from "~/mocks/server";
-import { Board } from "~/models/board";
+import { Board, BoardParseError } from "~/models/board";
 import { BoardFactory, cardsFromFactory } from "~/server/factories/board";
 import { UserFactory } from "~/server/factories/user";
 
@@ -117,6 +117,40 @@ describe("boardService", () => {
         "PDSからのboardの取得に失敗しました",
       );
       expect(actual).toBeNull();
+    });
+  });
+
+  describe("parseBoardFromForm", () => {
+    test("正しい形式のJSONならBoardを返す", async () => {
+      // arrange
+      const userDid = asDid("did:plc:dummy");
+      const rawBoard = JSON.stringify({ cards: dummyCards });
+      // act
+      const actual = await boardService.parseBoardFromForm(userDid, rawBoard);
+      // assert
+      expect(actual).toEqual(new Board(userDid, dummyCards));
+    });
+    test("JSONとして不正な文字列ならErrorを返す", async () => {
+      // arrange
+      const userDid = asDid("did:plc:dummy");
+      // act
+      const actual = await boardService.parseBoardFromForm(
+        userDid,
+        "{invalid-json",
+      );
+      // assert
+      expect(actual).toBeInstanceOf(SyntaxError);
+    });
+    test("cardsを含まない形式ならBoardParseErrorを返す", async () => {
+      // arrange
+      const userDid = asDid("did:plc:dummy");
+      // act
+      const actual = await boardService.parseBoardFromForm(
+        userDid,
+        JSON.stringify({}),
+      );
+      // assert
+      expect(actual).toBeInstanceOf(BoardParseError);
     });
   });
 });
