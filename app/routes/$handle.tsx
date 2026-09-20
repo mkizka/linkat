@@ -2,8 +2,8 @@ import { Footer, Main } from "~/components/layout";
 import { BoardViewer } from "~/features/board/board-viewer";
 import { ShareModal } from "~/features/board/share-modal";
 import { getInstance } from "~/i18n/i18n";
-import { authService } from "~/server/service/authService";
 import { boardService } from "~/server/service/boardService";
+import { sessionService } from "~/server/service/sessionService";
 import { userService } from "~/server/service/userService";
 import { env } from "~/utils/env";
 import { createMeta } from "~/utils/meta";
@@ -32,7 +32,7 @@ export async function loader({ request, params, context }: Route.LoaderArgs) {
     displayName: user.displayName,
     handle: user.handle,
   });
-  const userDid = await authService.getSessionUserDid(request);
+  const userDid = await sessionService.getSessionUserDid(request);
   return {
     user,
     board: { cards: board.cards },

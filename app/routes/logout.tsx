@@ -1,14 +1,14 @@
 import { redirect } from "react-router";
 
-import { authService } from "~/server/service/authService";
+import { sessionService } from "~/server/service/sessionService";
 
 import type { Route } from "./+types/logout";
 
 export const action = async ({ request }: Route.ActionArgs) => {
-  const session = await authService.getSession(request);
+  const session = await sessionService.getSession(request);
   return redirect("/", {
     headers: {
-      "Set-Cookie": await authService.destroySession(session),
+      "Set-Cookie": await sessionService.destroySession(session),
     },
   });
 };

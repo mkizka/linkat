@@ -6,6 +6,7 @@ import { LoginForm } from "~/features/login/login-form";
 import { RouteToaster } from "~/features/toast/route";
 import { getInstance } from "~/i18n/i18n";
 import { authService } from "~/server/service/authService";
+import { sessionService } from "~/server/service/sessionService";
 import { createLogger } from "~/utils/logger";
 
 import type { Route } from "./+types/login";
@@ -32,7 +33,7 @@ export async function action({ request, context }: Route.ActionArgs) {
 }
 
 export const loader = async ({ request }: Route.LoaderArgs) => {
-  const userDid = await authService.getSessionUserDid(request);
+  const userDid = await sessionService.getSessionUserDid(request);
   if (userDid) {
     return redirect("/");
   }

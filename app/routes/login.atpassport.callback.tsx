@@ -1,5 +1,6 @@
 import { redirect } from "react-router";
 
+import { atpassportService } from "~/server/service/atpassportService";
 import { authService } from "~/server/service/authService";
 import { createLogger } from "~/utils/logger";
 
@@ -8,7 +9,7 @@ import type { Route } from "./+types/login.atpassport.callback";
 const logger = createLogger("login.atpassport.callback");
 
 export async function loader({ request }: Route.LoaderArgs) {
-  const savedAtpstate: unknown = await authService.atpstateCookie.parse(
+  const savedAtpstate: unknown = await atpassportService.atpstateCookie.parse(
     request.headers.get("Cookie"),
   );
   if (typeof savedAtpstate !== "string") {
@@ -20,10 +21,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 
   let handle;
   try {
-    const result = authService.parseAtpassportCallback(
-      request.url,
-      savedAtpstate,
-    );
+    const result = atpassportService.parseCallback(request.url, savedAtpstate);
     handle = result.username;
   } catch (error) {
     logger.error(error, "ATPassportのコールバック検証に失敗しました");
