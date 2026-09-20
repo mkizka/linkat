@@ -1,6 +1,5 @@
 allowBuilds:
   "@sentry/cli": true
-  "@sentry/node-cpu-profiler": true
   core-js: false
   cpu-features: false
   esbuild: false
