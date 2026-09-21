@@ -9,6 +9,11 @@ const logger = createLogger("didService");
 
 const resolver = new IdResolver({
   plcUrl: env.ATPROTO_PLC_URL,
+  // 既定のfetchはSSRF対策でexample.comなどを拒否するため、テストでは標準のfetchを使う
+  fetch:
+    env.NODE_ENV === "test"
+      ? (...args) => globalThis.fetch(...args)
+      : undefined,
 });
 
 // 参考: https://github.com/bluesky-social/atproto/blob/319aa7cf6dd7de0262a40d69f695c9a0eb0b5179/packages/common-web/src/did-doc.ts#L82-L104

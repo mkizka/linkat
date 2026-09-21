@@ -23,7 +23,7 @@
     "update-lexicons": "lex install --update"
   },
   "dependencies": {
-    "@atpassport/client": "^0.2.3",
+    "@atpassport/client": "0.2.3",
     "@atproto/did": "0.5.5",
     "@atproto/identity": "0.5.13",
     "@atproto/jwk-jose": "0.2.4",
@@ -43,7 +43,7 @@
     "@react-router/fs-routes": "8.4.0",
     "@react-router/node": "8.4.0",
     "@resvg/resvg-js": "2.6.2",
-    "@sentry/react-router": "^10.74.0",
+    "@sentry/react-router": "10.75.0",
     "@skyware/jetstream": "0.2.5",
     "@t3-oss/env-core": "0.13.11",
     "clsx": "2.1.1",
@@ -80,7 +80,7 @@
     "@playwright/test": "1.63.0",
     "@react-router/dev": "8.4.0",
     "@tailwindcss/typography": "0.5.20",
-    "@testcontainers/postgresql": "^12.1.0",
+    "@testcontainers/postgresql": "12.1.0",
     "@types/express": "5.0.6",
     "@types/node": "24.13.5",
     "@types/pg": "8.23.1",
