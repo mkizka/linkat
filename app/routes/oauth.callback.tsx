@@ -11,9 +11,7 @@ const logger = createLogger("oauth.callback");
 export async function loader({ request }: Route.LoaderArgs) {
   const remixSession = await getSession(request);
   try {
-    const did = await authService.handleCallback(
-      new URL(request.url).searchParams,
-    );
+    const did = await authService.handleCallback(request.url);
     remixSession.set("did", did);
     return redirect("/edit", {
       headers: {
