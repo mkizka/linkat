@@ -1,6 +1,6 @@
 import { redirect } from "react-router";
 
-import { oauthClient } from "~/server/oauth/client";
+import { authService } from "~/server/service/authService";
 import { sessionService } from "~/server/service/sessionService";
 import { createLogger } from "~/utils/logger";
 
@@ -10,15 +10,10 @@ const logger = createLogger("oauth.callback");
 
 export async function loader({ request }: Route.LoaderArgs) {
   try {
-    const { session: oauthSession } = await oauthClient.callback(
-      new URL(request.url).searchParams,
-    );
+    const did = await authService.handleCallback(request.url);
     return redirect("/edit", {
       headers: {
-        "Set-Cookie": await sessionService.createSession(
-          request,
-          oauthSession.did,
-        ),
+        "Set-Cookie": await sessionService.createSession(request, did),
       },
     });
   } catch (error) {

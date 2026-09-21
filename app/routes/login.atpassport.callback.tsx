@@ -1,7 +1,7 @@
 import { redirect } from "react-router";
 
-import { oauthClient, scope } from "~/server/oauth/client";
 import { atpassportService } from "~/server/service/atpassportService";
+import { authService } from "~/server/service/authService";
 import { createLogger } from "~/utils/logger";
 
 import type { Route } from "./+types/login.atpassport.callback";
@@ -17,7 +17,7 @@ export async function loader({ request }: Route.LoaderArgs) {
     return redirect("/login");
   }
   try {
-    const authorizeUrl = await oauthClient.authorize(handle, { scope });
+    const authorizeUrl = await authService.authorize(handle);
     return redirect(authorizeUrl.toString());
   } catch (error) {
     logger.error(error, "ATPassport経由のOAuthログインに失敗しました");

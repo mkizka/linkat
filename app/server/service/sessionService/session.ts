@@ -2,7 +2,7 @@ import type { Did } from "@atproto/did";
 
 import { LinkatAgent } from "~/libs/agent";
 import { cookieSessionStorage } from "~/server/infrastructure/cookieSessionStorage";
-import { oauthClient } from "~/server/oauth/client";
+import { oauthClient } from "~/server/infrastructure/oauthClient";
 import { userService } from "~/server/service/userService";
 
 export const getSessionUserDid = (request: Request) =>
