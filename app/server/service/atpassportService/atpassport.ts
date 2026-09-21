@@ -1,9 +1,6 @@
 import { atpassportClient } from "~/server/infrastructure/atpassportClient";
-import { atpstateCookie } from "~/server/infrastructure/cookie";
 
-export { atpstateCookie };
+export const startLogin = () => atpassportClient.startLogin();
 
-export const generateAuthUrl = () => atpassportClient.generateAuthUrl();
-
-export const parseCallback = (url: string, atpstate: string) =>
-  atpassportClient.parseCallback(url, atpstate);
+export const verifyCallback = (request: Request) =>
+  atpassportClient.verifyCallback(request);

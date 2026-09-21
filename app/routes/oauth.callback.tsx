@@ -9,15 +9,13 @@ import type { Route } from "./+types/oauth.callback";
 const logger = createLogger("oauth.callback");
 
 export async function loader({ request }: Route.LoaderArgs) {
-  const remixSession = await sessionService.getSession(request);
   try {
     const did = await authService.handleCallback(
       new URL(request.url).searchParams,
     );
-    remixSession.set("did", did);
     return redirect("/edit", {
       headers: {
-        "Set-Cookie": await sessionService.commitSession(remixSession),
+        "Set-Cookie": await sessionService.createSession(request, did),
       },
     });
   } catch (error) {

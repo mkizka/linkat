@@ -1,25 +1,14 @@
 import { LinkatAgent } from "~/libs/agent";
-import {
-  commitSession,
-  destroySession,
-  getSession as getCookieSession,
-} from "~/server/infrastructure/cookie";
+import { cookieSessionStorage } from "~/server/infrastructure/cookieSessionStorage";
 import { oauthClient } from "~/server/infrastructure/oauthClient";
 import { userService } from "~/server/service/userService";
 
-export { commitSession, destroySession };
+export const getSessionUserDid = (request: Request) =>
+  cookieSessionStorage.getDid(request);
 
-export const getSession = (request: Request) => {
-  return getCookieSession(request.headers.get("Cookie"));
-};
+export const createSession = cookieSessionStorage.commit;
 
-export const getSessionUserDid = async (request: Request) => {
-  const session = await getSession(request);
-  if (!session.data.did) {
-    return null;
-  }
-  return session.data.did;
-};
+export const destroySession = cookieSessionStorage.destroy;
 
 export const getSessionUser = async (request: Request) => {
   const userDid = await getSessionUserDid(request);
