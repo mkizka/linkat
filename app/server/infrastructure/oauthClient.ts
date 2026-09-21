@@ -1,7 +1,9 @@
+import type { Did } from "@atproto/did";
 import { JoseKey } from "@atproto/jwk-jose";
 import type {
   NodeOAuthClientOptions,
   OAuthClientMetadataInput,
+  OAuthSession,
 } from "@atproto/oauth-client-node";
 import {
   atprotoLoopbackClientMetadata,
@@ -10,11 +12,11 @@ import {
 
 import { env, isProduction } from "~/utils/env";
 
-import { SessionStore, StateStore } from "./storage";
+import { SessionStore, StateStore } from "./oauthStorage";
 
 const privateKey = Buffer.from(env.PRIVATE_KEY_ES256_B64, "base64").toString();
 
-export const scope = "atproto include:blue.linkat.permissionSet";
+const scope = "atproto include:blue.linkat.permissionSet";
 
 const clientMetadata: OAuthClientMetadataInput = isProduction
   ? {
@@ -50,4 +52,23 @@ const oauthClientOptions: NodeOAuthClientOptions = {
   sessionStore: new SessionStore(),
 };
 
-export const oauthClient = new NodeOAuthClient(oauthClientOptions);
+const nodeOAuthClient = new NodeOAuthClient(oauthClientOptions);
+
+export interface OAuthClient {
+  authorize: (handle: string) => Promise<URL>;
+  callback: (params: URLSearchParams) => Promise<Did>;
+  restore: (did: Did) => Promise<OAuthSession>;
+  clientMetadata: NodeOAuthClient["clientMetadata"];
+  jwks: NodeOAuthClient["jwks"];
+}
+
+export const oauthClient: OAuthClient = {
+  authorize: (handle) => nodeOAuthClient.authorize(handle, { scope }),
+  callback: async (params) => {
+    const { session } = await nodeOAuthClient.callback(params);
+    return session.did;
+  },
+  restore: (did) => nodeOAuthClient.restore(did),
+  clientMetadata: nodeOAuthClient.clientMetadata,
+  jwks: nodeOAuthClient.jwks,
+};
