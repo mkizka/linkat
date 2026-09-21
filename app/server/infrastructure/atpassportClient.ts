@@ -14,13 +14,12 @@ const atpstateCookie = createCookie("atpstate", {
   secrets: [env.COOKIE_SECRET],
 });
 
+export class AtpassportCallbackError extends Error {}
+
 export interface AtpassportClient {
   // setCookie は Set-Cookie ヘッダーの値
   startLogin: () => Promise<{ url: string; setCookie: string }>;
-  verifyCallback: (
-    url: string,
-    cookieHeader: string | null,
-  ) => Promise<string | null>;
+  verifyCallback: (url: string, cookieHeader: string | null) => Promise<string>;
 }
 
 export const atpassportClient: AtpassportClient = {
@@ -31,9 +30,19 @@ export const atpassportClient: AtpassportClient = {
   verifyCallback: async (url, cookieHeader) => {
     const atpstate: unknown = await atpstateCookie.parse(cookieHeader);
     if (typeof atpstate !== "string") {
-      return null;
+      throw new AtpassportCallbackError("atpstate Cookieが見つかりません");
     }
-    const { username } = atpassport.parseCallback(url, atpstate);
-    return username || null;
+    let username;
+    try {
+      ({ username } = atpassport.parseCallback(url, atpstate));
+    } catch (error) {
+      throw new AtpassportCallbackError("コールバックの検証に失敗しました", {
+        cause: error,
+      });
+    }
+    if (!username) {
+      throw new AtpassportCallbackError("handleが空です");
+    }
+    return username;
   },
 };
