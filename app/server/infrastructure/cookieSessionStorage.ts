@@ -23,11 +23,17 @@ export interface CookieSessionStorage {
 }
 
 export const cookieSessionStorage: CookieSessionStorage = {
-  getDid: async (request) => (await getSession(request)).data.did ?? null,
+  getDid: async (request) => {
+    const session = await getSession(request);
+    return session.data.did ?? null;
+  },
   commit: async (request, did) => {
     const session = await getSession(request);
     session.set("did", did);
     return storage.commitSession(session);
   },
-  destroy: async (request) => storage.destroySession(await getSession(request)),
+  destroy: async (request) => {
+    const session = await getSession(request);
+    return storage.destroySession(session);
+  },
 };
