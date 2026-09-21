@@ -1,7 +1,10 @@
 import { redirect } from "react-router";
 
+import {
+  atpassport,
+  atpstateCookie,
+} from "~/server/infrastructure/atpassportClient";
 import { oauthClient, scope } from "~/server/infrastructure/oauthClient";
-import { atpassport, atpstateCookie } from "~/server/oauth/atpassport";
 import { createLogger } from "~/utils/logger";
 
 import type { Route } from "./+types/login.atpassport.callback";
