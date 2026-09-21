@@ -17,7 +17,6 @@ const atpstateCookie = createCookie("atpstate", {
 export interface AtpassportClient {
   // setCookie は Set-Cookie ヘッダーの値
   startLogin: () => Promise<{ url: string; setCookie: string }>;
-  // atpstate Cookie が無い、または handle が空なら null。検証に失敗したら throw
   verifyCallback: (
     url: string,
     cookieHeader: string | null,
