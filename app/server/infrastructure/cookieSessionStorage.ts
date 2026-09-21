@@ -12,28 +12,25 @@ const storage = createCookieSessionStorage<{ did: Did }>({
   },
 });
 
-const getSession = (request: Request) =>
-  storage.getSession(request.headers.get("Cookie"));
-
 export interface CookieSessionStorage {
-  getDid: (request: Request) => Promise<Did | null>;
+  getDid: (cookieHeader: string | null) => Promise<Did | null>;
   // 戻り値は Set-Cookie ヘッダーの値
-  commit: (request: Request, did: Did) => Promise<string>;
-  destroy: (request: Request) => Promise<string>;
+  commit: (cookieHeader: string | null, did: Did) => Promise<string>;
+  destroy: (cookieHeader: string | null) => Promise<string>;
 }
 
 export const cookieSessionStorage: CookieSessionStorage = {
-  getDid: async (request) => {
-    const session = await getSession(request);
+  getDid: async (cookieHeader) => {
+    const session = await storage.getSession(cookieHeader);
     return session.data.did ?? null;
   },
-  commit: async (request, did) => {
-    const session = await getSession(request);
+  commit: async (cookieHeader, did) => {
+    const session = await storage.getSession(cookieHeader);
     session.set("did", did);
     return storage.commitSession(session);
   },
-  destroy: async (request) => {
-    const session = await getSession(request);
+  destroy: async (cookieHeader) => {
+    const session = await storage.getSession(cookieHeader);
     return storage.destroySession(session);
   },
 };
