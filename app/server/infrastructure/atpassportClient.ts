@@ -33,6 +33,7 @@ export const atpassportClient: AtpassportClient = {
     if (typeof atpstate !== "string") {
       return null;
     }
-    return atpassport.parseCallback(request.url, atpstate).username || null;
+    const { username } = atpassport.parseCallback(request.url, atpstate);
+    return username || null;
   },
 };
