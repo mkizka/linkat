@@ -1,6 +1,6 @@
 import { redirect } from "react-router";
 
-import { oauthClient } from "~/server/oauth/client";
+import { oauthClient } from "~/server/infrastructure/oauthClient";
 import { commitSession, getSession } from "~/server/oauth/session";
 import { createLogger } from "~/utils/logger";
 

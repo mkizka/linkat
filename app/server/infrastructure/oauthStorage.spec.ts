@@ -6,7 +6,7 @@ import { Pool } from "pg";
 
 import { env } from "~/utils/env";
 
-import { SessionStore, StateStore } from "./storage";
+import { SessionStore, StateStore } from "./oauthStorage";
 
 const pool = new Pool({ connectionString: env.DATABASE_URL });
 

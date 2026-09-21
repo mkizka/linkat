@@ -10,7 +10,7 @@ import {
 
 import { env, isProduction } from "~/utils/env";
 
-import { SessionStore, StateStore } from "./storage";
+import { SessionStore, StateStore } from "./oauthStorage";
 
 const privateKey = Buffer.from(env.PRIVATE_KEY_ES256_B64, "base64").toString();
 

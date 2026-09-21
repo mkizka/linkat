@@ -5,7 +5,7 @@ import { Main, RootLayout } from "~/components/layout";
 import { LoginForm } from "~/features/login/login-form";
 import { RouteToaster } from "~/features/toast/route";
 import { getInstance } from "~/i18n/i18n";
-import { oauthClient, scope } from "~/server/oauth/client";
+import { oauthClient, scope } from "~/server/infrastructure/oauthClient";
 import { getSessionUserDid } from "~/server/oauth/session";
 import { createLogger } from "~/utils/logger";
 
