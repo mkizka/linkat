@@ -4,86 +4,12 @@
 
 ## プロジェクト概要
 
-LinkatはBlueskyアカウントを使用してリンク集を整理・共有できるWebアプリケーションです。AT Protocol/Blueskyエコシステムと深く統合されており、データはローカルとユーザーのPersonal Data Server (PDS)の両方に保存されます。
+LinkatはBlueskyアカウントを使用してリンク集を整理・共有できるWebアプリケーション。
 
-## 開発コマンド
+## 開発ルール
 
-```bash
-# ビルド
-pnpm build            # プロダクションビルド
-
-# テスト
-pnpm test             # ユニットテスト実行
-pnpm test -- app/models/board.spec.ts  # 特定のテストファイル実行
-
-# コード品質
-pnpm lint             # ESLintとPrettierチェック
-pnpm format           # ESLint修正とPrettierフォーマット
-pnpm typecheck        # TypeScript型チェック
-pnpm all              # typecheck、format、testを全て実行
-```
-
-## アーキテクチャ
-
-### 技術スタック
-
-- **フレームワーク**: React Router v7 (旧Remix)
-- **言語**: TypeScript
-- **データベース**: PostgreSQL (Drizzle ORM経由)
-- **認証**: AT Protocol OAuth 2.0
-- **状態管理**: Jotai (トースト通知などのクライアント状態)
-- **スタイリング**: Tailwind CSS
-- **テスト**: Vitest (ユニット)、Playwright (E2E)
-
-### 主要ディレクトリ
-
-- `app/routes/`: ページコンポーネントとAPIルート
-- `app/server/`: サーバーサイドロジックとサービス
-- `app/features/`: 機能別コンポーネント
-- `app/models/`: データ検証用Zodスキーマ
-- `drizzle/`: マイグレーション(スキーマは`app/server/infrastructure/schema.ts`)
-
-### データフロー
-
-1. ユーザーデータは楽観的にローカルのPostgreSQLに保存
-2. 変更はatprotoレコードとしてユーザーのBluesky PDSに同期
-3. JetstreamがPDSの更新を監視してローカルDBに同期
-4. ボードデータは`blue.linkat.board`レキシコンスキーマに従う
-
-### atproto統合
-
-- レコードは`blue.linkat.board`コレクションに保存
-- OAuthクライアント認証情報はDBに保存
-- bsky.socialとセルフホストPDSインスタンスの両方をサポート
-- Bluesky firehoseからのリアルタイム更新にJetstreamを使用
-
-## 開発ガイドライン
-
-### テスト
-
-- モデルとサービスのユニットテストはVitestで記述
-- テストはtestcontainersで起動した実際のPostgreSQLを使用し、各テスト前に全テーブルをTRUNCATEする(Dockerが必要)
-- E2EテストはPlaywrightで複数ブラウザをサポート
-- テストファイルはソースファイルと同じ場所に`*.spec.ts`として配置
-
-### データベース変更
+ファイルを変更した後は以下コマンドを実行して検証を行うこと。
 
 ```bash
-# app/server/infrastructure/schema.tsを変更した後
-pnpm drizzle-kit generate --name 変更内容の説明
-pnpm drizzle-kit migrate
+pnpm all # typecheck、format、testを全て実行
 ```
-
-### 環境変数
-
-必要な変数は`.env.example`に定義されています。主なもの：
-
-- `DATABASE_URL`: PostgreSQL接続文字列
-- `PRIVATE_JETSTREAM_URL`: JetstreamサービスURL
-- `ORIGIN`: アプリケーションURL (開発環境: http://localhost:3000)
-
-### エラーハンドリング
-
-- 一貫したエラーハンドリングには`tryCatch`ユーティリティを使用
-- サービスは見つからない場合`null`を返す
-- バリデーションエラーはZodスキーマで処理
