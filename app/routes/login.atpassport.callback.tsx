@@ -1,7 +1,7 @@
 import { redirect } from "react-router";
 
-import { oauthClient, scope } from "~/server/infrastructure/oauthClient";
-import { atpassport, atpstateCookie } from "~/server/oauth/atpassport";
+import { atpassportService } from "~/server/service/atpassportService";
+import { authService } from "~/server/service/authService";
 import { createLogger } from "~/utils/logger";
 
 import type { Route } from "./+types/login.atpassport.callback";
@@ -9,7 +9,7 @@ import type { Route } from "./+types/login.atpassport.callback";
 const logger = createLogger("login.atpassport.callback");
 
 export async function loader({ request }: Route.LoaderArgs) {
-  const savedAtpstate: unknown = await atpstateCookie.parse(
+  const savedAtpstate: unknown = await atpassportService.atpstateCookie.parse(
     request.headers.get("Cookie"),
   );
   if (typeof savedAtpstate !== "string") {
@@ -21,7 +21,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 
   let handle;
   try {
-    const result = atpassport.parseCallback(request.url, savedAtpstate);
+    const result = atpassportService.parseCallback(request.url, savedAtpstate);
     handle = result.username;
   } catch (error) {
     logger.error(error, "ATPassportのコールバック検証に失敗しました");
@@ -32,7 +32,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   }
 
   try {
-    const authorizeUrl = await oauthClient.authorize(handle, { scope });
+    const authorizeUrl = await authService.authorize(handle);
     return redirect(authorizeUrl.toString());
   } catch (error) {
     logger.error(error, "ATPassport経由のOAuthログインに失敗しました");

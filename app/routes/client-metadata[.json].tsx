@@ -1,5 +1,5 @@
-import { oauthClient } from "~/server/infrastructure/oauthClient";
+import { authService } from "~/server/service/authService";
 
 export function loader() {
-  return Response.json(oauthClient.clientMetadata);
+  return Response.json(authService.getClientMetadata());
 }
