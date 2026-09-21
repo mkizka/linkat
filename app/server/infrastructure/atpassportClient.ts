@@ -25,24 +25,25 @@ export interface AtpassportClient {
 export const atpassportClient: AtpassportClient = {
   startLogin: async () => {
     const { url, atpstate } = atpassport.generateAuthUrl();
-    return { url, setCookie: await atpstateCookie.serialize(atpstate) };
+    const setCookie = await atpstateCookie.serialize(atpstate);
+    return { url, setCookie };
   },
   verifyCallback: async (url, cookieHeader) => {
     const atpstate: unknown = await atpstateCookie.parse(cookieHeader);
     if (typeof atpstate !== "string") {
       throw new AtpassportCallbackError("atpstate Cookieが見つかりません");
     }
-    let username;
+    let result;
     try {
-      ({ username } = atpassport.parseCallback(url, atpstate));
+      result = atpassport.parseCallback(url, atpstate);
     } catch (error) {
       throw new AtpassportCallbackError("コールバックの検証に失敗しました", {
         cause: error,
       });
     }
-    if (!username) {
+    if (!result.username) {
       throw new AtpassportCallbackError("handleが空です");
     }
-    return username;
+    return result.username;
   },
 };
