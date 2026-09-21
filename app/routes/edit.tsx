@@ -42,6 +42,9 @@ export async function action({ request, context }: Route.ActionArgs) {
     await agent.updateBoard(parsedBoard);
   } catch (error) {
     logger.error(error, "PDSへのボードの保存に失敗しました");
+    // PDSへの保存に失敗した場合、実際には保存できていないため
+    // シェアモーダルを開く成功扱いにはしない
+    return redirect(`/${user.handle}`);
   }
   // 3. 閲覧ページにリダイレクト
   return redirect(`/${user.handle}?success`);
