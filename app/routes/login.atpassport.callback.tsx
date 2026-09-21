@@ -9,25 +9,17 @@ import type { Route } from "./+types/login.atpassport.callback";
 const logger = createLogger("login.atpassport.callback");
 
 export async function loader({ request }: Route.LoaderArgs) {
-  const savedAtpstate: unknown = await atpassportService.atpstateCookie.parse(
-    request.headers.get("Cookie"),
-  );
-  if (typeof savedAtpstate !== "string") {
-    logger.warn(
-      "atpstate Cookieが見つからないため、コールバックを拒否しました",
-    );
-    return redirect("/login");
-  }
-
   let handle;
   try {
-    const result = atpassportService.parseCallback(request.url, savedAtpstate);
-    handle = result.username;
+    handle = await atpassportService.verifyCallback(request);
   } catch (error) {
     logger.error(error, "ATPassportのコールバック検証に失敗しました");
     return redirect("/login");
   }
   if (!handle) {
+    logger.warn(
+      "atpstate Cookieまたはhandleが見つからないため、コールバックを拒否しました",
+    );
     return redirect("/login");
   }
 
