@@ -50,7 +50,7 @@
     "drizzle-kit": "0.31.10",
     "drizzle-orm": "0.45.2",
     "emoji-mart": "5.6.0",
-    "emoji-regex": "10.6.0",
+    "emoji-regex": "11.0.0",
     "express": "5.2.1",
     "i18next": "26.4.2",
     "i18next-browser-languagedetector": "8.2.1",
