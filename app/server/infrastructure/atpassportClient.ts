@@ -18,7 +18,10 @@ export interface AtpassportClient {
   // setCookie は Set-Cookie ヘッダーの値
   startLogin: () => Promise<{ url: string; setCookie: string }>;
   // atpstate Cookie が無い、または handle が空なら null。検証に失敗したら throw
-  verifyCallback: (request: Request) => Promise<string | null>;
+  verifyCallback: (
+    url: string,
+    cookieHeader: string | null,
+  ) => Promise<string | null>;
 }
 
 export const atpassportClient: AtpassportClient = {
@@ -26,14 +29,12 @@ export const atpassportClient: AtpassportClient = {
     const { url, atpstate } = atpassport.generateAuthUrl();
     return { url, setCookie: await atpstateCookie.serialize(atpstate) };
   },
-  verifyCallback: async (request) => {
-    const atpstate: unknown = await atpstateCookie.parse(
-      request.headers.get("Cookie"),
-    );
+  verifyCallback: async (url, cookieHeader) => {
+    const atpstate: unknown = await atpstateCookie.parse(cookieHeader);
     if (typeof atpstate !== "string") {
       return null;
     }
-    const { username } = atpassport.parseCallback(request.url, atpstate);
+    const { username } = atpassport.parseCallback(url, atpstate);
     return username || null;
   },
 };
