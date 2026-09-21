@@ -1,14 +1,12 @@
 import { redirect } from "react-router";
 
-import { atpassport, atpstateCookie } from "~/server/oauth/atpassport";
+import { atpassportService } from "~/server/service/atpassportService";
 
 import type { Route } from "./+types/login.atpassport";
 
 export async function loader(_: Route.LoaderArgs) {
-  const { url, atpstate } = atpassport.generateAuthUrl();
+  const { url, setCookie } = await atpassportService.startLogin();
   return redirect(url, {
-    headers: {
-      "Set-Cookie": await atpstateCookie.serialize(atpstate),
-    },
+    headers: { "Set-Cookie": setCookie },
   });
 }
