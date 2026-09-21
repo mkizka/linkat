@@ -8,7 +8,7 @@ import { Link } from "react-router";
 
 import { Main, RootLayout } from "~/components/layout";
 import { getInstance } from "~/i18n/i18n";
-import { getSessionUserDid } from "~/server/oauth/session";
+import { sessionService } from "~/server/service/sessionService";
 import { cn } from "~/utils/cn";
 import { env } from "~/utils/env";
 import { createMeta } from "~/utils/meta";
@@ -16,7 +16,7 @@ import { createMeta } from "~/utils/meta";
 import type { Route } from "./+types/_index";
 
 export const loader = async ({ request, context }: Route.LoaderArgs) => {
-  const userDid = await getSessionUserDid(request);
+  const userDid = await sessionService.getSessionUserDid(request);
   const i18next = getInstance(context);
   return {
     isLogin: !!userDid,
