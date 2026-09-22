@@ -16,19 +16,19 @@ const atpstateCookie = createCookie("atpstate", {
 
 export class AtpassportCallbackError extends Error {}
 
-export interface AtpassportClient {
+export interface IAtpassportClient {
   // setCookie は Set-Cookie ヘッダーの値
   startLogin: () => Promise<{ url: string; setCookie: string }>;
   verifyCallback: (url: string, cookieHeader: string | null) => Promise<string>;
 }
 
-export const atpassportClient: AtpassportClient = {
-  startLogin: async () => {
+export const atpassportClientFactory = (): IAtpassportClient => ({
+  async startLogin() {
     const { url, atpstate } = atpassport.generateAuthUrl();
     const setCookie = await atpstateCookie.serialize(atpstate);
     return { url, setCookie };
   },
-  verifyCallback: async (url, cookieHeader) => {
+  async verifyCallback(url, cookieHeader) {
     const atpstate: unknown = await atpstateCookie.parse(cookieHeader);
     if (typeof atpstate !== "string") {
       throw new AtpassportCallbackError("atpstate Cookieが見つかりません");
@@ -46,4 +46,4 @@ export const atpassportClient: AtpassportClient = {
     }
     return result.username;
   },
-};
+});

@@ -2,17 +2,17 @@ import type { Did } from "@atproto/did";
 import { desc, eq } from "drizzle-orm";
 
 import { User } from "~/models/user";
-import { db } from "~/server/infrastructure/drizzle";
+import type { Db } from "~/server/infrastructure/drizzle";
 import { userTable } from "~/server/infrastructure/schema";
 
-export interface UserRepository {
+export interface IUserRepository {
   findByDid: (did: Did) => Promise<User | null>;
   findByHandle: (handle: string) => Promise<User | null>;
   save: (user: User) => Promise<void>;
 }
 
-export const userRepository: UserRepository = {
-  findByDid: async (did) => {
+export const userRepositoryFactory = ({ db }: { db: Db }): IUserRepository => ({
+  async findByDid(did) {
     const [row] = await db
       .select()
       .from(userTable)
@@ -21,7 +21,7 @@ export const userRepository: UserRepository = {
       .limit(1);
     return row ? new User(row) : null;
   },
-  findByHandle: async (handle) => {
+  async findByHandle(handle) {
     const [row] = await db
       .select()
       .from(userTable)
@@ -30,7 +30,7 @@ export const userRepository: UserRepository = {
       .limit(1);
     return row ? new User(row) : null;
   },
-  save: async (user) => {
+  async save(user) {
     const data = {
       did: user.did,
       avatar: user.avatar,
@@ -44,4 +44,4 @@ export const userRepository: UserRepository = {
       .values(data)
       .onConflictDoUpdate({ target: userTable.did, set: data });
   },
-};
+});

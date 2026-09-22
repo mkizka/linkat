@@ -7,8 +7,7 @@ import { BoardViewer } from "~/features/board/board-viewer";
 import { RouteToaster } from "~/features/toast/route";
 import { useUmami } from "~/hooks/useUmami";
 import { getInstance } from "~/i18n/i18n";
-import { boardService } from "~/server/service/boardService";
-import { sessionService } from "~/server/service/sessionService";
+import { di } from "~/server/di";
 import { env } from "~/utils/env";
 import { createLogger } from "~/utils/logger";
 
@@ -19,8 +18,8 @@ const logger = createLogger("edit");
 export async function action({ request, context }: Route.ActionArgs) {
   const i18next = getInstance(context);
   const [user, agent] = await Promise.all([
-    sessionService.getSessionUser(request),
-    sessionService.getSessionAgent(request),
+    di.sessionService.getSessionUser(request),
+    di.sessionService.getSessionAgent(request),
   ]);
   if (!user || !agent) {
     return { error: i18next.t("login.invalid-session-error-message") };
@@ -31,12 +30,15 @@ export async function action({ request, context }: Route.ActionArgs) {
     return { error: i18next.t("edit.invalid-form-error-message") };
   }
   // 1. 楽観的にDBを更新
-  const parsedBoard = await boardService.parseBoardFromForm(user.did, rawBoard);
+  const parsedBoard = await di.boardService.parseBoardFromForm(
+    user.did,
+    rawBoard,
+  );
   if (parsedBoard instanceof Error) {
     logger.warn({ error: parsedBoard }, "boardの形式が不正でした");
     return { error: i18next.t("edit.invalid-form-error-message") };
   }
-  await boardService.saveBoard(parsedBoard);
+  await di.boardService.saveBoard(parsedBoard);
   try {
     // 2. PDSにも保存
     await agent.updateBoard(parsedBoard);
@@ -48,11 +50,11 @@ export async function action({ request, context }: Route.ActionArgs) {
 }
 
 export async function loader({ request }: Route.LoaderArgs) {
-  const user = await sessionService.getSessionUser(request);
+  const user = await di.sessionService.getSessionUser(request);
   if (!user) {
     throw redirect("/login");
   }
-  const board = await boardService.findOrFetchBoard(user.did);
+  const board = await di.boardService.findOrFetchBoard(user.did);
   return {
     user,
     board: board && { cards: board.cards },

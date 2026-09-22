@@ -1,5 +1,5 @@
-import { authService } from "~/server/service/authService";
+import { di } from "~/server/di";
 
 export function loader() {
-  return Response.json(authService.getClientMetadata());
+  return Response.json(di.authService.getClientMetadata());
 }

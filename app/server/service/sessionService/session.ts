@@ -1,34 +1,51 @@
 import type { Did } from "@atproto/did";
 
 import { LinkatAgent } from "~/libs/agent";
-import { cookieSessionStorage } from "~/server/infrastructure/cookieSessionStorage";
-import { oauthClient } from "~/server/infrastructure/oauthClient";
-import { userService } from "~/server/service/userService";
+import type { User } from "~/models/user";
+import type { ICookieSessionStorage } from "~/server/infrastructure/cookieSessionStorage";
+import type { IOAuthClient } from "~/server/infrastructure/oauthClient";
+import type { IUserService } from "~/server/service/userService/user";
 
-export const getSessionUserDid = (request: Request) =>
-  cookieSessionStorage.getDid(request.headers.get("Cookie"));
+export interface ISessionService {
+  getSessionUserDid: (request: Request) => Promise<Did | null>;
+  createSession: (request: Request, did: Did) => Promise<string>;
+  destroySession: (request: Request) => Promise<string>;
+  getSessionUser: (request: Request) => Promise<User | null>;
+  getSessionAgent: (request: Request) => Promise<LinkatAgent | null>;
+}
 
-export const createSession = (request: Request, did: Did) =>
-  cookieSessionStorage.commit(request.headers.get("Cookie"), did);
+export const sessionServiceFactory = ({
+  cookieSessionStorage,
+  oauthClient,
+  userService,
+}: {
+  cookieSessionStorage: ICookieSessionStorage;
+  oauthClient: IOAuthClient;
+  userService: IUserService;
+}): ISessionService => {
+  const getSessionUserDid = (request: Request) =>
+    cookieSessionStorage.getDid(request.headers.get("Cookie"));
 
-export const destroySession = (request: Request) =>
-  cookieSessionStorage.destroy(request.headers.get("Cookie"));
-
-export const getSessionUser = async (request: Request) => {
-  const userDid = await getSessionUserDid(request);
-  if (!userDid) {
-    return null;
-  }
-  return await userService.findOrFetchUser({
-    handleOrDid: userDid,
-  });
-};
-
-export const getSessionAgent = async (request: Request) => {
-  const userDid = await getSessionUserDid(request);
-  if (!userDid) {
-    return null;
-  }
-  const oauthSession = await oauthClient.restore(userDid);
-  return new LinkatAgent(oauthSession);
+  return {
+    getSessionUserDid,
+    createSession: (request, did) =>
+      cookieSessionStorage.commit(request.headers.get("Cookie"), did),
+    destroySession: (request) =>
+      cookieSessionStorage.destroy(request.headers.get("Cookie")),
+    async getSessionUser(request) {
+      const userDid = await getSessionUserDid(request);
+      if (!userDid) {
+        return null;
+      }
+      return await userService.findOrFetchUser({ handleOrDid: userDid });
+    },
+    async getSessionAgent(request) {
+      const userDid = await getSessionUserDid(request);
+      if (!userDid) {
+        return null;
+      }
+      const oauthSession = await oauthClient.restore(userDid);
+      return new LinkatAgent(oauthSession);
+    },
+  };
 };

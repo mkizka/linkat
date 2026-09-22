@@ -4,7 +4,7 @@ import { LRUCache } from "lru-cache";
 import satori from "satori";
 
 import type { User } from "~/models/user";
-import { userService } from "~/server/service/userService";
+import { di } from "~/server/di";
 import { createLogger } from "~/utils/logger";
 
 import type { Route } from "./+types/$handle.og";
@@ -144,7 +144,7 @@ const createImage = async (user: User) => {
 };
 
 export async function loader({ params }: Route.LoaderArgs) {
-  const user = await userService.findOrFetchUser({
+  const user = await di.userService.findOrFetchUser({
     handleOrDid: params.handle,
   });
   if (!user) {

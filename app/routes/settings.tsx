@@ -6,12 +6,12 @@ import { Card } from "~/components/card";
 import { Footer, Main } from "~/components/layout";
 import { DeleteBoardButton } from "~/features/settings/delete-button";
 import { LogoutButton } from "~/features/settings/logout-button";
-import { sessionService } from "~/server/service/sessionService";
+import { di } from "~/server/di";
 
 import type { Route } from "./+types/settings";
 
 export const loader = async ({ request }: Route.LoaderArgs) => {
-  const user = await sessionService.getSessionUser(request);
+  const user = await di.sessionService.getSessionUser(request);
   if (!user) {
     throw redirect("/login");
   }
