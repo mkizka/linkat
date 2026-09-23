@@ -69,7 +69,6 @@ export const resolveHandleIfNeeded = async (original: string) => {
     resolvedUrl.pathname = "/" + [profile, response.did, ...rest].join("/");
     return resolvedUrl.toString();
   } catch {
-    // 解決できなくてもカードとしては保存できるよう元のURLを返す
     return original;
   }
 };
