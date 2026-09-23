@@ -17,7 +17,7 @@ export async function action({ request, context }: Route.ActionArgs) {
   const form = await request.formData();
   const handle = form.get("handle");
   if (typeof handle !== "string") {
-    return { error: i18next.t("login.unknown-error") };
+    return { error: i18next.t("login.unknown-error-message") };
   }
   try {
     const url = await di.authService.authorize(handle);

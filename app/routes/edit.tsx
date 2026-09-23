@@ -22,7 +22,7 @@ export async function action({ request, context }: Route.ActionArgs) {
     di.sessionService.getSessionAgent(request),
   ]);
   if (!user || !agent) {
-    return { error: i18next.t("login.invalid-session-error-message") };
+    return { error: i18next.t("edit.invalid-session-error-message") };
   }
   const form = await request.formData();
   const rawBoard = form.get("board");
