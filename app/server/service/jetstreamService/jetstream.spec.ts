@@ -5,10 +5,27 @@ import { Pool } from "pg";
 
 import { mockedLogger } from "~/mocks/logger";
 import { server } from "~/mocks/server";
-import { di } from "~/server/di";
+import { boardRepositoryFactory } from "~/server/infrastructure/boardRepository";
+import { cursorRepositoryFactory } from "~/server/infrastructure/cursorRepository";
+import { db } from "~/server/infrastructure/drizzle";
+import { userRepositoryFactory } from "~/server/infrastructure/userRepository";
+import { boardServiceFactory } from "~/server/service/boardService/board";
+import { didServiceFactory } from "~/server/service/didService/did";
+import { userServiceFactory } from "~/server/service/userService/user";
 import { env } from "~/utils/env";
 
-const jetstreamService = di.jetstreamService;
+import { jetstreamServiceFactory } from "./jetstream";
+
+const jetstreamService = jetstreamServiceFactory({
+  cursorRepository: cursorRepositoryFactory({ db }),
+  boardService: boardServiceFactory({
+    boardRepository: boardRepositoryFactory({ db }),
+    didService: didServiceFactory(),
+  }),
+  userService: userServiceFactory({
+    userRepository: userRepositoryFactory({ db }),
+  }),
+});
 
 const pool = new Pool({ connectionString: env.DATABASE_URL });
 afterAll(() => pool.end());
