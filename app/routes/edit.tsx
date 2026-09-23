@@ -29,7 +29,6 @@ export async function action({ request, context }: Route.ActionArgs) {
   if (typeof rawBoard !== "string") {
     return { error: i18next.t("edit.invalid-form-error-message") };
   }
-  // 1. 楽観的にDBを更新
   const parsedBoard = await di.boardService.parseBoardFromForm(
     user.did,
     rawBoard,
@@ -38,14 +37,14 @@ export async function action({ request, context }: Route.ActionArgs) {
     logger.warn({ error: parsedBoard }, "boardの形式が不正でした");
     return { error: i18next.t("edit.invalid-form-error-message") };
   }
-  await di.boardService.saveBoard(parsedBoard);
   try {
-    // 2. PDSにも保存
     await agent.updateBoard(parsedBoard);
   } catch (error) {
     logger.error(error, "PDSへのボードの保存に失敗しました");
+    return { error: i18next.t("edit.save-board-error-message") };
   }
-  // 3. 閲覧ページにリダイレクト
+  // Jetstreamより先に閲覧ページへ反映するためDBも更新
+  await di.boardService.saveBoard(parsedBoard);
   return redirect(`/${user.handle}?success`);
 }
 
