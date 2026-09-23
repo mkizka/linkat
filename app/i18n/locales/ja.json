@@ -39,8 +39,7 @@
   },
   "board-viewer": {
     "confirm-delete-message": "本当に削除しますか？",
-    "submit-button": "保存",
-    "resolve-url-error-message": "BlueskyのURLからユーザーを特定できませんでした"
+    "submit-button": "保存"
   },
   "share-modal": {
     "title": "保存しました",

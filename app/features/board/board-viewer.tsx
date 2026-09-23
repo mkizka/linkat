@@ -3,7 +3,6 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Form, useNavigation } from "react-router";
 
-import { useToast } from "~/atoms/toast/hooks";
 import { Button } from "~/components/button";
 import type { ValidCard } from "~/models/card";
 import { resolveHandleIfNeeded } from "~/utils/url";
@@ -34,16 +33,10 @@ export function BoardViewer({ user, board, url, editable, isMine }: Props) {
   const [cards, setCards] = useState((board?.cards ?? []).map(withId));
   const { t } = useTranslation();
   const navigation = useNavigation();
-  const toast = useToast();
 
   const handleSubmitCardForm = async (payload: CardFormPayload) => {
-    let resolvedUrl;
-    try {
-      resolvedUrl = payload.url && (await resolveHandleIfNeeded(payload.url));
-    } catch {
-      toast.error(t("board-viewer.resolve-url-error-message"));
-      return;
-    }
+    const resolvedUrl =
+      payload.url && (await resolveHandleIfNeeded(payload.url));
     if (payload.id) {
       setCards((cards) =>
         cards.map((card) => {
