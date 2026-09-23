@@ -2,17 +2,18 @@ import { asDid } from "@atproto/did";
 import { Pool } from "pg";
 
 import { Board } from "~/models/board";
+import { di } from "~/server/di";
 import { BoardFactory, cardsFromFactory } from "~/server/factories/board";
 import { UserFactory } from "~/server/factories/user";
 import { env } from "~/utils/env";
-
-import { boardRepository } from "./boardRepository";
 
 const pool = new Pool({ connectionString: env.DATABASE_URL });
 
 afterAll(async () => {
   await pool.end();
 });
+
+const boardRepository = di.boardRepository;
 
 describe("boardRepository", () => {
   describe("find", () => {

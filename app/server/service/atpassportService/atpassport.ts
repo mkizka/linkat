@@ -1,6 +1,16 @@
-import { atpassportClient } from "~/server/infrastructure/atpassportClient";
+import type { IAtpassportClient } from "~/server/infrastructure/atpassportClient";
 
-export const startLogin = () => atpassportClient.startLogin();
+export interface IAtpassportService {
+  startLogin: () => Promise<{ url: string; setCookie: string }>;
+  verifyCallback: (request: Request) => Promise<string>;
+}
 
-export const verifyCallback = (request: Request) =>
-  atpassportClient.verifyCallback(request.url, request.headers.get("Cookie"));
+export const atpassportServiceFactory = ({
+  atpassportClient,
+}: {
+  atpassportClient: IAtpassportClient;
+}): IAtpassportService => ({
+  startLogin: () => atpassportClient.startLogin(),
+  verifyCallback: (request) =>
+    atpassportClient.verifyCallback(request.url, request.headers.get("Cookie")),
+});

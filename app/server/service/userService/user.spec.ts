@@ -2,9 +2,10 @@ import { http, HttpResponse } from "msw";
 
 import type { ProfileViewDetailed } from "~/generated/app/bsky/actor/defs";
 import { server } from "~/mocks/server";
+import { di } from "~/server/di";
 import { UserFactory } from "~/server/factories/user";
 
-import { userService } from ".";
+const userService = di.userService;
 
 const dummyBlueskyProfile = {
   did: "did:plc:dfbe2uvzisfdxwscnwcxdta6",

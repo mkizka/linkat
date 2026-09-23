@@ -1,7 +1,8 @@
 import type { Did } from "@atproto/did";
 import { JoseKey } from "@atproto/jwk-jose";
 import type {
-  NodeOAuthClientOptions,
+  NodeSavedSessionStore,
+  NodeSavedStateStore,
   OAuthClientMetadataInput,
   OAuthSession,
 } from "@atproto/oauth-client-node";
@@ -11,8 +12,6 @@ import {
 } from "@atproto/oauth-client-node";
 
 import { env, isProduction } from "~/utils/env";
-
-import { SessionStore, StateStore } from "./oauthStorage";
 
 const privateKey = Buffer.from(env.PRIVATE_KEY_ES256_B64, "base64").toString();
 
@@ -44,17 +43,7 @@ const keyset = isProduction
   ? [await JoseKey.fromImportable(privateKey, "key1")]
   : undefined;
 
-const oauthClientOptions: NodeOAuthClientOptions = {
-  clientMetadata,
-  keyset,
-  plcDirectoryUrl: env.ATPROTO_PLC_URL,
-  stateStore: new StateStore(),
-  sessionStore: new SessionStore(),
-};
-
-const nodeOAuthClient = new NodeOAuthClient(oauthClientOptions);
-
-export interface OAuthClient {
+export interface IOAuthClient {
   authorize: (handle: string) => Promise<URL>;
   callback: (params: URLSearchParams) => Promise<Did>;
   restore: (did: Did) => Promise<OAuthSession>;
@@ -62,13 +51,33 @@ export interface OAuthClient {
   jwks: NodeOAuthClient["jwks"];
 }
 
-export const oauthClient: OAuthClient = {
-  authorize: (handle) => nodeOAuthClient.authorize(handle, { scope }),
-  callback: async (params) => {
-    const { session } = await nodeOAuthClient.callback(params);
-    return session.did;
-  },
-  restore: (did) => nodeOAuthClient.restore(did),
-  clientMetadata: nodeOAuthClient.clientMetadata,
-  jwks: nodeOAuthClient.jwks,
+export const oauthClientFactory = ({
+  oauthStateStore,
+  oauthSessionStore,
+}: {
+  oauthStateStore: NodeSavedStateStore;
+  oauthSessionStore: NodeSavedSessionStore;
+}): IOAuthClient => {
+  const client = new NodeOAuthClient({
+    clientMetadata,
+    keyset,
+    plcDirectoryUrl: env.ATPROTO_PLC_URL,
+    stateStore: oauthStateStore,
+    sessionStore: oauthSessionStore,
+  });
+
+  return {
+    authorize: (handle) => client.authorize(handle, { scope }),
+    async callback(params) {
+      const { session } = await client.callback(params);
+      return session.did;
+    },
+    restore: (did) => client.restore(did),
+    get clientMetadata() {
+      return client.clientMetadata;
+    },
+    get jwks() {
+      return client.jwks;
+    },
+  };
 };

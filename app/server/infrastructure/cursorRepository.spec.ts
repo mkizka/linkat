@@ -1,10 +1,11 @@
 import { Pool } from "pg";
 
+import { di } from "~/server/di";
 import { env } from "~/utils/env";
 
-import { cursorRepository } from "./cursorRepository";
-
 const pool = new Pool({ connectionString: env.DATABASE_URL });
+
+const cursorRepository = di.cursorRepository;
 
 describe("cursorRepository", () => {
   beforeEach(async () => {

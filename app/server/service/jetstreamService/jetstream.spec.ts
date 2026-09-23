@@ -5,9 +5,10 @@ import { Pool } from "pg";
 
 import { mockedLogger } from "~/mocks/logger";
 import { server } from "~/mocks/server";
+import { di } from "~/server/di";
 import { env } from "~/utils/env";
 
-import { handleCreateOrUpdate } from "./jetstream";
+const jetstreamService = di.jetstreamService;
 
 const pool = new Pool({ connectionString: env.DATABASE_URL });
 afterAll(() => pool.end());
@@ -42,7 +43,7 @@ describe("jetstreamService", () => {
         ),
       );
       // act
-      const actual = handleCreateOrUpdate(dummyEvent(did));
+      const actual = jetstreamService.handleCreateOrUpdate(dummyEvent(did));
       // assert
       await expect(actual).resolves.toBeUndefined();
       expect(mockedLogger.warn).toHaveBeenCalledWith(

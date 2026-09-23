@@ -4,10 +4,11 @@ import { http, HttpResponse } from "msw";
 import { mockedLogger } from "~/mocks/logger";
 import { server } from "~/mocks/server";
 import { Board, BoardParseError } from "~/models/board";
+import { di } from "~/server/di";
 import { BoardFactory, cardsFromFactory } from "~/server/factories/board";
 import { UserFactory } from "~/server/factories/user";
 
-import { boardService } from ".";
+const boardService = di.boardService;
 
 const dummyCards = [
   {
