@@ -1,9 +1,9 @@
 import type { Did } from "@atproto/did";
-import { createCookieSessionStorage } from "react-router";
+import { createCookieSessionStorage as createReactRouterSessionStorage } from "react-router";
 
 import { env } from "~/utils/env";
 
-const storage = createCookieSessionStorage<{ did: Did }>({
+const storage = createReactRouterSessionStorage<{ did: Did }>({
   cookie: {
     httpOnly: true,
     maxAge: 30 * 24 * 60 * 60,
