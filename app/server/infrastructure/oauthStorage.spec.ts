@@ -6,7 +6,8 @@ import { Pool } from "pg";
 
 import { env } from "~/utils/env";
 
-import { SessionStore, StateStore } from "./storage";
+import { db } from "./drizzle";
+import { sessionStoreFactory, stateStoreFactory } from "./oauthStorage";
 
 const pool = new Pool({ connectionString: env.DATABASE_URL });
 
@@ -36,7 +37,7 @@ const dummyState = { verifier: "verifier1" } as NodeSavedState;
 const dummySession = { authMethod: "none" } as unknown as NodeSavedSession;
 
 describe("StateStore", () => {
-  const stateStore = new StateStore();
+  const stateStore = stateStoreFactory({ db });
 
   describe("get", () => {
     test("保存されていない場合はundefinedを返す", async () => {
@@ -98,7 +99,7 @@ describe("StateStore", () => {
 });
 
 describe("SessionStore", () => {
-  const sessionStore = new SessionStore();
+  const sessionStore = sessionStoreFactory({ db });
 
   describe("get", () => {
     test("保存されていない場合はundefinedを返す", async () => {

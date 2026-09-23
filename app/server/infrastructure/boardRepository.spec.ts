@@ -4,15 +4,18 @@ import { Pool } from "pg";
 import { Board } from "~/models/board";
 import { BoardFactory, cardsFromFactory } from "~/server/factories/board";
 import { UserFactory } from "~/server/factories/user";
+import { db } from "~/server/infrastructure/drizzle";
 import { env } from "~/utils/env";
 
-import { boardRepository } from "./boardRepository";
+import { boardRepositoryFactory } from "./boardRepository";
 
 const pool = new Pool({ connectionString: env.DATABASE_URL });
 
 afterAll(async () => {
   await pool.end();
 });
+
+const boardRepository = boardRepositoryFactory({ db });
 
 describe("boardRepository", () => {
   describe("find", () => {

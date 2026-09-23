@@ -1,7 +1,10 @@
+import type { Did } from "@atproto/did";
 import { JoseKey } from "@atproto/jwk-jose";
 import type {
-  NodeOAuthClientOptions,
+  NodeSavedSessionStore,
+  NodeSavedStateStore,
   OAuthClientMetadataInput,
+  OAuthSession,
 } from "@atproto/oauth-client-node";
 import {
   atprotoLoopbackClientMetadata,
@@ -10,11 +13,9 @@ import {
 
 import { env, isProduction } from "~/utils/env";
 
-import { SessionStore, StateStore } from "./storage";
-
 const privateKey = Buffer.from(env.PRIVATE_KEY_ES256_B64, "base64").toString();
 
-export const scope = "atproto include:blue.linkat.permissionSet";
+const scope = "atproto include:blue.linkat.permissionSet";
 
 const clientMetadata: OAuthClientMetadataInput = isProduction
   ? {
@@ -42,12 +43,41 @@ const keyset = isProduction
   ? [await JoseKey.fromImportable(privateKey, "key1")]
   : undefined;
 
-const oauthClientOptions: NodeOAuthClientOptions = {
-  clientMetadata,
-  keyset,
-  plcDirectoryUrl: env.ATPROTO_PLC_URL,
-  stateStore: new StateStore(),
-  sessionStore: new SessionStore(),
-};
+export interface IOAuthClient {
+  authorize: (handle: string) => Promise<URL>;
+  callback: (params: URLSearchParams) => Promise<Did>;
+  restore: (did: Did) => Promise<OAuthSession>;
+  clientMetadata: NodeOAuthClient["clientMetadata"];
+  jwks: NodeOAuthClient["jwks"];
+}
 
-export const oauthClient = new NodeOAuthClient(oauthClientOptions);
+export const oauthClientFactory = ({
+  oauthStateStore,
+  oauthSessionStore,
+}: {
+  oauthStateStore: NodeSavedStateStore;
+  oauthSessionStore: NodeSavedSessionStore;
+}): IOAuthClient => {
+  const client = new NodeOAuthClient({
+    clientMetadata,
+    keyset,
+    plcDirectoryUrl: env.ATPROTO_PLC_URL,
+    stateStore: oauthStateStore,
+    sessionStore: oauthSessionStore,
+  });
+
+  return {
+    authorize: (handle) => client.authorize(handle, { scope }),
+    async callback(params) {
+      const { session } = await client.callback(params);
+      return session.did;
+    },
+    restore: (did) => client.restore(did),
+    get clientMetadata() {
+      return client.clientMetadata;
+    },
+    get jwks() {
+      return client.jwks;
+    },
+  };
+};

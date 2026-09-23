@@ -2,8 +2,11 @@ import { asDid } from "@atproto/did";
 
 import { User } from "~/models/user";
 import { UserFactory } from "~/server/factories/user";
+import { db } from "~/server/infrastructure/drizzle";
 
-import { userRepository } from "./userRepository";
+import { userRepositoryFactory } from "./userRepository";
+
+const userRepository = userRepositoryFactory({ db });
 
 describe("userRepository", () => {
   describe("findByDid", () => {

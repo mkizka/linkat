@@ -5,9 +5,25 @@ import { Pool } from "pg";
 
 import { mockedLogger } from "~/mocks/logger";
 import { server } from "~/mocks/server";
+import { boardRepositoryFactory } from "~/server/infrastructure/boardRepository";
+import { cursorRepositoryFactory } from "~/server/infrastructure/cursorRepository";
+import { db } from "~/server/infrastructure/drizzle";
+import { userRepositoryFactory } from "~/server/infrastructure/userRepository";
+import { boardServiceFactory } from "~/server/service/boardService/board";
+import { userServiceFactory } from "~/server/service/userService/user";
 import { env } from "~/utils/env";
 
-import { handleCreateOrUpdate } from "./jetstream";
+import { jetstreamServiceFactory } from "./jetstream";
+
+const jetstreamService = jetstreamServiceFactory({
+  cursorRepository: cursorRepositoryFactory({ db }),
+  boardService: boardServiceFactory({
+    boardRepository: boardRepositoryFactory({ db }),
+  }),
+  userService: userServiceFactory({
+    userRepository: userRepositoryFactory({ db }),
+  }),
+});
 
 const pool = new Pool({ connectionString: env.DATABASE_URL });
 afterAll(() => pool.end());
@@ -42,7 +58,7 @@ describe("jetstreamService", () => {
         ),
       );
       // act
-      const actual = handleCreateOrUpdate(dummyEvent(did));
+      const actual = jetstreamService.handleCreateOrUpdate(dummyEvent(did));
       // assert
       await expect(actual).resolves.toBeUndefined();
       expect(mockedLogger.warn).toHaveBeenCalledWith(

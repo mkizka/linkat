@@ -2,9 +2,7 @@ import { Footer, Main } from "~/components/layout";
 import { BoardViewer } from "~/features/board/board-viewer";
 import { ShareModal } from "~/features/board/share-modal";
 import { getInstance } from "~/i18n/i18n";
-import { getSessionUserDid } from "~/server/oauth/session";
-import { boardService } from "~/server/service/boardService";
-import { userService } from "~/server/service/userService";
+import { di } from "~/server/di";
 import { env } from "~/utils/env";
 import { createMeta } from "~/utils/meta";
 
@@ -17,13 +15,13 @@ const notFound = () => {
 export async function loader({ request, params, context }: Route.LoaderArgs) {
   // この順で処理した場合ボードを持たない(=このサービスのユーザーでない)ユーザーの
   // データも作られてしまうが、一旦このままにしておく
-  const user = await userService.findOrFetchUser({
+  const user = await di.userService.findOrFetchUser({
     handleOrDid: params.handle,
   });
   if (!user) {
     return notFound();
   }
-  const board = await boardService.findBoard(user.did);
+  const board = await di.boardService.findBoard(user.did);
   if (!board) {
     return notFound();
   }
@@ -32,10 +30,11 @@ export async function loader({ request, params, context }: Route.LoaderArgs) {
     displayName: user.displayName,
     handle: user.handle,
   });
+  const userDid = await di.sessionService.getSessionUserDid(request);
   return {
     user,
     board: { cards: board.cards },
-    isMine: user.isOwnedBy(await getSessionUserDid(request)),
+    isMine: user.isOwnedBy(userDid),
     title: `${title} | Linkat`,
     url: `${env.PUBLIC_URL}/${user.handle}`,
     ogImageUrl: `${env.PUBLIC_URL}/${user.handle}/og`,

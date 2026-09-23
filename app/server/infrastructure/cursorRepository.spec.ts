@@ -1,10 +1,13 @@
 import { Pool } from "pg";
 
+import { db } from "~/server/infrastructure/drizzle";
 import { env } from "~/utils/env";
 
-import { cursorRepository } from "./cursorRepository";
+import { cursorRepositoryFactory } from "./cursorRepository";
 
 const pool = new Pool({ connectionString: env.DATABASE_URL });
+
+const cursorRepository = cursorRepositoryFactory({ db });
 
 describe("cursorRepository", () => {
   beforeEach(async () => {

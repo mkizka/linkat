@@ -1,5 +1,5 @@
-import { oauthClient } from "~/server/oauth/client";
+import { di } from "~/server/di";
 
 export function loader() {
-  return Response.json(oauthClient.jwks);
+  return Response.json(di.authService.getJwks());
 }
