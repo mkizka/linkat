@@ -39,7 +39,8 @@
   },
   "board-viewer": {
     "confirm-delete-message": "Are you sure you want to delete?",
-    "submit-button": "Save"
+    "submit-button": "Save",
+    "resolve-url-error-message": "Could not identify the user from the Bluesky URL"
   },
   "share-modal": {
     "title": "Saved",

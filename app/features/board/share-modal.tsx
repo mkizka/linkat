@@ -54,7 +54,8 @@ export function ShareModal({ url }: Props) {
 
   const handlePost = async () => {
     setLoading(true);
-    await fetch(`${url}/og`);
+    // OGP画像を事前に生成させておくだけなので失敗しても投稿は続ける
+    await fetch(`${url}/og`).catch(() => undefined);
     open(
       `https://bsky.app/intent/compose?text=${encodeURIComponent(shareText)}`,
       "_blank",
