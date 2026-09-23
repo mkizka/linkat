@@ -61,12 +61,16 @@ export const resolveHandleIfNeeded = async (original: string) => {
   if (!handle || handle.startsWith("did:")) {
     return original;
   }
-  ensureValidHandle(handle);
-  const publicAgent = LinkatAgent.credential();
-  const response = await publicAgent.call(resolveHandle, { handle });
-  const resolvedUrl = new URL(url.origin);
-  resolvedUrl.pathname = "/" + [profile, response.did, ...rest].join("/");
-  return resolvedUrl.toString();
+  try {
+    ensureValidHandle(handle);
+    const publicAgent = LinkatAgent.credential();
+    const response = await publicAgent.call(resolveHandle, { handle });
+    const resolvedUrl = new URL(url.origin);
+    resolvedUrl.pathname = "/" + [profile, response.did, ...rest].join("/");
+    return resolvedUrl.toString();
+  } catch {
+    return original;
+  }
 };
 
 // https://bsky.app/profile/did:plc:abcdefg.../post/hijklmnop...
