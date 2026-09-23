@@ -4,11 +4,18 @@ import { http, HttpResponse } from "msw";
 import { mockedLogger } from "~/mocks/logger";
 import { server } from "~/mocks/server";
 import { Board, BoardParseError } from "~/models/board";
-import { di } from "~/server/di";
 import { BoardFactory, cardsFromFactory } from "~/server/factories/board";
 import { UserFactory } from "~/server/factories/user";
+import { boardRepositoryFactory } from "~/server/infrastructure/boardRepository";
+import { db } from "~/server/infrastructure/drizzle";
+import { didServiceFactory } from "~/server/service/didService/did";
 
-const boardService = di.boardService;
+import { boardServiceFactory } from "./board";
+
+const boardService = boardServiceFactory({
+  boardRepository: boardRepositoryFactory({ db }),
+  didService: didServiceFactory(),
+});
 
 const dummyCards = [
   {
