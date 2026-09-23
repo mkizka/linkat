@@ -172,9 +172,6 @@ importers:
       '@atproto/did':
         specifier: 0.5.5
         version: 0.5.5
-      '@atproto/identity':
-        specifier: 0.5.13
-        version: 0.5.13
       '@atproto/jwk-jose':
         specifier: 0.2.4
         version: 0.2.4
@@ -494,10 +491,6 @@ packages:
 
   '@atproto/did@0.5.5':
     resolution: {integrity: sha512-ibCxTPsPQtrtX+iidnE0bkMBHuoWFBdVfPFfCAlUKY6HfkqdUUxItzvQu9AMucYDhP6vJ15HLVj+QhNY2jtIvw==}
-    engines: {node: '>=22'}
-
-  '@atproto/identity@0.5.13':
-    resolution: {integrity: sha512-YZO+1x/QPzfYXiIiq54Q3jVUG0t93bF23yWcaa1wBljqNDfqAbFSd01uQeKYSHsfetaUGb4MKuYzlgzwl/gLrA==}
     engines: {node: '>=22'}
 
   '@atproto/jwk-jose@0.2.4':
@@ -4691,12 +4684,6 @@ snapshots:
   '@atproto/did@0.5.5':
     dependencies:
       zod: 3.25.76
-
-  '@atproto/identity@0.5.13':
-    dependencies:
-      '@atproto-labs/fetch-node': 0.4.0
-      '@atproto/common-web': 0.5.12
-      '@atproto/crypto': 0.5.5
 
   '@atproto/jwk-jose@0.2.4':
     dependencies:
