@@ -1,6 +1,6 @@
 import "./tailwind.css";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import type { LoaderFunctionArgs } from "react-router";
 import {
@@ -43,28 +43,12 @@ export async function loader({ context }: LoaderFunctionArgs) {
   );
 }
 
-const TOAST_DURATION = 5000;
-
 function Toaster({ toast }: { toast: ReturnType<typeof getToast> }) {
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    if (!toast) return;
-    setVisible(true);
-    const timer = setTimeout(
-      () => setVisible(false),
-      toast.duration ?? TOAST_DURATION,
-    );
-    return () => clearTimeout(timer);
-  }, [toast]);
-
   if (!toast) return null;
   return (
     <div
-      className={cn(
-        "toast toast-center w-full max-w-screen-sm whitespace-normal opacity-90",
-        !visible && "animate-out fade-out-10",
-      )}
+      // 一定時間表示した後CSSだけでフェードアウトさせる
+      className="toast toast-center w-full max-w-screen-sm animate-out fade-out-0 whitespace-normal opacity-90 delay-[5000ms] fill-mode-forwards pointer-events-none"
     >
       <div
         className={cn("alert text-start", {

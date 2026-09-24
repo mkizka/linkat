@@ -12,12 +12,9 @@ import type { Route } from "./+types/login";
 
 const logger = createLogger("login");
 
-function redirectWithError(
-  context: Route.ActionArgs["context"],
-  message: string,
-) {
+function toastError(context: Route.ActionArgs["context"], message: string) {
   setToast(context, { message, type: "error" });
-  return redirect("/login");
+  return null;
 }
 
 export async function action({ request, context }: Route.ActionArgs) {
@@ -25,7 +22,7 @@ export async function action({ request, context }: Route.ActionArgs) {
   const form = await request.formData();
   const handle = form.get("handle");
   if (typeof handle !== "string") {
-    return redirectWithError(context, i18next.t("login.unknown-error-message"));
+    return toastError(context, i18next.t("login.unknown-error-message"));
   }
   try {
     const url = await di.authService.authorize(handle);
@@ -33,12 +30,12 @@ export async function action({ request, context }: Route.ActionArgs) {
   } catch (error) {
     logger.error(error, "OAuthログインに失敗しました");
     if (error instanceof OAuthResolverError) {
-      return redirectWithError(
+      return toastError(
         context,
         i18next.t("login.oauth-resolve-error-message"),
       );
     }
-    return redirectWithError(context, i18next.t("login.default-error-message"));
+    return toastError(context, i18next.t("login.default-error-message"));
   }
 }
 
