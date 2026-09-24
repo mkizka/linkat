@@ -27,7 +27,7 @@ export function Toaster({ toast }: Props) {
     <div
       data-testid="toaster"
       className={cn(
-        "toast toast-end toast-bottom w-full max-w-sm whitespace-normal opacity-90 transition-opacity duration-300",
+        "toast toast-center w-full max-w-screen-sm whitespace-normal opacity-90 transition-opacity duration-300",
         hidden && "pointer-events-none opacity-0",
       )}
     >
