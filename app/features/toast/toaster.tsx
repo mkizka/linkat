@@ -1,14 +1,35 @@
+import { useEffect, useState } from "react";
 import type { getToast } from "remix-toast/middleware";
 
 import { cn } from "~/utils/cn";
 
-export function Toaster({ toast }: { toast: ReturnType<typeof getToast> }) {
+type Props = {
+  toast: ReturnType<typeof getToast>;
+};
+
+const DISPLAY_DURATION = 5000;
+
+export function Toaster({ toast }: Props) {
+  const [hiddenToast, setHiddenToast] = useState<Props["toast"]>(null);
+
+  useEffect(() => {
+    if (!toast) return;
+    const timer = setTimeout(
+      () => setHiddenToast(toast),
+      toast.duration ?? DISPLAY_DURATION,
+    );
+    return () => clearTimeout(timer);
+  }, [toast]);
+
   if (!toast) return null;
+  const hidden = hiddenToast === toast;
   return (
     <div
       data-testid="toaster"
-      // 一定時間表示した後CSSだけでフェードアウトさせる
-      className="pointer-events-none toast toast-center w-full max-w-screen-sm animate-out whitespace-normal opacity-90 fade-out-0 fill-mode-forwards [animation-delay:5s]"
+      className={cn(
+        "toast toast-end toast-bottom w-full max-w-sm whitespace-normal opacity-90 transition-opacity duration-300",
+        hidden && "pointer-events-none opacity-0",
+      )}
     >
       <div
         className={cn("alert text-start", {

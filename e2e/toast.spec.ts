@@ -19,5 +19,9 @@ test.describe("トースト", () => {
     // すぐには消えない
     await expect(toaster).toHaveCSS("opacity", "0.9");
     await expect(toaster).toHaveCSS("opacity", "0", { timeout: 10_000 });
+
+    // 消えた後でもう一度失敗させると再び表示される
+    await page.getByTestId("login-form__submit").click();
+    await expect(toaster).toHaveCSS("opacity", "0.9");
   });
 });
