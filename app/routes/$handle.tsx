@@ -1,5 +1,6 @@
 import { Footer, Main } from "~/components/layout";
 import { BoardViewer } from "~/features/board/board-viewer";
+import { SaveDelayedToast } from "~/features/board/save-delayed-toast";
 import { ShareModal } from "~/features/board/share-modal";
 import { getInstance } from "~/i18n/i18n";
 import { di } from "~/server/di";
@@ -54,6 +55,7 @@ export default function Index({ loaderData }: Route.ComponentProps) {
       <Main>
         <BoardViewer user={user} board={board} url={url} isMine={isMine} />
         <ShareModal url={url} />
+        <SaveDelayedToast />
       </Main>
       <Footer withNavigation />
     </>

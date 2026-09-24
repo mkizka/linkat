@@ -11,6 +11,7 @@ export function Toaster() {
           key={toast.id}
           className={cn("alert text-start", {
             "alert-success": toast.level === "success",
+            "alert-warning": toast.level === "warning",
             "alert-error": toast.level === "error",
             "animate-out fade-out-10": toast.removing,
           })}

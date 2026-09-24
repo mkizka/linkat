@@ -11,6 +11,7 @@ export const useToast = () => {
   return useMemo(
     () => ({
       success: (message: string) => toast(message, "success"),
+      warning: (message: string) => toast(message, "warning"),
       error: (message: string) => toast(message, "error"),
     }),
     [toast],

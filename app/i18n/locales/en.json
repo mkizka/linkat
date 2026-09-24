@@ -36,7 +36,8 @@
     "confirm-leave-message": "Unsaved changes will be lost. Are you sure?"
   },
   "board": {
-    "meta-title": "{{displayName}}(@{{handle}})'s board"
+    "meta-title": "{{displayName}}(@{{handle}})'s board",
+    "save-delayed-warning-message": "Saved, but it may take a while for the changes to appear"
   },
   "board-viewer": {
     "confirm-delete-message": "Are you sure you want to delete?",

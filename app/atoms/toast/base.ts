@@ -3,7 +3,7 @@ import { atom } from "jotai";
 export type Toast = {
   id: string;
   message: string;
-  level: "success" | "error";
+  level: "success" | "warning" | "error";
   removing?: boolean;
 };
 
