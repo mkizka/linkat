@@ -44,7 +44,12 @@ export async function action({ request, context }: Route.ActionArgs) {
     return { error: i18next.t("edit.save-board-error-message") };
   }
   // Jetstreamより先に閲覧ページへ反映するためDBも更新
-  await di.boardService.saveBoard(parsedBoard);
+  try {
+    await di.boardService.saveBoard(parsedBoard);
+  } catch (error) {
+    // PDSへの保存は成功しており、いずれJetstream経由でDBにも反映されるため処理を続ける
+    logger.error(error, "DBへのボードの保存に失敗しました");
+  }
   return redirect(`/${user.handle}?success`);
 }
 
