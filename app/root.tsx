@@ -12,6 +12,7 @@ import {
   ScrollRestoration,
   useRouteLoaderData,
 } from "react-router";
+import { getToast, toastMiddleware } from "remix-toast/middleware";
 
 import type { Route } from "./+types/root";
 import { Toaster } from "./features/toast/toaster";
@@ -22,13 +23,14 @@ import { env } from "./utils/env";
 export { ErrorBoundary } from "~/components/error-boundary";
 export { HydrateFallback } from "~/components/hydate-fallback";
 
-export const middleware = [i18nextMiddleware];
+export const middleware = [i18nextMiddleware, toastMiddleware()];
 
 export async function loader({ context }: LoaderFunctionArgs) {
   const locale = getLocale(context);
   return data(
     {
       locale,
+      toast: getToast(context),
       umami: {
         scriptUrl: env.UMAMI_SCRIPT_URL,
         websiteId: env.UMAMI_WEBSITE_ID,
@@ -71,7 +73,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <body className="flex h-fit min-h-svh flex-col bg-base-300">
         <UmamiProvider>
           {children}
-          <Toaster />
+          <Toaster toast={loaderData?.toast ?? null} />
         </UmamiProvider>
         <ScrollRestoration />
         <script

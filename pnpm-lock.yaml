@@ -253,9 +253,6 @@ importers:
       isbot:
         specifier: 5.2.2
         version: 5.2.2
-      jotai:
-        specifier: 3.0.0
-        version: 3.0.0(@types/react@19.3.0)(react@19.3.0)
       lru-cache:
         specifier: 11.5.2
         version: 11.5.2
@@ -292,6 +289,9 @@ importers:
       remix-i18next:
         specifier: 8.0.0
         version: 8.0.0(i18next@26.4.2(typescript@6.0.3))(react-router@8.4.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0))
+      remix-toast:
+        specifier: ^4.0.0
+        version: 4.0.0(react-router@8.4.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0))
       remix-utils:
         specifier: 10.0.0
         version: 10.0.0(@standard-schema/spec@1.1.0)(react-router@8.4.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(react@19.3.0)
@@ -3166,18 +3166,6 @@ packages:
   jose@5.10.0:
     resolution: {integrity: sha512-s+3Al/p9g32Iq+oqXxkW//7jk2Vig6FF1CFqzVXoTUXt2qz89YWbL+OwS17NFYEvxC35n0FKeGO2LGYSxeM2Gg==}
 
-  jotai@3.0.0:
-    resolution: {integrity: sha512-KxhbmsJUp/tmrv6aZgO+nzB3H9K8C0xmk5i3aGkwy/EANg73DVBkggv3zVHaAi5PlNlQgTgP4uiVepo+JC+wSA==}
-    engines: {node: '>=22.12.0'}
-    peerDependencies:
-      '@types/react': '>=18.0.0'
-      react: '>=18.0.0'
-    peerDependenciesMeta:
-      '@types/react':
-        optional: true
-      react:
-        optional: true
-
   joycon@3.1.1:
     resolution: {integrity: sha512-34wB/Y7MW7bzjKRjUKTa46I2Z7eV62Rkhva+KkopW7Qvv/OSWBqvkSY7vusOPrNuZcUG3tApvdVgNB8POj3SPw==}
     engines: {node: '>=10'}
@@ -3907,6 +3895,11 @@ packages:
     peerDependencies:
       i18next: ^24.0.0 || ^25.0.0 || ^26.0.0
       react-router: ^8.0.0
+
+  remix-toast@4.0.0:
+    resolution: {integrity: sha512-6VUYEYOIPU02Fp3hThh8nz8C6w30EUoSlal5ATf/hfHAIEEXksVTSRMNiuh9R3hcdAQwQC7V8WjxK8tM7ZmlBw==}
+    peerDependencies:
+      react-router: '>=7.9.0'
 
   remix-utils@10.0.0:
     resolution: {integrity: sha512-v5voIsJQof6e/1m8te4qyH5YXATWxv+zEgbxd98CwtVxRLCXVc+P9rQ2uDRRYPLCvF9A2ZBOizK0ZTUfm4qJpw==}
@@ -7287,11 +7280,6 @@ snapshots:
 
   jose@5.10.0: {}
 
-  jotai@3.0.0(@types/react@19.3.0)(react@19.3.0):
-    optionalDependencies:
-      '@types/react': 19.3.0
-      react: 19.3.0
-
   joycon@3.1.1: {}
 
   js-tokens@10.0.0: {}
@@ -7956,6 +7944,11 @@ snapshots:
     dependencies:
       i18next: 26.4.2(typescript@6.0.3)
       react-router: 8.4.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+
+  remix-toast@4.0.0(react-router@8.4.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0)):
+    dependencies:
+      react-router: 8.4.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+      zod: 4.6.5
 
   remix-utils@10.0.0(@standard-schema/spec@1.1.0)(react-router@8.4.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(react@19.3.0):
     optionalDependencies:
