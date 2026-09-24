@@ -25,7 +25,6 @@
   "dependencies": {
     "@atpassport/client": "0.2.3",
     "@atproto/did": "0.5.5",
-    "@atproto/identity": "0.5.13",
     "@atproto/jwk-jose": "0.2.4",
     "@atproto/lex": "0.3.11",
     "@atproto/oauth-client-node": "0.5.7",

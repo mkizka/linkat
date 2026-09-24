@@ -66,7 +66,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   if (!user) {
     throw redirect("/login");
   }
-  const board = await di.boardService.findOrFetchBoard(user.did);
+  const board = await di.boardService.findBoard(user.did);
   return {
     user,
     board: board && { cards: board.cards },
