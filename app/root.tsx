@@ -1,6 +1,6 @@
 import "./tailwind.css";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { LoaderFunctionArgs } from "react-router";
 import {
@@ -12,23 +12,25 @@ import {
   ScrollRestoration,
   useRouteLoaderData,
 } from "react-router";
+import { getToast, toastMiddleware } from "remix-toast/middleware";
 
 import type { Route } from "./+types/root";
-import { Toaster } from "./features/toast/toaster";
 import { UmamiProvider } from "./hooks/useUmami";
 import { getLocale, i18nextMiddleware, localeCookie } from "./i18n/i18n";
+import { cn } from "./utils/cn";
 import { env } from "./utils/env";
 
 export { ErrorBoundary } from "~/components/error-boundary";
 export { HydrateFallback } from "~/components/hydate-fallback";
 
-export const middleware = [i18nextMiddleware];
+export const middleware = [i18nextMiddleware, toastMiddleware()];
 
 export async function loader({ context }: LoaderFunctionArgs) {
   const locale = getLocale(context);
   return data(
     {
       locale,
+      toast: getToast(context),
       umami: {
         scriptUrl: env.UMAMI_SCRIPT_URL,
         websiteId: env.UMAMI_WEBSITE_ID,
@@ -38,6 +40,43 @@ export async function loader({ context }: LoaderFunctionArgs) {
       },
     },
     { headers: { "Set-Cookie": await localeCookie.serialize(locale) } },
+  );
+}
+
+const TOAST_DURATION = 5000;
+
+function Toaster({ toast }: { toast: ReturnType<typeof getToast> }) {
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    if (!toast) return;
+    setVisible(true);
+    const timer = setTimeout(
+      () => setVisible(false),
+      toast.duration ?? TOAST_DURATION,
+    );
+    return () => clearTimeout(timer);
+  }, [toast]);
+
+  if (!toast) return null;
+  return (
+    <div
+      className={cn(
+        "toast toast-center w-full max-w-screen-sm whitespace-normal opacity-90",
+        !visible && "animate-out fade-out-10",
+      )}
+    >
+      <div
+        className={cn("alert text-start", {
+          "alert-success": toast.type === "success",
+          "alert-error": toast.type === "error",
+          "alert-info": toast.type === "info",
+          "alert-warning": toast.type === "warning",
+        })}
+      >
+        <span>{toast.message}</span>
+      </div>
+    </div>
   );
 }
 
@@ -71,7 +110,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <body className="flex h-fit min-h-svh flex-col bg-base-300">
         <UmamiProvider>
           {children}
-          <Toaster />
+          <Toaster toast={loaderData?.toast ?? null} />
         </UmamiProvider>
         <ScrollRestoration />
         <script

@@ -1,10 +1,10 @@
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { redirect, useBeforeUnload, useBlocker } from "react-router";
+import { setToast } from "remix-toast/middleware";
 
 import { Main } from "~/components/layout";
 import { BoardViewer } from "~/features/board/board-viewer";
-import { RouteToaster } from "~/features/toast/route";
 import { useUmami } from "~/hooks/useUmami";
 import { getInstance } from "~/i18n/i18n";
 import { di } from "~/server/di";
@@ -15,6 +15,14 @@ import type { Route } from "./+types/edit";
 
 const logger = createLogger("edit");
 
+function redirectWithError(
+  context: Route.ActionArgs["context"],
+  message: string,
+) {
+  setToast(context, { message, type: "error" });
+  return redirect("/edit");
+}
+
 export async function action({ request, context }: Route.ActionArgs) {
   const i18next = getInstance(context);
   const [user, agent] = await Promise.all([
@@ -22,12 +30,18 @@ export async function action({ request, context }: Route.ActionArgs) {
     di.sessionService.getSessionAgent(request),
   ]);
   if (!user || !agent) {
-    return { error: i18next.t("edit.invalid-session-error-message") };
+    return redirectWithError(
+      context,
+      i18next.t("edit.invalid-session-error-message"),
+    );
   }
   const form = await request.formData();
   const rawBoard = form.get("board");
   if (typeof rawBoard !== "string") {
-    return { error: i18next.t("edit.invalid-form-error-message") };
+    return redirectWithError(
+      context,
+      i18next.t("edit.invalid-form-error-message"),
+    );
   }
   // 1. 楽観的にDBを更新
   const parsedBoard = await di.boardService.parseBoardFromForm(
@@ -36,7 +50,10 @@ export async function action({ request, context }: Route.ActionArgs) {
   );
   if (parsedBoard instanceof Error) {
     logger.warn({ error: parsedBoard }, "boardの形式が不正でした");
-    return { error: i18next.t("edit.invalid-form-error-message") };
+    return redirectWithError(
+      context,
+      i18next.t("edit.invalid-form-error-message"),
+    );
   }
   await di.boardService.saveBoard(parsedBoard);
   try {
@@ -100,11 +117,8 @@ export default function Index({ loaderData }: Route.ComponentProps) {
   }, [t, blocker, umami]);
 
   return (
-    <>
-      <Main>
-        <BoardViewer user={user} board={board} url={url} editable />
-      </Main>
-      <RouteToaster />
-    </>
+    <Main>
+      <BoardViewer user={user} board={board} url={url} editable />
+    </Main>
   );
 }
