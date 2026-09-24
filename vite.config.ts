@@ -1,6 +1,7 @@
 import { reactRouter } from "@react-router/dev/vite";
 import type { SentryReactRouterBuildOptions } from "@sentry/react-router";
 import { sentryReactRouter } from "@sentry/react-router";
+import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "vite";
 
 const sentryConfig: SentryReactRouterBuildOptions = {
@@ -12,6 +13,7 @@ const sentryConfig: SentryReactRouterBuildOptions = {
 export default defineConfig((configEnv) => ({
   base: process.env.VITE_CONFIG_BASE ?? "/",
   plugins: [
+    tailwindcss(),
     reactRouter(),
     !process.env.VITEST && sentryReactRouter(sentryConfig, configEnv),
   ],
