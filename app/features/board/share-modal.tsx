@@ -85,14 +85,14 @@ export function ShareModal({ url }: Props) {
           <p>{t("share-modal.description")}</p>
           <div className="flex flex-col gap-4 py-4 sm:flex-row">
             <Button
-              className="btn-bluesky btn flex-1 text-white"
+              className="btn-bluesky btn h-auto flex-1 py-3 text-white"
               loading={loading}
               onClick={handlePost}
             >
               <BlueskyIcon className="size-6" />
               {t("share-modal.post-to-bluesky")}
             </Button>
-            <Button className="flex-1" onClick={handleCopy}>
+            <Button className="h-auto flex-1 py-3" onClick={handleCopy}>
               {copied ? (
                 <ClipboardDocumentCheckIcon className="size-6" />
               ) : (

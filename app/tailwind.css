@@ -1,13 +1,33 @@
 @import url("https://fonts.googleapis.com/css2?family=Murecho:wght@100..900&display=swap");
+@import "tailwindcss";
+@import "tw-animate-css";
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@source "./**/{**,.client,.server}/**/*.{js,jsx,ts,tsx}";
+
+@plugin "daisyui" {
+  logs: false;
+}
+@plugin "@tailwindcss/typography";
+
+@custom-variant light (@media (prefers-color-scheme: light));
+
+@theme {
+  --breakpoint-*: initial;
+  --breakpoint-sm: 430px;
+
+  --font-*: initial;
+  --font-murecho: "murecho", sans-serif;
+}
 
 /* body以下でh-fullなどを使用するために指定しておく */
 html,
 body {
   height: 100%;
+}
+
+:root {
+  --color-neutral: oklch(32.18% 0.0248 255.7);
+  background-color: var(--color-base-300);
 }
 
 .utils--center {
@@ -21,7 +41,7 @@ body {
 }
 
 .btn-bluesky {
-  --btn-color: 62.58% 0.205 254.95;
+  --btn-color: oklch(62.58% 0.205 254.95);
 }
 
 em-emoji-picker {
