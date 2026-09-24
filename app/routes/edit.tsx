@@ -15,11 +15,6 @@ import type { Route } from "./+types/edit";
 
 const logger = createLogger("edit");
 
-function toastError(context: Route.ActionArgs["context"], message: string) {
-  setToast(context, { message, type: "error" });
-  return null;
-}
-
 export async function action({ request, context }: Route.ActionArgs) {
   const i18next = getInstance(context);
   const [user, agent] = await Promise.all([
@@ -27,12 +22,20 @@ export async function action({ request, context }: Route.ActionArgs) {
     di.sessionService.getSessionAgent(request),
   ]);
   if (!user || !agent) {
-    return toastError(context, i18next.t("edit.invalid-session-error-message"));
+    setToast(context, {
+      message: i18next.t("edit.invalid-session-error-message"),
+      type: "error",
+    });
+    return null;
   }
   const form = await request.formData();
   const rawBoard = form.get("board");
   if (typeof rawBoard !== "string") {
-    return toastError(context, i18next.t("edit.invalid-form-error-message"));
+    setToast(context, {
+      message: i18next.t("edit.invalid-form-error-message"),
+      type: "error",
+    });
+    return null;
   }
   // 1. 楽観的にDBを更新
   const parsedBoard = await di.boardService.parseBoardFromForm(
@@ -41,7 +44,11 @@ export async function action({ request, context }: Route.ActionArgs) {
   );
   if (parsedBoard instanceof Error) {
     logger.warn({ error: parsedBoard }, "boardの形式が不正でした");
-    return toastError(context, i18next.t("edit.invalid-form-error-message"));
+    setToast(context, {
+      message: i18next.t("edit.invalid-form-error-message"),
+      type: "error",
+    });
+    return null;
   }
   await di.boardService.saveBoard(parsedBoard);
   try {

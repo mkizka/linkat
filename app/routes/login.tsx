@@ -12,17 +12,16 @@ import type { Route } from "./+types/login";
 
 const logger = createLogger("login");
 
-function toastError(context: Route.ActionArgs["context"], message: string) {
-  setToast(context, { message, type: "error" });
-  return null;
-}
-
 export async function action({ request, context }: Route.ActionArgs) {
   const i18next = getInstance(context);
   const form = await request.formData();
   const handle = form.get("handle");
   if (typeof handle !== "string") {
-    return toastError(context, i18next.t("login.unknown-error-message"));
+    setToast(context, {
+      message: i18next.t("login.unknown-error-message"),
+      type: "error",
+    });
+    return null;
   }
   try {
     const url = await di.authService.authorize(handle);
@@ -30,12 +29,17 @@ export async function action({ request, context }: Route.ActionArgs) {
   } catch (error) {
     logger.error(error, "OAuthログインに失敗しました");
     if (error instanceof OAuthResolverError) {
-      return toastError(
-        context,
-        i18next.t("login.oauth-resolve-error-message"),
-      );
+      setToast(context, {
+        message: i18next.t("login.oauth-resolve-error-message"),
+        type: "error",
+      });
+      return null;
     }
-    return toastError(context, i18next.t("login.default-error-message"));
+    setToast(context, {
+      message: i18next.t("login.default-error-message"),
+      type: "error",
+    });
+    return null;
   }
 }
 
