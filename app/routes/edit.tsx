@@ -1,10 +1,10 @@
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { redirect, useBeforeUnload, useBlocker } from "react-router";
+import { setToast } from "remix-toast/middleware";
 
 import { Main } from "~/components/layout";
 import { BoardViewer } from "~/features/board/board-viewer";
-import { RouteToaster } from "~/features/toast/route";
 import { useUmami } from "~/hooks/useUmami";
 import { getInstance } from "~/i18n/i18n";
 import { di } from "~/server/di";
@@ -22,12 +22,20 @@ export async function action({ request, context }: Route.ActionArgs) {
     di.sessionService.getSessionAgent(request),
   ]);
   if (!user || !agent) {
-    return { error: i18next.t("edit.invalid-session-error-message") };
+    setToast(context, {
+      message: i18next.t("edit.invalid-session-error-message"),
+      type: "error",
+    });
+    return null;
   }
   const form = await request.formData();
   const rawBoard = form.get("board");
   if (typeof rawBoard !== "string") {
-    return { error: i18next.t("edit.invalid-form-error-message") };
+    setToast(context, {
+      message: i18next.t("edit.invalid-form-error-message"),
+      type: "error",
+    });
+    return null;
   }
   const parsedBoard = await di.boardService.parseBoardFromForm(
     user.did,
@@ -35,13 +43,21 @@ export async function action({ request, context }: Route.ActionArgs) {
   );
   if (parsedBoard instanceof Error) {
     logger.warn({ error: parsedBoard }, "boardの形式が不正でした");
-    return { error: i18next.t("edit.invalid-form-error-message") };
+    setToast(context, {
+      message: i18next.t("edit.invalid-form-error-message"),
+      type: "error",
+    });
+    return null;
   }
   try {
     await agent.updateBoard(parsedBoard);
   } catch (error) {
     logger.error(error, "PDSへのボードの保存に失敗しました");
-    return { error: i18next.t("edit.save-board-error-message") };
+    setToast(context, {
+      message: i18next.t("edit.save-board-error-message"),
+      type: "error",
+    });
+    return null;
   }
   // Jetstreamより先に閲覧ページへ反映するためDBも更新
   try {
@@ -49,7 +65,11 @@ export async function action({ request, context }: Route.ActionArgs) {
   } catch (error) {
     // PDSには保存できておりJetstream経由でいずれDBにも反映されるため、警告を出して閲覧ページへ移動する
     logger.error(error, "DBへのボードの保存に失敗しました");
-    return redirect(`/${user.handle}?delayed`);
+    setToast(context, {
+      message: i18next.t("edit.save-delayed-warning-message"),
+      type: "warning",
+    });
+    return redirect(`/${user.handle}`);
   }
   return redirect(`/${user.handle}?success`);
 }
@@ -105,11 +125,8 @@ export default function Index({ loaderData }: Route.ComponentProps) {
   }, [t, blocker, umami]);
 
   return (
-    <>
-      <Main>
-        <BoardViewer user={user} board={board} url={url} editable />
-      </Main>
-      <RouteToaster />
-    </>
+    <Main>
+      <BoardViewer user={user} board={board} url={url} editable />
+    </Main>
   );
 }

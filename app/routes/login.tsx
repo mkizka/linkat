@@ -1,9 +1,9 @@
 import { OAuthResolverError } from "@atproto/oauth-client-node";
 import { redirect } from "react-router";
+import { setToast } from "remix-toast/middleware";
 
 import { Main, RootLayout } from "~/components/layout";
 import { LoginForm } from "~/features/login/login-form";
-import { RouteToaster } from "~/features/toast/route";
 import { getInstance } from "~/i18n/i18n";
 import { di } from "~/server/di";
 import { createLogger } from "~/utils/logger";
@@ -17,7 +17,11 @@ export async function action({ request, context }: Route.ActionArgs) {
   const form = await request.formData();
   const handle = form.get("handle");
   if (typeof handle !== "string") {
-    return { error: i18next.t("login.unknown-error-message") };
+    setToast(context, {
+      message: i18next.t("login.unknown-error-message"),
+      type: "error",
+    });
+    return null;
   }
   try {
     const url = await di.authService.authorize(handle);
@@ -25,9 +29,17 @@ export async function action({ request, context }: Route.ActionArgs) {
   } catch (error) {
     logger.error(error, "OAuthログインに失敗しました");
     if (error instanceof OAuthResolverError) {
-      return { error: i18next.t("login.oauth-resolve-error-message") };
+      setToast(context, {
+        message: i18next.t("login.oauth-resolve-error-message"),
+        type: "error",
+      });
+      return null;
     }
-    return { error: i18next.t("login.default-error-message") };
+    setToast(context, {
+      message: i18next.t("login.default-error-message"),
+      type: "error",
+    });
+    return null;
   }
 }
 
@@ -44,7 +56,6 @@ export default function LoginPage() {
     <RootLayout>
       <Main className="utils--center">
         <LoginForm />
-        <RouteToaster />
       </Main>
     </RootLayout>
   );

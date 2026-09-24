@@ -33,11 +33,11 @@
     "invalid-session-error-message": "The login information was invalid",
     "invalid-form-error-message": "The form is invalid",
     "save-board-error-message": "Failed to save the board",
+    "save-delayed-warning-message": "Saved, but it may take a while for the changes to appear",
     "confirm-leave-message": "Unsaved changes will be lost. Are you sure?"
   },
   "board": {
-    "meta-title": "{{displayName}}(@{{handle}})'s board",
-    "save-delayed-warning-message": "Saved, but it may take a while for the changes to appear"
+    "meta-title": "{{displayName}}(@{{handle}})'s board"
   },
   "board-viewer": {
     "confirm-delete-message": "Are you sure you want to delete?",

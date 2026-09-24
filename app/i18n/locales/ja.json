@@ -33,11 +33,11 @@
     "invalid-session-error-message": "ログイン情報が無効でした",
     "invalid-form-error-message": "フォームが無効です",
     "save-board-error-message": "ボードの保存に失敗しました",
+    "save-delayed-warning-message": "保存しましたが、反映されるまで時間がかかる場合があります",
     "confirm-leave-message": "保存していない変更は失われます。よろしいですか？"
   },
   "board": {
-    "meta-title": "{{displayName}}(@{{handle}})さんのボード",
-    "save-delayed-warning-message": "保存しましたが、反映されるまで時間がかかる場合があります"
+    "meta-title": "{{displayName}}(@{{handle}})さんのボード"
   },
   "board-viewer": {
     "confirm-delete-message": "本当に削除しますか？",
