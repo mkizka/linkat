@@ -15,9 +15,9 @@ import {
 import { getToast, toastMiddleware } from "remix-toast/middleware";
 
 import type { Route } from "./+types/root";
+import { Toaster } from "./features/toast/toaster";
 import { UmamiProvider } from "./hooks/useUmami";
 import { getLocale, i18nextMiddleware, localeCookie } from "./i18n/i18n";
-import { cn } from "./utils/cn";
 import { env } from "./utils/env";
 
 export { ErrorBoundary } from "~/components/error-boundary";
@@ -40,27 +40,6 @@ export async function loader({ context }: LoaderFunctionArgs) {
       },
     },
     { headers: { "Set-Cookie": await localeCookie.serialize(locale) } },
-  );
-}
-
-function Toaster({ toast }: { toast: ReturnType<typeof getToast> }) {
-  if (!toast) return null;
-  return (
-    <div
-      // 一定時間表示した後CSSだけでフェードアウトさせる
-      className="toast toast-center w-full max-w-screen-sm animate-out fade-out-0 whitespace-normal opacity-90 delay-[5000ms] fill-mode-forwards pointer-events-none"
-    >
-      <div
-        className={cn("alert text-start", {
-          "alert-success": toast.type === "success",
-          "alert-error": toast.type === "error",
-          "alert-info": toast.type === "info",
-          "alert-warning": toast.type === "warning",
-        })}
-      >
-        <span>{toast.message}</span>
-      </div>
-    </div>
   );
 }
 
