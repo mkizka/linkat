@@ -200,8 +200,8 @@ importers:
         specifier: 1.1.1
         version: 1.1.1(emoji-mart@5.6.0)(react@19.3.0)
       '@gyaku/di':
-        specifier: ^4.0.0
-        version: 4.0.0
+        specifier: ^5.0.0
+        version: 5.0.0
       '@heroicons/react':
         specifier: 2.2.0
         version: 2.2.0(react@19.3.0)
@@ -1252,8 +1252,8 @@ packages:
     engines: {node: '>=6'}
     hasBin: true
 
-  '@gyaku/di@4.0.0':
-    resolution: {integrity: sha512-7rlVctTHqvQzf9Ht8H0myHhGs0bt5/VfShblyLuuWvFekPI8IxVlfuuDIMouX6iLD8VB+ehu2aC0onPnAYINbg==}
+  '@gyaku/di@5.0.0':
+    resolution: {integrity: sha512-8Bw5vevl0ol1VzWCrCVMJ8V144XB9ANV1rSTBKtee3wTo8wWah1RHjB97jpiXkMlHt2/mPyC3/QcSM4ub2TyPQ==}
     engines: {node: '>=24'}
 
   '@heroicons/react@2.2.0':
@@ -5380,7 +5380,7 @@ snapshots:
       protobufjs: 7.6.6
       yargs: 17.7.3
 
-  '@gyaku/di@4.0.0': {}
+  '@gyaku/di@5.0.0': {}
 
   '@heroicons/react@2.2.0(react@19.3.0)':
     dependencies:
