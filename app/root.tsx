@@ -37,6 +37,7 @@ export async function loader({ context }: LoaderFunctionArgs) {
       },
       ENV: {
         SENTRY_DSN: env.SENTRY_DSN,
+        SENTRY_ENVIRONMENT: env.SENTRY_ENVIRONMENT,
       },
     },
     { headers: { "Set-Cookie": await localeCookie.serialize(locale) } },
