@@ -96,15 +96,13 @@ export function handleError(
   error: unknown,
   { request }: LoaderFunctionArgs | ActionFunctionArgs,
 ) {
-  if (!request.signal.aborted) {
-    Sentry.captureException(error);
-  }
   if (
     (isRouteErrorResponse(error) && error.status === 404) ||
     request.signal.aborted
   ) {
     return;
   }
+  Sentry.captureException(error);
   logger.error(error, "サーバーエラーが発生しました");
 }
 
