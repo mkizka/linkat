@@ -59,11 +59,9 @@ export async function action({ request, context }: Route.ActionArgs) {
     });
     return null;
   }
-  // Jetstreamより先に閲覧ページへ反映するためDBも更新
   try {
     await di.boardService.saveBoard(parsedBoard);
   } catch (error) {
-    // PDSには保存できておりJetstream経由でいずれDBにも反映されるため、警告を出して閲覧ページへ移動する
     logger.error(error, "DBへのボードの保存に失敗しました");
     setToast(context, {
       message: i18next.t("edit.save-delayed-warning-message"),
