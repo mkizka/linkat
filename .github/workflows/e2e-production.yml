@@ -31,7 +31,7 @@ jobs:
             echo "deployment status: ${STATUS:-<not found yet>}"
             case "$STATUS" in
               SUCCESS) echo "status=success" >> "$GITHUB_OUTPUT"; exit 0 ;;
-              SKIPPED) echo "Railway deployment skipped"; echo "status=skipped" >> "$GITHUB_OUTPUT"; exit 0 ;;
+              SKIPPED|REMOVED) echo "Railway deployment $STATUS"; echo "status=skipped" >> "$GITHUB_OUTPUT"; exit 0 ;;
               FAILED|CRASHED) echo "Railway deployment failed"; echo "status=failed" >> "$GITHUB_OUTPUT"; exit 1 ;;
             esac
             sleep 10
@@ -90,7 +90,7 @@ jobs:
       - name: Notify Discord
         run: |
           case "${{ needs.wait-for-deployment.outputs.status }}" in
-            skipped) MESSAGE="⏭️ E2E Test (Production) skipped (Railway deployment skipped)" ;;
+            skipped) MESSAGE="⏭️ E2E Test (Production) skipped (Railway deployment not running)" ;;
             success)
               if [ "${{ needs.e2e-test.result }}" = "success" ]; then
                 MESSAGE="✅ E2E Test (Production) succeeded"
