@@ -200,7 +200,7 @@ importers:
         specifier: 1.1.1
         version: 1.1.1(emoji-mart@5.6.0)(react@19.3.0)
       '@gyaku/di':
-        specifier: ^5.0.0
+        specifier: 5.0.0
         version: 5.0.0
       '@heroicons/react':
         specifier: 2.2.0
@@ -290,7 +290,7 @@ importers:
         specifier: 8.0.0
         version: 8.0.0(i18next@26.4.2(typescript@6.0.3))(react-router@8.4.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0))
       remix-toast:
-        specifier: ^4.0.0
+        specifier: 4.0.0
         version: 4.0.0(react-router@8.4.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0))
       remix-utils:
         specifier: 10.0.0
