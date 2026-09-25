@@ -14,6 +14,7 @@ COPY --link lexicons ./lexicons
 RUN pnpm install --frozen-lockfile
 COPY --link . .
 ARG VITE_CONFIG_BASE=/
+ARG RAILWAY_GIT_COMMIT_SHA
 RUN pnpm build
 RUN pnpm prune --prod --ignore-scripts
 
