@@ -26,6 +26,7 @@ COPY --from=build /app/dist /app/dist
 COPY --from=build /app/drizzle /app/drizzle
 COPY --from=build /app/drizzle.config.ts /app/
 COPY --from=build /app/package.json /app/
+COPY --from=build /app/instrument.server.mjs /app/
 
 EXPOSE 3000
-CMD [ "node", "./dist/server.js" ]
+CMD [ "node", "--import", "./instrument.server.mjs", "./dist/server.js" ]
