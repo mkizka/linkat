@@ -2,6 +2,7 @@ import * as Sentry from "@sentry/react-router";
 
 Sentry.init({
   dsn: process.env.SENTRY_DSN,
+  environment: process.env.SENTRY_ENVIRONMENT ?? "production",
   tracesSampleRate: 1.0,
   beforeSend(event) {
     if (event.exception) {
