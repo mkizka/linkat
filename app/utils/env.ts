@@ -35,6 +35,8 @@ const server = {
     .default("wss://jetstream1.us-west.bsky.network/subscribe"),
   // PR環境などJetstreamを使わない場合に無効化出来るようにする
   DISABLE_JETSTREAM: z.coerce.boolean().default(false),
+  // E2Eのmediumテスト用に外部システムへの接続をモックに置き換える
+  E2E_MOCK: z.coerce.boolean().default(false),
   ATPROTO_PLC_URL: z.url().default("https://plc.directory"),
   UMAMI_SCRIPT_URL: z.string().optional(),
   UMAMI_WEBSITE_ID: z.string().optional(),

@@ -4,13 +4,13 @@ import type {
   NodeSavedSessionStore,
   NodeSavedStateStore,
   OAuthClientMetadataInput,
-  OAuthSession,
 } from "@atproto/oauth-client-node";
 import {
   atprotoLoopbackClientMetadata,
   NodeOAuthClient,
 } from "@atproto/oauth-client-node";
 
+import { LinkatAgent } from "~/libs/agent";
 import { env, isProduction } from "~/utils/env";
 
 const privateKey = Buffer.from(env.PRIVATE_KEY_ES256_B64, "base64").toString();
@@ -46,7 +46,8 @@ const keyset = isProduction
 export interface IOAuthClient {
   authorize: (handle: string) => Promise<URL>;
   callback: (params: URLSearchParams) => Promise<Did>;
-  restore: (did: Did) => Promise<OAuthSession>;
+  // PDSへのアクセスはこのAgent経由に限定し、E2Eではまとめてモックに差し替える
+  restore: (did: Did) => Promise<LinkatAgent>;
   clientMetadata: NodeOAuthClient["clientMetadata"];
   jwks: NodeOAuthClient["jwks"];
 }
@@ -72,7 +73,9 @@ export const oauthClientFactory = ({
       const { session } = await client.callback(params);
       return session.did;
     },
-    restore: (did) => client.restore(did),
+    async restore(did) {
+      return new LinkatAgent(await client.restore(did));
+    },
     get clientMetadata() {
       return client.clientMetadata;
     },

@@ -18,8 +18,9 @@ import { didServiceFactory } from "~/server/service/didService/did";
 import { jetstreamServiceFactory } from "~/server/service/jetstreamService/jetstream";
 import { sessionServiceFactory } from "~/server/service/sessionService/session";
 import { userServiceFactory } from "~/server/service/userService/user";
+import { env } from "~/utils/env";
 
-export const di = await createRegistry()
+const registry = createRegistry()
   .value("db", db)
   .service("boardRepository", ["db"], boardRepositoryFactory)
   .service("cursorRepository", ["db"], cursorRepositoryFactory)
@@ -51,5 +52,13 @@ export const di = await createRegistry()
     "jetstreamService",
     ["cursorRepository", "boardService", "userService"],
     jetstreamServiceFactory,
-  )
-  .resolve();
+  );
+
+export type Registry = typeof registry;
+
+// E2Eのmediumテストでは外部システムへの接続をモックに置き換える
+const activeRegistry: Registry = env.E2E_MOCK
+  ? (await import("~/server/mocks/registry")).replaceWithMocks(registry)
+  : registry;
+
+export const di = await activeRegistry.resolve();
