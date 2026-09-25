@@ -10,6 +10,7 @@ import { i18nConfig } from "./i18n/config";
 
 Sentry.init({
   dsn: window.ENV.SENTRY_DSN,
+  environment: window.ENV.SENTRY_ENVIRONMENT,
   integrations: [
     Sentry.reactRouterTracingIntegration(),
     Sentry.replayIntegration(),
