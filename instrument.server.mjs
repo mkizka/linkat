@@ -6,7 +6,8 @@ Sentry.init({
   dsn: process.env.SENTRY_DSN,
   tracesSampleRate: 1.0,
   // Railwayのトレースにも送信する。エンドポイント等はRailwayが設定するOTEL_*環境変数から読まれる
-  openTelemetrySpanProcessors: process.env.OTEL_EXPORTER_OTLP_ENDPOINT
-    ? [new BatchSpanProcessor(new OTLPTraceExporter())]
-    : [],
+  openTelemetrySpanProcessors:
+    process.env.NODE_ENV === "production"
+      ? [new BatchSpanProcessor(new OTLPTraceExporter())]
+      : [],
 });
