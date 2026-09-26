@@ -22,7 +22,7 @@ jobs:
       - run: pnpm typecheck
       - run: pnpm lint
       - run: pnpm test -- --coverage
-  e2e-medium-test:
+  medium-test:
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
