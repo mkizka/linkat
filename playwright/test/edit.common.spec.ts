@@ -60,6 +60,8 @@ test.describe("編集", () => {
       await page.getByTestId("board-viewer__submit").click();
       await page.waitForURL((url) => url.pathname !== "/edit");
       await page.getByTestId("show-modal__close").click();
+      await expect(card1).toBeVisible();
+      await expect(card2).toBeVisible();
       const sorted = await page.getByTestId("sortable-card").allTextContents();
       expect(sorted.indexOf(text1)).toBeGreaterThan(sorted.indexOf(text2));
     });
