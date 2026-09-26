@@ -97,7 +97,7 @@ export function handleError(
   { request }: LoaderFunctionArgs | ActionFunctionArgs,
 ) {
   if (
-    (isRouteErrorResponse(error) && error.status === 404) ||
+    (isRouteErrorResponse(error) && error.status < 500) ||
     request.signal.aborted
   ) {
     return;
