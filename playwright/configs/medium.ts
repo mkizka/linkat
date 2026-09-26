@@ -1,21 +1,19 @@
 import { defineConfig } from "@playwright/test";
 
-import { createBaseConfig } from "./base";
-import { PORTS } from "./ports";
+import { PORTS } from "../server/constants";
+import { defineBaseConfig } from "./base";
 
-const base = createBaseConfig("medium");
+const base = defineBaseConfig("medium");
 
-export default defineConfig({
-  ...base,
+export default defineConfig(base, {
   fullyParallel: true,
   use: {
-    ...base.use,
     baseURL: "http://localhost:3000",
   },
   webServer: [
     {
-      command: "node --import tsx playwright/network.ts",
-      cwd: "..",
+      command: "node --import tsx playwright/server/dev-env.ts",
+      cwd: "../..",
       wait: { stdout: /atproto network is ready/ },
       stdout: "pipe",
       timeout: 120_000,

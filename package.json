@@ -10,8 +10,6 @@
     "build:remix": "react-router build",
     "build:server": "node ./scripts/build-server.js",
     "dev": "NODE_OPTIONS='--import ./instrument.server.mjs' ./scripts/dev.sh | pino-pretty",
-    "e2e:large": "playwright test --config playwright/large.config.ts",
-    "e2e:medium": "playwright test --config playwright/medium.config.ts",
     "format": "pnpm _eslint --fix && prettier . --write",
     "postinstall": "./scripts/postinstall.sh",
     "lint": "pnpm _eslint && prettier . --check",
@@ -20,6 +18,8 @@
     "start": "NODE_ENV=production NODE_OPTIONS='--import ./instrument.server.mjs' node ./dist/server.js",
     "start:local": "NODE_ENV=development E2E=1 DISABLE_JETSTREAM=true node --env-file .env ./dist/server.js",
     "test": "vitest run",
+    "test:large": "playwright test --config playwright/configs/large.ts",
+    "test:medium": "playwright test --config playwright/configs/medium.ts",
     "typecheck": "react-router typegen && tsc",
     "update-lexicons": "lex install --update"
   },

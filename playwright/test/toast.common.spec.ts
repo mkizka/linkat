@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./fixtures";
 
 test.describe("トースト", () => {
   test("ログイン失敗時に表示され、入力内容を保ったまま一定時間で消える", async ({

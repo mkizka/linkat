@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./fixtures";
 
 test.describe("存在しないパス", () => {
   test("マッチするルートがない場合は404を返す", async ({ page }) => {

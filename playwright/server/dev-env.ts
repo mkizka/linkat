@@ -1,7 +1,7 @@
 import { TestNetwork } from "@atproto/dev-env";
 import { PostgreSqlContainer } from "@testcontainers/postgresql";
 
-import { PORTS } from "./ports";
+import { PORTS } from "./constants";
 
 const postgres = await new PostgreSqlContainer("postgres:18-alpine").start();
 

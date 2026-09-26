@@ -1,13 +1,11 @@
-import { expect, test } from "@playwright/test";
-
-import { login } from "./login";
+import { expect, test } from "./fixtures";
 
 test.describe("編集", () => {
-  test("カードの編集操作を一通り確認", async ({ page }) => {
+  test("カードの編集操作を一通り確認", async ({ page, login }) => {
     page.on("dialog", (dialog) => dialog.accept());
 
     await test.step("ログイン", async () => {
-      await login(page);
+      await login();
     });
 
     const text1 = `1. ${crypto.randomUUID()}`;

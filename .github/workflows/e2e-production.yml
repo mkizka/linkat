@@ -64,7 +64,7 @@ jobs:
           cache: pnpm
       - run: pnpm i
       - run: pnpm playwright install --with-deps
-      - run: pnpm e2e:large
+      - run: pnpm test:large
         env:
           PLAYWRIGHT_TEST_BASE_URL: https://linkat.blue
           E2E_HANDLE: ${{ secrets.E2E_HANDLE }}
