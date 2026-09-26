@@ -73,6 +73,7 @@
     "zod": "4.6.5"
   },
   "devDependencies": {
+    "@atproto/dev-env": "0.6.8",
     "@mkizka/eslint-config": "10.0.0",
     "@mkizka/eslint-plugin-aaa": "1.0.2",
     "@playwright/test": "1.63.0",

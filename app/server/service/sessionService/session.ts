@@ -1,6 +1,6 @@
 import type { Did } from "@atproto/did";
 
-import type { LinkatAgent } from "~/libs/agent";
+import { LinkatAgent } from "~/libs/agent";
 import type { User } from "~/models/user";
 import type { ICookieSessionStorage } from "~/server/infrastructure/cookieSessionStorage";
 import type { IOAuthClient } from "~/server/infrastructure/oauthClient";
@@ -44,7 +44,8 @@ export const sessionServiceFactory = ({
       if (!userDid) {
         return null;
       }
-      return await oauthClient.restore(userDid);
+      const oauthSession = await oauthClient.restore(userDid);
+      return new LinkatAgent(oauthSession);
     },
   };
 };

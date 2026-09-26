@@ -25,11 +25,7 @@ export default defineConfig((configEnv) => ({
     include: ["app/**/*.spec.ts"],
     coverage: {
       include: ["app/server/**/*.ts"],
-      exclude: [
-        "app/**/*.spec.ts",
-        "app/generated/**/*.ts",
-        "app/server/mocks/**/*.ts",
-      ],
+      exclude: ["app/**/*.spec.ts", "app/generated/**/*.ts"],
     },
     globals: true,
     setupFiles: ["./vitest/vitest.setup.ts"],
