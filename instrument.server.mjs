@@ -1,18 +1,14 @@
+import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-proto";
+import { BatchSpanProcessor } from "@opentelemetry/sdk-trace-base";
 import * as Sentry from "@sentry/react-router";
 
 Sentry.init({
   dsn: process.env.SENTRY_DSN,
   tracesSampleRate: 1.0,
-  beforeSend(event) {
-    if (event.exception) {
-      const error = event.exception.values?.[0];
-      if (
-        error?.type === "NotFoundException" ||
-        error?.value?.includes("404")
-      ) {
-        return null;
-      }
-    }
-    return event;
-  },
+  enableLogs: true,
+  integrations: [Sentry.pinoIntegration()],
+  openTelemetrySpanProcessors:
+    process.env.NODE_ENV === "production"
+      ? [new BatchSpanProcessor(new OTLPTraceExporter())]
+      : [],
 });

@@ -1,4 +1,4 @@
-import { test } from "@playwright/test";
+import { test } from "./fixtures";
 
 test.describe("編集(リダイレクト)", () => {
   test("非ログイン時はトップにリダイレクト", async ({ page }) => {
@@ -9,6 +9,7 @@ test.describe("編集(リダイレクト)", () => {
   test("ログインが無効な時はトップにリダイレクト", async ({
     page,
     context,
+    baseURL,
   }) => {
     await page.goto("/");
     await context.addCookies([
@@ -16,8 +17,7 @@ test.describe("編集(リダイレクト)", () => {
         name: "__session",
         value:
           "eyJkaWQiOiJkaWQ6cGxjOnRpd2h6NWdiZTVqZGt2cmdjbHB1Z2oybCJ9.09GaE2lRKbto%2FraoDdda4pGnsQNvsIRfuBHErKE1qU",
-        domain: "localhost",
-        path: "/",
+        url: baseURL,
       },
     ]);
     await page.goto("/edit");

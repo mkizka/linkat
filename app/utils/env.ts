@@ -2,7 +2,7 @@ import { createEnv } from "@t3-oss/env-core";
 import { z } from "zod";
 
 export const isProduction =
-  process.env.NODE_ENV === "production" && !process.env.E2E;
+  process.env.NODE_ENV === "production" && !process.env.PLAYWRIGHT;
 
 const match = <Prod, Default>({ prod, dev }: { prod: Prod; dev: Default }) => {
   return isProduction ? prod : dev;
@@ -36,9 +36,11 @@ const server = {
   // PR環境などJetstreamを使わない場合に無効化出来るようにする
   DISABLE_JETSTREAM: z.coerce.boolean().default(false),
   ATPROTO_PLC_URL: z.url().default("https://plc.directory"),
+  ATPROTO_HANDLE_RESOLVER_URL: z.url().optional(),
   UMAMI_SCRIPT_URL: z.string().optional(),
   UMAMI_WEBSITE_ID: z.string().optional(),
   SENTRY_DSN: z.string().optional(),
+  SENTRY_ENVIRONMENT: z.string().default("production"),
   // aboutページで使用するwhitewindの記事情報
   ABOUT_WHTWND_PDS_URL: z
     .string()
