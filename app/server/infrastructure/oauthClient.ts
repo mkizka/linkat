@@ -62,6 +62,8 @@ export const oauthClientFactory = ({
     clientMetadata,
     keyset,
     plcDirectoryUrl: env.ATPROTO_PLC_URL,
+    handleResolver: env.ATPROTO_HANDLE_RESOLVER_URL,
+    allowHttp: !isProduction,
     stateStore: oauthStateStore,
     sessionStore: oauthSessionStore,
   });

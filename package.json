@@ -10,15 +10,16 @@
     "build:remix": "react-router build",
     "build:server": "node ./scripts/build-server.js",
     "dev": "NODE_OPTIONS='--import ./instrument.server.mjs' ./scripts/dev.sh | pino-pretty",
-    "e2e": "playwright test",
     "format": "pnpm _eslint --fix && prettier . --write",
     "postinstall": "./scripts/postinstall.sh",
     "lint": "pnpm _eslint && prettier . --check",
     "prepare": "husky",
     "setup-dev": "./scripts/setup-dev.sh",
     "start": "NODE_ENV=production NODE_OPTIONS='--import ./instrument.server.mjs' node ./dist/server.js",
-    "start:local": "NODE_ENV=development E2E=1 DISABLE_JETSTREAM=true node --env-file .env ./dist/server.js",
+    "start:local": "NODE_ENV=development PLAYWRIGHT=1 DISABLE_JETSTREAM=true node --env-file .env ./dist/server.js",
     "test": "vitest run",
+    "test:large": "playwright test --config playwright/configs/large.config.ts",
+    "test:medium": "playwright test --config playwright/configs/medium.config.ts",
     "typecheck": "react-router typegen && tsc",
     "update-lexicons": "lex install --update"
   },
@@ -74,6 +75,7 @@
     "zod": "4.6.5"
   },
   "devDependencies": {
+    "@atproto/dev-env": "0.6.8",
     "@mkizka/eslint-config": "10.0.0",
     "@mkizka/eslint-plugin-aaa": "1.0.2",
     "@playwright/test": "1.63.0",

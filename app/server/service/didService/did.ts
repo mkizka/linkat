@@ -2,7 +2,7 @@ import type { Did } from "@atproto/did";
 import type { DidDocument } from "@atproto/identity";
 import { IdResolver } from "@atproto/identity";
 
-import { env } from "~/utils/env";
+import { env, isProduction } from "~/utils/env";
 import { createLogger } from "~/utils/logger";
 
 const logger = createLogger("didService");
@@ -24,11 +24,9 @@ export interface IDidService {
 
 export const didServiceFactory = (): IDidService => {
   const resolver = new IdResolver({
-    plcUrl: env.ATPROTO_PLC_URL, // 既定のfetchはSSRF対策でexample.comなどを拒否するため、テストでは標準のfetchを使う
-    fetch:
-      env.NODE_ENV === "test"
-        ? (...args) => globalThis.fetch(...args)
-        : undefined,
+    plcUrl: env.ATPROTO_PLC_URL,
+    // 既定のfetchはSSRF対策でexample.comやlocalhostなどを拒否するため、本番以外では標準のfetchを使う
+    fetch: isProduction ? undefined : (...args) => globalThis.fetch(...args),
   });
 
   return {

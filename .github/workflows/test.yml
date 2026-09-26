@@ -22,12 +22,8 @@ jobs:
       - run: pnpm typecheck
       - run: pnpm lint
       - run: pnpm test -- --coverage
-  e2e-test:
+  medium-test:
     runs-on: ubuntu-latest
-    concurrency:
-      group: e2e-test
-      cancel-in-progress: false
-      queue: max
     permissions:
       pull-requests: write
     steps:
@@ -44,16 +40,13 @@ jobs:
       - run: cp .env.example .env
       - run: pnpm setup-dev
       - run: pnpm build
-      - run: pnpm e2e
-        env:
-          E2E_HANDLE: ${{ secrets.E2E_HANDLE }}
-          E2E_PASSWORD: ${{ secrets.E2E_PASSWORD }}
+      - run: pnpm test:medium
       - name: Upload Report
         if: always() && (github.ref == 'refs/heads/main' || github.actor == 'mkizka')
         run: |
-          E2E_S3_PATH="playwright-report/${{ github.ref == 'refs/heads/main' && 'main' || github.sha }}"
-          aws s3 cp playwright-report "s3://$E2E_S3_PATH" --recursive
-          echo "E2E_REPORT_URL=${{ vars.S3_BASE_URL }}/$E2E_S3_PATH/index.html" >> $GITHUB_ENV
+          REPORT_S3_PATH="playwright-report/${{ github.ref == 'refs/heads/main' && 'main' || github.sha }}"
+          aws s3 cp playwright-report/medium "s3://$REPORT_S3_PATH" --recursive
+          echo "REPORT_URL=${{ vars.S3_BASE_URL }}/$REPORT_S3_PATH/index.html" >> $GITHUB_ENV
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -62,10 +55,10 @@ jobs:
       - name: Comment on PR
         if: always() && github.ref != 'refs/heads/main' && github.actor == 'mkizka'
         run: |
-          MARKER="<!-- e2e-test-report -->"
+          MARKER="<!-- medium-test-report -->"
           BODY="$MARKER
-          ## E2E Test Report
-          📊 [View Report]($E2E_REPORT_URL)"
+          ## Medium Test Report
+          📊 [View Report]($REPORT_URL)"
           COMMENT_ID=$(gh api "repos/${{ github.repository }}/issues/${{ github.event.number }}/comments" \
             --paginate --jq "[.[] | select(.body | startswith(\"$MARKER\"))][-1].id // empty")
           if [ -n "$COMMENT_ID" ]; then
