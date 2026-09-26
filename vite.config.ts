@@ -7,6 +7,7 @@ const sentryConfig: SentryReactRouterBuildOptions = {
   org: process.env.SENTRY_ORG,
   project: process.env.SENTRY_PROJECT,
   authToken: process.env.SENTRY_AUTH_TOKEN,
+  release: { name: process.env.RAILWAY_GIT_COMMIT_SHA },
 };
 
 export default defineConfig((configEnv) => ({
