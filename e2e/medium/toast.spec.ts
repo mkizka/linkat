@@ -4,7 +4,6 @@ test.describe("トースト", () => {
   test("ログイン失敗時に表示され、入力内容を保ったまま一定時間で消える", async ({
     page,
   }) => {
-    // localhostのPDSに存在しないハンドルなのでOAuthのハンドル解決に必ず失敗する
     const handle = "nonexistent-handle-xyz.invalid";
 
     await page.goto("/login");

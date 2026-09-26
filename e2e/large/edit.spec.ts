@@ -6,7 +6,6 @@ if (!E2E_HANDLE || !E2E_PASSWORD) {
   throw new Error("環境変数E2E_HANDLE, E2E_PASSWORDを設定してください");
 }
 
-// 細かい編集操作はmediumテストで確認するので、ここでは実際のPDSと繋がることだけを確認する
 test.describe("編集", () => {
   test("実際のアカウントでログインしてボードを保存出来る", async ({ page }) => {
     page.on("dialog", (dialog) => dialog.accept());

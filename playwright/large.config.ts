@@ -4,7 +4,6 @@ import { createBaseConfig } from "./base";
 
 const base = createBaseConfig("large");
 
-// 実際のBlueskyアカウントを使い、PLAYWRIGHT_TEST_BASE_URLが無い場合はローカルのサーバーに対して実行する
 export default defineConfig({
   ...base,
   // 同じアカウントのボードを更新するので並列実行しない

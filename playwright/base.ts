@@ -6,7 +6,6 @@ try {
   // .envが無い場合は環境変数が既に設定されている前提で無視する
 }
 
-// mediumとlargeで成果物の出力先が衝突しないように分ける
 export const createBaseConfig = (
   size: "medium" | "large",
 ): PlaywrightTestConfig => ({

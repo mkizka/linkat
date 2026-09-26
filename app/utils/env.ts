@@ -36,7 +36,6 @@ const server = {
   // PR環境などJetstreamを使わない場合に無効化出来るようにする
   DISABLE_JETSTREAM: z.coerce.boolean().default(false),
   ATPROTO_PLC_URL: z.url().default("https://plc.directory"),
-  // 未指定の場合はDNSとHTTPSでハンドルを解決する。E2Eではlocalhostのサーバーで解決する
   ATPROTO_HANDLE_RESOLVER_URL: z.url().optional(),
   UMAMI_SCRIPT_URL: z.string().optional(),
   UMAMI_WEBSITE_ID: z.string().optional(),

@@ -2,7 +2,6 @@ import type { Page } from "@playwright/test";
 
 import { PORTS } from "../../playwright/ports";
 
-// テストごとにlocalhostのPDSへ別のアカウントを作るので並列実行出来る
 export const login = async (page: Page) => {
   const handle = `u${crypto.randomUUID().slice(0, 8)}.test`;
   const password = crypto.randomUUID();

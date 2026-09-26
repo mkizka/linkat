@@ -63,7 +63,6 @@ export const oauthClientFactory = ({
     keyset,
     plcDirectoryUrl: env.ATPROTO_PLC_URL,
     handleResolver: env.ATPROTO_HANDLE_RESOLVER_URL,
-    // E2Eではlocalhostのhttpで立てたPDSに接続する
     allowHttp: !isProduction,
     stateStore: oauthStateStore,
     sessionStore: oauthSessionStore,

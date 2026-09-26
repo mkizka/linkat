@@ -51,5 +51,4 @@ await agent.com.atproto.repo.createRecord({
   },
 });
 
-// playwrightのwebServerはこの出力を待ってから次のサーバーを起動する
 process.stdout.write("atproto network is ready\n");

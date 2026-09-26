@@ -5,10 +5,8 @@ import { PORTS } from "./ports";
 
 const base = createBaseConfig("medium");
 
-// localhostに立てたPLC、PDS、AppViewに接続したサーバーに対して実行する
 export default defineConfig({
   ...base,
-  // テストごとに別のアカウントを作るので並列実行しても影響しあわない
   fullyParallel: true,
   use: {
     ...base.use,
