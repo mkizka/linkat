@@ -1,4 +1,4 @@
-name: E2E Test (Production)
+name: Large Test
 
 on:
   workflow_run:
@@ -11,7 +11,7 @@ jobs:
     if: github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     concurrency:
-      group: e2e-test-production
+      group: large-test
       cancel-in-progress: false
       queue: max
     outputs:
@@ -90,15 +90,15 @@ jobs:
       - name: Notify Discord
         run: |
           case "${{ needs.wait-for-deployment.outputs.status }}" in
-            skipped) MESSAGE="⏭️ E2E Test (Production) skipped (Railway deployment not running)" ;;
+            skipped) MESSAGE="⏭️ Large Test skipped (Railway deployment not running)" ;;
             success)
               if [ "${{ needs.large-test.result }}" = "success" ]; then
-                MESSAGE="✅ E2E Test (Production) succeeded"
+                MESSAGE="✅ Large Test succeeded"
               else
-                MESSAGE="❌ E2E Test (Production) failed"
+                MESSAGE="❌ Large Test failed"
               fi
               ;;
-            *) MESSAGE="❌ E2E Test (Production) failed (Railway deployment not ready)" ;;
+            *) MESSAGE="❌ Large Test failed (Railway deployment not ready)" ;;
           esac
           jq -n \
             --arg message "$MESSAGE" \
