@@ -36,6 +36,8 @@
     "@emoji-mart/react": "1.1.1",
     "@gyaku/di": "5.0.0",
     "@heroicons/react": "2.2.0",
+    "@opentelemetry/exporter-trace-otlp-proto": "0.222.0",
+    "@opentelemetry/sdk-trace-base": "2.11.0",
     "@react-router/express": "8.4.0",
     "@react-router/fs-routes": "8.4.0",
     "@react-router/node": "8.4.0",
