@@ -14,7 +14,7 @@ export default defineConfig({
   },
   webServer: [
     {
-      command: "node --env-file .env --import tsx playwright/network.ts",
+      command: "node --import tsx playwright/network.ts",
       cwd: "..",
       wait: { stdout: /atproto network is ready/ },
       stdout: "pipe",

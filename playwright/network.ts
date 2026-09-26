@@ -1,24 +1,16 @@
 import { TestNetwork } from "@atproto/dev-env";
-import pg from "pg";
+import { PostgreSqlContainer } from "@testcontainers/postgresql";
 
 import { PORTS } from "./ports";
 
-const DB_SCHEMA = "linkat";
-
-// 前回の実行で残ったデータとPLCの内容が食い違わないように作り直す
-const client = new pg.Client(process.env.DATABASE_URL);
-await client.connect();
-for (const prefix of ["appview", "bsync", "ozone"]) {
-  await client.query(`DROP SCHEMA IF EXISTS ${prefix}_${DB_SCHEMA} CASCADE`);
-}
-await client.end();
+const postgres = await new PostgreSqlContainer("postgres:18-alpine").start();
 
 // TestNetworkは必須にしているが、AppViewはredisを使わない
 process.env.REDIS_HOST ??= "localhost";
 
 const network = await TestNetwork.create({
-  dbPostgresUrl: process.env.DATABASE_URL,
-  dbPostgresSchema: DB_SCHEMA,
+  dbPostgresUrl: postgres.getConnectionUri(),
+  dbPostgresSchema: "linkat",
   plc: { port: PORTS.plc },
   pds: { port: PORTS.pds, hostname: "localhost" },
   bsky: { port: PORTS.bsky },
