@@ -13,7 +13,9 @@ export default defineConfig((configEnv) => ({
   base: process.env.VITE_CONFIG_BASE ?? "/",
   plugins: [
     reactRouter(),
-    !process.env.VITEST && sentryReactRouter(sentryConfig, configEnv),
+    !process.env.VITEST &&
+      !!process.env.SENTRY_AUTH_TOKEN &&
+      sentryReactRouter(sentryConfig, configEnv),
   ],
   resolve: {
     tsconfigPaths: true,
