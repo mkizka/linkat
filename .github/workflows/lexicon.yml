@@ -4,7 +4,13 @@ on:
   push:
     branches:
       - main
+    paths:
+      - lexicons/**
+      - .github/workflows/lexicon.yml
   pull_request:
+    paths:
+      - lexicons/**
+      - .github/workflows/lexicon.yml
 
 jobs:
   lex-publish:
