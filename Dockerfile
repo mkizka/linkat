@@ -2,7 +2,7 @@
 FROM node:24.21.0-slim AS base
 WORKDIR /app
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y curl openssl && \
+    apt-get install --no-install-recommends -y ca-certificates curl openssl && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 RUN npm i -g corepack@latest && \
     corepack enable pnpm
