@@ -39,6 +39,7 @@ const server = {
   UMAMI_SCRIPT_URL: z.string().optional(),
   UMAMI_WEBSITE_ID: z.string().optional(),
   SENTRY_DSN: z.string().optional(),
+  SENTRY_ENVIRONMENT: z.string().default("production"),
   // aboutページで使用するwhitewindの記事情報
   ABOUT_WHTWND_PDS_URL: z
     .string()
