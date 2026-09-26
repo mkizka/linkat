@@ -13,6 +13,7 @@ const authorize = async (page: Page, handle: string, password: string) => {
   await page.locator("button", { hasText: "Sign in" }).click();
   await page.locator("button", { hasText: "Authorize" }).click();
   await page.waitForURL((url) => url.pathname === "/edit");
+  return { handle, password };
 };
 
 const loginWithNewAccount = async (page: Page) => {
@@ -33,7 +34,7 @@ const loginWithNewAccount = async (page: Page) => {
   if (!response.ok) {
     throw new Error(`アカウントの作成に失敗しました: ${await response.text()}`);
   }
-  await authorize(page, handle, password);
+  return await authorize(page, handle, password);
 };
 
 const loginWithLargeTestAccount = async (page: Page) => {
@@ -43,11 +44,11 @@ const loginWithLargeTestAccount = async (page: Page) => {
       "環境変数LARGE_TEST_HANDLE, LARGE_TEST_PASSWORDを設定してください",
     );
   }
-  await authorize(page, LARGE_TEST_HANDLE, LARGE_TEST_PASSWORD);
+  return await authorize(page, LARGE_TEST_HANDLE, LARGE_TEST_PASSWORD);
 };
 
 export const test = base.extend<
-  { login: () => Promise<void> },
+  { login: () => Promise<{ handle: string; password: string }> },
   { size: TestSize }
 >({
   size: ["medium", { option: true, scope: "worker" }],
