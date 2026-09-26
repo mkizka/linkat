@@ -1,6 +1,6 @@
 import { defineConfig } from "@playwright/test";
 
-import { defineBaseConfig } from "./base";
+import { defineBaseConfig } from "./base.config";
 
 const base = defineBaseConfig("large");
 

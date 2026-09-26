@@ -16,10 +16,10 @@
     "prepare": "husky",
     "setup-dev": "./scripts/setup-dev.sh",
     "start": "NODE_ENV=production NODE_OPTIONS='--import ./instrument.server.mjs' node ./dist/server.js",
-    "start:local": "NODE_ENV=development E2E=1 DISABLE_JETSTREAM=true node --env-file .env ./dist/server.js",
+    "start:local": "NODE_ENV=development PLAYWRIGHT=1 DISABLE_JETSTREAM=true node --env-file .env ./dist/server.js",
     "test": "vitest run",
-    "test:large": "playwright test --config playwright/configs/large.ts",
-    "test:medium": "playwright test --config playwright/configs/medium.ts",
+    "test:large": "playwright test --config playwright/configs/large.config.ts",
+    "test:medium": "playwright test --config playwright/configs/medium.config.ts",
     "typecheck": "react-router typegen && tsc",
     "update-lexicons": "lex install --update"
   },

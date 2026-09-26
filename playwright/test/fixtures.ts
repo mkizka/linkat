@@ -36,12 +36,14 @@ const loginWithNewAccount = async (page: Page) => {
   await authorize(page, handle, password);
 };
 
-const loginWithE2EAccount = async (page: Page) => {
-  const { E2E_HANDLE, E2E_PASSWORD } = process.env;
-  if (!E2E_HANDLE || !E2E_PASSWORD) {
-    throw new Error("環境変数E2E_HANDLE, E2E_PASSWORDを設定してください");
+const loginWithLargeTestAccount = async (page: Page) => {
+  const { LARGE_TEST_HANDLE, LARGE_TEST_PASSWORD } = process.env;
+  if (!LARGE_TEST_HANDLE || !LARGE_TEST_PASSWORD) {
+    throw new Error(
+      "環境変数LARGE_TEST_HANDLE, LARGE_TEST_PASSWORDを設定してください",
+    );
   }
-  await authorize(page, E2E_HANDLE, E2E_PASSWORD);
+  await authorize(page, LARGE_TEST_HANDLE, LARGE_TEST_PASSWORD);
 };
 
 export const test = base.extend<
@@ -51,7 +53,9 @@ export const test = base.extend<
   size: ["medium", { option: true, scope: "worker" }],
   login: async ({ page, size }, use) => {
     await use(() =>
-      size === "medium" ? loginWithNewAccount(page) : loginWithE2EAccount(page),
+      size === "medium"
+        ? loginWithNewAccount(page)
+        : loginWithLargeTestAccount(page),
     );
   },
 });

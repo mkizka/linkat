@@ -67,15 +67,15 @@ jobs:
       - run: pnpm test:large
         env:
           PLAYWRIGHT_TEST_BASE_URL: https://linkat.blue
-          E2E_HANDLE: ${{ secrets.E2E_HANDLE }}
-          E2E_PASSWORD: ${{ secrets.E2E_PASSWORD }}
+          LARGE_TEST_HANDLE: ${{ secrets.E2E_HANDLE }}
+          LARGE_TEST_PASSWORD: ${{ secrets.E2E_PASSWORD }}
       - name: Upload Report
         id: upload-report
         if: always()
         run: |
-          E2E_S3_PATH="playwright-report/production"
-          aws s3 cp playwright-report/large "s3://$E2E_S3_PATH" --recursive
-          echo "report_url=${{ vars.S3_BASE_URL }}/$E2E_S3_PATH/index.html" >> "$GITHUB_OUTPUT"
+          REPORT_S3_PATH="playwright-report/production"
+          aws s3 cp playwright-report/large "s3://$REPORT_S3_PATH" --recursive
+          echo "report_url=${{ vars.S3_BASE_URL }}/$REPORT_S3_PATH/index.html" >> "$GITHUB_OUTPUT"
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

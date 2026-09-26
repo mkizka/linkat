@@ -1,7 +1,7 @@
 import { defineConfig } from "@playwright/test";
 
 import { PORTS } from "../server/constants";
-import { defineBaseConfig } from "./base";
+import { defineBaseConfig } from "./base.config";
 
 const base = defineBaseConfig("medium");
 
@@ -20,9 +20,9 @@ export default defineConfig(base, {
     },
     {
       command: "pnpm start:local",
-      port: 3000,
+      // WSLのmirroredモードでは空きポートへの接続が応答なしで固まるので、portによる起動済みの確認を避ける
+      wait: { stdout: /App listening/ },
       stdout: "pipe",
-      reuseExistingServer: !process.env.CI,
       env: {
         ATPROTO_PLC_URL: `http://localhost:${PORTS.plc}`,
         ATPROTO_HANDLE_RESOLVER_URL: `http://localhost:${PORTS.pds}`,

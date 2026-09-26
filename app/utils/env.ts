@@ -2,7 +2,7 @@ import { createEnv } from "@t3-oss/env-core";
 import { z } from "zod";
 
 export const isProduction =
-  process.env.NODE_ENV === "production" && !process.env.E2E;
+  process.env.NODE_ENV === "production" && !process.env.PLAYWRIGHT;
 
 const match = <Prod, Default>({ prod, dev }: { prod: Prod; dev: Default }) => {
   return isProduction ? prod : dev;
