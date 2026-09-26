@@ -37,7 +37,6 @@ export async function action({ request, context }: Route.ActionArgs) {
     });
     return null;
   }
-  // 1. 楽観的にDBを更新
   const parsedBoard = await di.boardService.parseBoardFromForm(
     user.did,
     rawBoard,
@@ -50,14 +49,26 @@ export async function action({ request, context }: Route.ActionArgs) {
     });
     return null;
   }
-  await di.boardService.saveBoard(parsedBoard);
   try {
-    // 2. PDSにも保存
     await agent.updateBoard(parsedBoard);
   } catch (error) {
     logger.error(error, "PDSへのボードの保存に失敗しました");
+    setToast(context, {
+      message: i18next.t("edit.save-board-error-message"),
+      type: "error",
+    });
+    return null;
   }
-  // 3. 閲覧ページにリダイレクト
+  try {
+    await di.boardService.saveBoard(parsedBoard);
+  } catch (error) {
+    logger.error(error, "DBへのボードの保存に失敗しました");
+    setToast(context, {
+      message: i18next.t("edit.save-delayed-warning-message"),
+      type: "warning",
+    });
+    return redirect(`/${user.handle}`);
+  }
   return redirect(`/${user.handle}?success`);
 }
 
