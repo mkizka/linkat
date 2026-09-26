@@ -14,6 +14,9 @@ COPY --link lexicons ./lexicons
 RUN pnpm install --frozen-lockfile
 COPY --link . .
 ARG VITE_CONFIG_BASE=/
+ARG SENTRY_AUTH_TOKEN
+ARG SENTRY_ORG
+ARG SENTRY_PROJECT
 RUN pnpm build
 RUN pnpm prune --prod --ignore-scripts
 
