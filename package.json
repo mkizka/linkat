@@ -41,7 +41,6 @@
     "@opentelemetry/auto-instrumentations-node": "0.80.0",
     "@opentelemetry/core": "2.11.0",
     "@opentelemetry/instrumentation": "0.222.0",
-    "@opentelemetry/sdk-node": "0.222.0",
     "@react-router/express": "8.4.0",
     "@react-router/fs-routes": "8.4.0",
     "@react-router/node": "8.4.0",
