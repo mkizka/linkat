@@ -1,6 +1,6 @@
 import { reactRouter } from "@react-router/dev/vite";
-import type { SentryReactRouterBuildOptions } from "@sentry/react-router";
-import { sentryReactRouter } from "@sentry/react-router";
+import type { SentryReactRouterBuildOptions } from "@sentry/react-router/vite";
+import { sentryReactRouter } from "@sentry/react-router/vite";
 import { defineConfig } from "vite";
 
 const sentryConfig: SentryReactRouterBuildOptions = {
