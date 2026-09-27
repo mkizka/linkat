@@ -8,6 +8,10 @@ import { BoardViewer } from "~/features/board/board-viewer";
 import { useUmami } from "~/hooks/useUmami";
 import { getInstance } from "~/i18n/i18n";
 import { di } from "~/server/di";
+import {
+  BoardDbSaveError,
+  BoardPdsSaveError,
+} from "~/server/service/boardService/board";
 import { env } from "~/utils/env";
 import { createLogger } from "~/utils/logger";
 
@@ -50,24 +54,25 @@ export async function action({ request, context }: Route.ActionArgs) {
     return null;
   }
   try {
-    await agent.updateBoard(parsedBoard);
+    await di.boardService.publishBoard(agent, parsedBoard);
   } catch (error) {
-    logger.error(error, "PDSへのボードの保存に失敗しました");
-    setToast(context, {
-      message: i18next.t("edit.save-board-error-message"),
-      type: "error",
-    });
-    return null;
-  }
-  try {
-    await di.boardService.saveBoard(parsedBoard);
-  } catch (error) {
-    logger.error(error, "DBへのボードの保存に失敗しました");
-    setToast(context, {
-      message: i18next.t("edit.save-delayed-warning-message"),
-      type: "warning",
-    });
-    return redirect(`/${user.handle}`);
+    if (error instanceof BoardPdsSaveError) {
+      logger.error(error, error.message);
+      setToast(context, {
+        message: i18next.t("edit.save-board-error-message"),
+        type: "error",
+      });
+      return null;
+    }
+    if (error instanceof BoardDbSaveError) {
+      logger.error(error, error.message);
+      setToast(context, {
+        message: i18next.t("edit.save-delayed-warning-message"),
+        type: "warning",
+      });
+      return redirect(`/${user.handle}`);
+    }
+    throw error;
   }
   return redirect(`/${user.handle}?success`);
 }
