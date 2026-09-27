@@ -1,8 +1,21 @@
 import type { Did } from "@atproto/did";
 
+import type { LinkatAgent } from "~/libs/agent";
 import { Board } from "~/models/board";
 import type { IBoardRepository } from "~/server/infrastructure/boardRepository";
 import { tryCatch } from "~/utils/tryCatch";
+
+export class BoardPdsSaveError extends Error {
+  constructor(cause: unknown) {
+    super("PDSへのボードの保存に失敗しました", { cause });
+  }
+}
+
+export class BoardDbSaveError extends Error {
+  constructor(cause: unknown) {
+    super("DBへのボードの保存に失敗しました", { cause });
+  }
+}
 
 export interface IBoardService {
   parseBoardFromForm: (
@@ -10,6 +23,7 @@ export interface IBoardService {
     rawBoard: string,
   ) => Promise<Board | Error>;
   saveBoard: (board: Board) => Promise<void>;
+  publishBoard: (agent: LinkatAgent, board: Board) => Promise<void>;
   findBoard: (userDid: Did) => Promise<Board | null>;
   deleteBoard: (userDid: Did) => Promise<void>;
 }
@@ -26,6 +40,18 @@ export const boardServiceFactory = ({
     ),
     async saveBoard(board) {
       await boardRepository.save(board);
+    },
+    async publishBoard(agent, board) {
+      try {
+        await agent.updateBoard(board);
+      } catch (error) {
+        throw new BoardPdsSaveError(error);
+      }
+      try {
+        await boardRepository.save(board);
+      } catch (error) {
+        throw new BoardDbSaveError(error);
+      }
     },
     async findBoard(userDid) {
       return await boardRepository.find(userDid);

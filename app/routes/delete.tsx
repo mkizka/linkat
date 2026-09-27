@@ -1,4 +1,5 @@
 import { redirect } from "react-router";
+import { setToast } from "remix-toast/middleware";
 
 import { getInstance } from "~/i18n/i18n";
 import { di } from "~/server/di";
@@ -15,7 +16,11 @@ export async function action({ request, context }: Route.ActionArgs) {
     di.sessionService.getSessionAgent(request),
   ]);
   if (!userDid || !agent) {
-    return { error: i18next.t("delete.invalid-session-error-message") };
+    setToast(context, {
+      message: i18next.t("delete.invalid-session-error-message"),
+      type: "error",
+    });
+    return redirect("/");
   }
   try {
     await agent.deleteBoard();

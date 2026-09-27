@@ -1,10 +1,12 @@
 allowBuilds:
   "@sentry/cli": true
+  better-sqlite3: true
   core-js: false
   cpu-features: false
   esbuild: false
   msw: false
   protobufjs: false
+  sharp: false
   ssh2: false
   unrs-resolver: false
 minimumReleaseAgeExclude:

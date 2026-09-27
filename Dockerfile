@@ -2,7 +2,7 @@
 FROM node:24.21.0-slim AS base
 WORKDIR /app
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y curl openssl && \
+    apt-get install --no-install-recommends -y ca-certificates curl openssl && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 RUN npm i -g corepack@latest && \
     corepack enable pnpm
@@ -14,11 +14,16 @@ COPY --link lexicons ./lexicons
 RUN pnpm install --frozen-lockfile
 COPY --link . .
 ARG VITE_CONFIG_BASE=/
+ARG SENTRY_AUTH_TOKEN
+ARG SENTRY_ORG
+ARG SENTRY_PROJECT
+ARG RAILWAY_GIT_COMMIT_SHA
 RUN pnpm build
 RUN pnpm prune --prod --ignore-scripts
 
 FROM base AS runner
 ENV NODE_ENV="production"
+ENV OTEL_NODE_RESOURCE_DETECTORS="env,host,os,process"
 COPY --from=build /app/node_modules /app/node_modules
 COPY --from=build /app/build /app/build
 COPY --from=build /app/fonts /app/fonts
@@ -26,6 +31,7 @@ COPY --from=build /app/dist /app/dist
 COPY --from=build /app/drizzle /app/drizzle
 COPY --from=build /app/drizzle.config.ts /app/
 COPY --from=build /app/package.json /app/
+COPY --from=build /app/instrument.server.mjs /app/
 
 EXPOSE 3000
-CMD [ "node", "./dist/server.js" ]
+CMD [ "node", "--experimental-loader=@opentelemetry/instrumentation/hook.mjs", "--import", "@opentelemetry/auto-instrumentations-node/register", "--import", "./instrument.server.mjs", "./dist/server.js" ]

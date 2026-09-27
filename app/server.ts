@@ -8,10 +8,10 @@ import { di } from "~/server/di.js";
 import { env } from "./utils/env.js";
 import { createLogger } from "./utils/logger.js";
 
-// OAuthログインを行うためにE2Eテスト実行時のprocess.env.NODE_ENVはdevelopmentになっている
-// 代わりにprocess.env.E2Eが設定されているので、その場合はviteを使わない
+// OAuthログインを行うためにmedium/largeテスト実行時のprocess.env.NODE_ENVはdevelopmentになっている
+// 代わりにprocess.env.PLAYWRIGHTが設定されているので、その場合はviteを使わない
 const viteDevServer =
-  env.NODE_ENV === "production" || process.env.E2E
+  env.NODE_ENV === "production" || process.env.PLAYWRIGHT
     ? null
     : await import("vite").then((vite) =>
         vite.createServer({

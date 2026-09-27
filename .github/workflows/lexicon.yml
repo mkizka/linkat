@@ -4,17 +4,23 @@ on:
   push:
     branches:
       - main
+    paths:
+      - lexicons/blue/linkat/**
+      - .github/workflows/lexicon.yml
   pull_request:
+    paths:
+      - lexicons/blue/linkat/**
+      - .github/workflows/lexicon.yml
 
 jobs:
   lex-publish:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: mkizka/lex-publish@27d56dd1a20f37a3c7957ddf1ab836c05f3c74a3 # v1.1.1
+      - uses: mkizka/lex-publish@e65d2b1b5ac79fd074a1aaf0eb59d67162cd9e9f # v2.0.0
         with:
+          paths: lexicons/blue/linkat
           lint: false
           publish: ${{ github.ref == 'refs/heads/main' }}
-        env:
-          GOAT_USERNAME: ${{ secrets.GOAT_USERNAME }}
-          GOAT_PASSWORD: ${{ secrets.GOAT_PASSWORD }}
+          username: ${{ secrets.GOAT_USERNAME }}
+          password: ${{ secrets.GOAT_PASSWORD }}
