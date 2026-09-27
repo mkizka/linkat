@@ -23,6 +23,7 @@ RUN pnpm prune --prod --ignore-scripts
 
 FROM base AS runner
 ENV NODE_ENV="production"
+ENV OTEL_NODE_RESOURCE_DETECTORS="env,host,os,process"
 COPY --from=build /app/node_modules /app/node_modules
 COPY --from=build /app/build /app/build
 COPY --from=build /app/fonts /app/fonts
@@ -33,4 +34,4 @@ COPY --from=build /app/package.json /app/
 COPY --from=build /app/instrument.server.mjs /app/
 
 EXPOSE 3000
-CMD [ "node", "--import", "./instrument.server.mjs", "./dist/server.js" ]
+CMD [ "node", "--experimental-loader=@opentelemetry/instrumentation/hook.mjs", "--import", "@opentelemetry/auto-instrumentations-node/register", "--import", "./instrument.server.mjs", "./dist/server.js" ]
