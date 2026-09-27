@@ -15,7 +15,6 @@
     "lint": "pnpm _eslint && prettier . --check",
     "prepare": "husky",
     "setup-dev": "./scripts/setup-dev.sh",
-    "start": "NODE_ENV=production NODE_OPTIONS='--import ./instrument.server.mjs' node ./dist/server.js",
     "start:local": "NODE_ENV=development PLAYWRIGHT=1 DISABLE_JETSTREAM=true node --env-file .env ./dist/server.js",
     "test": "vitest run",
     "test:large": "playwright test --config playwright/configs/large.config.ts",
