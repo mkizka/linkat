@@ -32,6 +32,8 @@
   "edit": {
     "invalid-session-error-message": "ログイン情報が無効でした",
     "invalid-form-error-message": "フォームが無効です",
+    "save-board-error-message": "ボードの保存に失敗しました",
+    "save-delayed-warning-message": "変更の反映に時間がかかっています。少し待ってリロードしてみてください",
     "confirm-leave-message": "保存していない変更は失われます。よろしいですか？"
   },
   "board": {

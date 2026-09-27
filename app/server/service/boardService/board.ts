@@ -9,12 +9,25 @@ import { tryCatch } from "~/utils/tryCatch";
 
 const logger = createLogger("boardService");
 
+export class BoardPdsSaveError extends Error {
+  constructor(cause: unknown) {
+    super("PDSへのボードの保存に失敗しました", { cause });
+  }
+}
+
+export class BoardDbSaveError extends Error {
+  constructor(cause: unknown) {
+    super("DBへのボードの保存に失敗しました", { cause });
+  }
+}
+
 export interface IBoardService {
   parseBoardFromForm: (
     userDid: Did,
     rawBoard: string,
   ) => Promise<Board | Error>;
   saveBoard: (board: Board) => Promise<void>;
+  publishBoard: (agent: LinkatAgent, board: Board) => Promise<void>;
   findOrFetchBoard: (userDid: Did) => Promise<Board | null>;
   deleteBoard: (userDid: Did) => Promise<void>;
 }
@@ -58,6 +71,18 @@ export const boardServiceFactory = ({
     ),
     async saveBoard(board) {
       await boardRepository.save(board);
+    },
+    async publishBoard(agent, board) {
+      try {
+        await agent.updateBoard(board);
+      } catch (error) {
+        throw new BoardPdsSaveError(error);
+      }
+      try {
+        await boardRepository.save(board);
+      } catch (error) {
+        throw new BoardDbSaveError(error);
+      }
     },
     // TODO: 全部の処理を一つのトランザクションで行う
     async findOrFetchBoard(userDid) {

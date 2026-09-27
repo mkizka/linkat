@@ -1,6 +1,7 @@
 import { asDid } from "@atproto/did";
 import { http, HttpResponse } from "msw";
 
+import { LinkatAgent } from "~/libs/agent";
 import { mockedLogger } from "~/mocks/logger";
 import { server } from "~/mocks/server";
 import { Board, BoardParseError } from "~/models/board";
@@ -10,10 +11,15 @@ import { boardRepositoryFactory } from "~/server/infrastructure/boardRepository"
 import { db } from "~/server/infrastructure/drizzle";
 import { didServiceFactory } from "~/server/service/didService/did";
 
-import { boardServiceFactory } from "./board";
+import {
+  BoardDbSaveError,
+  BoardPdsSaveError,
+  boardServiceFactory,
+} from "./board";
 
+const boardRepository = boardRepositoryFactory({ db });
 const boardService = boardServiceFactory({
-  boardRepository: boardRepositoryFactory({ db }),
+  boardRepository,
   didService: didServiceFactory(),
 });
 
@@ -159,6 +165,76 @@ describe("boardService", () => {
       );
       // assert
       expect(actual).toBeInstanceOf(BoardParseError);
+    });
+  });
+
+  describe("publishBoard", () => {
+    const putRecordUrl =
+      "https://pds.example.com/xrpc/com.atproto.repo.putRecord";
+    const createAgent = (did: string) =>
+      new LinkatAgent({ did: asDid(did), service: "https://pds.example.com" });
+
+    test("PDSに保存してからDBに保存する", async () => {
+      // arrange
+      const user = await UserFactory.create();
+      const board = new Board(user.did, dummyCards);
+      let putRecordBody: unknown;
+      server.use(
+        http.post(putRecordUrl, async ({ request }) => {
+          putRecordBody = await request.json();
+          return HttpResponse.json({
+            uri: dummyBoardRecord.uri,
+            cid: dummyBoardRecord.cid,
+          });
+        }),
+      );
+      // act
+      await boardService.publishBoard(createAgent(user.did), board);
+      // assert
+      expect(putRecordBody).toMatchObject({
+        repo: user.did,
+        collection: "blue.linkat.board",
+        rkey: "self",
+        record: { cards: dummyCards },
+      });
+      expect(await boardRepository.find(asDid(user.did))).toEqual(board);
+    });
+    test("PDSへの保存に失敗したらDBに保存せずBoardPdsSaveErrorを投げる", async () => {
+      // arrange
+      const user = await UserFactory.create();
+      server.use(
+        http.post(putRecordUrl, () =>
+          HttpResponse.json({ error: "InternalServerError" }, { status: 500 }),
+        ),
+      );
+      // act
+      const actual = boardService.publishBoard(
+        createAgent(user.did),
+        new Board(user.did, dummyCards),
+      );
+      // assert
+      await expect(actual).rejects.toThrow(BoardPdsSaveError);
+      expect(await boardRepository.find(asDid(user.did))).toBeNull();
+    });
+    test("DBへの保存に失敗したらBoardDbSaveErrorを投げる", async () => {
+      // arrange
+      const user = await UserFactory.create();
+      server.use(
+        http.post(putRecordUrl, () =>
+          HttpResponse.json({
+            uri: dummyBoardRecord.uri,
+            cid: dummyBoardRecord.cid,
+          }),
+        ),
+      );
+      vi.spyOn(boardRepository, "save").mockRejectedValueOnce(new Error());
+      // act
+      const actual = boardService.publishBoard(
+        createAgent(user.did),
+        new Board(user.did, dummyCards),
+      );
+      // assert
+      await expect(actual).rejects.toThrow(BoardDbSaveError);
     });
   });
 });
