@@ -3,6 +3,10 @@ import { setToast } from "remix-toast/middleware";
 
 import { getInstance } from "~/i18n/i18n";
 import { di } from "~/server/di";
+import {
+  BoardDbDeleteError,
+  BoardPdsDeleteError,
+} from "~/server/service/boardService/board";
 import { createLogger } from "~/utils/logger";
 
 import type { Route } from "./+types/delete";
@@ -23,10 +27,25 @@ export async function action({ request, context }: Route.ActionArgs) {
     return redirect("/");
   }
   try {
-    await agent.deleteBoard();
+    await di.boardService.unpublishBoard(agent, userDid);
   } catch (error) {
-    logger.error(error, "PDSからボードの削除に失敗しました");
+    if (error instanceof BoardPdsDeleteError) {
+      logger.error(error, error.message);
+      setToast(context, {
+        message: i18next.t("delete.delete-board-error-message"),
+        type: "error",
+      });
+      return redirect("/settings");
+    }
+    if (error instanceof BoardDbDeleteError) {
+      logger.error(error, error.message);
+      setToast(context, {
+        message: i18next.t("delete.delete-delayed-warning-message"),
+        type: "warning",
+      });
+      return redirect("/");
+    }
+    throw error;
   }
-  await di.boardService.deleteBoard(userDid);
-  return redirect(`/`);
+  return redirect("/");
 }

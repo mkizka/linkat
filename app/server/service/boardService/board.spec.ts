@@ -12,7 +12,9 @@ import { db } from "~/server/infrastructure/drizzle";
 import { didServiceFactory } from "~/server/service/didService/did";
 
 import {
+  BoardDbDeleteError,
   BoardDbSaveError,
+  BoardPdsDeleteError,
   BoardPdsSaveError,
   boardServiceFactory,
 } from "./board";
@@ -235,6 +237,67 @@ describe("boardService", () => {
       );
       // assert
       await expect(actual).rejects.toThrow(BoardDbSaveError);
+    });
+  });
+
+  describe("unpublishBoard", () => {
+    const deleteRecordUrl =
+      "https://pds.example.com/xrpc/com.atproto.repo.deleteRecord";
+    const createAgent = (did: string) =>
+      new LinkatAgent({ did: asDid(did), service: "https://pds.example.com" });
+
+    test("PDSから削除してからDBから削除する", async () => {
+      // arrange
+      const board = await BoardFactory.create();
+      let deleteRecordBody: unknown;
+      server.use(
+        http.post(deleteRecordUrl, async ({ request }) => {
+          deleteRecordBody = await request.json();
+          return HttpResponse.json({});
+        }),
+      );
+      // act
+      await boardService.unpublishBoard(
+        createAgent(board.userDid),
+        asDid(board.userDid),
+      );
+      // assert
+      expect(deleteRecordBody).toMatchObject({
+        repo: board.userDid,
+        collection: "blue.linkat.board",
+        rkey: "self",
+      });
+      expect(await boardRepository.find(asDid(board.userDid))).toBeNull();
+    });
+    test("PDSからの削除に失敗したらDBから削除せずBoardPdsDeleteErrorを投げる", async () => {
+      // arrange
+      const board = await BoardFactory.create();
+      server.use(
+        http.post(deleteRecordUrl, () =>
+          HttpResponse.json({ error: "InternalServerError" }, { status: 500 }),
+        ),
+      );
+      // act
+      const actual = boardService.unpublishBoard(
+        createAgent(board.userDid),
+        asDid(board.userDid),
+      );
+      // assert
+      await expect(actual).rejects.toThrow(BoardPdsDeleteError);
+      expect(await boardRepository.find(asDid(board.userDid))).not.toBeNull();
+    });
+    test("DBからの削除に失敗したらBoardDbDeleteErrorを投げる", async () => {
+      // arrange
+      const board = await BoardFactory.create();
+      server.use(http.post(deleteRecordUrl, () => HttpResponse.json({})));
+      vi.spyOn(boardRepository, "delete").mockRejectedValueOnce(new Error());
+      // act
+      const actual = boardService.unpublishBoard(
+        createAgent(board.userDid),
+        asDid(board.userDid),
+      );
+      // assert
+      await expect(actual).rejects.toThrow(BoardDbDeleteError);
     });
   });
 });

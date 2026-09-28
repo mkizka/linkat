@@ -96,7 +96,9 @@
     "text": "Back to top"
   },
   "delete": {
-    "invalid-session-error-message": "The login information was invalid"
+    "invalid-session-error-message": "The login information was invalid",
+    "delete-board-error-message": "Failed to delete the board",
+    "delete-delayed-warning-message": "The deletion is taking a while to appear. Please wait a moment and reload."
   },
   "delete-board-button": {
     "text": "Delete your board",
