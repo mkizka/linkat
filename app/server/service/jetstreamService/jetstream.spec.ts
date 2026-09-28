@@ -8,6 +8,7 @@ import { server } from "~/mocks/server";
 import { boardRepositoryFactory } from "~/server/infrastructure/boardRepository";
 import { cursorRepositoryFactory } from "~/server/infrastructure/cursorRepository";
 import { db } from "~/server/infrastructure/drizzle";
+import { identityResolverFactory } from "~/server/infrastructure/identityResolver";
 import { userBskyRepositoryFactory } from "~/server/infrastructure/userBskyRepository";
 import { userDbRepositoryFactory } from "~/server/infrastructure/userDbRepository";
 import { userRepositoryFactory } from "~/server/infrastructure/userRepository";
@@ -26,6 +27,7 @@ const jetstreamService = jetstreamServiceFactory({
     userRepository: userRepositoryFactory({
       userDbRepository: userDbRepositoryFactory({ db }),
       userBskyRepository: userBskyRepositoryFactory(),
+      identityResolver: identityResolverFactory(),
     }),
   }),
 });
@@ -53,13 +55,13 @@ const dummyEvent = (did: string) =>
 
 describe("jetstreamService", () => {
   describe("handleCreateOrUpdate", () => {
-    test("ユーザーがDBになくBlueskyからも取得できない場合、エラーにせずボードの保存をスキップする", async () => {
+    test("ユーザーがDBになくDIDも解決できない場合、エラーにせずボードの保存をスキップする", async () => {
       // arrange
       const did = "did:plc:notfounduser0000000000000";
       server.use(
         http.get(
-          "https://public.api.example.com/xrpc/app.bsky.actor.getProfile",
-          () => HttpResponse.json("", { status: 500 }),
+          `https://plc.example.com/${encodeURIComponent(did)}`,
+          () => new HttpResponse(null, { status: 404 }),
         ),
       );
       // act

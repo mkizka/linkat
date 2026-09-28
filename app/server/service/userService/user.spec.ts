@@ -1,5 +1,6 @@
 import { UserFactory } from "~/server/factories/user";
 import { db } from "~/server/infrastructure/drizzle";
+import { identityResolverFactory } from "~/server/infrastructure/identityResolver";
 import { userBskyRepositoryFactory } from "~/server/infrastructure/userBskyRepository";
 import { userDbRepositoryFactory } from "~/server/infrastructure/userDbRepository";
 import { userRepositoryFactory } from "~/server/infrastructure/userRepository";
@@ -10,6 +11,7 @@ const userService = userServiceFactory({
   userRepository: userRepositoryFactory({
     userDbRepository: userDbRepositoryFactory({ db }),
     userBskyRepository: userBskyRepositoryFactory(),
+    identityResolver: identityResolverFactory(),
   }),
 });
 

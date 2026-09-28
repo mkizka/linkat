@@ -1,5 +1,13 @@
 import { asDid, type Did } from "@atproto/did";
 
+import type { ProfileViewDetailed } from "~/generated/app/bsky/actor/defs";
+
+const toProfileFields = (profile: ProfileViewDetailed | null) => ({
+  avatar: profile?.avatar ?? null,
+  description: profile?.description ?? null,
+  displayName: profile?.displayName ?? null,
+});
+
 export class User {
   readonly did: Did;
   readonly avatar: string | null;
@@ -29,5 +37,46 @@ export class User {
 
   isOwnedBy(viewerDid: Did | null) {
     return this.did === viewerDid;
+  }
+
+  static create({
+    did,
+    handle,
+    profile,
+  }: {
+    did: Did;
+    handle: string;
+    profile: ProfileViewDetailed | null;
+  }) {
+    return new User({
+      did,
+      handle,
+      ...toProfileFields(profile),
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+  }
+
+  refresh({
+    handle,
+    profile,
+  }: {
+    handle: string;
+    profile: ProfileViewDetailed | null;
+  }) {
+    const profileFields = profile
+      ? toProfileFields(profile)
+      : {
+          avatar: this.avatar,
+          description: this.description,
+          displayName: this.displayName,
+        };
+    return new User({
+      did: this.did,
+      handle,
+      ...profileFields,
+      createdAt: this.createdAt,
+      updatedAt: new Date(),
+    });
   }
 }
