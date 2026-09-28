@@ -10,7 +10,6 @@ import { cursorRepositoryFactory } from "~/server/infrastructure/cursorRepositor
 import { db } from "~/server/infrastructure/drizzle";
 import { userRepositoryFactory } from "~/server/infrastructure/userRepository";
 import { boardServiceFactory } from "~/server/service/boardService/board";
-import { didServiceFactory } from "~/server/service/didService/did";
 import { userServiceFactory } from "~/server/service/userService/user";
 import { env } from "~/utils/env";
 
@@ -20,7 +19,6 @@ const jetstreamService = jetstreamServiceFactory({
   cursorRepository: cursorRepositoryFactory({ db }),
   boardService: boardServiceFactory({
     boardRepository: boardRepositoryFactory({ db }),
-    didService: didServiceFactory(),
   }),
   userService: userServiceFactory({
     userRepository: userRepositoryFactory({ db }),
