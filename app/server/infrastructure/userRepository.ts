@@ -1,4 +1,4 @@
-import { asDid, isDid } from "@atproto/did";
+import { isDid } from "@atproto/did";
 import { isValidHandle } from "@atproto/syntax";
 
 import { User } from "~/models/user";
@@ -11,19 +11,15 @@ const REFETCH_INTERVAL_MS = 10 * 60 * 1000;
 const isFresh = (user: User) =>
   user.updatedAt.getTime() > Date.now() - REFETCH_INTERVAL_MS;
 
+const EMPTY_PROFILE = { avatar: null, description: null, displayName: null };
+
 const resolveIdentity = async (
   identityResolver: IIdentityResolver,
   handleOrDid: string,
-  cached: User | null,
 ) => {
-  if (cached) {
-    const handle = await identityResolver.resolveDidToHandle(cached.did);
-    return handle ? { did: cached.did, handle } : null;
-  }
   if (isDid(handleOrDid)) {
-    const did = asDid(handleOrDid);
-    const handle = await identityResolver.resolveDidToHandle(did);
-    return handle ? { did, handle } : null;
+    const handle = await identityResolver.resolveDidToHandle(handleOrDid);
+    return handle ? { did: handleOrDid, handle } : null;
   }
   if (isValidHandle(handleOrDid)) {
     const did = await identityResolver.resolveHandleToDid(handleOrDid);
@@ -54,17 +50,22 @@ export const userRepositoryFactory = ({
     }
     const identity = await resolveIdentity(
       identityResolver,
-      handleOrDid,
-      cached,
+      cached?.did ?? handleOrDid,
     );
     if (!identity) {
       return cached;
     }
-    const { did, handle } = identity;
-    const profile = await userBskyRepository.findProfileByDid(did);
-    const user = cached
-      ? cached.refresh({ handle, profile })
-      : User.create({ did, handle, profile });
+    const profile = await userBskyRepository.findProfileByDid(identity.did);
+    const { avatar, description, displayName } =
+      profile ?? cached ?? EMPTY_PROFILE;
+    const user = new User({
+      ...identity,
+      avatar,
+      description,
+      displayName,
+      createdAt: cached?.createdAt ?? new Date(),
+      updatedAt: new Date(),
+    });
     return await userDbRepository.save(user);
   },
 });

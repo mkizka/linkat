@@ -1,16 +1,18 @@
 import type { Did } from "@atproto/did";
 
-import type { ProfileViewDetailed } from "~/generated/app/bsky/actor/defs";
 import getProfile from "~/generated/app/bsky/actor/getProfile";
 import { LinkatAgent } from "~/libs/agent";
+import type { User } from "~/models/user";
 import { env } from "~/utils/env";
 import { createLogger } from "~/utils/logger";
 import { tryCatch } from "~/utils/tryCatch";
 
 const logger = createLogger("userBskyRepository");
 
+export type Profile = Pick<User, "avatar" | "description" | "displayName">;
+
 export interface IUserBskyRepository {
-  findProfileByDid: (did: Did) => Promise<ProfileViewDetailed | null>;
+  findProfileByDid: (did: Did) => Promise<Profile | null>;
 }
 
 const fetchProfile = async (did: Did) => {
@@ -26,6 +28,10 @@ export const userBskyRepositoryFactory = (): IUserBskyRepository => ({
       logger.warn(profile, "プロフィールの取得に失敗しました");
       return null;
     }
-    return profile;
+    return {
+      avatar: profile.avatar ?? null,
+      description: profile.description ?? null,
+      displayName: profile.displayName ?? null,
+    };
   },
 });

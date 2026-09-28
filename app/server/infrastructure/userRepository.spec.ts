@@ -127,13 +127,13 @@ describe("userRepository", () => {
         updatedAt: new Date("2024-01-01T00:10:00.000Z"),
       });
     });
-    test("DBにユーザーがいて最終更新から一定時間経過しているが、プロフィールが取得出来なかった場合、プロフィールはそのまま残す", async () => {
+    test("DBにユーザーがいて最終更新から一定時間経過しているが、プロフィールが取得出来なかった場合、handleだけ更新してプロフィールはそのまま残す", async () => {
       // arrange
       vi.useFakeTimers({ toFake: ["Date"] });
       vi.setSystemTime(new Date("2024-01-01T00:10:00.000Z"));
       const user = await UserFactory.create({
         did: "did:plc:dfbe2uvzisfdxwscnwcxdta6",
-        handle: "example.com",
+        handle: "old.example.com",
         displayName: "Alice",
         createdAt: new Date("2024-01-01T00:00:00.000Z"),
         updatedAt: new Date("2024-01-01T00:00:00.000Z"),
@@ -152,6 +152,7 @@ describe("userRepository", () => {
       // assert
       expect(actual).toEqual({
         ...user,
+        handle: "example.com",
         updatedAt: new Date("2024-01-01T00:10:00.000Z"),
       });
     });
