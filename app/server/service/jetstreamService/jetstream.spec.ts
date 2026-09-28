@@ -8,6 +8,8 @@ import { server } from "~/mocks/server";
 import { boardRepositoryFactory } from "~/server/infrastructure/boardRepository";
 import { cursorRepositoryFactory } from "~/server/infrastructure/cursorRepository";
 import { db } from "~/server/infrastructure/drizzle";
+import { userBskyRepositoryFactory } from "~/server/infrastructure/userBskyRepository";
+import { userDbRepositoryFactory } from "~/server/infrastructure/userDbRepository";
 import { userRepositoryFactory } from "~/server/infrastructure/userRepository";
 import { boardServiceFactory } from "~/server/service/boardService/board";
 import { didServiceFactory } from "~/server/service/didService/did";
@@ -23,7 +25,10 @@ const jetstreamService = jetstreamServiceFactory({
     didService: didServiceFactory(),
   }),
   userService: userServiceFactory({
-    userRepository: userRepositoryFactory({ db }),
+    userRepository: userRepositoryFactory({
+      userDbRepository: userDbRepositoryFactory({ db }),
+      userBskyRepository: userBskyRepositoryFactory(),
+    }),
   }),
 });
 

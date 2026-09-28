@@ -144,7 +144,7 @@ const createImage = async (user: User) => {
 };
 
 export async function loader({ params }: Route.LoaderArgs) {
-  const user = await di.userService.findOrFetchUser({
+  const user = await di.userService.findUser({
     handleOrDid: params.handle,
   });
   if (!user) {

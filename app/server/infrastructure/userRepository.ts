@@ -1,47 +1,36 @@
-import type { Did } from "@atproto/did";
-import { desc, eq } from "drizzle-orm";
+import { isDid } from "@atproto/did";
 
-import { User } from "~/models/user";
-import type { Db } from "~/server/infrastructure/drizzle";
-import { userTable } from "~/server/infrastructure/schema";
+import type { User } from "~/models/user";
+import type { IUserBskyRepository } from "~/server/infrastructure/userBskyRepository";
+import type { IUserDbRepository } from "~/server/infrastructure/userDbRepository";
+
+const REFETCH_INTERVAL_MS = 10 * 60 * 1000;
+
+const isFresh = (user: User) =>
+  user.updatedAt.getTime() > Date.now() - REFETCH_INTERVAL_MS;
 
 export interface IUserRepository {
-  findByDid: (did: Did) => Promise<User | null>;
-  findByHandle: (handle: string) => Promise<User | null>;
-  save: (user: User) => Promise<void>;
+  findByHandleOrDid: (handleOrDid: string) => Promise<User | null>;
 }
 
-export const userRepositoryFactory = ({ db }: { db: Db }): IUserRepository => ({
-  async findByDid(did) {
-    const [row] = await db
-      .select()
-      .from(userTable)
-      .where(eq(userTable.did, did))
-      .orderBy(desc(userTable.createdAt))
-      .limit(1);
-    return row ? new User(row) : null;
-  },
-  async findByHandle(handle) {
-    const [row] = await db
-      .select()
-      .from(userTable)
-      .where(eq(userTable.handle, handle))
-      .orderBy(desc(userTable.createdAt))
-      .limit(1);
-    return row ? new User(row) : null;
-  },
-  async save(user) {
-    const data = {
-      did: user.did,
-      avatar: user.avatar,
-      description: user.description,
-      displayName: user.displayName,
-      handle: user.handle,
-      updatedAt: user.updatedAt,
-    };
-    await db
-      .insert(userTable)
-      .values(data)
-      .onConflictDoUpdate({ target: userTable.did, set: data });
+export const userRepositoryFactory = ({
+  userDbRepository,
+  userBskyRepository,
+}: {
+  userDbRepository: IUserDbRepository;
+  userBskyRepository: IUserBskyRepository;
+}): IUserRepository => ({
+  async findByHandleOrDid(handleOrDid) {
+    const cached = await (isDid(handleOrDid)
+      ? userDbRepository.findByDid(handleOrDid)
+      : userDbRepository.findByHandle(handleOrDid));
+    if (cached && isFresh(cached)) {
+      return cached;
+    }
+    const fetched = await userBskyRepository.findByHandleOrDid(handleOrDid);
+    if (!fetched) {
+      return cached;
+    }
+    return await userDbRepository.save(fetched);
   },
 });

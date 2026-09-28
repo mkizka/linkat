@@ -37,7 +37,7 @@ export const sessionServiceFactory = ({
       if (!userDid) {
         return null;
       }
-      return await userService.findOrFetchUser({ handleOrDid: userDid });
+      return await userService.findUser({ handleOrDid: userDid });
     },
     async getSessionAgent(request) {
       const userDid = await getSessionUserDid(request);
