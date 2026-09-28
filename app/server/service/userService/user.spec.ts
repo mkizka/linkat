@@ -5,11 +5,13 @@ import { server } from "~/mocks/server";
 import { UserFactory } from "~/server/factories/user";
 import { db } from "~/server/infrastructure/drizzle";
 import { userRepositoryFactory } from "~/server/infrastructure/userRepository";
+import { identityServiceFactory } from "~/server/service/identityService/identity";
 
 import { userServiceFactory } from "./user";
 
 const userService = userServiceFactory({
   userRepository: userRepositoryFactory({ db }),
+  identityService: identityServiceFactory(),
 });
 
 const dummyBlueskyProfile = {
@@ -30,6 +32,13 @@ const dummyBlueskyProfile = {
   postsCount: 42,
 } satisfies ProfileViewDetailed;
 
+const mockResolveHandle = () =>
+  server.use(
+    http.get("https://example.com/.well-known/atproto-did", () =>
+      HttpResponse.text(dummyBlueskyProfile.did),
+    ),
+  );
+
 describe("userService", () => {
   describe("findUser", () => {
     test("didを指定してユーザーを検索できる", async () => {
@@ -42,36 +51,27 @@ describe("userService", () => {
       // assert
       expect(actual).toEqual(user);
     });
-    test("handleを指定してユーザーを検索できる", async () => {
+    test("handleを指定すると、DIDに解決してからユーザーを検索する", async () => {
       // arrange
-      const user = await UserFactory.create();
-      // act
-      const actual = await userService.findOrFetchUser({
-        handleOrDid: user.handle,
-      });
-      // assert
-      expect(actual).toEqual(user);
-    });
-    test("handleが同じユーザーが複数DBにある場合は、最後の方を取得する", async () => {
-      // arrange
-      const user1 = await UserFactory.create({
+      const user = await UserFactory.create({
+        did: dummyBlueskyProfile.did,
         handle: "example.com",
-        createdAt: new Date("2024-01-01T00:00:00.000Z"),
       });
-      const user2 = await UserFactory.create({
+      await UserFactory.create({
         handle: "example.com",
-        createdAt: new Date("2024-01-02T00:00:00.000Z"),
+        createdAt: new Date(Date.now() + 1000),
       });
+      mockResolveHandle();
       // act
       const actual = await userService.findOrFetchUser({
         handleOrDid: "example.com",
       });
       // assert
-      expect(user1.did).not.toEqual(user2.did);
-      expect(actual).toEqual(user2);
+      expect(actual).toEqual(user);
     });
     test("DBにユーザーがいないとき、Blueskyから取得して作成できる", async () => {
       // arrange
+      mockResolveHandle();
       server.use(
         http.get(
           "https://public.api.example.com/xrpc/app.bsky.actor.getProfile",
@@ -145,12 +145,11 @@ describe("userService", () => {
       // assert
       expect(actual).toEqual(user);
     });
-    test("DBにユーザーがなく、Blueskyから取得できないときnullを返す", async () => {
+    test("handleが解決できないときnullを返す", async () => {
       // arrange
       server.use(
-        http.get(
-          "https://public.api.example.com/xrpc/app.bsky.actor.getProfile",
-          () => HttpResponse.json("", { status: 500 }),
+        http.get("https://notfound.example.com/.well-known/atproto-did", () =>
+          HttpResponse.text("", { status: 404 }),
         ),
       );
       // act
@@ -160,7 +159,7 @@ describe("userService", () => {
       // assert
       expect(actual).toBeNull();
     });
-    test("入力が明らかにドメインでなければnullを返す", async () => {
+    test("入力がhandleとして不正であればnullを返す", async () => {
       // arrange
       // act
       const actual = await userService.findOrFetchUser({

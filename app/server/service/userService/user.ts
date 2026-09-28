@@ -1,10 +1,11 @@
-import { isDid } from "@atproto/did";
-import { asAtIdentifierString } from "@atproto/syntax";
+import { asDid, isDid } from "@atproto/did";
+import { asAtIdentifierString, isValidHandle } from "@atproto/syntax";
 
 import getProfile from "~/generated/app/bsky/actor/getProfile";
 import { LinkatAgent } from "~/libs/agent";
 import { User } from "~/models/user";
 import type { IUserRepository } from "~/server/infrastructure/userRepository";
+import type { IIdentityService } from "~/server/service/identityService/identity";
 import { env } from "~/utils/env";
 import { createLogger } from "~/utils/logger";
 import { tryCatch } from "~/utils/tryCatch";
@@ -25,20 +26,25 @@ export interface IUserService {
 
 export const userServiceFactory = ({
   userRepository,
+  identityService,
 }: {
   userRepository: IUserRepository;
+  identityService: IIdentityService;
 }): IUserService => ({
   async findOrFetchUser({ handleOrDid }) {
-    if (!handleOrDid.includes(".") && !isDid(handleOrDid)) {
+    const did = isDid(handleOrDid)
+      ? asDid(handleOrDid)
+      : isValidHandle(handleOrDid)
+        ? await identityService.resolveHandle(handleOrDid)
+        : null;
+    if (!did) {
       return null;
     }
-    const user = await (isDid(handleOrDid)
-      ? userRepository.findByDid(handleOrDid)
-      : userRepository.findByHandle(handleOrDid));
+    const user = await userRepository.findByDid(did);
     if (user && !user.shouldRefetch()) {
       return user;
     }
-    const blueskyProfile = await tryCatch(fetchBlueskyProfile)(handleOrDid);
+    const blueskyProfile = await tryCatch(fetchBlueskyProfile)(did);
     if (blueskyProfile instanceof Error) {
       logger.warn(blueskyProfile, "プロフィールの取得に失敗しました");
       return user;

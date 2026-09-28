@@ -14,6 +14,7 @@ import { userRepositoryFactory } from "~/server/infrastructure/userRepository";
 import { atpassportServiceFactory } from "~/server/service/atpassportService/atpassport";
 import { authServiceFactory } from "~/server/service/authService/auth";
 import { boardServiceFactory } from "~/server/service/boardService/board";
+import { identityServiceFactory } from "~/server/service/identityService/identity";
 import { jetstreamServiceFactory } from "~/server/service/jetstreamService/jetstream";
 import { sessionServiceFactory } from "~/server/service/sessionService/session";
 import { userServiceFactory } from "~/server/service/userService/user";
@@ -32,7 +33,12 @@ export const di = await createRegistry()
   )
   .service("atpassportClient", atpassportClientFactory)
   .service("cookieSessionStorage", cookieSessionStorageFactory)
-  .service("userService", ["userRepository"], userServiceFactory)
+  .service("identityService", identityServiceFactory)
+  .service(
+    "userService",
+    ["userRepository", "identityService"],
+    userServiceFactory,
+  )
   .service("boardService", ["boardRepository"], boardServiceFactory)
   .service("atpassportService", ["atpassportClient"], atpassportServiceFactory)
   .service("authService", ["oauthClient"], authServiceFactory)
