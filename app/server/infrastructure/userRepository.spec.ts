@@ -5,7 +5,7 @@ import type { ProfileViewDetailed } from "~/generated/app/bsky/actor/defs";
 import { server } from "~/mocks/server";
 import { UserFactory } from "~/server/factories/user";
 import { db } from "~/server/infrastructure/drizzle";
-import type { IdentityResolver } from "~/server/infrastructure/oauthClient";
+import type { IdentityResolver } from "~/server/infrastructure/identityResolver";
 import { userBskyRepositoryFactory } from "~/server/infrastructure/userBskyRepository";
 import { userDbRepositoryFactory } from "~/server/infrastructure/userDbRepository";
 

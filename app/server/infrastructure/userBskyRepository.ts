@@ -3,7 +3,7 @@ import type { Did } from "@atproto/did";
 import getProfile from "~/generated/app/bsky/actor/getProfile";
 import { LinkatAgent } from "~/libs/agent";
 import { User } from "~/models/user";
-import type { IdentityResolver } from "~/server/infrastructure/oauthClient";
+import type { IdentityResolver } from "~/server/infrastructure/identityResolver";
 import { env } from "~/utils/env";
 import { createLogger } from "~/utils/logger";
 import { tryCatch } from "~/utils/tryCatch";

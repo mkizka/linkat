@@ -5,6 +5,7 @@ import { boardRepositoryFactory } from "~/server/infrastructure/boardRepository"
 import { cookieSessionStorageFactory } from "~/server/infrastructure/cookieSessionStorage";
 import { cursorRepositoryFactory } from "~/server/infrastructure/cursorRepository";
 import { db } from "~/server/infrastructure/drizzle";
+import { identityResolverFactory } from "~/server/infrastructure/identityResolver";
 import { oauthClientFactory } from "~/server/infrastructure/oauthClient";
 import {
   sessionStoreFactory,
@@ -27,15 +28,11 @@ export const di = await createRegistry()
   .service("userDbRepository", ["db"], userDbRepositoryFactory)
   .service("oauthStateStore", ["db"], stateStoreFactory)
   .service("oauthSessionStore", ["db"], sessionStoreFactory)
+  .service("identityResolver", identityResolverFactory)
   .service(
     "oauthClient",
-    ["oauthStateStore", "oauthSessionStore"],
+    ["identityResolver", "oauthStateStore", "oauthSessionStore"],
     oauthClientFactory,
-  )
-  .service(
-    "identityResolver",
-    ["oauthClient"],
-    ({ oauthClient }) => oauthClient.identityResolver,
   )
   .service(
     "userBskyRepository",

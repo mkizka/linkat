@@ -11,6 +11,7 @@ import {
   NodeOAuthClient,
 } from "@atproto/oauth-client-node";
 
+import type { IdentityResolver } from "~/server/infrastructure/identityResolver";
 import { env, isProduction } from "~/utils/env";
 
 const privateKey = Buffer.from(env.PRIVATE_KEY_ES256_B64, "base64").toString();
@@ -43,8 +44,6 @@ const keyset = isProduction
   ? [await JoseKey.fromImportable(privateKey, "key1")]
   : undefined;
 
-export type IdentityResolver = NodeOAuthClient["identityResolver"];
-
 export interface IOAuthClient {
   authorize: (handle: string) => Promise<URL>;
   callback: (params: URLSearchParams) => Promise<Did>;
@@ -52,21 +51,21 @@ export interface IOAuthClient {
   revoke: (did: Did) => Promise<void>;
   clientMetadata: NodeOAuthClient["clientMetadata"];
   jwks: NodeOAuthClient["jwks"];
-  identityResolver: IdentityResolver;
 }
 
 export const oauthClientFactory = ({
+  identityResolver,
   oauthStateStore,
   oauthSessionStore,
 }: {
+  identityResolver: IdentityResolver;
   oauthStateStore: NodeSavedStateStore;
   oauthSessionStore: NodeSavedSessionStore;
 }): IOAuthClient => {
   const client = new NodeOAuthClient({
     clientMetadata,
     keyset,
-    plcDirectoryUrl: env.ATPROTO_PLC_URL,
-    handleResolver: env.ATPROTO_HANDLE_RESOLVER_URL,
+    identityResolver,
     allowHttp: !isProduction,
     stateStore: oauthStateStore,
     sessionStore: oauthSessionStore,
@@ -85,9 +84,6 @@ export const oauthClientFactory = ({
     },
     get jwks() {
       return client.jwks;
-    },
-    get identityResolver() {
-      return client.identityResolver;
     },
   };
 };

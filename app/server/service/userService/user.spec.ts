@@ -2,7 +2,7 @@ import { mock } from "vitest-mock-extended";
 
 import { UserFactory } from "~/server/factories/user";
 import { db } from "~/server/infrastructure/drizzle";
-import type { IdentityResolver } from "~/server/infrastructure/oauthClient";
+import type { IdentityResolver } from "~/server/infrastructure/identityResolver";
 import { userBskyRepositoryFactory } from "~/server/infrastructure/userBskyRepository";
 import { userDbRepositoryFactory } from "~/server/infrastructure/userDbRepository";
 import { userRepositoryFactory } from "~/server/infrastructure/userRepository";

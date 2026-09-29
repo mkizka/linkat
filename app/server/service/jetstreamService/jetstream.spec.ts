@@ -7,7 +7,7 @@ import { mockedLogger } from "~/mocks/logger";
 import { boardRepositoryFactory } from "~/server/infrastructure/boardRepository";
 import { cursorRepositoryFactory } from "~/server/infrastructure/cursorRepository";
 import { db } from "~/server/infrastructure/drizzle";
-import type { IdentityResolver } from "~/server/infrastructure/oauthClient";
+import type { IdentityResolver } from "~/server/infrastructure/identityResolver";
 import { userBskyRepositoryFactory } from "~/server/infrastructure/userBskyRepository";
 import { userDbRepositoryFactory } from "~/server/infrastructure/userDbRepository";
 import { userRepositoryFactory } from "~/server/infrastructure/userRepository";
