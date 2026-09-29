@@ -7,7 +7,7 @@ import { mockedLogger } from "~/mocks/logger";
 import { boardRepositoryFactory } from "~/server/infrastructure/boardRepository";
 import { cursorRepositoryFactory } from "~/server/infrastructure/cursorRepository";
 import { db } from "~/server/infrastructure/drizzle";
-import type { IdentityResolver } from "~/server/infrastructure/identityResolver";
+import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
 import { userBskyRepositoryFactory } from "~/server/infrastructure/userBskyRepository";
 import { userDbRepositoryFactory } from "~/server/infrastructure/userDbRepository";
 import { userRepositoryFactory } from "~/server/infrastructure/userRepository";
@@ -17,7 +17,7 @@ import { env } from "~/utils/env";
 
 import { jetstreamServiceFactory } from "./jetstream";
 
-const identityResolver = mock<IdentityResolver>();
+const identityResolver = mock<IIdentityResolver>();
 
 const jetstreamService = jetstreamServiceFactory({
   cursorRepository: cursorRepositoryFactory({ db }),
@@ -58,7 +58,7 @@ describe("jetstreamService", () => {
     test("ユーザーがDBになくDIDも解決できない場合、エラーにせずボードの保存をスキップする", async () => {
       // arrange
       const did = "did:plc:notfounduser0000000000000";
-      identityResolver.resolve.mockRejectedValue(new Error("not found"));
+      identityResolver.resolve.mockResolvedValue(null);
       // act
       const actual = jetstreamService.handleCreateOrUpdate(dummyEvent(did));
       // assert

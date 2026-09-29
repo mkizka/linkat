@@ -31,7 +31,7 @@ export const di = await createRegistry()
   .service("identityResolver", identityResolverFactory)
   .service(
     "oauthClient",
-    ["identityResolver", "oauthStateStore", "oauthSessionStore"],
+    ["oauthStateStore", "oauthSessionStore"],
     oauthClientFactory,
   )
   .service(

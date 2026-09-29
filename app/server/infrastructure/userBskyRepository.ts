@@ -3,7 +3,7 @@ import type { Did } from "@atproto/did";
 import getProfile from "~/generated/app/bsky/actor/getProfile";
 import { LinkatAgent } from "~/libs/agent";
 import { User } from "~/models/user";
-import type { IdentityResolver } from "~/server/infrastructure/identityResolver";
+import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
 import { env } from "~/utils/env";
 import { createLogger } from "~/utils/logger";
 import { tryCatch } from "~/utils/tryCatch";
@@ -23,14 +23,11 @@ const fetchProfile = async (did: Did) => {
 export const userBskyRepositoryFactory = ({
   identityResolver,
 }: {
-  identityResolver: IdentityResolver;
+  identityResolver: IIdentityResolver;
 }): IUserBskyRepository => ({
   async findByHandleOrDid(handleOrDid) {
-    const identity = await tryCatch((input: string) =>
-      identityResolver.resolve(input),
-    )(handleOrDid);
-    if (identity instanceof Error) {
-      logger.warn(identity, "DIDまたはhandleの解決に失敗しました");
+    const identity = await identityResolver.resolve(handleOrDid);
+    if (!identity) {
       return null;
     }
     const profile = await tryCatch(fetchProfile)(identity.did);

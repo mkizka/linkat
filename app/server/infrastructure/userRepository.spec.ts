@@ -5,13 +5,13 @@ import type { ProfileViewDetailed } from "~/generated/app/bsky/actor/defs";
 import { server } from "~/mocks/server";
 import { UserFactory } from "~/server/factories/user";
 import { db } from "~/server/infrastructure/drizzle";
-import type { IdentityResolver } from "~/server/infrastructure/identityResolver";
+import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
 import { userBskyRepositoryFactory } from "~/server/infrastructure/userBskyRepository";
 import { userDbRepositoryFactory } from "~/server/infrastructure/userDbRepository";
 
 import { userRepositoryFactory } from "./userRepository";
 
-const identityResolver = mock<IdentityResolver>();
+const identityResolver = mock<IIdentityResolver>();
 
 const userRepository = userRepositoryFactory({
   userDbRepository: userDbRepositoryFactory({ db }),
@@ -22,7 +22,6 @@ const mockIdentity = () => {
   identityResolver.resolve.mockResolvedValue({
     did: "did:plc:dfbe2uvzisfdxwscnwcxdta6",
     handle: "example.com",
-    didDoc: { id: "did:plc:dfbe2uvzisfdxwscnwcxdta6" },
   });
 };
 
@@ -146,7 +145,7 @@ describe("userRepository", () => {
         createdAt: new Date("2024-01-01T00:00:00.000Z"),
         updatedAt: new Date("2024-01-01T00:00:00.000Z"),
       });
-      identityResolver.resolve.mockRejectedValue(new Error("not found"));
+      identityResolver.resolve.mockResolvedValue(null);
       // act
       const actual = await userRepository.findByHandleOrDid(
         "did:plc:dfbe2uvzisfdxwscnwcxdta6",
@@ -156,7 +155,7 @@ describe("userRepository", () => {
     });
     test("DBにユーザーがなく、DIDを解決できないときnullを返す", async () => {
       // arrange
-      identityResolver.resolve.mockRejectedValue(new Error("not found"));
+      identityResolver.resolve.mockResolvedValue(null);
       // act
       const actual = await userRepository.findByHandleOrDid(
         "notfound.example.com",

@@ -11,7 +11,6 @@ import {
   NodeOAuthClient,
 } from "@atproto/oauth-client-node";
 
-import type { IdentityResolver } from "~/server/infrastructure/identityResolver";
 import { env, isProduction } from "~/utils/env";
 
 const privateKey = Buffer.from(env.PRIVATE_KEY_ES256_B64, "base64").toString();
@@ -54,18 +53,17 @@ export interface IOAuthClient {
 }
 
 export const oauthClientFactory = ({
-  identityResolver,
   oauthStateStore,
   oauthSessionStore,
 }: {
-  identityResolver: IdentityResolver;
   oauthStateStore: NodeSavedStateStore;
   oauthSessionStore: NodeSavedSessionStore;
 }): IOAuthClient => {
   const client = new NodeOAuthClient({
     clientMetadata,
     keyset,
-    identityResolver,
+    plcDirectoryUrl: env.ATPROTO_PLC_URL,
+    handleResolver: env.ATPROTO_HANDLE_RESOLVER_URL,
     allowHttp: !isProduction,
     stateStore: oauthStateStore,
     sessionStore: oauthSessionStore,
