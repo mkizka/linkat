@@ -96,7 +96,9 @@
     "text": "トップに戻る"
   },
   "delete": {
-    "invalid-session-error-message": "ログイン情報が無効でした"
+    "invalid-session-error-message": "ログイン情報が無効でした",
+    "delete-board-error-message": "ボードの削除に失敗しました",
+    "delete-delayed-warning-message": "削除の反映に時間がかかっています。少し時間を空けてからご確認ください"
   },
   "delete-board-button": {
     "text": "ボードを削除する",

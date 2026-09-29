@@ -17,6 +17,18 @@ export class BoardDbSaveError extends Error {
   }
 }
 
+export class BoardPdsDeleteError extends Error {
+  constructor(cause: unknown) {
+    super("PDSからのボードの削除に失敗しました", { cause });
+  }
+}
+
+export class BoardDbDeleteError extends Error {
+  constructor(cause: unknown) {
+    super("DBからのボードの削除に失敗しました", { cause });
+  }
+}
+
 export interface IBoardService {
   parseBoardFromForm: (
     userDid: Did,
@@ -26,6 +38,7 @@ export interface IBoardService {
   publishBoard: (agent: LinkatAgent, board: Board) => Promise<void>;
   findBoard: (userDid: Did) => Promise<Board | null>;
   deleteBoard: (userDid: Did) => Promise<void>;
+  unpublishBoard: (agent: LinkatAgent, userDid: Did) => Promise<void>;
 }
 
 export const boardServiceFactory = ({
@@ -58,6 +71,18 @@ export const boardServiceFactory = ({
     },
     async deleteBoard(userDid) {
       await boardRepository.delete(userDid);
+    },
+    async unpublishBoard(agent, userDid) {
+      try {
+        await agent.deleteBoard();
+      } catch (error) {
+        throw new BoardPdsDeleteError(error);
+      }
+      try {
+        await boardRepository.delete(userDid);
+      } catch (error) {
+        throw new BoardDbDeleteError(error);
+      }
     },
   };
 };
