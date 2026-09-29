@@ -5,6 +5,9 @@ import type { User } from "~/models/user";
 import type { ICookieSessionStorage } from "~/server/infrastructure/cookieSessionStorage";
 import type { IOAuthClient } from "~/server/infrastructure/oauthClient";
 import type { IUserService } from "~/server/service/userService/user";
+import { createLogger } from "~/utils/logger";
+
+const logger = createLogger("sessionService");
 
 export interface ISessionService {
   getSessionUserDid: (request: Request) => Promise<Did | null>;
@@ -30,8 +33,15 @@ export const sessionServiceFactory = ({
     getSessionUserDid,
     createSession: (request, did) =>
       cookieSessionStorage.commit(request.headers.get("Cookie"), did),
-    destroySession: (request) =>
-      cookieSessionStorage.destroy(request.headers.get("Cookie")),
+    async destroySession(request) {
+      const userDid = await getSessionUserDid(request);
+      if (userDid) {
+        await oauthClient.revoke(userDid).catch((error: unknown) => {
+          logger.error(error, "OAuthセッションの失効に失敗しました");
+        });
+      }
+      return cookieSessionStorage.destroy(request.headers.get("Cookie"));
+    },
     async getSessionUser(request) {
       const userDid = await getSessionUserDid(request);
       if (!userDid) {

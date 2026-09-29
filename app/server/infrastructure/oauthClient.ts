@@ -47,6 +47,7 @@ export interface IOAuthClient {
   authorize: (handle: string) => Promise<URL>;
   callback: (params: URLSearchParams) => Promise<Did>;
   restore: (did: Did) => Promise<OAuthSession>;
+  revoke: (did: Did) => Promise<void>;
   clientMetadata: NodeOAuthClient["clientMetadata"];
   jwks: NodeOAuthClient["jwks"];
 }
@@ -75,6 +76,7 @@ export const oauthClientFactory = ({
       return session.did;
     },
     restore: (did) => client.restore(did),
+    revoke: (did) => client.revoke(did),
     get clientMetadata() {
       return client.clientMetadata;
     },
