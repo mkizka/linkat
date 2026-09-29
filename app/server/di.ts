@@ -5,6 +5,7 @@ import { boardRepositoryFactory } from "~/server/infrastructure/boardRepository"
 import { cookieSessionStorageFactory } from "~/server/infrastructure/cookieSessionStorage";
 import { cursorRepositoryFactory } from "~/server/infrastructure/cursorRepository";
 import { db } from "~/server/infrastructure/drizzle";
+import { identityResolverFactory } from "~/server/infrastructure/identityResolver";
 import { oauthClientFactory } from "~/server/infrastructure/oauthClient";
 import {
   sessionStoreFactory,
@@ -25,18 +26,23 @@ export const di = await createRegistry()
   .service("boardRepository", ["db"], boardRepositoryFactory)
   .service("cursorRepository", ["db"], cursorRepositoryFactory)
   .service("userDbRepository", ["db"], userDbRepositoryFactory)
-  .service("userBskyRepository", userBskyRepositoryFactory)
-  .service(
-    "userRepository",
-    ["userDbRepository", "userBskyRepository"],
-    userRepositoryFactory,
-  )
   .service("oauthStateStore", ["db"], stateStoreFactory)
   .service("oauthSessionStore", ["db"], sessionStoreFactory)
+  .service("identityResolver", identityResolverFactory)
   .service(
     "oauthClient",
     ["oauthStateStore", "oauthSessionStore"],
     oauthClientFactory,
+  )
+  .service(
+    "userBskyRepository",
+    ["identityResolver"],
+    userBskyRepositoryFactory,
+  )
+  .service(
+    "userRepository",
+    ["userDbRepository", "userBskyRepository"],
+    userRepositoryFactory,
   )
   .service("atpassportClient", atpassportClientFactory)
   .service("cookieSessionStorage", cookieSessionStorageFactory)
