@@ -10,6 +10,8 @@ import {
   sessionStoreFactory,
   stateStoreFactory,
 } from "~/server/infrastructure/oauthStorage";
+import { userBskyRepositoryFactory } from "~/server/infrastructure/userBskyRepository";
+import { userDbRepositoryFactory } from "~/server/infrastructure/userDbRepository";
 import { userRepositoryFactory } from "~/server/infrastructure/userRepository";
 import { atpassportServiceFactory } from "~/server/service/atpassportService/atpassport";
 import { authServiceFactory } from "~/server/service/authService/auth";
@@ -22,7 +24,13 @@ export const di = await createRegistry()
   .value("db", db)
   .service("boardRepository", ["db"], boardRepositoryFactory)
   .service("cursorRepository", ["db"], cursorRepositoryFactory)
-  .service("userRepository", ["db"], userRepositoryFactory)
+  .service("userDbRepository", ["db"], userDbRepositoryFactory)
+  .service("userBskyRepository", userBskyRepositoryFactory)
+  .service(
+    "userRepository",
+    ["userDbRepository", "userBskyRepository"],
+    userRepositoryFactory,
+  )
   .service("oauthStateStore", ["db"], stateStoreFactory)
   .service("oauthSessionStore", ["db"], sessionStoreFactory)
   .service(

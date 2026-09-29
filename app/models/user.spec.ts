@@ -14,19 +14,6 @@ const createUser = (props: Partial<ConstructorParameters<typeof User>[0]>) =>
     ...props,
   });
 
-describe("shouldRefetch", () => {
-  test.each`
-    updatedAt                                | expected | description
-    ${new Date()}                            | ${false} | ${"直近に取得済み"}
-    ${new Date(Date.now() - 11 * 60 * 1000)} | ${true}  | ${"10分以上経過している"}
-  `(
-    "$description",
-    ({ updatedAt, expected }: { updatedAt: Date; expected: boolean }) => {
-      expect(createUser({ updatedAt }).shouldRefetch()).toBe(expected);
-    },
-  );
-});
-
 describe("isOwnedBy", () => {
   test.each`
     did                | viewerDid          | expected | description

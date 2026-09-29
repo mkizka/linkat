@@ -1,121 +1,142 @@
-import { asDid } from "@atproto/did";
+import { http, HttpResponse } from "msw";
 
-import { User } from "~/models/user";
+import type { ProfileViewDetailed } from "~/generated/app/bsky/actor/defs";
+import { server } from "~/mocks/server";
 import { UserFactory } from "~/server/factories/user";
 import { db } from "~/server/infrastructure/drizzle";
+import { userBskyRepositoryFactory } from "~/server/infrastructure/userBskyRepository";
+import { userDbRepositoryFactory } from "~/server/infrastructure/userDbRepository";
 
 import { userRepositoryFactory } from "./userRepository";
 
-const userRepository = userRepositoryFactory({ db });
+const userRepository = userRepositoryFactory({
+  userDbRepository: userDbRepositoryFactory({ db }),
+  userBskyRepository: userBskyRepositoryFactory(),
+});
+
+const dummyBlueskyProfile = {
+  did: "did:plc:dfbe2uvzisfdxwscnwcxdta6",
+  handle: "example.com",
+  displayName: "Alice",
+  avatar: "https://example.com/avatar.png",
+  associated: {
+    lists: 1,
+    feedgens: 1,
+    labeler: false,
+  },
+  labels: [],
+  description: "Test user 1",
+  indexedAt: "2024-07-21T08:19:48.394Z",
+  followersCount: 2,
+  followsCount: 2,
+  postsCount: 42,
+} satisfies ProfileViewDetailed;
 
 describe("userRepository", () => {
-  describe("findByDid", () => {
-    test("保存されていない場合はnullを返す", async () => {
-      // arrange
-      // act
-      const actual = await userRepository.findByDid(asDid("did:plc:notfound"));
-      // assert
-      expect(actual).toBeNull();
-    });
-    test("didを指定してユーザーを取得できる", async () => {
+  describe("findByHandleOrDid", () => {
+    test("didを指定してユーザーを検索できる", async () => {
       // arrange
       const user = await UserFactory.create();
       // act
-      const actual = await userRepository.findByDid(asDid(user.did));
+      const actual = await userRepository.findByHandleOrDid(user.did);
       // assert
       expect(actual).toEqual(user);
     });
-  });
-
-  describe("findByHandle", () => {
-    test("保存されていない場合はnullを返す", async () => {
-      // arrange
-      // act
-      const actual = await userRepository.findByHandle("notfound.example.com");
-      // assert
-      expect(actual).toBeNull();
-    });
-    test("handleを指定してユーザーを取得できる", async () => {
+    test("handleを指定してユーザーを検索できる", async () => {
       // arrange
       const user = await UserFactory.create();
       // act
-      const actual = await userRepository.findByHandle(user.handle);
+      const actual = await userRepository.findByHandleOrDid(user.handle);
       // assert
       expect(actual).toEqual(user);
     });
-    test("handleが同じユーザーが複数DBにある場合は、最後に作成された方を取得する", async () => {
+    test("DBにユーザーがいないとき、Blueskyから取得して作成できる", async () => {
       // arrange
-      const user1 = await UserFactory.create({
-        handle: "example.com",
-        createdAt: new Date("2024-01-01T00:00:00.000Z"),
-      });
-      const user2 = await UserFactory.create({
-        handle: "example.com",
-        createdAt: new Date("2024-01-02T00:00:00.000Z"),
-      });
+      server.use(
+        http.get(
+          "https://public.api.example.com/xrpc/app.bsky.actor.getProfile",
+          () => HttpResponse.json(dummyBlueskyProfile),
+        ),
+      );
       // act
-      const actual = await userRepository.findByHandle("example.com");
+      const actual = await userRepository.findByHandleOrDid("example.com");
       // assert
-      expect(user1.did).not.toEqual(user2.did);
-      expect(actual).toEqual(user2);
-    });
-  });
-
-  describe("save", () => {
-    test("新しいユーザーを保存できる", async () => {
-      // arrange
-      const user = new User({
-        did: "did:plc:abcdefghijklmnopqrstuvwx",
+      expect(actual).toEqual({
         avatar: "https://example.com/avatar.png",
-        description: "description",
-        displayName: "display name",
+        description: "Test user 1",
+        did: "did:plc:dfbe2uvzisfdxwscnwcxdta6",
+        displayName: "Alice",
         handle: "example.com",
-        createdAt: new Date("2024-01-01T00:00:00.000Z"),
-        updatedAt: new Date("2024-01-02T00:00:00.000Z"),
-      });
-      // act
-      await userRepository.save(user);
-      // assert
-      const actual = await userRepository.findByDid(user.did);
-      expect(actual).toEqual({
-        did: user.did,
-        avatar: user.avatar,
-        description: user.description,
-        displayName: user.displayName,
-        handle: user.handle,
         createdAt: expect.any(Date),
-        updatedAt: user.updatedAt,
+        updatedAt: expect.any(Date),
       });
     });
-    test("既存のユーザーを上書きできる", async () => {
+    test("DBにユーザーがいて最終更新から一定時間経過している場合、Blueskyから取得して作成する", async () => {
       // arrange
-      const existing = await UserFactory.create({
-        did: "did:plc:abcdefghijklmnopqrstuvwx",
-        handle: "old.example.com",
-        avatar: "https://example.com/old-avatar.png",
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date("2024-01-01T00:10:00.000Z"));
+      await UserFactory.create({
+        did: "did:plc:dfbe2uvzisfdxwscnwcxdta6",
+        createdAt: new Date("2024-01-01T00:00:00.000Z"),
+        updatedAt: new Date("2024-01-01T00:00:00.000Z"),
       });
-      const updated = new User({
-        did: existing.did,
-        avatar: "https://example.com/new-avatar.png",
-        description: "new description",
-        displayName: "new display name",
-        handle: "new.example.com",
-        createdAt: existing.createdAt,
-        updatedAt: new Date("2024-02-01T00:00:00.000Z"),
-      });
+      server.use(
+        http.get(
+          "https://public.api.example.com/xrpc/app.bsky.actor.getProfile",
+          () => HttpResponse.json(dummyBlueskyProfile),
+        ),
+      );
       // act
-      await userRepository.save(updated);
+      const actual = await userRepository.findByHandleOrDid(
+        "did:plc:dfbe2uvzisfdxwscnwcxdta6",
+      );
       // assert
-      const actual = await userRepository.findByDid(asDid(existing.did));
       expect(actual).toEqual({
-        did: existing.did,
-        avatar: updated.avatar,
-        description: updated.description,
-        displayName: updated.displayName,
-        handle: updated.handle,
-        createdAt: existing.createdAt,
-        updatedAt: updated.updatedAt,
+        avatar: "https://example.com/avatar.png",
+        description: "Test user 1",
+        did: "did:plc:dfbe2uvzisfdxwscnwcxdta6",
+        displayName: "Alice",
+        handle: "example.com",
+        createdAt: new Date("2024-01-01T00:00:00.000Z"),
+        updatedAt: new Date("2024-01-01T00:10:00.000Z"),
       });
+    });
+    test("DBにユーザーがいて最終更新から一定時間経過しているが、Blueskyからも取得出来なかった場合、そのまま返す", async () => {
+      // arrange
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date("2024-01-01T00:10:00.000Z"));
+      const user = await UserFactory.create({
+        did: "did:plc:dfbe2uvzisfdxwscnwcxdta6",
+        createdAt: new Date("2024-01-01T00:00:00.000Z"),
+        updatedAt: new Date("2024-01-01T00:00:00.000Z"),
+      });
+      server.use(
+        http.get(
+          "https://public.api.example.com/xrpc/app.bsky.actor.getProfile",
+          () => HttpResponse.json("", { status: 500 }),
+        ),
+      );
+      // act
+      const actual = await userRepository.findByHandleOrDid(
+        "did:plc:dfbe2uvzisfdxwscnwcxdta6",
+      );
+      // assert
+      expect(actual).toEqual(user);
+    });
+    test("DBにユーザーがなく、Blueskyから取得できないときnullを返す", async () => {
+      // arrange
+      server.use(
+        http.get(
+          "https://public.api.example.com/xrpc/app.bsky.actor.getProfile",
+          () => HttpResponse.json("", { status: 500 }),
+        ),
+      );
+      // act
+      const actual = await userRepository.findByHandleOrDid(
+        "notfound.example.com",
+      );
+      // assert
+      expect(actual).toBeNull();
     });
   });
 });
