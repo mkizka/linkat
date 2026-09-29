@@ -3,7 +3,10 @@ import type { Did } from "@atproto/did";
 import { LinkatAgent } from "~/libs/agent";
 import type { User } from "~/models/user";
 import type { ICookieSessionStorage } from "~/server/infrastructure/cookieSessionStorage";
-import type { IOAuthClient } from "~/server/infrastructure/oauthClient";
+import {
+  type IOAuthClient,
+  OAuthSessionInvalidError,
+} from "~/server/infrastructure/oauthClient";
 import type { IUserService } from "~/server/service/userService/user";
 import { createLogger } from "~/utils/logger";
 
@@ -54,8 +57,14 @@ export const sessionServiceFactory = ({
       if (!userDid) {
         return null;
       }
-      const oauthSession = await oauthClient.restore(userDid);
-      return new LinkatAgent(oauthSession);
+      try {
+        return new LinkatAgent(await oauthClient.restore(userDid));
+      } catch (error) {
+        if (error instanceof OAuthSessionInvalidError) {
+          return null;
+        }
+        throw error;
+      }
     },
   };
 };

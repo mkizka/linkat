@@ -9,6 +9,7 @@ import type {
 import {
   atprotoLoopbackClientMetadata,
   NodeOAuthClient,
+  TokenRefreshError,
 } from "@atproto/oauth-client-node";
 
 import { env, isProduction } from "~/utils/env";
@@ -43,6 +44,12 @@ const keyset = isProduction
   ? [await JoseKey.fromImportable(privateKey, "key1")]
   : undefined;
 
+export class OAuthSessionInvalidError extends Error {
+  constructor(cause: unknown) {
+    super("OAuthセッションが無効です", { cause });
+  }
+}
+
 export interface IOAuthClient {
   authorize: (handle: string) => Promise<URL>;
   callback: (params: URLSearchParams) => Promise<Did>;
@@ -75,7 +82,16 @@ export const oauthClientFactory = ({
       const { session } = await client.callback(params);
       return session.did;
     },
-    restore: (did) => client.restore(did),
+    async restore(did) {
+      try {
+        return await client.restore(did);
+      } catch (error) {
+        if (error instanceof TokenRefreshError) {
+          throw new OAuthSessionInvalidError(error);
+        }
+        throw error;
+      }
+    },
     revoke: (did) => client.revoke(did),
     get clientMetadata() {
       return client.clientMetadata;

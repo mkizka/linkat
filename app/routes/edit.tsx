@@ -30,7 +30,11 @@ export async function action({ request, context }: Route.ActionArgs) {
       message: i18next.t("edit.invalid-session-error-message"),
       type: "error",
     });
-    return null;
+    return redirect("/login", {
+      headers: {
+        "Set-Cookie": await di.sessionService.destroySession(request),
+      },
+    });
   }
   const form = await request.formData();
   const rawBoard = form.get("board");
