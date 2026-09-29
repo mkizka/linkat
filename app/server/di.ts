@@ -25,18 +25,27 @@ export const di = await createRegistry()
   .service("boardRepository", ["db"], boardRepositoryFactory)
   .service("cursorRepository", ["db"], cursorRepositoryFactory)
   .service("userDbRepository", ["db"], userDbRepositoryFactory)
-  .service("userBskyRepository", userBskyRepositoryFactory)
-  .service(
-    "userRepository",
-    ["userDbRepository", "userBskyRepository"],
-    userRepositoryFactory,
-  )
   .service("oauthStateStore", ["db"], stateStoreFactory)
   .service("oauthSessionStore", ["db"], sessionStoreFactory)
   .service(
     "oauthClient",
     ["oauthStateStore", "oauthSessionStore"],
     oauthClientFactory,
+  )
+  .service(
+    "identityResolver",
+    ["oauthClient"],
+    ({ oauthClient }) => oauthClient.identityResolver,
+  )
+  .service(
+    "userBskyRepository",
+    ["identityResolver"],
+    userBskyRepositoryFactory,
+  )
+  .service(
+    "userRepository",
+    ["userDbRepository", "userBskyRepository"],
+    userRepositoryFactory,
   )
   .service("atpassportClient", atpassportClientFactory)
   .service("cookieSessionStorage", cookieSessionStorageFactory)

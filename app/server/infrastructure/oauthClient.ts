@@ -43,6 +43,8 @@ const keyset = isProduction
   ? [await JoseKey.fromImportable(privateKey, "key1")]
   : undefined;
 
+export type IdentityResolver = NodeOAuthClient["identityResolver"];
+
 export interface IOAuthClient {
   authorize: (handle: string) => Promise<URL>;
   callback: (params: URLSearchParams) => Promise<Did>;
@@ -50,6 +52,7 @@ export interface IOAuthClient {
   revoke: (did: Did) => Promise<void>;
   clientMetadata: NodeOAuthClient["clientMetadata"];
   jwks: NodeOAuthClient["jwks"];
+  identityResolver: IdentityResolver;
 }
 
 export const oauthClientFactory = ({
@@ -82,6 +85,9 @@ export const oauthClientFactory = ({
     },
     get jwks() {
       return client.jwks;
+    },
+    get identityResolver() {
+      return client.identityResolver;
     },
   };
 };

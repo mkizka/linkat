@@ -1,13 +1,13 @@
 import { asDid } from "@atproto/did";
 import { CommitType, EventType } from "@skyware/jetstream";
-import { http, HttpResponse } from "msw";
 import { Pool } from "pg";
+import { mock } from "vitest-mock-extended";
 
 import { mockedLogger } from "~/mocks/logger";
-import { server } from "~/mocks/server";
 import { boardRepositoryFactory } from "~/server/infrastructure/boardRepository";
 import { cursorRepositoryFactory } from "~/server/infrastructure/cursorRepository";
 import { db } from "~/server/infrastructure/drizzle";
+import type { IdentityResolver } from "~/server/infrastructure/oauthClient";
 import { userBskyRepositoryFactory } from "~/server/infrastructure/userBskyRepository";
 import { userDbRepositoryFactory } from "~/server/infrastructure/userDbRepository";
 import { userRepositoryFactory } from "~/server/infrastructure/userRepository";
@@ -17,6 +17,8 @@ import { env } from "~/utils/env";
 
 import { jetstreamServiceFactory } from "./jetstream";
 
+const identityResolver = mock<IdentityResolver>();
+
 const jetstreamService = jetstreamServiceFactory({
   cursorRepository: cursorRepositoryFactory({ db }),
   boardService: boardServiceFactory({
@@ -25,7 +27,7 @@ const jetstreamService = jetstreamServiceFactory({
   userService: userServiceFactory({
     userRepository: userRepositoryFactory({
       userDbRepository: userDbRepositoryFactory({ db }),
-      userBskyRepository: userBskyRepositoryFactory(),
+      userBskyRepository: userBskyRepositoryFactory({ identityResolver }),
     }),
   }),
 });
@@ -53,15 +55,10 @@ const dummyEvent = (did: string) =>
 
 describe("jetstreamService", () => {
   describe("handleCreateOrUpdate", () => {
-    test("ユーザーがDBになくBlueskyからも取得できない場合、エラーにせずボードの保存をスキップする", async () => {
+    test("ユーザーがDBになくDIDも解決できない場合、エラーにせずボードの保存をスキップする", async () => {
       // arrange
       const did = "did:plc:notfounduser0000000000000";
-      server.use(
-        http.get(
-          "https://public.api.example.com/xrpc/app.bsky.actor.getProfile",
-          () => HttpResponse.json("", { status: 500 }),
-        ),
-      );
+      identityResolver.resolve.mockRejectedValue(new Error("not found"));
       // act
       const actual = jetstreamService.handleCreateOrUpdate(dummyEvent(did));
       // assert
