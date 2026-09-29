@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { data, redirect, useBeforeUnload, useBlocker } from "react-router";
+import { redirect, useBeforeUnload, useBlocker } from "react-router";
 import { setToast } from "remix-toast/middleware";
 
 import { Main } from "~/components/layout";
@@ -30,7 +30,7 @@ export async function action({ request, context }: Route.ActionArgs) {
       message: i18next.t("edit.invalid-session-error-message"),
       type: "error",
     });
-    return data(null, {
+    return redirect("/login", {
       headers: {
         "Set-Cookie": await di.sessionService.destroySession(request),
       },
