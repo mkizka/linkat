@@ -9,6 +9,9 @@ import type {
 import {
   atprotoLoopbackClientMetadata,
   NodeOAuthClient,
+  TokenInvalidError,
+  TokenRefreshError,
+  TokenRevokedError,
 } from "@atproto/oauth-client-node";
 
 import { env, isProduction } from "~/utils/env";
@@ -46,7 +49,7 @@ const keyset = isProduction
 export interface IOAuthClient {
   authorize: (handle: string) => Promise<URL>;
   callback: (params: URLSearchParams) => Promise<Did>;
-  restore: (did: Did) => Promise<OAuthSession>;
+  restore: (did: Did) => Promise<OAuthSession | null>;
   revoke: (did: Did) => Promise<void>;
   clientMetadata: NodeOAuthClient["clientMetadata"];
   jwks: NodeOAuthClient["jwks"];
@@ -75,7 +78,20 @@ export const oauthClientFactory = ({
       const { session } = await client.callback(params);
       return session.did;
     },
-    restore: (did) => client.restore(did),
+    async restore(did) {
+      try {
+        return await client.restore(did);
+      } catch (error) {
+        if (
+          error instanceof TokenRefreshError ||
+          error instanceof TokenRevokedError ||
+          error instanceof TokenInvalidError
+        ) {
+          return null;
+        }
+        throw error;
+      }
+    },
     revoke: (did) => client.revoke(did),
     get clientMetadata() {
       return client.clientMetadata;

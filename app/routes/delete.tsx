@@ -24,7 +24,11 @@ export async function action({ request, context }: Route.ActionArgs) {
       message: i18next.t("delete.invalid-session-error-message"),
       type: "error",
     });
-    return redirect("/");
+    return redirect("/", {
+      headers: {
+        "Set-Cookie": await di.sessionService.destroySession(request),
+      },
+    });
   }
   try {
     await di.boardService.unpublishBoard(agent, userDid);

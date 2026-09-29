@@ -55,7 +55,7 @@ export const sessionServiceFactory = ({
         return null;
       }
       const oauthSession = await oauthClient.restore(userDid);
-      return new LinkatAgent(oauthSession);
+      return oauthSession && new LinkatAgent(oauthSession);
     },
   };
 };
