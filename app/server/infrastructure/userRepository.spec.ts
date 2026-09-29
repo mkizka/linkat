@@ -18,13 +18,6 @@ const userRepository = userRepositoryFactory({
   userBskyRepository: userBskyRepositoryFactory({ identityResolver }),
 });
 
-const mockIdentity = () => {
-  identityResolver.resolve.mockResolvedValue({
-    did: "did:plc:dfbe2uvzisfdxwscnwcxdta6",
-    handle: "example.com",
-  });
-};
-
 const dummyBlueskyProfile = {
   did: "did:plc:dfbe2uvzisfdxwscnwcxdta6",
   handle: "example.com",
@@ -63,7 +56,10 @@ describe("userRepository", () => {
     });
     test("DBにユーザーがいないとき、Blueskyから取得して作成できる", async () => {
       // arrange
-      mockIdentity();
+      identityResolver.resolve.mockResolvedValue({
+        did: "did:plc:dfbe2uvzisfdxwscnwcxdta6",
+        handle: "example.com",
+      });
       server.use(
         http.get(
           "https://public.api.example.com/xrpc/app.bsky.actor.getProfile",
@@ -92,7 +88,10 @@ describe("userRepository", () => {
         createdAt: new Date("2024-01-01T00:00:00.000Z"),
         updatedAt: new Date("2024-01-01T00:00:00.000Z"),
       });
-      mockIdentity();
+      identityResolver.resolve.mockResolvedValue({
+        did: "did:plc:dfbe2uvzisfdxwscnwcxdta6",
+        handle: "example.com",
+      });
       server.use(
         http.get(
           "https://public.api.example.com/xrpc/app.bsky.actor.getProfile",
@@ -116,7 +115,10 @@ describe("userRepository", () => {
     });
     test("DBにユーザーがいないとき、プロフィールが取得できなくてもDIDとhandleだけで作成できる", async () => {
       // arrange
-      mockIdentity();
+      identityResolver.resolve.mockResolvedValue({
+        did: "did:plc:dfbe2uvzisfdxwscnwcxdta6",
+        handle: "example.com",
+      });
       server.use(
         http.get(
           "https://public.api.example.com/xrpc/app.bsky.actor.getProfile",
