@@ -9,9 +9,7 @@ import type {
 import {
   atprotoLoopbackClientMetadata,
   NodeOAuthClient,
-  TokenInvalidError,
   TokenRefreshError,
-  TokenRevokedError,
 } from "@atproto/oauth-client-node";
 
 import { env, isProduction } from "~/utils/env";
@@ -88,11 +86,7 @@ export const oauthClientFactory = ({
       try {
         return await client.restore(did);
       } catch (error) {
-        if (
-          error instanceof TokenRefreshError ||
-          error instanceof TokenRevokedError ||
-          error instanceof TokenInvalidError
-        ) {
+        if (error instanceof TokenRefreshError) {
           throw new OAuthSessionInvalidError(error);
         }
         throw error;
