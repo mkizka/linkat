@@ -1,0 +1,61 @@
+import { asDid } from "@atproto/did";
+import { mock } from "vitest-mock-extended";
+
+import { mockedLogger } from "~/mocks/logger";
+import type { ICookieSessionStorage } from "~/server/infrastructure/cookieSessionStorage";
+import type { IOAuthClient } from "~/server/infrastructure/oauthClient";
+import type { IUserService } from "~/server/service/userService/user";
+
+import { sessionServiceFactory } from "./session";
+
+const cookieSessionStorage = mock<ICookieSessionStorage>();
+const oauthClient = mock<IOAuthClient>();
+
+const sessionService = sessionServiceFactory({
+  cookieSessionStorage,
+  oauthClient,
+  userService: mock<IUserService>(),
+});
+
+const did = asDid("did:plc:test");
+const request = new Request("http://localhost/logout", {
+  headers: { Cookie: "session=value" },
+});
+
+describe("sessionService", () => {
+  describe("destroySession", () => {
+    beforeEach(() => {
+      vi.resetAllMocks();
+      cookieSessionStorage.destroy.mockResolvedValue("destroyed");
+    });
+    test("OAuthセッションを失効させてCookieを破棄する", async () => {
+      // arrange
+      cookieSessionStorage.getDid.mockResolvedValue(did);
+      oauthClient.revoke.mockResolvedValue();
+      // act
+      const actual = await sessionService.destroySession(request);
+      // assert
+      expect(oauthClient.revoke).toHaveBeenCalledWith(did);
+      expect(actual).toBe("destroyed");
+    });
+    test("ログインしていなければ失効させずにCookieを破棄する", async () => {
+      // arrange
+      cookieSessionStorage.getDid.mockResolvedValue(null);
+      // act
+      const actual = await sessionService.destroySession(request);
+      // assert
+      expect(oauthClient.revoke).not.toHaveBeenCalled();
+      expect(actual).toBe("destroyed");
+    });
+    test("失効に失敗してもCookieを破棄する", async () => {
+      // arrange
+      cookieSessionStorage.getDid.mockResolvedValue(did);
+      oauthClient.revoke.mockRejectedValue(new Error("failed"));
+      // act
+      const actual = await sessionService.destroySession(request);
+      // assert
+      expect(mockedLogger.error).toHaveBeenCalled();
+      expect(actual).toBe("destroyed");
+    });
+  });
+});
