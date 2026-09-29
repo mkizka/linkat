@@ -46,10 +46,16 @@ const keyset = isProduction
   ? [await JoseKey.fromImportable(privateKey, "key1")]
   : undefined;
 
+export class OAuthSessionInvalidError extends Error {
+  constructor(cause: unknown) {
+    super("OAuthセッションが無効です", { cause });
+  }
+}
+
 export interface IOAuthClient {
   authorize: (handle: string) => Promise<URL>;
   callback: (params: URLSearchParams) => Promise<Did>;
-  restore: (did: Did) => Promise<OAuthSession | null>;
+  restore: (did: Did) => Promise<OAuthSession>;
   revoke: (did: Did) => Promise<void>;
   clientMetadata: NodeOAuthClient["clientMetadata"];
   jwks: NodeOAuthClient["jwks"];
@@ -87,7 +93,7 @@ export const oauthClientFactory = ({
           error instanceof TokenRevokedError ||
           error instanceof TokenInvalidError
         ) {
-          return null;
+          throw new OAuthSessionInvalidError(error);
         }
         throw error;
       }
