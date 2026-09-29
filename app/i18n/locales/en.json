@@ -98,7 +98,7 @@
   "delete": {
     "invalid-session-error-message": "The login information was invalid",
     "delete-board-error-message": "Failed to delete the board",
-    "delete-delayed-warning-message": "The deletion is taking a while to appear. Please wait a moment and check again."
+    "delete-delayed-warning-message": "The deletion is taking a while to appear. Please check again after a while."
   },
   "delete-board-button": {
     "text": "Delete your board",
