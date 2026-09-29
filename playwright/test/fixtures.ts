@@ -4,7 +4,9 @@ import { PORTS } from "../server/constants";
 
 export type TestSize = "medium" | "large";
 
-const authorize = async (page: Page, handle: string, password: string) => {
+type Account = { handle: string; password: string };
+
+const authorize = async (page: Page, { handle, password }: Account) => {
   await page.goto("/login");
   await page.getByTestId("login-form__handle").fill(handle);
   await page.getByTestId("login-form__submit").click();
@@ -15,7 +17,7 @@ const authorize = async (page: Page, handle: string, password: string) => {
   await page.waitForURL((url) => url.pathname === "/edit");
 };
 
-const loginWithNewAccount = async (page: Page) => {
+const createAccount = async (): Promise<Account> => {
   const handle = `u${crypto.randomUUID().slice(0, 8)}.test`;
   const password = crypto.randomUUID();
   const response = await fetch(
@@ -33,30 +35,31 @@ const loginWithNewAccount = async (page: Page) => {
   if (!response.ok) {
     throw new Error(`アカウントの作成に失敗しました: ${await response.text()}`);
   }
-  await authorize(page, handle, password);
+  return { handle, password };
 };
 
-const loginWithLargeTestAccount = async (page: Page) => {
+const getLargeTestAccount = (): Account => {
   const { LARGE_TEST_HANDLE, LARGE_TEST_PASSWORD } = process.env;
   if (!LARGE_TEST_HANDLE || !LARGE_TEST_PASSWORD) {
     throw new Error(
       "環境変数LARGE_TEST_HANDLE, LARGE_TEST_PASSWORDを設定してください",
     );
   }
-  await authorize(page, LARGE_TEST_HANDLE, LARGE_TEST_PASSWORD);
+  return { handle: LARGE_TEST_HANDLE, password: LARGE_TEST_PASSWORD };
 };
 
 export const test = base.extend<
-  { login: () => Promise<void> },
+  { login: (target?: Page) => Promise<void> },
   { size: TestSize }
 >({
   size: ["medium", { option: true, scope: "worker" }],
   login: async ({ page, size }, use) => {
-    await use(() =>
-      size === "medium"
-        ? loginWithNewAccount(page)
-        : loginWithLargeTestAccount(page),
-    );
+    let account: Account | undefined;
+    await use(async (target = page) => {
+      account ??=
+        size === "medium" ? await createAccount() : getLargeTestAccount();
+      await authorize(target, account);
+    });
   },
 });
 
