@@ -1,6 +1,6 @@
 import type { Page } from "@playwright/test";
 
-import { expect, test } from "./fixtures";
+import { authorize, createAccount, expect, test } from "./fixtures";
 
 const expectRedirectedToLogin = async (page: Page) => {
   await page.waitForURL((url) => url.pathname === "/login");
@@ -11,13 +11,14 @@ const expectRedirectedToLogin = async (page: Page) => {
 };
 
 test.describe("別のデバイスでログアウトした後", () => {
-  test.beforeEach(async ({ page, browser, login }) => {
+  test.beforeEach(async ({ page, browser }) => {
     const otherPage = await (await browser.newContext()).newPage();
     page.on("dialog", (dialog) => dialog.accept());
     otherPage.on("dialog", (dialog) => dialog.accept());
 
-    await login();
-    await login(otherPage);
+    const { handle, password } = await createAccount();
+    await authorize(page, handle, password);
+    await authorize(otherPage, handle, password);
     await otherPage.goto("/settings");
     await otherPage.getByTestId("logout-button").click();
     await otherPage.waitForURL((url) => url.pathname === "/");
