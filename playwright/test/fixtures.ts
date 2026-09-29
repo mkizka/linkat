@@ -49,17 +49,17 @@ const getLargeTestAccount = (): Account => {
 };
 
 export const test = base.extend<
-  { login: (target?: Page) => Promise<void> },
+  { account: Account; login: (target?: Page) => Promise<void> },
   { size: TestSize }
 >({
   size: ["medium", { option: true, scope: "worker" }],
-  login: async ({ page, size }, use) => {
-    let account: Account | undefined;
-    await use(async (target = page) => {
-      account ??=
-        size === "medium" ? await createAccount() : getLargeTestAccount();
-      await authorize(target, account);
-    });
+  account: async ({ size }, use) => {
+    await use(
+      size === "medium" ? await createAccount() : getLargeTestAccount(),
+    );
+  },
+  login: async ({ page, account }, use) => {
+    await use((target = page) => authorize(target, account));
   },
 });
 
