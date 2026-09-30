@@ -16,7 +16,7 @@ export interface IUserBskyRepository {
 const profileSchema = z.object({
   displayName: z.string().optional(),
   description: z.string().optional(),
-  avatar: z.object({ ref: z.object({ $link: z.string() }) }).optional(),
+  avatar: z.object({ ref: z.custom<{ toString: () => string }>() }).optional(),
 });
 
 const fetchProfile = async ({ did, pds }: { did: Did; pds: string }) => {
@@ -26,7 +26,7 @@ const fetchProfile = async ({ did, pds }: { did: Did; pds: string }) => {
     repo: did,
   });
   const profile = profileSchema.parse(response.body.value);
-  const avatarCid = profile.avatar?.ref.$link;
+  const avatarCid = profile.avatar?.ref.toString();
   return {
     displayName: profile.displayName ?? null,
     description: profile.description ?? null,

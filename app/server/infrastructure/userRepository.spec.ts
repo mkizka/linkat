@@ -28,7 +28,9 @@ const dummyProfileRecord = {
     description: "Test user 1",
     avatar: {
       $type: "blob",
-      ref: { $link: "bafkreiavatar" },
+      ref: {
+        $link: "bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku",
+      },
       mimeType: "image/png",
       size: 1000,
     },
@@ -69,7 +71,7 @@ describe("userRepository", () => {
       const actual = await userRepository.findByHandleOrDid("example.com");
       // assert
       expect(actual).toEqual({
-        avatar: `${pds}/xrpc/com.atproto.sync.getBlob?did=did:plc:dfbe2uvzisfdxwscnwcxdta6&cid=bafkreiavatar`,
+        avatar: `${pds}/xrpc/com.atproto.sync.getBlob?did=did:plc:dfbe2uvzisfdxwscnwcxdta6&cid=bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku`,
         description: "Test user 1",
         did: "did:plc:dfbe2uvzisfdxwscnwcxdta6",
         displayName: "Alice",
@@ -103,7 +105,7 @@ describe("userRepository", () => {
       );
       // assert
       expect(actual).toEqual({
-        avatar: `${pds}/xrpc/com.atproto.sync.getBlob?did=did:plc:dfbe2uvzisfdxwscnwcxdta6&cid=bafkreiavatar`,
+        avatar: `${pds}/xrpc/com.atproto.sync.getBlob?did=did:plc:dfbe2uvzisfdxwscnwcxdta6&cid=bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku`,
         description: "Test user 1",
         did: "did:plc:dfbe2uvzisfdxwscnwcxdta6",
         displayName: "Alice",
