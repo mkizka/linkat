@@ -3,11 +3,11 @@ import { eq } from "drizzle-orm";
 
 import { User } from "~/models/user";
 import type { Db } from "~/server/infrastructure/drizzle";
-import { boardTable, userTable } from "~/server/infrastructure/schema";
+import { userTable } from "~/server/infrastructure/schema";
 
 export interface IUserDbRepository {
   findByDid: (did: Did) => Promise<User | null>;
-  saveIfBoardExists: (user: User) => Promise<User | null>;
+  save: (user: User) => Promise<User>;
 }
 
 export const userDbRepositoryFactory = ({
@@ -22,14 +22,7 @@ export const userDbRepositoryFactory = ({
       .where(eq(userTable.did, did));
     return row ? new User(row) : null;
   },
-  async saveIfBoardExists(user) {
-    const [board] = await db
-      .select({ id: boardTable.id })
-      .from(boardTable)
-      .where(eq(boardTable.userDid, user.did));
-    if (!board) {
-      return null;
-    }
+  async save(user) {
     const data = {
       did: user.did,
       avatar: user.avatar,

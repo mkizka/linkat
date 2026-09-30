@@ -35,3 +35,21 @@ describe("isOwnedBy", () => {
     },
   );
 });
+
+describe("withHandle", () => {
+  test("handleだけを差し替えたUserを返す", () => {
+    // arrange
+    const createdAt = new Date("2024-01-01T00:00:00.000Z");
+    const user = createUser({ handle: "old.example.com", createdAt });
+    // act
+    const actual = user.withHandle("new.example.com");
+    // assert
+    expect(actual).toEqual(
+      createUser({
+        handle: "new.example.com",
+        createdAt,
+        updatedAt: user.updatedAt,
+      }),
+    );
+  });
+});

@@ -1,16 +1,17 @@
 import { asDid } from "@atproto/did";
 import { CommitType, EventType } from "@skyware/jetstream";
+import { http, HttpResponse } from "msw";
 import { Pool } from "pg";
 import { mock } from "vitest-mock-extended";
 
 import { mockedLogger } from "~/mocks/logger";
+import { server } from "~/mocks/server";
 import { boardRepositoryFactory } from "~/server/infrastructure/boardRepository";
 import { cursorRepositoryFactory } from "~/server/infrastructure/cursorRepository";
 import { db } from "~/server/infrastructure/drizzle";
 import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
 import { userBskyRepositoryFactory } from "~/server/infrastructure/userBskyRepository";
 import { userDbRepositoryFactory } from "~/server/infrastructure/userDbRepository";
-import { userRepositoryFactory } from "~/server/infrastructure/userRepository";
 import { boardServiceFactory } from "~/server/service/boardService/board";
 import { userServiceFactory } from "~/server/service/userService/user";
 import { env } from "~/utils/env";
@@ -25,11 +26,9 @@ const jetstreamService = jetstreamServiceFactory({
     boardRepository: boardRepositoryFactory({ db }),
   }),
   userService: userServiceFactory({
-    userRepository: userRepositoryFactory({
-      identityResolver,
-      userDbRepository: userDbRepositoryFactory({ db }),
-      userBskyRepository: userBskyRepositoryFactory({ identityResolver }),
-    }),
+    identityResolver,
+    userDbRepository: userDbRepositoryFactory({ db }),
+    userBskyRepository: userBskyRepositoryFactory({ identityResolver }),
   }),
 });
 
@@ -56,6 +55,32 @@ const dummyEvent = (did: string) =>
 
 describe("jetstreamService", () => {
   describe("handleCreateOrUpdate", () => {
+    test("DBにユーザーがいなければBlueskyから取得して作成し、ボードを保存する", async () => {
+      // arrange
+      const did = "did:plc:newuser000000000000000000";
+      identityResolver.resolve.mockResolvedValue({
+        did: asDid(did),
+        handle: "new.example.com",
+      });
+      server.use(
+        http.get(
+          "https://public.api.example.com/xrpc/app.bsky.actor.getProfile",
+          () => HttpResponse.json({ did, handle: "new.example.com" }),
+        ),
+      );
+      // act
+      await jetstreamService.handleCreateOrUpdate(dummyEvent(did));
+      // assert
+      const users = await pool.query(`SELECT * FROM "User" WHERE did = $1`, [
+        did,
+      ]);
+      expect(users.rows).toHaveLength(1);
+      const boards = await pool.query(
+        `SELECT * FROM "Board" WHERE "userDid" = $1`,
+        [did],
+      );
+      expect(boards.rows).toHaveLength(1);
+    });
     test("ユーザーがDBになくDIDも解決できない場合、エラーにせずボードの保存をスキップする", async () => {
       // arrange
       const did = "did:plc:notfounduser0000000000000";

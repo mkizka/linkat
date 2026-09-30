@@ -13,7 +13,6 @@ import {
 } from "~/server/infrastructure/oauthStorage";
 import { userBskyRepositoryFactory } from "~/server/infrastructure/userBskyRepository";
 import { userDbRepositoryFactory } from "~/server/infrastructure/userDbRepository";
-import { userRepositoryFactory } from "~/server/infrastructure/userRepository";
 import { atpassportServiceFactory } from "~/server/service/atpassportService/atpassport";
 import { authServiceFactory } from "~/server/service/authService/auth";
 import { boardServiceFactory } from "~/server/service/boardService/board";
@@ -39,17 +38,16 @@ export const di = await createRegistry()
     ["identityResolver"],
     userBskyRepositoryFactory,
   )
-  .service(
-    "userRepository",
-    ["identityResolver", "userDbRepository", "userBskyRepository"],
-    userRepositoryFactory,
-  )
   .service("atpassportClient", atpassportClientFactory)
   .service("cookieSessionStorage", cookieSessionStorageFactory)
-  .service("userService", ["userRepository"], userServiceFactory)
+  .service(
+    "userService",
+    ["identityResolver", "userDbRepository", "userBskyRepository"],
+    userServiceFactory,
+  )
   .service("boardService", ["boardRepository"], boardServiceFactory)
   .service("atpassportService", ["atpassportClient"], atpassportServiceFactory)
-  .service("authService", ["oauthClient"], authServiceFactory)
+  .service("authService", ["oauthClient", "userService"], authServiceFactory)
   .service(
     "sessionService",
     ["cookieSessionStorage", "oauthClient", "userService"],

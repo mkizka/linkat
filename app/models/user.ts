@@ -27,6 +27,18 @@ export class User {
     this.updatedAt = props.updatedAt;
   }
 
+  withHandle(handle: string) {
+    return new User({
+      did: this.did,
+      avatar: this.avatar,
+      description: this.description,
+      displayName: this.displayName,
+      handle,
+      createdAt: this.createdAt,
+      updatedAt: this.updatedAt,
+    });
+  }
+
   isOwnedBy(viewerDid: Did | null) {
     return this.did === viewerDid;
   }
