@@ -31,7 +31,7 @@ function AvatarPlaceholder() {
 }
 
 export type ProfileCardProps = {
-  user: Pick<User, "avatar" | "displayName" | "handle">;
+  user: Pick<User, "did" | "avatar" | "displayName" | "handle">;
   url: string;
   showEditButton?: boolean;
 };
@@ -80,7 +80,7 @@ export function ProfileCard({ user, url, showEditButton }: ProfileCardProps) {
             ) : (
               <a
                 className="btn-bluesky btn text-white"
-                href={`https://bsky.app/profile/${user.handle}`}
+                href={`https://bsky.app/profile/${user.did}`}
                 target="_blank"
                 rel="noreferrer"
                 data-umami-event="click-bsky-link"

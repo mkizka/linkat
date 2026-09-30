@@ -171,14 +171,29 @@ describe("userService", () => {
         updatedAt: expect.any(Date),
       });
     });
-    test("DIDを解決できなければ保存せずnullを返す", async () => {
+    test("DIDを解決できなくてもhandleを無効として作成する", async () => {
       // arrange
       identityResolver.resolve.mockResolvedValue(null);
+      server.use(
+        http.get(
+          "https://public.api.example.com/xrpc/app.bsky.actor.getProfile",
+          () => HttpResponse.json(dummyBlueskyProfile),
+        ),
+      );
       // act
       const actual = await userService.syncUser(did);
       // assert
-      expect(actual).toBeNull();
-      expect(await userDbRepository.findByDid(did)).toBeNull();
+      const expected = {
+        did,
+        avatar: "https://example.com/avatar.png",
+        description: "Test user 1",
+        displayName: "Alice",
+        handle: "handle.invalid",
+        createdAt: expect.any(Date),
+        updatedAt: expect.any(Date),
+      };
+      expect(actual).toEqual(expected);
+      expect(await userDbRepository.findByDid(did)).toEqual(expected);
     });
   });
 });

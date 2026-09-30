@@ -1,5 +1,7 @@
 import { asDid, type Did } from "@atproto/did";
 
+export const INVALID_HANDLE = "handle.invalid";
+
 export class User {
   readonly did: Did;
   readonly avatar: string | null;
@@ -25,6 +27,10 @@ export class User {
     this.handle = props.handle;
     this.createdAt = props.createdAt;
     this.updatedAt = props.updatedAt;
+  }
+
+  get handleOrDid() {
+    return this.handle === INVALID_HANDLE ? this.did : this.handle;
   }
 
   withHandle(handle: string) {

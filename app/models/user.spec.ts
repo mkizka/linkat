@@ -53,3 +53,21 @@ describe("withHandle", () => {
     );
   });
 });
+
+describe("handleOrDid", () => {
+  test.each`
+    handle              | expected           | description
+    ${"example.com"}    | ${"example.com"}   | ${"有効なhandleならhandle"}
+    ${"handle.invalid"} | ${"did:plc:dummy"} | ${"無効なhandleならDID"}
+  `(
+    "$description",
+    ({ handle, expected }: { handle: string; expected: string }) => {
+      // arrange
+      const user = createUser({ handle });
+      // act
+      const actual = user.handleOrDid;
+      // assert
+      expect(actual).toBe(expected);
+    },
+  );
+});

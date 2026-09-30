@@ -34,8 +34,8 @@ export async function loader({ request, params, context }: Route.LoaderArgs) {
     board: { cards: board.cards },
     isMine: user.isOwnedBy(userDid),
     title: `${title} | Linkat`,
-    url: `${env.PUBLIC_URL}/${user.handle}`,
-    ogImageUrl: `${env.PUBLIC_URL}/${user.handle}/og`,
+    url: `${env.PUBLIC_URL}/${user.handleOrDid}`,
+    ogImageUrl: `${env.PUBLIC_URL}/${user.handleOrDid}/og`,
     atUri: `at://${user.did}/blue.linkat.board/self`,
   };
 }

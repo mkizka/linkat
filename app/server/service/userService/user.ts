@@ -7,7 +7,7 @@ import type { IUserDbRepository } from "~/server/infrastructure/userDbRepository
 
 export interface IUserService {
   findUser: (params: { handleOrDid: string }) => Promise<User | null>;
-  syncUser: (did: Did) => Promise<User | null>;
+  syncUser: (did: Did) => Promise<User>;
 }
 
 export const userServiceFactory = ({
@@ -35,9 +35,6 @@ export const userServiceFactory = ({
   },
   async syncUser(did) {
     const fetched = await userBskyRepository.findByDid(did);
-    if (!fetched) {
-      return null;
-    }
     return await userDbRepository.save(fetched);
   },
 });

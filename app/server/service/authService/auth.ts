@@ -21,10 +21,7 @@ export const authServiceFactory = ({
   async handleCallback(url) {
     const params = new URL(url).searchParams;
     const did = await oauthClient.callback(params);
-    const user = await userService.syncUser(did);
-    if (!user) {
-      throw new Error("ログインしたユーザーの情報を取得できませんでした");
-    }
+    await userService.syncUser(did);
     return did;
   },
   getClientMetadata: () => oauthClient.clientMetadata,

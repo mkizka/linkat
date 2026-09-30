@@ -4,7 +4,6 @@ import { http, HttpResponse } from "msw";
 import { Pool } from "pg";
 import { mock } from "vitest-mock-extended";
 
-import { mockedLogger } from "~/mocks/logger";
 import { server } from "~/mocks/server";
 import { boardRepositoryFactory } from "~/server/infrastructure/boardRepository";
 import { cursorRepositoryFactory } from "~/server/infrastructure/cursorRepository";
@@ -81,23 +80,30 @@ describe("jetstreamService", () => {
       );
       expect(boards.rows).toHaveLength(1);
     });
-    test("ユーザーがDBになくDIDも解決できない場合、エラーにせずボードの保存をスキップする", async () => {
+    test("DIDを解決できずプロフィールも取得できない場合も、ユーザーを作成してボードを保存する", async () => {
       // arrange
-      const did = "did:plc:notfounduser0000000000000";
+      const did = "did:plc:unresolvable00000000000000";
       identityResolver.resolve.mockResolvedValue(null);
-      // act
-      const actual = jetstreamService.handleCreateOrUpdate(dummyEvent(did));
-      // assert
-      await expect(actual).resolves.toBeUndefined();
-      expect(mockedLogger.warn).toHaveBeenCalledWith(
-        { did },
-        "ユーザーが見つからないためボードの更新をスキップしました",
+      server.use(
+        http.get(
+          "https://public.api.example.com/xrpc/app.bsky.actor.getProfile",
+          () => HttpResponse.json("", { status: 500 }),
+        ),
       );
-      const { rows } = await pool.query(
+      // act
+      await jetstreamService.handleCreateOrUpdate(dummyEvent(did));
+      // assert
+      const users = await pool.query(`SELECT * FROM "User" WHERE did = $1`, [
+        did,
+      ]);
+      expect(users.rows).toEqual([
+        expect.objectContaining({ did, handle: "handle.invalid" }),
+      ]);
+      const boards = await pool.query(
         `SELECT * FROM "Board" WHERE "userDid" = $1`,
         [did],
       );
-      expect(rows).toHaveLength(0);
+      expect(boards.rows).toHaveLength(1);
     });
   });
 });

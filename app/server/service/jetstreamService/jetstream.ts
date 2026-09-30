@@ -55,13 +55,6 @@ export const jetstreamServiceFactory = ({
     }
     const board = new Board(event.did, cards);
     const user = await userService.syncUser(event.did);
-    if (!user) {
-      logger.warn(
-        { did: event.did },
-        "ユーザーが見つからないためボードの更新をスキップしました",
-      );
-      return;
-    }
     await boardService.saveBoard(board);
     logger.info({ user, board }, "ボードを更新しました");
   };
