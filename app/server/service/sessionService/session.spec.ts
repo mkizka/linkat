@@ -1,9 +1,13 @@
 import { asDid } from "@atproto/did";
+import type { OAuthSession } from "@atproto/oauth-client-node";
 import { mock } from "vitest-mock-extended";
 
 import { mockedLogger } from "~/mocks/logger";
 import type { ICookieSessionStorage } from "~/server/infrastructure/cookieSessionStorage";
-import type { IOAuthClient } from "~/server/infrastructure/oauthClient";
+import {
+  type IOAuthClient,
+  OAuthSessionInvalidError,
+} from "~/server/infrastructure/oauthClient";
 import type { IUserService } from "~/server/service/userService/user";
 
 import { sessionServiceFactory } from "./session";
@@ -23,6 +27,40 @@ const request = new Request("http://localhost/logout", {
 });
 
 describe("sessionService", () => {
+  describe("getSessionUserDid", () => {
+    beforeEach(() => {
+      vi.resetAllMocks();
+    });
+    test("OAuthセッションを復元できればDIDを返す", async () => {
+      // arrange
+      cookieSessionStorage.getDid.mockResolvedValue(did);
+      oauthClient.restore.mockResolvedValue(mock<OAuthSession>({ did }));
+      // act
+      const actual = await sessionService.getSessionUserDid(request);
+      // assert
+      expect(actual).toBe(did);
+    });
+    test("OAuthセッションを復元できなければnullを返す", async () => {
+      // arrange
+      cookieSessionStorage.getDid.mockResolvedValue(did);
+      oauthClient.restore.mockRejectedValue(
+        new OAuthSessionInvalidError(new Error("revoked")),
+      );
+      // act
+      const actual = await sessionService.getSessionUserDid(request);
+      // assert
+      expect(actual).toBeNull();
+    });
+    test("CookieにDIDがなければ復元せずnullを返す", async () => {
+      // arrange
+      cookieSessionStorage.getDid.mockResolvedValue(null);
+      // act
+      const actual = await sessionService.getSessionUserDid(request);
+      // assert
+      expect(oauthClient.restore).not.toHaveBeenCalled();
+      expect(actual).toBeNull();
+    });
+  });
   describe("destroySession", () => {
     beforeEach(() => {
       vi.resetAllMocks();

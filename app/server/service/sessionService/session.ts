@@ -29,15 +29,34 @@ export const sessionServiceFactory = ({
   oauthClient: IOAuthClient;
   userService: IUserService;
 }): ISessionService => {
-  const getSessionUserDid = (request: Request) =>
+  const getCookieDid = (request: Request) =>
     cookieSessionStorage.getDid(request.headers.get("Cookie"));
+
+  const getSessionAgent = async (request: Request) => {
+    const userDid = await getCookieDid(request);
+    if (!userDid) {
+      return null;
+    }
+    try {
+      return new LinkatAgent(await oauthClient.restore(userDid));
+    } catch (error) {
+      if (error instanceof OAuthSessionInvalidError) {
+        return null;
+      }
+      throw error;
+    }
+  };
+
+  const getSessionUserDid = async (request: Request) =>
+    (await getSessionAgent(request))?.assertDid ?? null;
 
   return {
     getSessionUserDid,
+    getSessionAgent,
     createSession: (request, did) =>
       cookieSessionStorage.commit(request.headers.get("Cookie"), did),
     async destroySession(request) {
-      const userDid = await getSessionUserDid(request);
+      const userDid = await getCookieDid(request);
       if (userDid) {
         await oauthClient.revoke(userDid).catch((error: unknown) => {
           logger.error(error, "OAuthセッションの失効に失敗しました");
@@ -51,20 +70,6 @@ export const sessionServiceFactory = ({
         return null;
       }
       return await userService.findUser({ handleOrDid: userDid });
-    },
-    async getSessionAgent(request) {
-      const userDid = await getSessionUserDid(request);
-      if (!userDid) {
-        return null;
-      }
-      try {
-        return new LinkatAgent(await oauthClient.restore(userDid));
-      } catch (error) {
-        if (error instanceof OAuthSessionInvalidError) {
-          return null;
-        }
-        throw error;
-      }
     },
   };
 };
