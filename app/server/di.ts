@@ -41,7 +41,7 @@ export const di = await createRegistry()
   )
   .service(
     "userRepository",
-    ["userDbRepository", "userBskyRepository"],
+    ["identityResolver", "userDbRepository", "userBskyRepository"],
     userRepositoryFactory,
   )
   .service("atpassportClient", atpassportClientFactory)

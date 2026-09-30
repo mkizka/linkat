@@ -1,14 +1,13 @@
 import type { Did } from "@atproto/did";
-import { desc, eq } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 
 import { User } from "~/models/user";
 import type { Db } from "~/server/infrastructure/drizzle";
-import { userTable } from "~/server/infrastructure/schema";
+import { boardTable, userTable } from "~/server/infrastructure/schema";
 
 export interface IUserDbRepository {
   findByDid: (did: Did) => Promise<User | null>;
-  findByHandle: (handle: string) => Promise<User | null>;
-  save: (user: User) => Promise<User>;
+  saveIfBoardExists: (user: User) => Promise<User | null>;
 }
 
 export const userDbRepositoryFactory = ({
@@ -20,21 +19,17 @@ export const userDbRepositoryFactory = ({
     const [row] = await db
       .select()
       .from(userTable)
-      .where(eq(userTable.did, did))
-      .orderBy(desc(userTable.createdAt))
-      .limit(1);
+      .where(eq(userTable.did, did));
     return row ? new User(row) : null;
   },
-  async findByHandle(handle) {
-    const [row] = await db
-      .select()
-      .from(userTable)
-      .where(eq(userTable.handle, handle))
-      .orderBy(desc(userTable.createdAt))
-      .limit(1);
-    return row ? new User(row) : null;
-  },
-  async save(user) {
+  async saveIfBoardExists(user) {
+    const [board] = await db
+      .select({ id: boardTable.id })
+      .from(boardTable)
+      .where(eq(boardTable.userDid, user.did));
+    if (!board) {
+      return null;
+    }
     const data = {
       did: user.did,
       avatar: user.avatar,

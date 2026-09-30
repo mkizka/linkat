@@ -9,12 +9,13 @@ import { userRepositoryFactory } from "~/server/infrastructure/userRepository";
 
 import { userServiceFactory } from "./user";
 
+const identityResolver = mock<IIdentityResolver>();
+
 const userService = userServiceFactory({
   userRepository: userRepositoryFactory({
+    identityResolver,
     userDbRepository: userDbRepositoryFactory({ db }),
-    userBskyRepository: userBskyRepositoryFactory({
-      identityResolver: mock<IIdentityResolver>(),
-    }),
+    userBskyRepository: userBskyRepositoryFactory({ identityResolver }),
   }),
 });
 

@@ -11,7 +11,7 @@ import { tryCatch } from "~/utils/tryCatch";
 const logger = createLogger("userBskyRepository");
 
 export interface IUserBskyRepository {
-  findByHandleOrDid: (handleOrDid: string) => Promise<User | null>;
+  findByDid: (did: Did) => Promise<User | null>;
 }
 
 const fetchProfile = async (did: Did) => {
@@ -25,8 +25,8 @@ export const userBskyRepositoryFactory = ({
 }: {
   identityResolver: IIdentityResolver;
 }): IUserBskyRepository => ({
-  async findByHandleOrDid(handleOrDid) {
-    const identity = await identityResolver.resolve(handleOrDid);
+  async findByDid(did) {
+    const identity = await identityResolver.resolve(did);
     if (!identity) {
       return null;
     }
