@@ -1,7 +1,6 @@
 import { http, HttpResponse } from "msw";
 import { mock } from "vitest-mock-extended";
 
-import type { ProfileViewDetailed } from "~/generated/app/bsky/actor/defs";
 import { server } from "~/mocks/server";
 import { UserFactory } from "~/server/factories/user";
 import { db } from "~/server/infrastructure/drizzle";
@@ -18,23 +17,23 @@ const userRepository = userRepositoryFactory({
   userBskyRepository: userBskyRepositoryFactory({ identityResolver }),
 });
 
-const dummyBlueskyProfile = {
-  did: "did:plc:dfbe2uvzisfdxwscnwcxdta6",
-  handle: "example.com",
-  displayName: "Alice",
-  avatar: "https://example.com/avatar.png",
-  associated: {
-    lists: 1,
-    feedgens: 1,
-    labeler: false,
+const pds = "https://pds.example.com";
+
+const dummyProfileRecord = {
+  uri: "at://did:plc:dfbe2uvzisfdxwscnwcxdta6/app.bsky.actor.profile/self",
+  cid: "bafyreigrtosreva7e5m7bwbbfsmw77gkdnieizgxwpobw5iobuck3j54xa",
+  value: {
+    $type: "app.bsky.actor.profile",
+    displayName: "Alice",
+    description: "Test user 1",
+    avatar: {
+      $type: "blob",
+      ref: { $link: "bafkreiavatar" },
+      mimeType: "image/png",
+      size: 1000,
+    },
   },
-  labels: [],
-  description: "Test user 1",
-  indexedAt: "2024-07-21T08:19:48.394Z",
-  followersCount: 2,
-  followsCount: 2,
-  postsCount: 42,
-} satisfies ProfileViewDetailed;
+};
 
 describe("userRepository", () => {
   describe("findByHandleOrDid", () => {
@@ -59,18 +58,18 @@ describe("userRepository", () => {
       identityResolver.resolve.mockResolvedValue({
         did: "did:plc:dfbe2uvzisfdxwscnwcxdta6",
         handle: "example.com",
+        pds,
       });
       server.use(
-        http.get(
-          "https://public.api.example.com/xrpc/app.bsky.actor.getProfile",
-          () => HttpResponse.json(dummyBlueskyProfile),
+        http.get(`${pds}/xrpc/com.atproto.repo.getRecord`, () =>
+          HttpResponse.json(dummyProfileRecord),
         ),
       );
       // act
       const actual = await userRepository.findByHandleOrDid("example.com");
       // assert
       expect(actual).toEqual({
-        avatar: "https://example.com/avatar.png",
+        avatar: `${pds}/xrpc/com.atproto.sync.getBlob?did=did:plc:dfbe2uvzisfdxwscnwcxdta6&cid=bafkreiavatar`,
         description: "Test user 1",
         did: "did:plc:dfbe2uvzisfdxwscnwcxdta6",
         displayName: "Alice",
@@ -91,11 +90,11 @@ describe("userRepository", () => {
       identityResolver.resolve.mockResolvedValue({
         did: "did:plc:dfbe2uvzisfdxwscnwcxdta6",
         handle: "example.com",
+        pds,
       });
       server.use(
-        http.get(
-          "https://public.api.example.com/xrpc/app.bsky.actor.getProfile",
-          () => HttpResponse.json(dummyBlueskyProfile),
+        http.get(`${pds}/xrpc/com.atproto.repo.getRecord`, () =>
+          HttpResponse.json(dummyProfileRecord),
         ),
       );
       // act
@@ -104,7 +103,7 @@ describe("userRepository", () => {
       );
       // assert
       expect(actual).toEqual({
-        avatar: "https://example.com/avatar.png",
+        avatar: `${pds}/xrpc/com.atproto.sync.getBlob?did=did:plc:dfbe2uvzisfdxwscnwcxdta6&cid=bafkreiavatar`,
         description: "Test user 1",
         did: "did:plc:dfbe2uvzisfdxwscnwcxdta6",
         displayName: "Alice",
@@ -118,11 +117,11 @@ describe("userRepository", () => {
       identityResolver.resolve.mockResolvedValue({
         did: "did:plc:dfbe2uvzisfdxwscnwcxdta6",
         handle: "example.com",
+        pds,
       });
       server.use(
-        http.get(
-          "https://public.api.example.com/xrpc/app.bsky.actor.getProfile",
-          () => HttpResponse.json("", { status: 500 }),
+        http.get(`${pds}/xrpc/com.atproto.repo.getRecord`, () =>
+          HttpResponse.json("", { status: 500 }),
         ),
       );
       // act

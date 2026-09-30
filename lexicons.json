@@ -1,7 +1,6 @@
 {
   "version": 1,
   "lexicons": [
-    "app.bsky.actor.getProfile",
     "app.bsky.feed.getFeedGenerator",
     "com.atproto.identity.resolveHandle"
   ],
@@ -9,10 +8,6 @@
     "app.bsky.actor.defs": {
       "uri": "at://did:plc:4v4y5r3lwsbtmsxhile2ljac/com.atproto.lexicon.schema/app.bsky.actor.defs",
       "cid": "bafyreidv4wr3sla7dvnhdcxw6fkg4wst4njoifeysti7mmgflfhl36yxjq"
-    },
-    "app.bsky.actor.getProfile": {
-      "uri": "at://did:plc:4v4y5r3lwsbtmsxhile2ljac/com.atproto.lexicon.schema/app.bsky.actor.getProfile",
-      "cid": "bafyreigrtosreva7e5m7bwbbfsmw77gkdnieizgxwpobw5iobuck3j54xa"
     },
     "app.bsky.actor.status": {
       "uri": "at://did:plc:4v4y5r3lwsbtmsxhile2ljac/com.atproto.lexicon.schema/app.bsky.actor.status",

@@ -10,7 +10,7 @@ const logger = createLogger("identityResolver");
 export interface IIdentityResolver {
   resolve: (
     handleOrDid: string,
-  ) => Promise<{ did: Did; handle: string } | null>;
+  ) => Promise<{ did: Did; handle: string; pds: string } | null>;
 }
 
 export const identityResolverFactory = (): IIdentityResolver => {
@@ -23,8 +23,17 @@ export const identityResolverFactory = (): IIdentityResolver => {
   return {
     async resolve(handleOrDid) {
       try {
-        const { did, handle } = await resolver.resolve(handleOrDid);
-        return { did, handle };
+        const { did, handle, didDoc } = await resolver.resolve(handleOrDid);
+        const pds = didDoc.service?.find(
+          (service) =>
+            service.id === "#atproto_pds" &&
+            service.type === "AtprotoPersonalDataServer",
+        )?.serviceEndpoint;
+        if (typeof pds !== "string") {
+          logger.warn({ did }, "PDSのURLが見つかりませんでした");
+          return null;
+        }
+        return { did, handle, pds };
       } catch (error) {
         logger.warn(error, "DIDまたはhandleの解決に失敗しました");
         return null;

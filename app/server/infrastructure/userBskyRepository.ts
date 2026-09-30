@@ -1,10 +1,9 @@
 import type { Did } from "@atproto/did";
+import { z } from "zod";
 
-import getProfile from "~/generated/app/bsky/actor/getProfile";
 import { LinkatAgent } from "~/libs/agent";
 import { User } from "~/models/user";
 import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
-import { env } from "~/utils/env";
 import { createLogger } from "~/utils/logger";
 import { tryCatch } from "~/utils/tryCatch";
 
@@ -14,10 +13,27 @@ export interface IUserBskyRepository {
   findByHandleOrDid: (handleOrDid: string) => Promise<User | null>;
 }
 
-const fetchProfile = async (did: Did) => {
-  logger.info({ actor: did }, "プロフィールを取得します");
-  const agent = LinkatAgent.credential(env.BSKY_PUBLIC_API_URL);
-  return await agent.call(getProfile, { actor: did });
+const profileSchema = z.object({
+  displayName: z.string().optional(),
+  description: z.string().optional(),
+  avatar: z.object({ ref: z.object({ $link: z.string() }) }).optional(),
+});
+
+const fetchProfile = async ({ did, pds }: { did: Did; pds: string }) => {
+  logger.info({ did, pds }, "プロフィールを取得します");
+  const agent = LinkatAgent.credential(pds);
+  const response = await agent.getRecord("app.bsky.actor.profile", "self", {
+    repo: did,
+  });
+  const profile = profileSchema.parse(response.body.value);
+  const avatarCid = profile.avatar?.ref.$link;
+  return {
+    displayName: profile.displayName ?? null,
+    description: profile.description ?? null,
+    avatar: avatarCid
+      ? `${pds}/xrpc/com.atproto.sync.getBlob?did=${did}&cid=${avatarCid}`
+      : null,
+  };
 };
 
 export const userBskyRepositoryFactory = ({
@@ -30,7 +46,7 @@ export const userBskyRepositoryFactory = ({
     if (!identity) {
       return null;
     }
-    const profile = await tryCatch(fetchProfile)(identity.did);
+    const profile = await tryCatch(fetchProfile)(identity);
     if (profile instanceof Error) {
       logger.warn(profile, "プロフィールの取得に失敗しました");
     }
