@@ -69,7 +69,7 @@ export const sessionServiceFactory = ({
       if (!userDid) {
         return null;
       }
-      return await userService.findUser({ handleOrDid: userDid });
+      return await userService.findUser({ did: userDid });
     },
   };
 };

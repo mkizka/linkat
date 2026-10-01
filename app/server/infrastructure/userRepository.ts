@@ -1,4 +1,4 @@
-import { isDid } from "@atproto/did";
+import type { Did } from "@atproto/did";
 
 import type { User } from "~/models/user";
 import type { IUserBskyRepository } from "~/server/infrastructure/userBskyRepository";
@@ -10,7 +10,7 @@ const isFresh = (user: User) =>
   user.updatedAt.getTime() > Date.now() - REFETCH_INTERVAL_MS;
 
 export interface IUserRepository {
-  findByHandleOrDid: (handleOrDid: string) => Promise<User | null>;
+  findByDid: (did: Did) => Promise<User | null>;
 }
 
 export const userRepositoryFactory = ({
@@ -20,14 +20,12 @@ export const userRepositoryFactory = ({
   userDbRepository: IUserDbRepository;
   userBskyRepository: IUserBskyRepository;
 }): IUserRepository => ({
-  async findByHandleOrDid(handleOrDid) {
-    const cached = await (isDid(handleOrDid)
-      ? userDbRepository.findByDid(handleOrDid)
-      : userDbRepository.findByHandle(handleOrDid));
+  async findByDid(did) {
+    const cached = await userDbRepository.findByDid(did);
     if (cached && isFresh(cached)) {
       return cached;
     }
-    const fetched = await userBskyRepository.findByHandleOrDid(handleOrDid);
+    const fetched = await userBskyRepository.findByDid(did);
     if (!fetched) {
       return cached;
     }

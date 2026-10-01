@@ -54,9 +54,7 @@ export const jetstreamServiceFactory = ({
       return;
     }
     const board = new Board(event.did, cards);
-    const user = await userService.findUser({
-      handleOrDid: event.did,
-    });
+    const user = await userService.findUser({ did: event.did });
     if (!user) {
       logger.warn(
         { did: event.did },

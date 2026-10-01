@@ -25,6 +25,7 @@ const jetstreamService = jetstreamServiceFactory({
     boardRepository: boardRepositoryFactory({ db }),
   }),
   userService: userServiceFactory({
+    identityResolver,
     userRepository: userRepositoryFactory({
       userDbRepository: userDbRepositoryFactory({ db }),
       userBskyRepository: userBskyRepositoryFactory({ identityResolver }),

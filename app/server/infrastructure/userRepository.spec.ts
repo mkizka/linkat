@@ -1,3 +1,4 @@
+import { asDid } from "@atproto/did";
 import { http, HttpResponse } from "msw";
 import { mock } from "vitest-mock-extended";
 
@@ -37,20 +38,12 @@ const dummyBlueskyProfile = {
 } satisfies ProfileViewDetailed;
 
 describe("userRepository", () => {
-  describe("findByHandleOrDid", () => {
-    test("didを指定してユーザーを検索できる", async () => {
+  describe("findByDid", () => {
+    test("DBのユーザーを返す", async () => {
       // arrange
       const user = await UserFactory.create();
       // act
-      const actual = await userRepository.findByHandleOrDid(user.did);
-      // assert
-      expect(actual).toEqual(user);
-    });
-    test("handleを指定してユーザーを検索できる", async () => {
-      // arrange
-      const user = await UserFactory.create();
-      // act
-      const actual = await userRepository.findByHandleOrDid(user.handle);
+      const actual = await userRepository.findByDid(asDid(user.did));
       // assert
       expect(actual).toEqual(user);
     });
@@ -67,7 +60,9 @@ describe("userRepository", () => {
         ),
       );
       // act
-      const actual = await userRepository.findByHandleOrDid("example.com");
+      const actual = await userRepository.findByDid(
+        asDid("did:plc:dfbe2uvzisfdxwscnwcxdta6"),
+      );
       // assert
       expect(actual).toEqual({
         avatar: "https://example.com/avatar.png",
@@ -99,8 +94,8 @@ describe("userRepository", () => {
         ),
       );
       // act
-      const actual = await userRepository.findByHandleOrDid(
-        "did:plc:dfbe2uvzisfdxwscnwcxdta6",
+      const actual = await userRepository.findByDid(
+        asDid("did:plc:dfbe2uvzisfdxwscnwcxdta6"),
       );
       // assert
       expect(actual).toEqual({
@@ -126,7 +121,9 @@ describe("userRepository", () => {
         ),
       );
       // act
-      const actual = await userRepository.findByHandleOrDid("example.com");
+      const actual = await userRepository.findByDid(
+        asDid("did:plc:dfbe2uvzisfdxwscnwcxdta6"),
+      );
       // assert
       expect(actual).toEqual({
         avatar: null,
@@ -149,8 +146,8 @@ describe("userRepository", () => {
       });
       identityResolver.resolve.mockResolvedValue(null);
       // act
-      const actual = await userRepository.findByHandleOrDid(
-        "did:plc:dfbe2uvzisfdxwscnwcxdta6",
+      const actual = await userRepository.findByDid(
+        asDid("did:plc:dfbe2uvzisfdxwscnwcxdta6"),
       );
       // assert
       expect(actual).toEqual(user);
@@ -159,9 +156,7 @@ describe("userRepository", () => {
       // arrange
       identityResolver.resolve.mockResolvedValue(null);
       // act
-      const actual = await userRepository.findByHandleOrDid(
-        "notfound.example.com",
-      );
+      const actual = await userRepository.findByDid(asDid("did:plc:notfound"));
       // assert
       expect(actual).toBeNull();
     });
