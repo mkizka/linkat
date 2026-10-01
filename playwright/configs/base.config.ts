@@ -11,7 +11,6 @@ try {
 export const defineBaseConfig = (size: TestSize) =>
   defineConfig<{ size: TestSize }>({
     testDir: "../test",
-    testMatch: [`*.common.spec.ts`, `*.${size}.spec.ts`],
     outputDir: `../../node_modules/.cache/playwright/${size}`,
     forbidOnly: !!process.env.CI,
     retries: process.env.CI ? 2 : 0,
