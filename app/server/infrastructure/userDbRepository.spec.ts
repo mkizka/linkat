@@ -23,7 +23,7 @@ describe("userDbRepository", () => {
       // arrange
       const user = await UserFactory.create();
       // act
-      const actual = await userDbRepository.findByDid(asDid(user.did));
+      const actual = await userDbRepository.findByDid(user.did);
       // assert
       expect(actual).toEqual(user);
     });
@@ -110,7 +110,7 @@ describe("userDbRepository", () => {
       // act
       await userDbRepository.save(updated);
       // assert
-      const actual = await userDbRepository.findByDid(asDid(existing.did));
+      const actual = await userDbRepository.findByDid(existing.did);
       expect(actual).toEqual({
         did: existing.did,
         avatarCid: updated.avatarCid,

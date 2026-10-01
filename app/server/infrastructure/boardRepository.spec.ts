@@ -23,7 +23,7 @@ describe("boardRepository", () => {
       // arrange
       const user = await UserFactory.create();
       // act
-      const actual = await boardRepository.find(asDid(user.did));
+      const actual = await boardRepository.find(user.did);
       // assert
       expect(actual).toBeNull();
     });
@@ -47,7 +47,7 @@ describe("boardRepository", () => {
       // act
       await boardRepository.save(board);
       // assert
-      const actual = await boardRepository.find(asDid(user.did));
+      const actual = await boardRepository.find(user.did);
       expect(actual).toEqual(board);
     });
     test("ボードが存在する場合は上書きする", async () => {
@@ -82,7 +82,7 @@ describe("boardRepository", () => {
       // arrange
       const user = await UserFactory.create();
       // act
-      const actual = boardRepository.delete(asDid(user.did));
+      const actual = boardRepository.delete(user.did);
       // assert
       await expect(actual).resolves.not.toThrow();
     });

@@ -11,6 +11,7 @@ import {
 
 export const userTable = pgTable("User", {
   did: text().primaryKey(),
+  avatar: text(),
   avatarCid: text(),
   description: text(),
   displayName: text(),
