@@ -169,9 +169,9 @@ importers:
       '@atpassport/client':
         specifier: 0.2.3
         version: 0.2.3(react@19.3.0)
-      '@atproto-labs/handle-resolver-node':
-        specifier: 0.2.10
-        version: 0.2.10
+      '@atproto-labs/fetch-node':
+        specifier: 0.4.0
+        version: 0.4.0
       '@atproto-labs/identity-resolver':
         specifier: 0.4.9
         version: 0.4.9

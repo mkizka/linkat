@@ -1,10 +1,10 @@
 import { type Did, DidError } from "@atproto/did";
-import { AtprotoHandleResolverNode } from "@atproto-labs/handle-resolver-node";
 import {
   createIdentityResolver,
   IdentityResolverError,
 } from "@atproto-labs/identity-resolver";
 
+import { createHandleResolver } from "~/server/infrastructure/handleResolver";
 import { env, isProduction } from "~/utils/env";
 import { createLogger } from "~/utils/logger";
 
@@ -24,8 +24,7 @@ const isNotFound = (error: unknown) =>
 export const identityResolverFactory = (): IIdentityResolver => {
   const resolver = createIdentityResolver({
     plcDirectoryUrl: env.ATPROTO_PLC_URL,
-    handleResolver:
-      env.ATPROTO_HANDLE_RESOLVER_URL ?? new AtprotoHandleResolverNode(),
+    handleResolver: env.ATPROTO_HANDLE_RESOLVER_URL ?? createHandleResolver(),
     allowHttp: !isProduction,
   });
   return {
