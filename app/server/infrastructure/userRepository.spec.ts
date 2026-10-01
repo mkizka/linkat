@@ -75,6 +75,7 @@ describe("userRepository", () => {
         did: "did:plc:dfbe2uvzisfdxwscnwcxdta6",
         displayName: "Alice",
         handle: "example.com",
+        status: "active",
         createdAt: expect.any(Date),
         updatedAt: expect.any(Date),
       });
@@ -109,6 +110,7 @@ describe("userRepository", () => {
         did: "did:plc:dfbe2uvzisfdxwscnwcxdta6",
         displayName: "Alice",
         handle: "example.com",
+        status: "active",
         createdAt: new Date("2024-01-01T00:00:00.000Z"),
         updatedAt: new Date("2024-01-01T00:10:00.000Z"),
       });
@@ -134,6 +136,7 @@ describe("userRepository", () => {
         did: "did:plc:dfbe2uvzisfdxwscnwcxdta6",
         displayName: null,
         handle: "example.com",
+        status: "active",
         createdAt: expect.any(Date),
         updatedAt: expect.any(Date),
       });

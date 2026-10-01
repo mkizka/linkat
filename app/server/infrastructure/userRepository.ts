@@ -1,4 +1,4 @@
-import { isDid } from "@atproto/did";
+import { type Did, isDid } from "@atproto/did";
 
 import type { User } from "~/models/user";
 import type { IUserBskyRepository } from "~/server/infrastructure/userBskyRepository";
@@ -11,6 +11,7 @@ const isFresh = (user: User) =>
 
 export interface IUserRepository {
   findByHandleOrDid: (handleOrDid: string) => Promise<User | null>;
+  updateStatus: (did: Did, status: string) => Promise<void>;
 }
 
 export const userRepositoryFactory = ({
@@ -32,5 +33,8 @@ export const userRepositoryFactory = ({
       return cached;
     }
     return await userDbRepository.save(fetched);
+  },
+  async updateStatus(did, status) {
+    await userDbRepository.updateStatus(did, status);
   },
 });

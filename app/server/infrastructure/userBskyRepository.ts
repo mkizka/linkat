@@ -41,6 +41,7 @@ export const userBskyRepositoryFactory = ({
       description: found?.description ?? null,
       displayName: found?.displayName ?? null,
       handle: identity.handle,
+      status: "active",
       createdAt: new Date(),
       updatedAt: new Date(),
     });

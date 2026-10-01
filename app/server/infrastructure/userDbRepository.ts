@@ -9,6 +9,7 @@ export interface IUserDbRepository {
   findByDid: (did: Did) => Promise<User | null>;
   findByHandle: (handle: string) => Promise<User | null>;
   save: (user: User) => Promise<User>;
+  updateStatus: (did: Did, status: string) => Promise<void>;
 }
 
 export const userDbRepositoryFactory = ({
@@ -52,5 +53,8 @@ export const userDbRepositoryFactory = ({
       throw new Error("ユーザーの保存に失敗しました");
     }
     return new User(row);
+  },
+  async updateStatus(did, status) {
+    await db.update(userTable).set({ status }).where(eq(userTable.did, did));
   },
 });

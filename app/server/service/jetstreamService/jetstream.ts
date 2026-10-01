@@ -1,4 +1,8 @@
-import type { CommitCreateEvent, CommitUpdateEvent } from "@skyware/jetstream";
+import type {
+  AccountEvent,
+  CommitCreateEvent,
+  CommitUpdateEvent,
+} from "@skyware/jetstream";
 import { Jetstream } from "@skyware/jetstream";
 import WebSocket from "ws";
 
@@ -20,6 +24,7 @@ export interface IJetstreamService {
       | CommitCreateEvent<"blue.linkat.board">
       | CommitUpdateEvent<"blue.linkat.board">,
   ) => Promise<void>;
+  handleAccount: (event: AccountEvent) => Promise<void>;
   startJetstream: () => Promise<void>;
 }
 
@@ -68,6 +73,11 @@ export const jetstreamServiceFactory = ({
     logger.info({ user, board }, "ボードを更新しました");
   };
 
+  const handleAccount = async ({ account }: AccountEvent) => {
+    const status = account.active ? "active" : (account.status ?? "inactive");
+    await userService.updateStatus(account.did, status);
+  };
+
   jetstream.on("open", () => {
     logger.info(`Jetstream subscription started to ${env.JETSTREAM_URL}`);
   });
@@ -78,6 +88,12 @@ export const jetstreamServiceFactory = ({
 
   jetstream.on("error", (error) => {
     logger.error(error, "Jetstreamでエラーが発生しました");
+  });
+
+  jetstream.on("account", (event) => {
+    handleAccount(event).catch((error: unknown) => {
+      logger.error(error, "アカウントの状態の更新に失敗しました");
+    });
   });
 
   jetstream.onCreate("blue.linkat.board", handleCreateOrUpdate);
@@ -91,6 +107,7 @@ export const jetstreamServiceFactory = ({
 
   return {
     handleCreateOrUpdate,
+    handleAccount,
     async startJetstream() {
       const savedCursor = await cursorRepository.load();
       if (savedCursor !== undefined) {

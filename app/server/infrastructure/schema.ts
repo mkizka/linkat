@@ -15,6 +15,7 @@ export const userTable = pgTable("User", {
   description: text(),
   displayName: text(),
   handle: text().notNull(),
+  status: text().notNull().default("active"),
   createdAt: timestamp({ precision: 3 }).notNull().defaultNow(),
   updatedAt: timestamp({ precision: 3 }).notNull(),
 });

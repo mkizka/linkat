@@ -4,6 +4,7 @@ import { Pool } from "pg";
 import { mock } from "vitest-mock-extended";
 
 import { mockedLogger } from "~/mocks/logger";
+import { UserFactory } from "~/server/factories/user";
 import { boardRepositoryFactory } from "~/server/infrastructure/boardRepository";
 import { cursorRepositoryFactory } from "~/server/infrastructure/cursorRepository";
 import { db } from "~/server/infrastructure/drizzle";
@@ -73,5 +74,49 @@ describe("jetstreamService", () => {
       );
       expect(rows).toHaveLength(0);
     });
+  });
+
+  describe("handleAccount", () => {
+    const accountEvent = (
+      did: string,
+      account: { active: boolean; status?: string },
+    ) => ({
+      did: asDid(did),
+      time_us: Date.now() * 1000,
+      kind: EventType.Account,
+      account: {
+        did: asDid(did),
+        seq: 1,
+        time: new Date().toISOString(),
+        ...account,
+      },
+    });
+
+    test.each`
+      account                                     | expected
+      ${{ active: false, status: "deactivated" }} | ${"deactivated"}
+      ${{ active: false }}                        | ${"inactive"}
+      ${{ active: true }}                         | ${"active"}
+    `(
+      "$expected の状態を記録する",
+      async ({
+        account,
+        expected,
+      }: {
+        account: { active: boolean; status?: string };
+        expected: string;
+      }) => {
+        // arrange
+        const user = await UserFactory.create({ status: "suspended" });
+        // act
+        await jetstreamService.handleAccount(accountEvent(user.did, account));
+        // assert
+        const { rows } = await pool.query(
+          `SELECT status FROM "User" WHERE did = $1`,
+          [user.did],
+        );
+        expect(rows).toEqual([{ status: expected }]);
+      },
+    );
   });
 });

@@ -9,6 +9,7 @@ const createUser = (props: Partial<ConstructorParameters<typeof User>[0]>) =>
     description: null,
     displayName: null,
     handle: "example.com",
+    status: "active",
     createdAt: new Date(),
     updatedAt: new Date(),
     ...props,
@@ -32,6 +33,24 @@ describe("isOwnedBy", () => {
       expected: boolean;
     }) => {
       expect(createUser({ did }).isOwnedBy(viewerDid)).toBe(expected);
+    },
+  );
+});
+
+describe("isHidden", () => {
+  test.each`
+    status              | expected
+    ${"active"}         | ${false}
+    ${"takendown"}      | ${true}
+    ${"suspended"}      | ${true}
+    ${"deleted"}        | ${true}
+    ${"deactivated"}    | ${true}
+    ${"desynchronized"} | ${false}
+    ${"throttled"}      | ${false}
+  `(
+    "$status",
+    ({ status, expected }: { status: string; expected: boolean }) => {
+      expect(createUser({ status }).isHidden()).toBe(expected);
     },
   );
 });
