@@ -3,22 +3,30 @@ import { getBlobCidString } from "@atproto/lex";
 
 import profile from "~/generated/app/bsky/actor/profile";
 import { LinkatAgent } from "~/libs/agent";
-import { User } from "~/models/user";
+import type { User } from "~/models/user";
 import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
 import { createLogger } from "~/utils/logger";
 import { tryCatch } from "~/utils/tryCatch";
 
 const logger = createLogger("userPdsRepository");
 
+type Profile = Pick<User, "avatarCid" | "description" | "displayName">;
+
 export interface IUserPdsRepository {
-  findByHandleOrDid: (handleOrDid: string) => Promise<User | null>;
+  findByHandleOrDid: (
+    handleOrDid: string,
+  ) => Promise<{ did: Did; handle: string; profile: Profile | null } | null>;
 }
 
 const fetchProfile = async ({ did, pds }: { did: Did; pds: string }) => {
   logger.info({ did, pds }, "プロフィールを取得します");
   const agent = LinkatAgent.credential(pds);
   const { value } = await agent.get(profile, { repo: did });
-  return value;
+  return {
+    avatarCid: getBlobCidString(value.avatar) ?? null,
+    description: value.description ?? null,
+    displayName: value.displayName ?? null,
+  };
 };
 
 export const userPdsRepositoryFactory = ({
@@ -35,15 +43,10 @@ export const userPdsRepositoryFactory = ({
     if (fetched instanceof Error) {
       logger.warn(fetched, "プロフィールの取得に失敗しました");
     }
-    const found = fetched instanceof Error ? null : fetched;
-    return new User({
+    return {
       did: identity.did,
-      avatarCid: getBlobCidString(found?.avatar) ?? null,
-      description: found?.description ?? null,
-      displayName: found?.displayName ?? null,
       handle: identity.handle,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
+      profile: fetched instanceof Error ? null : fetched,
+    };
   },
 });

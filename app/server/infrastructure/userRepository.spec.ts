@@ -129,6 +129,38 @@ describe("userRepository", () => {
         updatedAt: expect.any(Date),
       });
     });
+    test("DBにユーザーがいて最終更新から一定時間経過しているが、プロフィールが取得できなかった場合、既存のプロフィールを残す", async () => {
+      // arrange
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date("2024-01-01T00:10:00.000Z"));
+      await UserFactory.create({
+        did: "did:plc:dfbe2uvzisfdxwscnwcxdta6",
+        handle: "old.example.com",
+        avatarCid: AVATAR_CID,
+        description: "Test user 1",
+        displayName: "Alice",
+        createdAt: new Date("2024-01-01T00:00:00.000Z"),
+        updatedAt: new Date("2024-01-01T00:00:00.000Z"),
+      });
+      identityResolver.resolve.mockResolvedValue(dummyIdentity);
+      server.use(
+        http.get(getRecordUrl, () => HttpResponse.json("", { status: 500 })),
+      );
+      // act
+      const actual = await userRepository.findByHandleOrDid(
+        "did:plc:dfbe2uvzisfdxwscnwcxdta6",
+      );
+      // assert
+      expect(actual).toEqual({
+        avatarCid: AVATAR_CID,
+        description: "Test user 1",
+        did: "did:plc:dfbe2uvzisfdxwscnwcxdta6",
+        displayName: "Alice",
+        handle: "example.com",
+        createdAt: new Date("2024-01-01T00:00:00.000Z"),
+        updatedAt: new Date("2024-01-01T00:10:00.000Z"),
+      });
+    });
     test("DBにユーザーがいて最終更新から一定時間経過しているが、DIDを解決できなかった場合、そのまま返す", async () => {
       // arrange
       vi.useFakeTimers();
