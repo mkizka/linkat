@@ -8,8 +8,8 @@ import { boardRepositoryFactory } from "~/server/infrastructure/boardRepository"
 import { cursorRepositoryFactory } from "~/server/infrastructure/cursorRepository";
 import { db } from "~/server/infrastructure/drizzle";
 import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
-import { userBskyRepositoryFactory } from "~/server/infrastructure/userBskyRepository";
 import { userDbRepositoryFactory } from "~/server/infrastructure/userDbRepository";
+import { userPdsRepositoryFactory } from "~/server/infrastructure/userPdsRepository";
 import { userRepositoryFactory } from "~/server/infrastructure/userRepository";
 import { boardServiceFactory } from "~/server/service/boardService/board";
 import { userServiceFactory } from "~/server/service/userService/user";
@@ -27,7 +27,7 @@ const jetstreamService = jetstreamServiceFactory({
   userService: userServiceFactory({
     userRepository: userRepositoryFactory({
       userDbRepository: userDbRepositoryFactory({ db }),
-      userBskyRepository: userBskyRepositoryFactory({ identityResolver }),
+      userPdsRepository: userPdsRepositoryFactory({ identityResolver }),
     }),
   }),
 });

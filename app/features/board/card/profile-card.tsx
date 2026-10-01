@@ -8,7 +8,7 @@ import { Button } from "~/components/button";
 import { Card } from "~/components/card";
 import { BlueskyIcon } from "~/components/icons/bluesky";
 import { useUmami } from "~/hooks/useUmami";
-import type { User } from "~/models/user";
+import { getAvatarUrl, type User } from "~/models/user";
 
 function Avatar({ avatar }: { avatar: string }) {
   return (
@@ -31,7 +31,7 @@ function AvatarPlaceholder() {
 }
 
 export type ProfileCardProps = {
-  user: Pick<User, "avatar" | "displayName" | "handle">;
+  user: Pick<User, "did" | "avatarCid" | "displayName" | "handle">;
   url: string;
   showEditButton?: boolean;
 };
@@ -40,6 +40,7 @@ export function ProfileCard({ user, url, showEditButton }: ProfileCardProps) {
   const [loading, setLoading] = useState(false);
   const { t } = useTranslation();
   const umami = useUmami();
+  const avatarUrl = getAvatarUrl(user);
   const shareText = t("profile-card.share-text", {
     url,
     displayName: user.displayName,
@@ -62,11 +63,7 @@ export function ProfileCard({ user, url, showEditButton }: ProfileCardProps) {
     <Card>
       <div className="card-body gap-2">
         <div className="flex items-center">
-          {user.avatar ? (
-            <Avatar avatar={user.avatar} />
-          ) : (
-            <AvatarPlaceholder />
-          )}
+          {avatarUrl ? <Avatar avatar={avatarUrl} /> : <AvatarPlaceholder />}
           <div className="flex flex-1 justify-end gap-2">
             {showEditButton ? (
               <Link

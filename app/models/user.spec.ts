@@ -1,11 +1,11 @@
 import type { Did } from "@atproto/did";
 
-import { User } from "./user";
+import { getAvatarUrl, User } from "./user";
 
 const createUser = (props: Partial<ConstructorParameters<typeof User>[0]>) =>
   new User({
     did: "did:plc:dummy",
-    avatar: null,
+    avatarCid: null,
     description: null,
     displayName: null,
     handle: "example.com",
@@ -34,4 +34,25 @@ describe("isOwnedBy", () => {
       expect(createUser({ did }).isOwnedBy(viewerDid)).toBe(expected);
     },
   );
+});
+
+describe("getAvatarUrl", () => {
+  test("アバターのCIDからBlueskyのCDNのURLを返す", () => {
+    // arrange
+    const user = createUser({ avatarCid: "bafkreiavatar" });
+    // act
+    const actual = getAvatarUrl(user);
+    // assert
+    expect(actual).toBe(
+      "https://cdn.bsky.app/img/avatar/plain/did:plc:dummy/bafkreiavatar@jpeg",
+    );
+  });
+  test("アバターが無ければnullを返す", () => {
+    // arrange
+    const user = createUser({ avatarCid: null });
+    // act
+    const actual = getAvatarUrl(user);
+    // assert
+    expect(actual).toBeNull();
+  });
 });

@@ -1,8 +1,8 @@
 import { isDid } from "@atproto/did";
 
 import type { User } from "~/models/user";
-import type { IUserBskyRepository } from "~/server/infrastructure/userBskyRepository";
 import type { IUserDbRepository } from "~/server/infrastructure/userDbRepository";
+import type { IUserPdsRepository } from "~/server/infrastructure/userPdsRepository";
 
 const REFETCH_INTERVAL_MS = 10 * 60 * 1000;
 
@@ -15,10 +15,10 @@ export interface IUserRepository {
 
 export const userRepositoryFactory = ({
   userDbRepository,
-  userBskyRepository,
+  userPdsRepository,
 }: {
   userDbRepository: IUserDbRepository;
-  userBskyRepository: IUserBskyRepository;
+  userPdsRepository: IUserPdsRepository;
 }): IUserRepository => ({
   async findByHandleOrDid(handleOrDid) {
     const cached = await (isDid(handleOrDid)
@@ -27,7 +27,7 @@ export const userRepositoryFactory = ({
     if (cached && isFresh(cached)) {
       return cached;
     }
-    const fetched = await userBskyRepository.findByHandleOrDid(handleOrDid);
+    const fetched = await userPdsRepository.findByHandleOrDid(handleOrDid);
     if (!fetched) {
       return cached;
     }

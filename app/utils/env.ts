@@ -29,7 +29,6 @@ const server = {
   PRIVATE_KEY_ES256_B64: isProduction
     ? z.string()
     : z.string().default(DEVELOPMENT_PRIVATE_KEY),
-  BSKY_PUBLIC_API_URL: z.url().default("https://public.api.bsky.app"),
   JETSTREAM_URL: z
     .url()
     .default("wss://jetstream1.us-west.bsky.network/subscribe"),
