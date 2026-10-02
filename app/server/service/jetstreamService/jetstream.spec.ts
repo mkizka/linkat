@@ -4,11 +4,11 @@ import { Pool } from "pg";
 import { mock } from "vitest-mock-extended";
 
 import { mockedLogger } from "~/mocks/logger";
+import { accountPdsRepositoryFactory } from "~/server/infrastructure/accountPdsRepository";
 import { boardRepositoryFactory } from "~/server/infrastructure/boardRepository";
 import { cursorRepositoryFactory } from "~/server/infrastructure/cursorRepository";
 import { db } from "~/server/infrastructure/drizzle";
 import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
-import { userBskyRepositoryFactory } from "~/server/infrastructure/userBskyRepository";
 import { userDbRepositoryFactory } from "~/server/infrastructure/userDbRepository";
 import { userRepositoryFactory } from "~/server/infrastructure/userRepository";
 import { boardServiceFactory } from "~/server/service/boardService/board";
@@ -28,7 +28,7 @@ const jetstreamService = jetstreamServiceFactory({
     identityResolver,
     userRepository: userRepositoryFactory({
       userDbRepository: userDbRepositoryFactory({ db }),
-      userBskyRepository: userBskyRepositoryFactory({ identityResolver }),
+      accountPdsRepository: accountPdsRepositoryFactory({ identityResolver }),
     }),
   }),
 });

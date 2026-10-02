@@ -1,4 +1,4 @@
-import { type Did, DidError } from "@atproto/did";
+import { type Did, DidError, extractPdsUrl } from "@atproto/did";
 import {
   createIdentityResolver,
   IdentityResolverError,
@@ -18,7 +18,7 @@ export type HandleResolution =
 export interface IIdentityResolver {
   resolve: (
     handleOrDid: string,
-  ) => Promise<{ did: Did; handle: string } | null>;
+  ) => Promise<{ did: Did; handle: string; pds: string } | null>;
   resolveHandle: (handle: string) => Promise<HandleResolution>;
 }
 
@@ -35,8 +35,8 @@ export const identityResolverFactory = (): IIdentityResolver => {
   return {
     async resolve(handleOrDid) {
       try {
-        const { did, handle } = await resolver.resolve(handleOrDid);
-        return { did, handle };
+        const { did, didDoc, handle } = await resolver.resolve(handleOrDid);
+        return { did, handle, pds: extractPdsUrl(didDoc).origin };
       } catch (error) {
         logger.warn(error, "DIDまたはhandleの解決に失敗しました");
         return null;

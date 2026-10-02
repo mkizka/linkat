@@ -1,7 +1,7 @@
 import type { Did } from "@atproto/did";
 
-import type { User } from "~/models/user";
-import type { IUserBskyRepository } from "~/server/infrastructure/userBskyRepository";
+import { User } from "~/models/user";
+import type { IAccountPdsRepository } from "~/server/infrastructure/accountPdsRepository";
 import type { IUserDbRepository } from "~/server/infrastructure/userDbRepository";
 
 const REFETCH_INTERVAL_MS = 10 * 60 * 1000;
@@ -15,20 +15,33 @@ export interface IUserRepository {
 
 export const userRepositoryFactory = ({
   userDbRepository,
-  userBskyRepository,
+  accountPdsRepository,
 }: {
   userDbRepository: IUserDbRepository;
-  userBskyRepository: IUserBskyRepository;
+  accountPdsRepository: IAccountPdsRepository;
 }): IUserRepository => ({
   async findByDid(did) {
     const cached = await userDbRepository.findByDid(did);
     if (cached && isFresh(cached)) {
       return cached;
     }
-    const fetched = await userBskyRepository.findByDid(did);
+    const fetched = await accountPdsRepository.findByDid(did);
     if (!fetched) {
       return cached;
     }
-    return await userDbRepository.save(fetched);
+    const profile =
+      fetched.profile ?? (cached?.did === fetched.did ? cached : null);
+    return await userDbRepository.save(
+      new User({
+        did: fetched.did,
+        avatar: profile?.avatar ?? null,
+        avatarCid: profile?.avatarCid ?? null,
+        description: profile?.description ?? null,
+        displayName: profile?.displayName ?? null,
+        handle: fetched.handle,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }),
+    );
   },
 });

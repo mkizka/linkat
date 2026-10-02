@@ -2,12 +2,11 @@ import { asDid } from "@atproto/did";
 import { http, HttpResponse } from "msw";
 import { mock } from "vitest-mock-extended";
 
-import type { ProfileViewDetailed } from "~/generated/app/bsky/actor/defs";
 import { server } from "~/mocks/server";
 import { UserFactory } from "~/server/factories/user";
+import { accountPdsRepositoryFactory } from "~/server/infrastructure/accountPdsRepository";
 import { db } from "~/server/infrastructure/drizzle";
 import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
-import { userBskyRepositoryFactory } from "~/server/infrastructure/userBskyRepository";
 import { userDbRepositoryFactory } from "~/server/infrastructure/userDbRepository";
 
 import { userRepositoryFactory } from "./userRepository";
@@ -16,26 +15,35 @@ const identityResolver = mock<IIdentityResolver>();
 
 const userRepository = userRepositoryFactory({
   userDbRepository: userDbRepositoryFactory({ db }),
-  userBskyRepository: userBskyRepositoryFactory({ identityResolver }),
+  accountPdsRepository: accountPdsRepositoryFactory({ identityResolver }),
 });
 
-const dummyBlueskyProfile = {
-  did: "did:plc:dfbe2uvzisfdxwscnwcxdta6",
-  handle: "example.com",
-  displayName: "Alice",
-  avatar: "https://example.com/avatar.png",
-  associated: {
-    lists: 1,
-    feedgens: 1,
-    labeler: false,
+const AVATAR_CID =
+  "bafkreigh2akiscaildcqabsyg3dfr6chu3fgpregiymsck7e7aqa4s52zy";
+
+const dummyProfileRecord = {
+  uri: "at://did:plc:dfbe2uvzisfdxwscnwcxdta6/app.bsky.actor.profile/self",
+  cid: "bafyreidfayvfuwqa7qlnopdjiqrxzs6blmoeu4rujcjtnci5beludirz2a",
+  value: {
+    $type: "app.bsky.actor.profile",
+    displayName: "Alice",
+    description: "Test user 1",
+    avatar: {
+      $type: "blob",
+      ref: { $link: AVATAR_CID },
+      mimeType: "image/jpeg",
+      size: 1000,
+    },
   },
-  labels: [],
-  description: "Test user 1",
-  indexedAt: "2024-07-21T08:19:48.394Z",
-  followersCount: 2,
-  followsCount: 2,
-  postsCount: 42,
-} satisfies ProfileViewDetailed;
+};
+
+const dummyIdentity = {
+  did: asDid("did:plc:dfbe2uvzisfdxwscnwcxdta6"),
+  handle: "example.com",
+  pds: "https://pds.example.com",
+};
+
+const getRecordUrl = "https://pds.example.com/xrpc/com.atproto.repo.getRecord";
 
 describe("userRepository", () => {
   describe("findByDid", () => {
@@ -47,17 +55,11 @@ describe("userRepository", () => {
       // assert
       expect(actual).toEqual(user);
     });
-    test("DBにユーザーがいないとき、Blueskyから取得して作成できる", async () => {
+    test("DBにユーザーがいないとき、PDSから取得して作成できる", async () => {
       // arrange
-      identityResolver.resolve.mockResolvedValue({
-        did: "did:plc:dfbe2uvzisfdxwscnwcxdta6",
-        handle: "example.com",
-      });
+      identityResolver.resolve.mockResolvedValue(dummyIdentity);
       server.use(
-        http.get(
-          "https://public.api.example.com/xrpc/app.bsky.actor.getProfile",
-          () => HttpResponse.json(dummyBlueskyProfile),
-        ),
+        http.get(getRecordUrl, () => HttpResponse.json(dummyProfileRecord)),
       );
       // act
       const actual = await userRepository.findByDid(
@@ -65,7 +67,8 @@ describe("userRepository", () => {
       );
       // assert
       expect(actual).toEqual({
-        avatar: "https://example.com/avatar.png",
+        avatar: null,
+        avatarCid: AVATAR_CID,
         description: "Test user 1",
         did: "did:plc:dfbe2uvzisfdxwscnwcxdta6",
         displayName: "Alice",
@@ -74,24 +77,19 @@ describe("userRepository", () => {
         updatedAt: expect.any(Date),
       });
     });
-    test("DBにユーザーがいて最終更新から一定時間経過している場合、Blueskyから取得して作成する", async () => {
+    test("DBにユーザーがいて最終更新から一定時間経過している場合、PDSから取得して作成する", async () => {
       // arrange
       vi.useFakeTimers();
       vi.setSystemTime(new Date("2024-01-01T00:10:00.000Z"));
       await UserFactory.create({
         did: "did:plc:dfbe2uvzisfdxwscnwcxdta6",
+        avatar: "https://example.com/avatar.png",
         createdAt: new Date("2024-01-01T00:00:00.000Z"),
         updatedAt: new Date("2024-01-01T00:00:00.000Z"),
       });
-      identityResolver.resolve.mockResolvedValue({
-        did: "did:plc:dfbe2uvzisfdxwscnwcxdta6",
-        handle: "example.com",
-      });
+      identityResolver.resolve.mockResolvedValue(dummyIdentity);
       server.use(
-        http.get(
-          "https://public.api.example.com/xrpc/app.bsky.actor.getProfile",
-          () => HttpResponse.json(dummyBlueskyProfile),
-        ),
+        http.get(getRecordUrl, () => HttpResponse.json(dummyProfileRecord)),
       );
       // act
       const actual = await userRepository.findByDid(
@@ -99,7 +97,8 @@ describe("userRepository", () => {
       );
       // assert
       expect(actual).toEqual({
-        avatar: "https://example.com/avatar.png",
+        avatar: null,
+        avatarCid: AVATAR_CID,
         description: "Test user 1",
         did: "did:plc:dfbe2uvzisfdxwscnwcxdta6",
         displayName: "Alice",
@@ -110,15 +109,9 @@ describe("userRepository", () => {
     });
     test("DBにユーザーがいないとき、プロフィールが取得できなくてもDIDとhandleだけで作成できる", async () => {
       // arrange
-      identityResolver.resolve.mockResolvedValue({
-        did: "did:plc:dfbe2uvzisfdxwscnwcxdta6",
-        handle: "example.com",
-      });
+      identityResolver.resolve.mockResolvedValue(dummyIdentity);
       server.use(
-        http.get(
-          "https://public.api.example.com/xrpc/app.bsky.actor.getProfile",
-          () => HttpResponse.json("", { status: 500 }),
-        ),
+        http.get(getRecordUrl, () => HttpResponse.json("", { status: 500 })),
       );
       // act
       const actual = await userRepository.findByDid(
@@ -127,12 +120,46 @@ describe("userRepository", () => {
       // assert
       expect(actual).toEqual({
         avatar: null,
+        avatarCid: null,
         description: null,
         did: "did:plc:dfbe2uvzisfdxwscnwcxdta6",
         displayName: null,
         handle: "example.com",
         createdAt: expect.any(Date),
         updatedAt: expect.any(Date),
+      });
+    });
+    test("DBに写しがあって最終更新から一定時間経過しているが、プロフィールが取得できなかった場合、既存のプロフィールを残す", async () => {
+      // arrange
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date("2024-01-01T00:10:00.000Z"));
+      await UserFactory.create({
+        did: "did:plc:dfbe2uvzisfdxwscnwcxdta6",
+        handle: "old.example.com",
+        avatar: "https://example.com/avatar.png",
+        description: "Test user 1",
+        displayName: "Alice",
+        createdAt: new Date("2024-01-01T00:00:00.000Z"),
+        updatedAt: new Date("2024-01-01T00:00:00.000Z"),
+      });
+      identityResolver.resolve.mockResolvedValue(dummyIdentity);
+      server.use(
+        http.get(getRecordUrl, () => HttpResponse.json("", { status: 500 })),
+      );
+      // act
+      const actual = await userRepository.findByDid(
+        asDid("did:plc:dfbe2uvzisfdxwscnwcxdta6"),
+      );
+      // assert
+      expect(actual).toEqual({
+        avatar: "https://example.com/avatar.png",
+        avatarCid: null,
+        description: "Test user 1",
+        did: "did:plc:dfbe2uvzisfdxwscnwcxdta6",
+        displayName: "Alice",
+        handle: "example.com",
+        createdAt: new Date("2024-01-01T00:00:00.000Z"),
+        updatedAt: new Date("2024-01-01T00:10:00.000Z"),
       });
     });
     test("DBにユーザーがいて最終更新から一定時間経過しているが、DIDを解決できなかった場合、そのまま返す", async () => {

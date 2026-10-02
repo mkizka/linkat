@@ -2,9 +2,9 @@ import { asDid } from "@atproto/did";
 import { mock } from "vitest-mock-extended";
 
 import { UserFactory } from "~/server/factories/user";
+import { accountPdsRepositoryFactory } from "~/server/infrastructure/accountPdsRepository";
 import { db } from "~/server/infrastructure/drizzle";
 import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
-import { userBskyRepositoryFactory } from "~/server/infrastructure/userBskyRepository";
 import { userDbRepositoryFactory } from "~/server/infrastructure/userDbRepository";
 import { userRepositoryFactory } from "~/server/infrastructure/userRepository";
 
@@ -16,7 +16,7 @@ const userService = userServiceFactory({
   identityResolver,
   userRepository: userRepositoryFactory({
     userDbRepository: userDbRepositoryFactory({ db }),
-    userBskyRepository: userBskyRepositoryFactory({ identityResolver }),
+    accountPdsRepository: accountPdsRepositoryFactory({ identityResolver }),
   }),
 });
 

@@ -3,7 +3,7 @@ import fs from "fs";
 import { LRUCache } from "lru-cache";
 import satori from "satori";
 
-import type { User } from "~/models/user";
+import { getAvatarUrl, type User } from "~/models/user";
 import { di } from "~/server/di";
 import { createLogger } from "~/utils/logger";
 
@@ -19,8 +19,7 @@ const cache = new LRUCache<string, Uint8Array<ArrayBuffer>>({
 const fontData = fs.readFileSync("./fonts/Murecho-Bold.ttf");
 
 const renderImage = async (user: User) => {
-  // satoriが対応していないwebp等を避けるため、CDNにjpegでの配信を要求する
-  const avatar = user.avatar ? `${user.avatar}@jpeg` : null;
+  const avatarUrl = getAvatarUrl(user);
   //
   // カード内の割合
   // 100px(padding) + 200px(avatar) + 50px(mariginLeft) + 650px(handle/displayName) + 100px(padding) = 1100px
@@ -57,9 +56,9 @@ const renderImage = async (user: User) => {
             alignItems: "center",
           }}
         >
-          {avatar ? (
+          {avatarUrl ? (
             <img
-              src={avatar}
+              src={avatarUrl}
               style={{
                 width: "200px",
                 height: "200px",

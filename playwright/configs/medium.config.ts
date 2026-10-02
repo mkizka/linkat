@@ -26,7 +26,6 @@ export default defineConfig(base, {
       env: {
         ATPROTO_PLC_URL: `http://localhost:${PORTS.plc}`,
         ATPROTO_HANDLE_RESOLVER_URL: `http://localhost:${PORTS.pds}`,
-        BSKY_PUBLIC_API_URL: `http://localhost:${PORTS.bsky}`,
       },
     },
   ],
