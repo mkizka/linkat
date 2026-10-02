@@ -1,31 +1,31 @@
 import { asDid } from "@atproto/did";
 
-import { User } from "~/models/user";
-import { UserFactory } from "~/server/factories/user";
+import { Owner } from "~/models/owner";
+import { OwnerFactory } from "~/server/factories/owner";
 import { db } from "~/server/infrastructure/drizzle";
 
-import { userDbRepositoryFactory } from "./userDbRepository";
+import { ownerDbRepositoryFactory } from "./ownerDbRepository";
 
-const userDbRepository = userDbRepositoryFactory({ db });
+const ownerDbRepository = ownerDbRepositoryFactory({ db });
 
-describe("userDbRepository", () => {
+describe("ownerDbRepository", () => {
   describe("findByDid", () => {
     test("保存されていない場合はnullを返す", async () => {
       // arrange
       // act
-      const actual = await userDbRepository.findByDid(
+      const actual = await ownerDbRepository.findByDid(
         asDid("did:plc:notfound"),
       );
       // assert
       expect(actual).toBeNull();
     });
-    test("didを指定してユーザーを取得できる", async () => {
+    test("didを指定して持ち主の写しを取得できる", async () => {
       // arrange
-      const user = await UserFactory.create();
+      const owner = await OwnerFactory.create();
       // act
-      const actual = await userDbRepository.findByDid(asDid(user.did));
+      const actual = await ownerDbRepository.findByDid(asDid(owner.did));
       // assert
-      expect(actual).toEqual(user);
+      expect(actual).toEqual(owner);
     });
   });
 
@@ -33,24 +33,24 @@ describe("userDbRepository", () => {
     test("保存されていない場合はnullを返す", async () => {
       // arrange
       // act
-      const actual = await userDbRepository.findByHandle(
+      const actual = await ownerDbRepository.findByHandle(
         "notfound.example.com",
       );
       // assert
       expect(actual).toBeNull();
     });
-    test("handleを指定してユーザーを取得できる", async () => {
+    test("handleを指定して持ち主の写しを取得できる", async () => {
       // arrange
-      const user = await UserFactory.create({ handle: "example.com" });
+      const owner = await OwnerFactory.create({ handle: "example.com" });
       // act
-      const actual = await userDbRepository.findByHandle("example.com");
+      const actual = await ownerDbRepository.findByHandle("example.com");
       // assert
-      expect(actual).toEqual(user);
+      expect(actual).toEqual(owner);
     });
   });
 
   describe("save", () => {
-    const userToSave = {
+    const ownerToSave = {
       did: "did:plc:abcdefghijklmnopqrstuvwx",
       avatar: null,
       avatarCid: null,
@@ -58,38 +58,38 @@ describe("userDbRepository", () => {
       displayName: null,
       updatedAt: new Date("2024-02-01T00:00:00.000Z"),
     };
-    test("他のユーザーが同じhandleを持っている場合、そのユーザーのhandleをnullにする", async () => {
+    test("他の持ち主が同じhandleを持っている場合、その持ち主のhandleをnullにする", async () => {
       // arrange
-      const other = await UserFactory.create({ handle: "example.com" });
+      const other = await OwnerFactory.create({ handle: "example.com" });
       // act
-      const actual = await userDbRepository.save({
-        ...userToSave,
+      const actual = await ownerDbRepository.save({
+        ...ownerToSave,
         handle: "example.com",
       });
       // assert
       expect(actual.handle).toBe("example.com");
-      const otherActual = await userDbRepository.findByDid(asDid(other.did));
+      const otherActual = await ownerDbRepository.findByDid(asDid(other.did));
       expect(otherActual?.handle).toBeNull();
     });
     test("handleがundefinedの場合、既存のhandleを残す", async () => {
       // arrange
-      await UserFactory.create({
-        did: userToSave.did,
+      await OwnerFactory.create({
+        did: ownerToSave.did,
         handle: "example.com",
       });
       // act
-      const actual = await userDbRepository.save({
-        ...userToSave,
+      const actual = await ownerDbRepository.save({
+        ...ownerToSave,
         handle: undefined,
       });
       // assert
       expect(actual.handle).toBe("example.com");
     });
-    test("handleがundefinedで既存のユーザーがいない場合、handleをnullで保存する", async () => {
+    test("handleがundefinedで既存の写しが無い場合、handleをnullで保存する", async () => {
       // arrange
       // act
-      const actual = await userDbRepository.save({
-        ...userToSave,
+      const actual = await ownerDbRepository.save({
+        ...ownerToSave,
         handle: undefined,
       });
       // assert
@@ -97,32 +97,32 @@ describe("userDbRepository", () => {
     });
     test("handleがnullの場合、handleをnullにする", async () => {
       // arrange
-      await UserFactory.create({
-        did: userToSave.did,
+      await OwnerFactory.create({
+        did: ownerToSave.did,
         handle: "example.com",
       });
       // act
-      const actual = await userDbRepository.save({
-        ...userToSave,
+      const actual = await ownerDbRepository.save({
+        ...ownerToSave,
         handle: null,
       });
       // assert
       expect(actual.handle).toBeNull();
     });
-    test("handleがnullのユーザーは複数保存できる", async () => {
+    test("handleがnullの写しは複数保存できる", async () => {
       // arrange
-      await UserFactory.create({ handle: null });
+      await OwnerFactory.create({ handle: null });
       // act
-      const actual = await userDbRepository.save({
-        ...userToSave,
+      const actual = await ownerDbRepository.save({
+        ...ownerToSave,
         handle: null,
       });
       // assert
       expect(actual.handle).toBeNull();
     });
-    test("新しいユーザーを保存できる", async () => {
+    test("新しい持ち主の写しを保存できる", async () => {
       // arrange
-      const user = new User({
+      const owner = new Owner({
         did: "did:plc:abcdefghijklmnopqrstuvwx",
         avatar: null,
         avatarCid: "bafkreiavatar",
@@ -133,28 +133,28 @@ describe("userDbRepository", () => {
         updatedAt: new Date("2024-01-02T00:00:00.000Z"),
       });
       // act
-      await userDbRepository.save(user);
+      await ownerDbRepository.save(owner);
       // assert
-      const actual = await userDbRepository.findByDid(user.did);
+      const actual = await ownerDbRepository.findByDid(owner.did);
       expect(actual).toEqual({
-        did: user.did,
-        avatar: user.avatar,
-        avatarCid: user.avatarCid,
-        description: user.description,
-        displayName: user.displayName,
-        handle: user.handle,
+        did: owner.did,
+        avatar: owner.avatar,
+        avatarCid: owner.avatarCid,
+        description: owner.description,
+        displayName: owner.displayName,
+        handle: owner.handle,
         createdAt: expect.any(Date),
-        updatedAt: user.updatedAt,
+        updatedAt: owner.updatedAt,
       });
     });
-    test("既存のユーザーを上書きできる", async () => {
+    test("既存の持ち主の写しを上書きできる", async () => {
       // arrange
-      const existing = await UserFactory.create({
+      const existing = await OwnerFactory.create({
         did: "did:plc:abcdefghijklmnopqrstuvwx",
         handle: "old.example.com",
         avatar: "https://example.com/old-avatar.png",
       });
-      const updated = new User({
+      const updated = new Owner({
         did: existing.did,
         avatar: null,
         avatarCid: "bafkreinewavatar",
@@ -165,9 +165,9 @@ describe("userDbRepository", () => {
         updatedAt: new Date("2024-02-01T00:00:00.000Z"),
       });
       // act
-      await userDbRepository.save(updated);
+      await ownerDbRepository.save(updated);
       // assert
-      const actual = await userDbRepository.findByDid(asDid(existing.did));
+      const actual = await ownerDbRepository.findByDid(asDid(existing.did));
       expect(actual).toEqual({
         did: existing.did,
         avatar: updated.avatar,

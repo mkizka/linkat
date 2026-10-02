@@ -2,13 +2,13 @@ import type { Did } from "@atproto/did";
 
 import type { LinkatAgent } from "~/libs/agent";
 import { Board } from "~/models/board";
-import type { User } from "~/models/user";
+import type { Owner } from "~/models/owner";
 import type {
   IAccountPdsRepository,
   Profile,
 } from "~/server/infrastructure/accountPdsRepository";
 import type { IBoardRepository } from "~/server/infrastructure/boardRepository";
-import type { IUserDbRepository } from "~/server/infrastructure/userDbRepository";
+import type { IOwnerDbRepository } from "~/server/infrastructure/ownerDbRepository";
 import { tryCatch } from "~/utils/tryCatch";
 
 export class BoardPdsSaveError extends Error {
@@ -37,15 +37,16 @@ export class BoardDbDeleteError extends Error {
 
 export interface IBoardService {
   parseBoardFromForm: (
-    userDid: Did,
+    ownerDid: Did,
     rawBoard: string,
   ) => Promise<Board | Error>;
   // ボードを公開・更新した(/editのPOST、Jetstreamのcommit)。保存した持ち主の写しを返す
-  saveBoard: (board: Board) => Promise<User>;
-  publishBoard: (agent: LinkatAgent, board: Board) => Promise<User>;
-  findBoard: (userDid: Did) => Promise<Board | null>;
-  deleteBoard: (userDid: Did) => Promise<void>;
-  unpublishBoard: (agent: LinkatAgent, userDid: Did) => Promise<void>;
+  saveBoard: (board: Board) => Promise<Owner>;
+  publishBoard: (agent: LinkatAgent, board: Board) => Promise<Owner>;
+  findBoard: (ownerDid: Did) => Promise<Board | null>;
+  // ボードが削除された(Jetstream、/delete)
+  deleteBoard: (ownerDid: Did) => Promise<void>;
+  unpublishBoard: (agent: LinkatAgent, ownerDid: Did) => Promise<void>;
 }
 
 const emptyProfile: Profile = {
@@ -57,18 +58,18 @@ const emptyProfile: Profile = {
 
 export const boardServiceFactory = ({
   boardRepository,
-  userDbRepository,
+  ownerDbRepository,
   accountPdsRepository,
 }: {
   boardRepository: IBoardRepository;
-  userDbRepository: IUserDbRepository;
+  ownerDbRepository: IOwnerDbRepository;
   accountPdsRepository: IAccountPdsRepository;
 }): IBoardService => {
   const saveOwner = async (did: Did) => {
     const { handle, profile } = await accountPdsRepository.resolveAccount(did);
     // プロフィールの取得に失敗したときは、初回は空のまま、更新時は既存の値を残す
-    const existing = profile ? null : await userDbRepository.findByDid(did);
-    return await userDbRepository.save({
+    const existing = profile ? null : await ownerDbRepository.findByDid(did);
+    return await ownerDbRepository.save({
       did,
       ...(profile ??
         (existing && {
@@ -84,16 +85,22 @@ export const boardServiceFactory = ({
   };
 
   const saveBoard = async (board: Board) => {
-    // Boardは持ち主の写しへの外部キーを持つため、持ち主の写しを先に保存する
-    const owner = await saveOwner(board.userDid);
+    const owner = await saveOwner(board.ownerDid);
     await boardRepository.save(board);
     return owner;
   };
 
+  // 写しを持つのはボードの持ち主だけなので、ボードと一緒に持ち主の写しも削除する
+  // 途中で失敗したときに持ち主でない人の写しが残らないよう、持ち主の写しを先に削除する
+  const deleteBoard = async (ownerDid: Did) => {
+    await ownerDbRepository.delete(ownerDid);
+    await boardRepository.delete(ownerDid);
+  };
+
   return {
     parseBoardFromForm: tryCatch(
-      (userDid: Did, rawBoard: string) =>
-        new Board(userDid, Board.parseCards(JSON.parse(rawBoard))),
+      (ownerDid: Did, rawBoard: string) =>
+        new Board(ownerDid, Board.parseCards(JSON.parse(rawBoard))),
     ),
     saveBoard,
     async publishBoard(agent, board) {
@@ -108,20 +115,18 @@ export const boardServiceFactory = ({
         throw new BoardDbSaveError(error);
       }
     },
-    async findBoard(userDid) {
-      return await boardRepository.find(userDid);
+    async findBoard(ownerDid) {
+      return await boardRepository.find(ownerDid);
     },
-    async deleteBoard(userDid) {
-      await boardRepository.delete(userDid);
-    },
-    async unpublishBoard(agent, userDid) {
+    deleteBoard,
+    async unpublishBoard(agent, ownerDid) {
       try {
         await agent.deleteBoard();
       } catch (error) {
         throw new BoardPdsDeleteError(error);
       }
       try {
-        await boardRepository.delete(userDid);
+        await deleteBoard(ownerDid);
       } catch (error) {
         throw new BoardDbDeleteError(error);
       }

@@ -2,7 +2,7 @@ import { Footer, Main } from "~/components/layout";
 import { BoardViewer } from "~/features/board/board-viewer";
 import { ShareModal } from "~/features/board/share-modal";
 import { getInstance } from "~/i18n/i18n";
-import { getHandleOrDid } from "~/models/user";
+import { getHandleOrDid } from "~/models/owner";
 import { di } from "~/server/di";
 import { env } from "~/utils/env";
 import { createMeta } from "~/utils/meta";
@@ -14,32 +14,30 @@ const notFound = () => {
 };
 
 export async function loader({ request, params, context }: Route.LoaderArgs) {
-  // この順で処理した場合ボードを持たない(=このサービスのユーザーでない)ユーザーの
-  // データも作られてしまうが、一旦このままにしておく
-  const user = await di.userService.findUser({
+  const owner = await di.ownerService.findOwner({
     handleOrDid: params.handle,
   });
-  if (!user) {
+  if (!owner) {
     return notFound();
   }
-  const board = await di.boardService.findBoard(user.did);
+  const board = await di.boardService.findBoard(owner.did);
   if (!board) {
     return notFound();
   }
   const i18next = getInstance(context);
   const title = i18next.t("board.meta-title", {
-    displayName: user.displayName,
-    handle: getHandleOrDid(user),
+    displayName: owner.displayName,
+    handle: getHandleOrDid(owner),
   });
-  const userDid = await di.sessionService.getSessionUserDid(request);
+  const viewerDid = await di.sessionService.getSessionDid(request);
   return {
-    user,
+    owner,
     board: { cards: board.cards },
-    isMine: user.isOwnedBy(userDid),
+    isMine: owner.isOwnedBy(viewerDid),
     title: `${title} | Linkat`,
-    url: `${env.PUBLIC_URL}/${getHandleOrDid(user)}`,
-    ogImageUrl: `${env.PUBLIC_URL}/${getHandleOrDid(user)}/og`,
-    atUri: `at://${user.did}/blue.linkat.board/self`,
+    url: `${env.PUBLIC_URL}/${getHandleOrDid(owner)}`,
+    ogImageUrl: `${env.PUBLIC_URL}/${getHandleOrDid(owner)}/og`,
+    atUri: `at://${owner.did}/blue.linkat.board/self`,
   };
 }
 
@@ -49,11 +47,11 @@ export const meta: Route.MetaFunction = ({ loaderData }) => {
 };
 
 export default function Index({ loaderData }: Route.ComponentProps) {
-  const { user, board, url, isMine } = loaderData;
+  const { owner, board, url, isMine } = loaderData;
   return (
     <>
       <Main>
-        <BoardViewer user={user} board={board} url={url} isMine={isMine} />
+        <BoardViewer owner={owner} board={board} url={url} isMine={isMine} />
         <ShareModal url={url} />
       </Main>
       <Footer withNavigation />

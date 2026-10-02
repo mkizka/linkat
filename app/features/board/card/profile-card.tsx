@@ -8,7 +8,7 @@ import { Button } from "~/components/button";
 import { Card } from "~/components/card";
 import { BlueskyIcon } from "~/components/icons/bluesky";
 import { useUmami } from "~/hooks/useUmami";
-import { getAvatarUrl, getHandleOrDid, type User } from "~/models/user";
+import { getAvatarUrl, getHandleOrDid, type Owner } from "~/models/owner";
 
 function Avatar({ avatar }: { avatar: string }) {
   return (
@@ -31,19 +31,19 @@ function AvatarPlaceholder() {
 }
 
 export type ProfileCardProps = {
-  user: Pick<User, "did" | "avatar" | "avatarCid" | "displayName" | "handle">;
+  owner: Pick<Owner, "did" | "avatar" | "avatarCid" | "displayName" | "handle">;
   url: string;
   showEditButton?: boolean;
 };
 
-export function ProfileCard({ user, url, showEditButton }: ProfileCardProps) {
+export function ProfileCard({ owner, url, showEditButton }: ProfileCardProps) {
   const [loading, setLoading] = useState(false);
   const { t } = useTranslation();
   const umami = useUmami();
-  const avatarUrl = getAvatarUrl(user);
+  const avatarUrl = getAvatarUrl(owner);
   const shareText = t("profile-card.share-text", {
     url,
-    displayName: user.displayName,
+    displayName: owner.displayName,
   });
 
   const handlePost = async () => {
@@ -77,11 +77,11 @@ export function ProfileCard({ user, url, showEditButton }: ProfileCardProps) {
             ) : (
               <a
                 className="btn-bluesky btn text-white"
-                href={`https://bsky.app/profile/${getHandleOrDid(user)}`}
+                href={`https://bsky.app/profile/${getHandleOrDid(owner)}`}
                 target="_blank"
                 rel="noreferrer"
                 data-umami-event="click-bsky-link"
-                data-umami-event-handle={getHandleOrDid(user)}
+                data-umami-event-handle={getHandleOrDid(owner)}
               >
                 <BlueskyIcon className="size-6" />
                 Bluesky
@@ -97,9 +97,9 @@ export function ProfileCard({ user, url, showEditButton }: ProfileCardProps) {
           </div>
         </div>
         <div>
-          <h2 className="text-xl font-bold">{user.displayName}</h2>
+          <h2 className="text-xl font-bold">{owner.displayName}</h2>
           <p className="text-gray-500">
-            {user.handle ? `@${user.handle}` : user.did}
+            {owner.handle ? `@${owner.handle}` : owner.did}
           </p>
         </div>
       </div>

@@ -5,7 +5,7 @@ import profile, {
   type Main as ProfileRecord,
 } from "~/generated/app/bsky/actor/profile";
 import { LinkatAgent } from "~/libs/agent";
-import type { User } from "~/models/user";
+import type { Owner } from "~/models/owner";
 import type {
   Identity,
   IIdentityResolver,
@@ -16,16 +16,11 @@ import { tryCatch } from "~/utils/tryCatch";
 const logger = createLogger("accountPdsRepository");
 
 export type Profile = Pick<
-  User,
+  Owner,
   "avatar" | "avatarCid" | "description" | "displayName"
 >;
 
 export interface IAccountPdsRepository {
-  findByDid: (did: Did) => Promise<{
-    did: Did;
-    handle: Identity["handle"];
-    profile: Profile | null;
-  } | null>;
   // ハンドルを解決し、プロフィールを取得する。写しへの書き込みの中でだけ使う
   // プロフィールの取得に失敗したときは、profileをnullにする
   resolveAccount: (did: Did) => Promise<{
@@ -77,18 +72,6 @@ export const accountPdsRepositoryFactory = ({
 }: {
   identityResolver: IIdentityResolver;
 }): IAccountPdsRepository => ({
-  async findByDid(did) {
-    const resolution = await identityResolver.resolve(did);
-    if (resolution.type !== "found") {
-      return null;
-    }
-    const { identity } = resolution;
-    return {
-      did: identity.did,
-      handle: identity.handle,
-      profile: await fetchProfileFromPds(identity),
-    };
-  },
   async resolveAccount(did) {
     const resolution = await identityResolver.resolve(did);
     switch (resolution.type) {

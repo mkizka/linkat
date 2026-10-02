@@ -12,20 +12,19 @@ import {
   sessionStoreFactory,
   stateStoreFactory,
 } from "~/server/infrastructure/oauthStorage";
-import { userDbRepositoryFactory } from "~/server/infrastructure/userDbRepository";
-import { userRepositoryFactory } from "~/server/infrastructure/userRepository";
+import { ownerDbRepositoryFactory } from "~/server/infrastructure/ownerDbRepository";
 import { atpassportServiceFactory } from "~/server/service/atpassportService/atpassport";
 import { authServiceFactory } from "~/server/service/authService/auth";
 import { boardServiceFactory } from "~/server/service/boardService/board";
 import { jetstreamServiceFactory } from "~/server/service/jetstreamService/jetstream";
+import { ownerServiceFactory } from "~/server/service/ownerService/owner";
 import { sessionServiceFactory } from "~/server/service/sessionService/session";
-import { userServiceFactory } from "~/server/service/userService/user";
 
 export const di = await createRegistry()
   .value("db", db)
   .service("boardRepository", ["db"], boardRepositoryFactory)
   .service("cursorRepository", ["db"], cursorRepositoryFactory)
-  .service("userDbRepository", ["db"], userDbRepositoryFactory)
+  .service("ownerDbRepository", ["db"], ownerDbRepositoryFactory)
   .service("oauthStateStore", ["db"], stateStoreFactory)
   .service("oauthSessionStore", ["db"], sessionStoreFactory)
   .service("identityResolver", identityResolverFactory)
@@ -39,26 +38,16 @@ export const di = await createRegistry()
     ["identityResolver"],
     accountPdsRepositoryFactory,
   )
-  .service(
-    "userRepository",
-    ["userDbRepository", "accountPdsRepository"],
-    userRepositoryFactory,
-  )
   .service("atpassportClient", atpassportClientFactory)
   .service("cookieSessionStorage", cookieSessionStorageFactory)
   .service(
-    "userService",
-    [
-      "userRepository",
-      "userDbRepository",
-      "accountPdsRepository",
-      "identityResolver",
-    ],
-    userServiceFactory,
+    "ownerService",
+    ["ownerDbRepository", "accountPdsRepository", "identityResolver"],
+    ownerServiceFactory,
   )
   .service(
     "boardService",
-    ["boardRepository", "userDbRepository", "accountPdsRepository"],
+    ["boardRepository", "ownerDbRepository", "accountPdsRepository"],
     boardServiceFactory,
   )
   .service("atpassportService", ["atpassportClient"], atpassportServiceFactory)
@@ -70,7 +59,7 @@ export const di = await createRegistry()
   )
   .service(
     "jetstreamService",
-    ["cursorRepository", "boardService", "userService"],
+    ["cursorRepository", "boardService", "ownerService"],
     jetstreamServiceFactory,
   )
   .resolve();

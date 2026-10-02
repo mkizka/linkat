@@ -13,7 +13,7 @@ import {
 } from "~/server/infrastructure/accountPdsRepository";
 import type { ICursorRepository } from "~/server/infrastructure/cursorRepository";
 import type { IBoardService } from "~/server/service/boardService/board";
-import type { IUserService } from "~/server/service/userService/user";
+import type { IOwnerService } from "~/server/service/ownerService/owner";
 import { env } from "~/utils/env";
 import { createLogger } from "~/utils/logger";
 import { tryCatch } from "~/utils/tryCatch";
@@ -40,11 +40,11 @@ export interface IJetstreamService {
 export const jetstreamServiceFactory = ({
   cursorRepository,
   boardService,
-  userService,
+  ownerService,
 }: {
   cursorRepository: ICursorRepository;
   boardService: IBoardService;
-  userService: IUserService;
+  ownerService: IOwnerService;
 }): IJetstreamService => {
   const jetstream = new Jetstream({
     ws: WebSocket,
@@ -102,9 +102,9 @@ export const jetstreamServiceFactory = ({
       profile = parsed;
     }
     // 持ち主の写しが無いアカウントのイベントは捨てる
-    const user = await userService.updateProfile({ did: event.did, profile });
-    if (user) {
-      logger.info({ user }, "プロフィールを更新しました");
+    const owner = await ownerService.updateProfile({ did: event.did, profile });
+    if (owner) {
+      logger.info({ owner }, "プロフィールを更新しました");
     }
   };
 
@@ -126,7 +126,7 @@ export const jetstreamServiceFactory = ({
 
   jetstream.onDelete("blue.linkat.board", async (event) => {
     await boardService.deleteBoard(event.did);
-    logger.info({ userDid: event.did }, "ボードを削除しました");
+    logger.info({ ownerDid: event.did }, "ボードを削除しました");
   });
 
   jetstream.onCreate("app.bsky.actor.profile", handleProfileCommit);

@@ -7,7 +7,7 @@ import { Main } from "~/components/layout";
 import { BoardViewer } from "~/features/board/board-viewer";
 import { useUmami } from "~/hooks/useUmami";
 import { getInstance } from "~/i18n/i18n";
-import { getHandleOrDid } from "~/models/user";
+import { getHandleOrDid } from "~/models/owner";
 import { di } from "~/server/di";
 import {
   BoardDbSaveError,
@@ -85,19 +85,19 @@ export async function loader({ request }: Route.LoaderArgs) {
   if (!agent) {
     throw redirect("/login");
   }
-  const [user, board] = await Promise.all([
-    di.userService.findEditor(agent),
+  const [editor, board] = await Promise.all([
+    di.ownerService.findEditor(agent),
     di.boardService.findBoard(agent.assertDid),
   ]);
   return {
-    user,
+    editor,
     board: board && { cards: board.cards },
-    url: `${env.PUBLIC_URL}/${getHandleOrDid(user)}`,
+    url: `${env.PUBLIC_URL}/${getHandleOrDid(editor)}`,
   };
 }
 
 export default function Index({ loaderData }: Route.ComponentProps) {
-  const { user, board, url } = loaderData;
+  const { editor, board, url } = loaderData;
   const { t } = useTranslation();
   const umami = useUmami();
 
@@ -112,7 +112,7 @@ export default function Index({ loaderData }: Route.ComponentProps) {
     ({ currentLocation, nextLocation, historyAction }) =>
       // 保存ボタンを押したときの移動以外のとき
       (currentLocation.pathname !== nextLocation.pathname &&
-        nextLocation.pathname !== `/${getHandleOrDid(user)}`) ||
+        nextLocation.pathname !== `/${getHandleOrDid(editor)}`) ||
       // /alice.testから/editに移動して戻るとき
       // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
       historyAction === "POP",
@@ -135,7 +135,7 @@ export default function Index({ loaderData }: Route.ComponentProps) {
 
   return (
     <Main>
-      <BoardViewer user={user} board={board} url={url} editable />
+      <BoardViewer owner={editor} board={board} url={url} editable />
     </Main>
   );
 }

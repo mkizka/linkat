@@ -6,12 +6,12 @@ import { LinkatAgent } from "~/libs/agent";
 import { server } from "~/mocks/server";
 import { Board, BoardParseError } from "~/models/board";
 import { BoardFactory, cardsFromFactory } from "~/server/factories/board";
-import { UserFactory } from "~/server/factories/user";
+import { OwnerFactory } from "~/server/factories/owner";
 import { accountPdsRepositoryFactory } from "~/server/infrastructure/accountPdsRepository";
 import { boardRepositoryFactory } from "~/server/infrastructure/boardRepository";
 import { db } from "~/server/infrastructure/drizzle";
 import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
-import { userDbRepositoryFactory } from "~/server/infrastructure/userDbRepository";
+import { ownerDbRepositoryFactory } from "~/server/infrastructure/ownerDbRepository";
 
 import {
   BoardDbDeleteError,
@@ -23,10 +23,10 @@ import {
 
 const identityResolver = mock<IIdentityResolver>();
 const boardRepository = boardRepositoryFactory({ db });
-const userDbRepository = userDbRepositoryFactory({ db });
+const ownerDbRepository = ownerDbRepositoryFactory({ db });
 const boardService = boardServiceFactory({
   boardRepository,
-  userDbRepository,
+  ownerDbRepository,
   accountPdsRepository: accountPdsRepositoryFactory({ identityResolver }),
 });
 
@@ -76,15 +76,15 @@ describe("boardService", () => {
       // arrange
       const existing = await BoardFactory.create();
       // act
-      const actual = await boardService.findBoard(asDid(existing.userDid));
+      const actual = await boardService.findBoard(asDid(existing.ownerDid));
       // assert
-      expect(actual).toEqual(new Board(existing.userDid, cardsFromFactory));
+      expect(actual).toEqual(new Board(existing.ownerDid, cardsFromFactory));
     });
     test("DBにボードが無ければnullを返す", async () => {
       // arrange
-      const user = await UserFactory.create();
+      const owner = await OwnerFactory.create();
       // act
-      const actual = await boardService.findBoard(asDid(user.did));
+      const actual = await boardService.findBoard(asDid(owner.did));
       // assert
       expect(actual).toBeNull();
     });
@@ -110,23 +110,23 @@ describe("boardService", () => {
         description: "プロフィールの説明",
         displayName: "Alice",
       });
-      expect(await userDbRepository.findByDid(asDid(did))).toEqual(actual);
+      expect(await ownerDbRepository.findByDid(asDid(did))).toEqual(actual);
       expect(await boardRepository.find(asDid(did))).toEqual(board);
     });
     test("持ち主の写しがあれば、プロフィールとハンドルを更新する", async () => {
       // arrange
-      const user = await UserFactory.create({
+      const owner = await OwnerFactory.create({
         did: "did:plc:owner",
         handle: "old.example.com",
         displayName: "古い名前",
       });
-      mockIdentity(user.did, "alice.example.com");
+      mockIdentity(owner.did, "alice.example.com");
       server.use(
         http.get(getRecordUrl, () => HttpResponse.json(dummyProfileRecord)),
       );
       // act
       const actual = await boardService.saveBoard(
-        new Board(user.did, dummyCards),
+        new Board(owner.did, dummyCards),
       );
       // assert
       expect(actual).toMatchObject({
@@ -137,7 +137,7 @@ describe("boardService", () => {
     });
     test("検証済みのハンドルが同じ他の写しは、ハンドルをnullにする", async () => {
       // arrange
-      const other = await UserFactory.create({ handle: "alice.example.com" });
+      const other = await OwnerFactory.create({ handle: "alice.example.com" });
       const did = "did:plc:owner";
       mockIdentity(did, "alice.example.com");
       server.use(
@@ -146,20 +146,22 @@ describe("boardService", () => {
       // act
       await boardService.saveBoard(new Board(did, dummyCards));
       // assert
-      expect(await userDbRepository.findByDid(asDid(other.did))).toMatchObject({
-        handle: null,
-      });
+      expect(await ownerDbRepository.findByDid(asDid(other.did))).toMatchObject(
+        {
+          handle: null,
+        },
+      );
     });
     test("ハンドルの検証に失敗したら、写しのハンドルをnullにする", async () => {
       // arrange
-      const user = await UserFactory.create({ handle: "old.example.com" });
-      mockIdentity(user.did, null);
+      const owner = await OwnerFactory.create({ handle: "old.example.com" });
+      mockIdentity(owner.did, null);
       server.use(
         http.get(getRecordUrl, () => HttpResponse.json(dummyProfileRecord)),
       );
       // act
       const actual = await boardService.saveBoard(
-        new Board(user.did, dummyCards),
+        new Board(owner.did, dummyCards),
       );
       // assert
       expect(actual.handle).toBeNull();
@@ -182,14 +184,14 @@ describe("boardService", () => {
     });
     test("一時的な障害なら、既存のハンドルとプロフィールを残す", async () => {
       // arrange
-      const user = await UserFactory.create({
+      const owner = await OwnerFactory.create({
         handle: "alice.example.com",
         displayName: "Alice",
         avatarCid: AVATAR_CID,
       });
       // act
       const actual = await boardService.saveBoard(
-        new Board(user.did, dummyCards),
+        new Board(owner.did, dummyCards),
       );
       // assert
       expect(actual).toMatchObject({
@@ -200,12 +202,12 @@ describe("boardService", () => {
     });
     test("プロフィールの取得に失敗したら、既存のプロフィールを残してハンドルは更新する", async () => {
       // arrange
-      const user = await UserFactory.create({
+      const owner = await OwnerFactory.create({
         handle: "old.example.com",
         displayName: "Alice",
         avatarCid: AVATAR_CID,
       });
-      mockIdentity(user.did, "alice.example.com");
+      mockIdentity(owner.did, "alice.example.com");
       server.use(
         http.get(getRecordUrl, () =>
           HttpResponse.json({ error: "InternalServerError" }, { status: 500 }),
@@ -213,7 +215,7 @@ describe("boardService", () => {
       );
       // act
       const actual = await boardService.saveBoard(
-        new Board(user.did, dummyCards),
+        new Board(owner.did, dummyCards),
       );
       // assert
       expect(actual).toMatchObject({
@@ -248,19 +250,19 @@ describe("boardService", () => {
   describe("parseBoardFromForm", () => {
     test("正しい形式のJSONならBoardを返す", async () => {
       // arrange
-      const userDid = asDid("did:plc:dummy");
+      const ownerDid = asDid("did:plc:dummy");
       const rawBoard = JSON.stringify({ cards: dummyCards });
       // act
-      const actual = await boardService.parseBoardFromForm(userDid, rawBoard);
+      const actual = await boardService.parseBoardFromForm(ownerDid, rawBoard);
       // assert
-      expect(actual).toEqual(new Board(userDid, dummyCards));
+      expect(actual).toEqual(new Board(ownerDid, dummyCards));
     });
     test("JSONとして不正な文字列ならErrorを返す", async () => {
       // arrange
-      const userDid = asDid("did:plc:dummy");
+      const ownerDid = asDid("did:plc:dummy");
       // act
       const actual = await boardService.parseBoardFromForm(
-        userDid,
+        ownerDid,
         "{invalid-json",
       );
       // assert
@@ -268,10 +270,10 @@ describe("boardService", () => {
     });
     test("cardsを含まない形式ならBoardParseErrorを返す", async () => {
       // arrange
-      const userDid = asDid("did:plc:dummy");
+      const ownerDid = asDid("did:plc:dummy");
       // act
       const actual = await boardService.parseBoardFromForm(
-        userDid,
+        ownerDid,
         JSON.stringify({}),
       );
       // assert
@@ -291,9 +293,9 @@ describe("boardService", () => {
 
     test("PDSに保存してからDBに保存し、持ち主の写しを返す", async () => {
       // arrange
-      const user = await UserFactory.create();
-      mockIdentity(user.did, "alice.example.com");
-      const board = new Board(user.did, dummyCards);
+      const owner = await OwnerFactory.create();
+      mockIdentity(owner.did, "alice.example.com");
+      const board = new Board(owner.did, dummyCards);
       let putRecordBody: unknown;
       server.use(
         http.get(getRecordUrl, () => HttpResponse.json(dummyProfileRecord)),
@@ -307,25 +309,25 @@ describe("boardService", () => {
       );
       // act
       const actual = await boardService.publishBoard(
-        createAgent(user.did),
+        createAgent(owner.did),
         board,
       );
       // assert
       expect(actual).toMatchObject({
-        did: user.did,
+        did: owner.did,
         handle: "alice.example.com",
       });
       expect(putRecordBody).toMatchObject({
-        repo: user.did,
+        repo: owner.did,
         collection: "blue.linkat.board",
         rkey: "self",
         record: { cards: dummyCards },
       });
-      expect(await boardRepository.find(asDid(user.did))).toEqual(board);
+      expect(await boardRepository.find(asDid(owner.did))).toEqual(board);
     });
     test("PDSへの保存に失敗したらDBに保存せずBoardPdsSaveErrorを投げる", async () => {
       // arrange
-      const user = await UserFactory.create();
+      const owner = await OwnerFactory.create();
       server.use(
         http.post(putRecordUrl, () =>
           HttpResponse.json({ error: "InternalServerError" }, { status: 500 }),
@@ -333,16 +335,16 @@ describe("boardService", () => {
       );
       // act
       const actual = boardService.publishBoard(
-        createAgent(user.did),
-        new Board(user.did, dummyCards),
+        createAgent(owner.did),
+        new Board(owner.did, dummyCards),
       );
       // assert
       await expect(actual).rejects.toThrow(BoardPdsSaveError);
-      expect(await boardRepository.find(asDid(user.did))).toBeNull();
+      expect(await boardRepository.find(asDid(owner.did))).toBeNull();
     });
     test("DBへの保存に失敗したらBoardDbSaveErrorを投げる", async () => {
       // arrange
-      const user = await UserFactory.create();
+      const owner = await OwnerFactory.create();
       server.use(
         http.post(putRecordUrl, () =>
           HttpResponse.json({
@@ -354,11 +356,39 @@ describe("boardService", () => {
       vi.spyOn(boardRepository, "save").mockRejectedValueOnce(new Error());
       // act
       const actual = boardService.publishBoard(
-        createAgent(user.did),
-        new Board(user.did, dummyCards),
+        createAgent(owner.did),
+        new Board(owner.did, dummyCards),
       );
       // assert
       await expect(actual).rejects.toThrow(BoardDbSaveError);
+    });
+  });
+
+  describe("deleteBoard", () => {
+    test("ボードと持ち主の写しを削除する", async () => {
+      // arrange
+      const board = await BoardFactory.create();
+      const other = await BoardFactory.create();
+      // act
+      await boardService.deleteBoard(asDid(board.ownerDid));
+      // assert
+      expect(await boardRepository.find(asDid(board.ownerDid))).toBeNull();
+      expect(
+        await ownerDbRepository.findByDid(asDid(board.ownerDid)),
+      ).toBeNull();
+      expect(await boardRepository.find(asDid(other.ownerDid))).not.toBeNull();
+      expect(
+        await ownerDbRepository.findByDid(asDid(other.ownerDid)),
+      ).not.toBeNull();
+    });
+    test("持ち主の写しが無くても、ボードを削除する", async () => {
+      // arrange
+      const did = "did:plc:nocopy";
+      await BoardFactory.create({ ownerDid: did });
+      // act
+      await boardService.deleteBoard(asDid(did));
+      // assert
+      expect(await boardRepository.find(asDid(did))).toBeNull();
     });
   });
 
@@ -380,16 +410,19 @@ describe("boardService", () => {
       );
       // act
       await boardService.unpublishBoard(
-        createAgent(board.userDid),
-        asDid(board.userDid),
+        createAgent(board.ownerDid),
+        asDid(board.ownerDid),
       );
       // assert
       expect(deleteRecordBody).toMatchObject({
-        repo: board.userDid,
+        repo: board.ownerDid,
         collection: "blue.linkat.board",
         rkey: "self",
       });
-      expect(await boardRepository.find(asDid(board.userDid))).toBeNull();
+      expect(await boardRepository.find(asDid(board.ownerDid))).toBeNull();
+      expect(
+        await ownerDbRepository.findByDid(asDid(board.ownerDid)),
+      ).toBeNull();
     });
     test("PDSからの削除に失敗したらDBから削除せずBoardPdsDeleteErrorを投げる", async () => {
       // arrange
@@ -401,12 +434,15 @@ describe("boardService", () => {
       );
       // act
       const actual = boardService.unpublishBoard(
-        createAgent(board.userDid),
-        asDid(board.userDid),
+        createAgent(board.ownerDid),
+        asDid(board.ownerDid),
       );
       // assert
       await expect(actual).rejects.toThrow(BoardPdsDeleteError);
-      expect(await boardRepository.find(asDid(board.userDid))).not.toBeNull();
+      expect(await boardRepository.find(asDid(board.ownerDid))).not.toBeNull();
+      expect(
+        await ownerDbRepository.findByDid(asDid(board.ownerDid)),
+      ).not.toBeNull();
     });
     test("DBからの削除に失敗したらBoardDbDeleteErrorを投げる", async () => {
       // arrange
@@ -415,8 +451,8 @@ describe("boardService", () => {
       vi.spyOn(boardRepository, "delete").mockRejectedValueOnce(new Error());
       // act
       const actual = boardService.unpublishBoard(
-        createAgent(board.userDid),
-        asDid(board.userDid),
+        createAgent(board.ownerDid),
+        asDid(board.ownerDid),
       );
       // assert
       await expect(actual).rejects.toThrow(BoardDbDeleteError);

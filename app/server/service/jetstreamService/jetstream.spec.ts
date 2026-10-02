@@ -4,37 +4,32 @@ import { CommitType, EventType } from "@skyware/jetstream";
 import { Pool } from "pg";
 import { mock, mockReset } from "vitest-mock-extended";
 
-import { UserFactory } from "~/server/factories/user";
+import { OwnerFactory } from "~/server/factories/owner";
 import { accountPdsRepositoryFactory } from "~/server/infrastructure/accountPdsRepository";
 import { boardRepositoryFactory } from "~/server/infrastructure/boardRepository";
 import { cursorRepositoryFactory } from "~/server/infrastructure/cursorRepository";
 import { db } from "~/server/infrastructure/drizzle";
 import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
-import { userDbRepositoryFactory } from "~/server/infrastructure/userDbRepository";
-import { userRepositoryFactory } from "~/server/infrastructure/userRepository";
+import { ownerDbRepositoryFactory } from "~/server/infrastructure/ownerDbRepository";
 import { boardServiceFactory } from "~/server/service/boardService/board";
-import { userServiceFactory } from "~/server/service/userService/user";
+import { ownerServiceFactory } from "~/server/service/ownerService/owner";
 import { env } from "~/utils/env";
 
 import { jetstreamServiceFactory } from "./jetstream";
 
 const identityResolver = mock<IIdentityResolver>();
-const userDbRepository = userDbRepositoryFactory({ db });
+const ownerDbRepository = ownerDbRepositoryFactory({ db });
 const accountPdsRepository = accountPdsRepositoryFactory({ identityResolver });
 
 const jetstreamService = jetstreamServiceFactory({
   cursorRepository: cursorRepositoryFactory({ db }),
   boardService: boardServiceFactory({
     boardRepository: boardRepositoryFactory({ db }),
-    userDbRepository,
+    ownerDbRepository,
     accountPdsRepository,
   }),
-  userService: userServiceFactory({
-    userRepository: userRepositoryFactory({
-      userDbRepository,
-      accountPdsRepository,
-    }),
-    userDbRepository,
+  ownerService: ownerServiceFactory({
+    ownerDbRepository,
     accountPdsRepository,
     identityResolver,
   }),
@@ -118,24 +113,24 @@ describe("jetstreamService", () => {
   describe("handleProfileCommit", () => {
     test("持ち主の写しがあれば、レコードの値でプロフィールを更新し、ハンドルを解決し直す", async () => {
       // arrange
-      const user = await UserFactory.create({
+      const owner = await OwnerFactory.create({
         handle: "old.example.com",
         displayName: "古い名前",
       });
       identityResolver.resolve.mockResolvedValue({
         type: "found",
         identity: {
-          did: asDid(user.did),
+          did: asDid(owner.did),
           pds: "https://pds.example.com",
           handle: "new.example.com",
         },
       });
       // act
       await jetstreamService.handleProfileCommit(
-        profileUpdateEvent(user.did, profileRecord),
+        profileUpdateEvent(owner.did, profileRecord),
       );
       // assert
-      const actual = await userDbRepository.findByDid(asDid(user.did));
+      const actual = await ownerDbRepository.findByDid(asDid(owner.did));
       expect(actual).toMatchObject({
         handle: "new.example.com",
         displayName: "新しい名前",
@@ -146,18 +141,18 @@ describe("jetstreamService", () => {
     });
     test("プロフィールのレコードが削除された場合、プロフィールを空にする", async () => {
       // arrange
-      const user = await UserFactory.create({
+      const owner = await OwnerFactory.create({
         displayName: "古い名前",
         description: "古い説明",
         avatarCid,
       });
       identityResolver.resolve.mockResolvedValue({ type: "unavailable" });
       // act
-      await jetstreamService.handleProfileCommit(profileDeleteEvent(user.did));
+      await jetstreamService.handleProfileCommit(profileDeleteEvent(owner.did));
       // assert
-      const actual = await userDbRepository.findByDid(asDid(user.did));
+      const actual = await ownerDbRepository.findByDid(asDid(owner.did));
       expect(actual).toMatchObject({
-        handle: user.handle,
+        handle: owner.handle,
         displayName: null,
         description: null,
         avatarCid: null,
@@ -172,14 +167,14 @@ describe("jetstreamService", () => {
       );
       // assert
       expect(identityResolver.resolve).not.toHaveBeenCalled();
-      expect(await userDbRepository.findByDid(asDid(did))).toBeNull();
+      expect(await ownerDbRepository.findByDid(asDid(did))).toBeNull();
     });
     test("レコードが不正な場合、既存の値を残す", async () => {
       // arrange
-      const user = await UserFactory.create({ displayName: "古い名前" });
+      const owner = await OwnerFactory.create({ displayName: "古い名前" });
       // act
       await jetstreamService.handleProfileCommit(
-        profileUpdateEvent(user.did, {
+        profileUpdateEvent(owner.did, {
           $type: "app.bsky.actor.profile",
           // 表示名の上限(64文字)を超えている
           displayName: "あ".repeat(65),
@@ -187,19 +182,19 @@ describe("jetstreamService", () => {
       );
       // assert
       expect(identityResolver.resolve).not.toHaveBeenCalled();
-      const actual = await userDbRepository.findByDid(asDid(user.did));
-      expect(actual).toEqual(user);
+      const actual = await ownerDbRepository.findByDid(asDid(owner.did));
+      expect(actual).toEqual(owner);
     });
     test("rkeyがself以外のレコードは無視する", async () => {
       // arrange
-      const user = await UserFactory.create({ displayName: "古い名前" });
+      const owner = await OwnerFactory.create({ displayName: "古い名前" });
       // act
       await jetstreamService.handleProfileCommit(
-        profileUpdateEvent(user.did, profileRecord, "other"),
+        profileUpdateEvent(owner.did, profileRecord, "other"),
       );
       // assert
-      const actual = await userDbRepository.findByDid(asDid(user.did));
-      expect(actual).toEqual(user);
+      const actual = await ownerDbRepository.findByDid(asDid(owner.did));
+      expect(actual).toEqual(owner);
     });
   });
 
@@ -211,13 +206,13 @@ describe("jetstreamService", () => {
       // act
       await jetstreamService.handleCreateOrUpdate(dummyEvent(did));
       // assert
-      const { rows: users } = await pool.query(
-        `SELECT * FROM "User" WHERE "did" = $1`,
+      const { rows: owners } = await pool.query(
+        `SELECT * FROM "Owner" WHERE "did" = $1`,
         [did],
       );
-      expect(users).toHaveLength(1);
+      expect(owners).toHaveLength(1);
       const { rows: boards } = await pool.query(
-        `SELECT * FROM "Board" WHERE "userDid" = $1`,
+        `SELECT * FROM "Board" WHERE "ownerDid" = $1`,
         [did],
       );
       expect(boards).toHaveLength(1);
@@ -234,7 +229,7 @@ describe("jetstreamService", () => {
       // assert
       expect(identityResolver.resolve).not.toHaveBeenCalled();
       const { rows } = await pool.query(
-        `SELECT * FROM "User" WHERE "did" = $1`,
+        `SELECT * FROM "Owner" WHERE "did" = $1`,
         [did],
       );
       expect(rows).toHaveLength(0);

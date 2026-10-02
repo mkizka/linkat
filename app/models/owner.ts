@@ -1,6 +1,6 @@
 import { asDid, type Did } from "@atproto/did";
 
-export class User {
+export class Owner {
   readonly did: Did;
   readonly avatar: string | null;
   readonly avatarCid: string | null;
@@ -36,12 +36,12 @@ export class User {
 }
 
 // 写しのハンドルが無いときは、表示とURLにDIDを使う
-export const getHandleOrDid = (user: Pick<User, "did" | "handle">) =>
-  user.handle ?? user.did;
+export const getHandleOrDid = (owner: Pick<Owner, "did" | "handle">) =>
+  owner.handle ?? owner.did;
 
 export const getAvatarUrl = (
-  user: Pick<User, "did" | "avatar" | "avatarCid">,
+  owner: Pick<Owner, "did" | "avatar" | "avatarCid">,
 ) =>
-  user.avatarCid
-    ? `https://cdn.bsky.app/img/avatar/plain/${user.did}/${user.avatarCid}@jpeg`
-    : user.avatar;
+  owner.avatarCid
+    ? `https://cdn.bsky.app/img/avatar/plain/${owner.did}/${owner.avatarCid}@jpeg`
+    : owner.avatar;
