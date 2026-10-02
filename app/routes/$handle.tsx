@@ -19,13 +19,14 @@ const serviceUnavailable = () => {
 export async function loader({ request, params, context }: Route.LoaderArgs) {
   // この順で処理した場合ボードを持たない(=このサービスのユーザーでない)ユーザーの
   // データも作られてしまうが、一旦このままにしておく
-  const did = await di.userService
-    .resolveDid(params.handle)
-    .catch(serviceUnavailable);
-  if (!did) {
+  const resolution = await di.userService.resolveDid(params.handle);
+  if (resolution.status === "unavailable") {
+    return serviceUnavailable();
+  }
+  if (resolution.status === "notFound") {
     return notFound();
   }
-  const user = await di.userService.findUser({ did });
+  const user = await di.userService.findUser({ did: resolution.did });
   if (!user) {
     return notFound();
   }

@@ -29,7 +29,10 @@ describe("userService", () => {
         "did:plc:dfbe2uvzisfdxwscnwcxdta6",
       );
       // assert
-      expect(actual).toBe("did:plc:dfbe2uvzisfdxwscnwcxdta6");
+      expect(actual).toEqual({
+        status: "resolved",
+        did: "did:plc:dfbe2uvzisfdxwscnwcxdta6",
+      });
     });
     test("DBに同じhandleのユーザーがいても、handleはATProtoで解決する", async () => {
       // arrange
@@ -37,13 +40,17 @@ describe("userService", () => {
         did: "did:plc:olduser000000000000000000",
         handle: "example.com",
       });
-      identityResolver.resolveHandle.mockResolvedValue(
-        asDid("did:plc:dfbe2uvzisfdxwscnwcxdta6"),
-      );
+      identityResolver.resolveHandle.mockResolvedValue({
+        status: "resolved",
+        did: asDid("did:plc:dfbe2uvzisfdxwscnwcxdta6"),
+      });
       // act
       const actual = await userService.resolveDid("example.com");
       // assert
-      expect(actual).toBe("did:plc:dfbe2uvzisfdxwscnwcxdta6");
+      expect(actual).toEqual({
+        status: "resolved",
+        did: "did:plc:dfbe2uvzisfdxwscnwcxdta6",
+      });
       expect(identityResolver.resolveHandle).toHaveBeenCalledWith(
         "example.com",
       );

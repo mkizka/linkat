@@ -144,13 +144,14 @@ const createImage = async (user: User) => {
 };
 
 export async function loader({ params }: Route.LoaderArgs) {
-  const did = await di.userService.resolveDid(params.handle).catch(() => {
+  const resolution = await di.userService.resolveDid(params.handle);
+  if (resolution.status === "unavailable") {
     throw new Response(null, { status: 503 });
-  });
-  if (!did) {
+  }
+  if (resolution.status === "notFound") {
     throw new Response(null, { status: 404 });
   }
-  const user = await di.userService.findUser({ did });
+  const user = await di.userService.findUser({ did: resolution.did });
   if (!user) {
     throw new Response(null, { status: 404 });
   }

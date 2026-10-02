@@ -28,9 +28,9 @@ describe("identityResolver", () => {
       const actual =
         await identityResolverFactory().resolveHandle("example.com");
       // assert
-      expect(actual).toBe(did);
+      expect(actual).toEqual({ status: "resolved", did });
     });
-    test("handleが存在しないときnullを返す", async () => {
+    test("handleが存在しないときnotFoundを返す", async () => {
       // arrange
       server.use(
         http.get(resolveHandleUrl, () =>
@@ -44,9 +44,9 @@ describe("identityResolver", () => {
       const actual =
         await identityResolverFactory().resolveHandle("example.com");
       // assert
-      expect(actual).toBeNull();
+      expect(actual).toEqual({ status: "notFound" });
     });
-    test("DIDドキュメントにhandleが無いときnullを返す", async () => {
+    test("DIDドキュメントにhandleが無いときnotFoundを返す", async () => {
       // arrange
       server.use(
         http.get(resolveHandleUrl, () => HttpResponse.json({ did })),
@@ -56,9 +56,9 @@ describe("identityResolver", () => {
       const actual =
         await identityResolverFactory().resolveHandle("example.com");
       // assert
-      expect(actual).toBeNull();
+      expect(actual).toEqual({ status: "notFound" });
     });
-    test("DIDが存在しないときnullを返す", async () => {
+    test("DIDが存在しないときnotFoundを返す", async () => {
       // arrange
       server.use(
         http.get(resolveHandleUrl, () => HttpResponse.json({ did })),
@@ -68,9 +68,9 @@ describe("identityResolver", () => {
       const actual =
         await identityResolverFactory().resolveHandle("example.com");
       // assert
-      expect(actual).toBeNull();
+      expect(actual).toEqual({ status: "notFound" });
     });
-    test("handleの解決に一時的に失敗したとき例外を投げる", async () => {
+    test("handleの解決に一時的に失敗したときunavailableを返す", async () => {
       // arrange
       server.use(
         http.get(
@@ -79,20 +79,22 @@ describe("identityResolver", () => {
         ),
       );
       // act
-      const actual = identityResolverFactory().resolveHandle("example.com");
+      const actual =
+        await identityResolverFactory().resolveHandle("example.com");
       // assert
-      await expect(actual).rejects.toThrow();
+      expect(actual).toEqual({ status: "unavailable" });
     });
-    test("DIDの解決に一時的に失敗したとき例外を投げる", async () => {
+    test("DIDの解決に一時的に失敗したときunavailableを返す", async () => {
       // arrange
       server.use(
         http.get(resolveHandleUrl, () => HttpResponse.json({ did })),
         http.get(plcUrl, () => new HttpResponse(null, { status: 500 })),
       );
       // act
-      const actual = identityResolverFactory().resolveHandle("example.com");
+      const actual =
+        await identityResolverFactory().resolveHandle("example.com");
       // assert
-      await expect(actual).rejects.toThrow();
+      expect(actual).toEqual({ status: "unavailable" });
     });
   });
 });

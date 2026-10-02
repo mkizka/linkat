@@ -10,11 +10,16 @@ import { createLogger } from "~/utils/logger";
 
 const logger = createLogger("identityResolver");
 
+export type HandleResolution =
+  | { status: "resolved"; did: Did }
+  | { status: "notFound" }
+  | { status: "unavailable" };
+
 export interface IIdentityResolver {
   resolve: (
     handleOrDid: string,
   ) => Promise<{ did: Did; handle: string } | null>;
-  resolveHandle: (handle: string) => Promise<Did | null>;
+  resolveHandle: (handle: string) => Promise<HandleResolution>;
 }
 
 const isNotFound = (error: unknown) =>
@@ -40,13 +45,13 @@ export const identityResolverFactory = (): IIdentityResolver => {
     async resolveHandle(handle) {
       try {
         const { did } = await resolver.resolve(handle);
-        return did;
+        return { status: "resolved", did };
       } catch (error) {
         if (isNotFound(error)) {
-          return null;
+          return { status: "notFound" };
         }
         logger.warn(error, "handleの解決に一時的に失敗しました");
-        throw error;
+        return { status: "unavailable" };
       }
     },
   };
