@@ -36,6 +36,7 @@ export const userRepositoryFactory = ({
     return await userDbRepository.save(
       new User({
         did: fetched.did,
+        avatar: profile?.avatar ?? null,
         avatarCid: profile?.avatarCid ?? null,
         description: profile?.description ?? null,
         displayName: profile?.displayName ?? null,

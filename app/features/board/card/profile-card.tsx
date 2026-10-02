@@ -31,7 +31,7 @@ function AvatarPlaceholder() {
 }
 
 export type ProfileCardProps = {
-  user: Pick<User, "did" | "avatarCid" | "displayName" | "handle">;
+  user: Pick<User, "did" | "avatar" | "avatarCid" | "displayName" | "handle">;
   url: string;
   showEditButton?: boolean;
 };

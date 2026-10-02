@@ -73,6 +73,7 @@ describe("userRepository", () => {
       const actual = await userRepository.findByHandleOrDid("example.com");
       // assert
       expect(actual).toEqual({
+        avatar: null,
         avatarCid: AVATAR_CID,
         description: "Test user 1",
         did: "did:plc:dfbe2uvzisfdxwscnwcxdta6",
@@ -88,6 +89,7 @@ describe("userRepository", () => {
       vi.setSystemTime(new Date("2024-01-01T00:10:00.000Z"));
       await UserFactory.create({
         did: "did:plc:dfbe2uvzisfdxwscnwcxdta6",
+        avatar: "https://example.com/avatar.png",
         createdAt: new Date("2024-01-01T00:00:00.000Z"),
         updatedAt: new Date("2024-01-01T00:00:00.000Z"),
       });
@@ -101,6 +103,7 @@ describe("userRepository", () => {
       );
       // assert
       expect(actual).toEqual({
+        avatar: null,
         avatarCid: AVATAR_CID,
         description: "Test user 1",
         did: "did:plc:dfbe2uvzisfdxwscnwcxdta6",
@@ -120,6 +123,7 @@ describe("userRepository", () => {
       const actual = await userRepository.findByHandleOrDid("example.com");
       // assert
       expect(actual).toEqual({
+        avatar: null,
         avatarCid: null,
         description: null,
         did: "did:plc:dfbe2uvzisfdxwscnwcxdta6",
@@ -136,7 +140,7 @@ describe("userRepository", () => {
       await UserFactory.create({
         did: "did:plc:dfbe2uvzisfdxwscnwcxdta6",
         handle: "old.example.com",
-        avatarCid: AVATAR_CID,
+        avatar: "https://example.com/avatar.png",
         description: "Test user 1",
         displayName: "Alice",
         createdAt: new Date("2024-01-01T00:00:00.000Z"),
@@ -152,7 +156,8 @@ describe("userRepository", () => {
       );
       // assert
       expect(actual).toEqual({
-        avatarCid: AVATAR_CID,
+        avatar: "https://example.com/avatar.png",
+        avatarCid: null,
         description: "Test user 1",
         did: "did:plc:dfbe2uvzisfdxwscnwcxdta6",
         displayName: "Alice",

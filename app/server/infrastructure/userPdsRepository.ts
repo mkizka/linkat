@@ -10,7 +10,10 @@ import { tryCatch } from "~/utils/tryCatch";
 
 const logger = createLogger("userPdsRepository");
 
-type Profile = Pick<User, "avatarCid" | "description" | "displayName">;
+type Profile = Pick<
+  User,
+  "avatar" | "avatarCid" | "description" | "displayName"
+>;
 
 export interface IUserPdsRepository {
   findByHandleOrDid: (
@@ -23,6 +26,7 @@ const fetchProfile = async ({ did, pds }: { did: Did; pds: string }) => {
   const agent = LinkatAgent.credential(pds);
   const { value } = await agent.get(profile, { repo: did });
   return {
+    avatar: null,
     avatarCid: getBlobCidString(value.avatar) ?? null,
     description: value.description ?? null,
     displayName: value.displayName ?? null,

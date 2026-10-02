@@ -5,6 +5,7 @@ import { getAvatarUrl, User } from "./user";
 const createUser = (props: Partial<ConstructorParameters<typeof User>[0]>) =>
   new User({
     did: "did:plc:dummy",
+    avatar: null,
     avatarCid: null,
     description: null,
     displayName: null,
@@ -46,6 +47,17 @@ describe("getAvatarUrl", () => {
     expect(actual).toBe(
       "https://cdn.bsky.app/img/avatar/plain/did:plc:dummy/bafkreiavatar@jpeg",
     );
+  });
+  test("アバターのCIDが無ければ移行前のアバターのURLを返す", () => {
+    // arrange
+    const user = createUser({
+      avatar: "https://example.com/avatar.png",
+      avatarCid: null,
+    });
+    // act
+    const actual = getAvatarUrl(user);
+    // assert
+    expect(actual).toBe("https://example.com/avatar.png");
   });
   test("アバターが無ければnullを返す", () => {
     // arrange

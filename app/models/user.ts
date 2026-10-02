@@ -2,6 +2,7 @@ import { asDid, type Did } from "@atproto/did";
 
 export class User {
   readonly did: Did;
+  readonly avatar: string | null;
   readonly avatarCid: string | null;
   readonly description: string | null;
   readonly displayName: string | null;
@@ -11,6 +12,7 @@ export class User {
 
   constructor(props: {
     did: string;
+    avatar: string | null;
     avatarCid: string | null;
     description: string | null;
     displayName: string | null;
@@ -19,6 +21,7 @@ export class User {
     updatedAt: Date;
   }) {
     this.did = asDid(props.did);
+    this.avatar = props.avatar;
     this.avatarCid = props.avatarCid;
     this.description = props.description;
     this.displayName = props.displayName;
@@ -32,7 +35,9 @@ export class User {
   }
 }
 
-export const getAvatarUrl = (user: Pick<User, "did" | "avatarCid">) =>
+export const getAvatarUrl = (
+  user: Pick<User, "did" | "avatar" | "avatarCid">,
+) =>
   user.avatarCid
     ? `https://cdn.bsky.app/img/avatar/plain/${user.did}/${user.avatarCid}@jpeg`
-    : null;
+    : user.avatar;

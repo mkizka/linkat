@@ -1,4 +1,3 @@
-import { User } from "~/models/user";
 import { db } from "~/server/infrastructure/drizzle";
 import { userTable } from "~/server/infrastructure/schema";
 
@@ -19,6 +18,6 @@ export const UserFactory = {
     if (!user) {
       throw new Error("ユーザーの作成に失敗しました");
     }
-    return new User(user);
+    return user;
   },
 };

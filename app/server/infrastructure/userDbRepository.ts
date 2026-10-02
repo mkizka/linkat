@@ -37,6 +37,7 @@ export const userDbRepositoryFactory = ({
   async save(user) {
     const data = {
       did: user.did,
+      avatar: user.avatar,
       avatarCid: user.avatarCid,
       description: user.description,
       displayName: user.displayName,
