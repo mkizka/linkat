@@ -1,7 +1,9 @@
 import type { Did } from "@atproto/did";
-import { getBlobCidString } from "@atproto/lex";
+import { getBlobCidString, lexParse } from "@atproto/lex";
 
-import profile from "~/generated/app/bsky/actor/profile";
+import profile, {
+  type Main as ProfileRecord,
+} from "~/generated/app/bsky/actor/profile";
 import { LinkatAgent } from "~/libs/agent";
 import type { User } from "~/models/user";
 import type {
@@ -13,7 +15,7 @@ import { tryCatch } from "~/utils/tryCatch";
 
 const logger = createLogger("accountPdsRepository");
 
-type Profile = Pick<
+export type Profile = Pick<
   User,
   "avatar" | "avatarCid" | "description" | "displayName"
 >;
@@ -26,16 +28,28 @@ export interface IAccountPdsRepository {
   } | null>;
 }
 
+const toProfile = (value: ProfileRecord): Profile => ({
+  avatar: null,
+  avatarCid: getBlobCidString(value.avatar) ?? null,
+  description: value.description ?? null,
+  displayName: value.displayName ?? null,
+});
+
+// JetstreamなどからJSONで受け取ったプロフィールのレコードを変換する。不正な値ならnullを返す
+export const parseProfileRecord = (json: unknown): Profile | null => {
+  try {
+    const result = profile.safeParse(lexParse(JSON.stringify(json)));
+    return result.success ? toProfile(result.value) : null;
+  } catch {
+    return null;
+  }
+};
+
 const fetchProfile = async ({ did, pds }: { did: Did; pds: string }) => {
   logger.info({ did, pds }, "プロフィールを取得します");
   const agent = LinkatAgent.credential(pds);
   const { value } = await agent.get(profile, { repo: did });
-  return {
-    avatar: null,
-    avatarCid: getBlobCidString(value.avatar) ?? null,
-    description: value.description ?? null,
-    displayName: value.displayName ?? null,
-  };
+  return toProfile(value);
 };
 
 export const accountPdsRepositoryFactory = ({

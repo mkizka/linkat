@@ -1,8 +1,16 @@
-import type { CommitCreateEvent, CommitUpdateEvent } from "@skyware/jetstream";
+import type {
+  CommitCreateEvent,
+  CommitDeleteEvent,
+  CommitUpdateEvent,
+} from "@skyware/jetstream";
 import { Jetstream } from "@skyware/jetstream";
 import WebSocket from "ws";
 
 import { Board } from "~/models/board";
+import {
+  parseProfileRecord,
+  type Profile,
+} from "~/server/infrastructure/accountPdsRepository";
 import type { ICursorRepository } from "~/server/infrastructure/cursorRepository";
 import type { IBoardService } from "~/server/service/boardService/board";
 import type { IUserService } from "~/server/service/userService/user";
@@ -20,6 +28,12 @@ export interface IJetstreamService {
       | CommitCreateEvent<"blue.linkat.board">
       | CommitUpdateEvent<"blue.linkat.board">,
   ) => Promise<void>;
+  handleProfileCommit: (
+    event:
+      | CommitCreateEvent<"app.bsky.actor.profile">
+      | CommitUpdateEvent<"app.bsky.actor.profile">
+      | CommitDeleteEvent<"app.bsky.actor.profile">,
+  ) => Promise<void>;
   startJetstream: () => Promise<void>;
 }
 
@@ -35,7 +49,7 @@ export const jetstreamServiceFactory = ({
   const jetstream = new Jetstream({
     ws: WebSocket,
     endpoint: env.JETSTREAM_URL,
-    wantedCollections: ["blue.linkat.board"],
+    wantedCollections: ["blue.linkat.board", "app.bsky.actor.profile"],
   });
 
   const handleCreateOrUpdate = async (
@@ -68,6 +82,42 @@ export const jetstreamServiceFactory = ({
     logger.info({ user, board }, "ボードを更新しました");
   };
 
+  const handleProfileCommit = async (
+    event:
+      | CommitCreateEvent<"app.bsky.actor.profile">
+      | CommitUpdateEvent<"app.bsky.actor.profile">
+      | CommitDeleteEvent<"app.bsky.actor.profile">,
+  ) => {
+    if (event.commit.rkey !== "self") {
+      return;
+    }
+    let profile: Profile;
+    if (event.commit.operation === "delete") {
+      // プロフィールのレコードが消えたときは、空のプロフィールとして扱う
+      profile = {
+        avatar: null,
+        avatarCid: null,
+        description: null,
+        displayName: null,
+      };
+    } else {
+      const parsed = parseProfileRecord(event.commit.record);
+      if (!parsed) {
+        logger.warn(
+          { did: event.did, record: event.commit.record },
+          "プロフィールのパースに失敗しました",
+        );
+        return;
+      }
+      profile = parsed;
+    }
+    // 持ち主の写しが無いアカウントのイベントは捨てる
+    const user = await userService.updateProfile({ did: event.did, profile });
+    if (user) {
+      logger.info({ user }, "プロフィールを更新しました");
+    }
+  };
+
   jetstream.on("open", () => {
     logger.info(`Jetstream subscription started to ${env.JETSTREAM_URL}`);
   });
@@ -89,8 +139,15 @@ export const jetstreamServiceFactory = ({
     logger.info({ userDid: event.did }, "ボードを削除しました");
   });
 
+  jetstream.onCreate("app.bsky.actor.profile", handleProfileCommit);
+
+  jetstream.onUpdate("app.bsky.actor.profile", handleProfileCommit);
+
+  jetstream.onDelete("app.bsky.actor.profile", handleProfileCommit);
+
   return {
     handleCreateOrUpdate,
+    handleProfileCommit,
     async startJetstream() {
       const savedCursor = await cursorRepository.load();
       if (savedCursor !== undefined) {
