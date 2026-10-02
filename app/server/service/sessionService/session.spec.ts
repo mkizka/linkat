@@ -8,7 +8,6 @@ import {
   type IOAuthClient,
   OAuthSessionInvalidError,
 } from "~/server/infrastructure/oauthClient";
-import type { IUserService } from "~/server/service/userService/user";
 
 import { sessionServiceFactory } from "./session";
 
@@ -18,7 +17,6 @@ const oauthClient = mock<IOAuthClient>();
 const sessionService = sessionServiceFactory({
   cookieSessionStorage,
   oauthClient,
-  userService: mock<IUserService>(),
 });
 
 const did = asDid("did:plc:test");

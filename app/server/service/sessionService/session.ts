@@ -1,13 +1,11 @@
 import type { Did } from "@atproto/did";
 
 import { LinkatAgent } from "~/libs/agent";
-import type { User } from "~/models/user";
 import type { ICookieSessionStorage } from "~/server/infrastructure/cookieSessionStorage";
 import {
   type IOAuthClient,
   OAuthSessionInvalidError,
 } from "~/server/infrastructure/oauthClient";
-import type { IUserService } from "~/server/service/userService/user";
 import { createLogger } from "~/utils/logger";
 
 const logger = createLogger("sessionService");
@@ -16,18 +14,15 @@ export interface ISessionService {
   getSessionUserDid: (request: Request) => Promise<Did | null>;
   createSession: (request: Request, did: Did) => Promise<string>;
   destroySession: (request: Request) => Promise<string>;
-  getSessionUser: (request: Request) => Promise<User | null>;
   getSessionAgent: (request: Request) => Promise<LinkatAgent | null>;
 }
 
 export const sessionServiceFactory = ({
   cookieSessionStorage,
   oauthClient,
-  userService,
 }: {
   cookieSessionStorage: ICookieSessionStorage;
   oauthClient: IOAuthClient;
-  userService: IUserService;
 }): ISessionService => {
   const getCookieDid = (request: Request) =>
     cookieSessionStorage.getDid(request.headers.get("Cookie"));
@@ -63,13 +58,6 @@ export const sessionServiceFactory = ({
         });
       }
       return cookieSessionStorage.destroy(request.headers.get("Cookie"));
-    },
-    async getSessionUser(request) {
-      const userDid = await getSessionUserDid(request);
-      if (!userDid) {
-        return null;
-      }
-      return await userService.findUser({ handleOrDid: userDid });
     },
   };
 };

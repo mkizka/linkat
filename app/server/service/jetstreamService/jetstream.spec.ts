@@ -3,16 +3,13 @@ import { CommitType, EventType } from "@skyware/jetstream";
 import { Pool } from "pg";
 import { mock } from "vitest-mock-extended";
 
-import { mockedLogger } from "~/mocks/logger";
 import { accountPdsRepositoryFactory } from "~/server/infrastructure/accountPdsRepository";
 import { boardRepositoryFactory } from "~/server/infrastructure/boardRepository";
 import { cursorRepositoryFactory } from "~/server/infrastructure/cursorRepository";
 import { db } from "~/server/infrastructure/drizzle";
 import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
 import { userDbRepositoryFactory } from "~/server/infrastructure/userDbRepository";
-import { userRepositoryFactory } from "~/server/infrastructure/userRepository";
 import { boardServiceFactory } from "~/server/service/boardService/board";
-import { userServiceFactory } from "~/server/service/userService/user";
 import { env } from "~/utils/env";
 
 import { jetstreamServiceFactory } from "./jetstream";
@@ -23,12 +20,8 @@ const jetstreamService = jetstreamServiceFactory({
   cursorRepository: cursorRepositoryFactory({ db }),
   boardService: boardServiceFactory({
     boardRepository: boardRepositoryFactory({ db }),
-  }),
-  userService: userServiceFactory({
-    userRepository: userRepositoryFactory({
-      userDbRepository: userDbRepositoryFactory({ db }),
-      accountPdsRepository: accountPdsRepositoryFactory({ identityResolver }),
-    }),
+    userDbRepository: userDbRepositoryFactory({ db }),
+    accountPdsRepository: accountPdsRepositoryFactory({ identityResolver }),
   }),
 });
 
@@ -55,20 +48,37 @@ const dummyEvent = (did: string) =>
 
 describe("jetstreamService", () => {
   describe("handleCreateOrUpdate", () => {
-    test("ユーザーがDBになくDIDも解決できない場合、エラーにせずボードの保存をスキップする", async () => {
+    test("持ち主の写しが無くても、写しを作成してボードを保存する", async () => {
       // arrange
-      const did = "did:plc:notfounduser0000000000000";
+      const did = "did:plc:newowner";
       identityResolver.resolve.mockResolvedValue({ type: "notFound" });
       // act
-      const actual = jetstreamService.handleCreateOrUpdate(dummyEvent(did));
+      await jetstreamService.handleCreateOrUpdate(dummyEvent(did));
       // assert
-      await expect(actual).resolves.toBeUndefined();
-      expect(mockedLogger.warn).toHaveBeenCalledWith(
-        { did },
-        "ユーザーが見つからないためボードの更新をスキップしました",
+      const { rows: users } = await pool.query(
+        `SELECT * FROM "User" WHERE "did" = $1`,
+        [did],
       );
-      const { rows } = await pool.query(
+      expect(users).toHaveLength(1);
+      const { rows: boards } = await pool.query(
         `SELECT * FROM "Board" WHERE "userDid" = $1`,
+        [did],
+      );
+      expect(boards).toHaveLength(1);
+    });
+    test("ボードの形式が不正なら、写しを作らずにスキップする", async () => {
+      // arrange
+      const did = "did:plc:invalidboard";
+      const event = dummyEvent(did);
+      // act
+      await jetstreamService.handleCreateOrUpdate({
+        ...event,
+        commit: { ...event.commit, record: { $type: "blue.linkat.board" } },
+      });
+      // assert
+      expect(identityResolver.resolve).not.toHaveBeenCalled();
+      const { rows } = await pool.query(
+        `SELECT * FROM "User" WHERE "did" = $1`,
         [did],
       );
       expect(rows).toHaveLength(0);
