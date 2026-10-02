@@ -2,7 +2,13 @@ import type { Did } from "@atproto/did";
 
 import type { LinkatAgent } from "~/libs/agent";
 import { Board } from "~/models/board";
+import type { User } from "~/models/user";
+import type {
+  IAccountPdsRepository,
+  Profile,
+} from "~/server/infrastructure/accountPdsRepository";
 import type { IBoardRepository } from "~/server/infrastructure/boardRepository";
+import type { IUserDbRepository } from "~/server/infrastructure/userDbRepository";
 import { tryCatch } from "~/utils/tryCatch";
 
 export class BoardPdsSaveError extends Error {
@@ -34,26 +40,62 @@ export interface IBoardService {
     userDid: Did,
     rawBoard: string,
   ) => Promise<Board | Error>;
-  saveBoard: (board: Board) => Promise<void>;
-  publishBoard: (agent: LinkatAgent, board: Board) => Promise<void>;
+  // ボードを公開・更新した(/editのPOST、Jetstreamのcommit)。保存した持ち主の写しを返す
+  saveBoard: (board: Board) => Promise<User>;
+  publishBoard: (agent: LinkatAgent, board: Board) => Promise<User>;
   findBoard: (userDid: Did) => Promise<Board | null>;
   deleteBoard: (userDid: Did) => Promise<void>;
   unpublishBoard: (agent: LinkatAgent, userDid: Did) => Promise<void>;
 }
 
+const emptyProfile: Profile = {
+  avatar: null,
+  avatarCid: null,
+  description: null,
+  displayName: null,
+};
+
 export const boardServiceFactory = ({
   boardRepository,
+  userDbRepository,
+  accountPdsRepository,
 }: {
   boardRepository: IBoardRepository;
+  userDbRepository: IUserDbRepository;
+  accountPdsRepository: IAccountPdsRepository;
 }): IBoardService => {
+  const saveOwner = async (did: Did) => {
+    const { handle, profile } = await accountPdsRepository.resolveAccount(did);
+    // プロフィールの取得に失敗したときは、初回は空のまま、更新時は既存の値を残す
+    const existing = profile ? null : await userDbRepository.findByDid(did);
+    return await userDbRepository.save({
+      did,
+      ...(profile ??
+        (existing && {
+          avatar: existing.avatar,
+          avatarCid: existing.avatarCid,
+          description: existing.description,
+          displayName: existing.displayName,
+        }) ??
+        emptyProfile),
+      handle,
+      updatedAt: new Date(),
+    });
+  };
+
+  const saveBoard = async (board: Board) => {
+    // Boardは持ち主の写しへの外部キーを持つため、持ち主の写しを先に保存する
+    const owner = await saveOwner(board.userDid);
+    await boardRepository.save(board);
+    return owner;
+  };
+
   return {
     parseBoardFromForm: tryCatch(
       (userDid: Did, rawBoard: string) =>
         new Board(userDid, Board.parseCards(JSON.parse(rawBoard))),
     ),
-    async saveBoard(board) {
-      await boardRepository.save(board);
-    },
+    saveBoard,
     async publishBoard(agent, board) {
       try {
         await agent.updateBoard(board);
@@ -61,7 +103,7 @@ export const boardServiceFactory = ({
         throw new BoardPdsSaveError(error);
       }
       try {
-        await boardRepository.save(board);
+        return await saveBoard(board);
       } catch (error) {
         throw new BoardDbSaveError(error);
       }

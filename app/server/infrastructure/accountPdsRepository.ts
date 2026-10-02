@@ -13,7 +13,7 @@ import { tryCatch } from "~/utils/tryCatch";
 
 const logger = createLogger("accountPdsRepository");
 
-type Profile = Pick<
+export type Profile = Pick<
   User,
   "avatar" | "avatarCid" | "description" | "displayName"
 >;
@@ -24,11 +24,17 @@ export interface IAccountPdsRepository {
     handle: Identity["handle"];
     profile: Profile | null;
   } | null>;
+  // ハンドルを解決し、プロフィールを取得する。写しへの書き込みの中でだけ使う
+  // プロフィールの取得に失敗したときは、profileをnullにする
+  resolveAccount: (did: Did) => Promise<{
+    handle: Identity["handle"];
+    profile: Profile | null;
+  }>;
+  // OAuthセッションのPDSからプロフィールを取得する。ハンドルは解決しない
+  fetchSessionProfile: (agent: LinkatAgent) => Promise<Profile | null>;
 }
 
-const fetchProfile = async ({ did, pds }: { did: Did; pds: string }) => {
-  logger.info({ did, pds }, "プロフィールを取得します");
-  const agent = LinkatAgent.credential(pds);
+const fetchProfile = async (agent: LinkatAgent, did: Did) => {
   const { value } = await agent.get(profile, { repo: did });
   return {
     avatar: null,
@@ -36,6 +42,20 @@ const fetchProfile = async ({ did, pds }: { did: Did; pds: string }) => {
     description: value.description ?? null,
     displayName: value.displayName ?? null,
   };
+};
+
+const tryFetchProfile = async (agent: LinkatAgent, did: Did) => {
+  const fetched = await tryCatch(fetchProfile)(agent, did);
+  if (fetched instanceof Error) {
+    logger.warn(fetched, "プロフィールの取得に失敗しました");
+    return null;
+  }
+  return fetched;
+};
+
+const fetchProfileFromPds = ({ did, pds }: { did: Did; pds: string }) => {
+  logger.info({ did, pds }, "プロフィールを取得します");
+  return tryFetchProfile(LinkatAgent.credential(pds), did);
 };
 
 export const accountPdsRepositoryFactory = ({
@@ -49,14 +69,29 @@ export const accountPdsRepositoryFactory = ({
       return null;
     }
     const { identity } = resolution;
-    const fetched = await tryCatch(fetchProfile)(identity);
-    if (fetched instanceof Error) {
-      logger.warn(fetched, "プロフィールの取得に失敗しました");
-    }
     return {
       did: identity.did,
       handle: identity.handle,
-      profile: fetched instanceof Error ? null : fetched,
+      profile: await fetchProfileFromPds(identity),
     };
+  },
+  async resolveAccount(did) {
+    const resolution = await identityResolver.resolve(did);
+    switch (resolution.type) {
+      case "found":
+        return {
+          handle: resolution.identity.handle,
+          profile: await fetchProfileFromPds(resolution.identity),
+        };
+      // DIDドキュメントが無ければ、検証済みのハンドルも無い
+      case "notFound":
+        return { handle: null, profile: null };
+      // 一時的な障害のときは、既存のハンドルを残す
+      case "unavailable":
+        return { handle: undefined, profile: null };
+    }
+  },
+  async fetchSessionProfile(agent) {
+    return await tryFetchProfile(agent, agent.assertDid);
   },
 });

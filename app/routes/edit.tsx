@@ -22,11 +22,8 @@ const logger = createLogger("edit");
 
 export async function action({ request, context }: Route.ActionArgs) {
   const i18next = getInstance(context);
-  const [user, agent] = await Promise.all([
-    di.sessionService.getSessionUser(request),
-    di.sessionService.getSessionAgent(request),
-  ]);
-  if (!user || !agent) {
+  const agent = await di.sessionService.getSessionAgent(request);
+  if (!agent) {
     setToast(context, {
       message: i18next.t("edit.invalid-session-error-message"),
       type: "error",
@@ -47,7 +44,7 @@ export async function action({ request, context }: Route.ActionArgs) {
     return null;
   }
   const parsedBoard = await di.boardService.parseBoardFromForm(
-    user.did,
+    agent.assertDid,
     rawBoard,
   );
   if (parsedBoard instanceof Error) {
@@ -58,8 +55,9 @@ export async function action({ request, context }: Route.ActionArgs) {
     });
     return null;
   }
+  let owner;
   try {
-    await di.boardService.publishBoard(agent, parsedBoard);
+    owner = await di.boardService.publishBoard(agent, parsedBoard);
   } catch (error) {
     if (error instanceof BoardPdsSaveError) {
       logger.error(error, error.message);
@@ -75,19 +73,22 @@ export async function action({ request, context }: Route.ActionArgs) {
         message: i18next.t("edit.save-delayed-warning-message"),
         type: "warning",
       });
-      return redirect(`/${getHandleOrDid(user)}`);
+      return redirect(`/${agent.assertDid}`);
     }
     throw error;
   }
-  return redirect(`/${getHandleOrDid(user)}?success`);
+  return redirect(`/${getHandleOrDid(owner)}?success`);
 }
 
 export async function loader({ request }: Route.LoaderArgs) {
-  const user = await di.sessionService.getSessionUser(request);
-  if (!user) {
+  const agent = await di.sessionService.getSessionAgent(request);
+  if (!agent) {
     throw redirect("/login");
   }
-  const board = await di.boardService.findBoard(user.did);
+  const [user, board] = await Promise.all([
+    di.userService.findEditor(agent),
+    di.boardService.findBoard(agent.assertDid),
+  ]);
   return {
     user,
     board: board && { cards: board.cards },
