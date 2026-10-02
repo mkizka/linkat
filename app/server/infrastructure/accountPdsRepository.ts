@@ -19,7 +19,7 @@ type Profile = Pick<
 >;
 
 export interface IAccountPdsRepository {
-  findByHandleOrDid: (handleOrDid: string) => Promise<{
+  findByDid: (did: Did) => Promise<{
     did: Did;
     handle: Identity["handle"];
     profile: Profile | null;
@@ -43,8 +43,8 @@ export const accountPdsRepositoryFactory = ({
 }: {
   identityResolver: IIdentityResolver;
 }): IAccountPdsRepository => ({
-  async findByHandleOrDid(handleOrDid) {
-    const resolution = await identityResolver.resolve(handleOrDid);
+  async findByDid(did) {
+    const resolution = await identityResolver.resolve(did);
     if (resolution.type !== "found") {
       return null;
     }

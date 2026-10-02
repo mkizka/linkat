@@ -1,4 +1,4 @@
-import { isDid } from "@atproto/did";
+import { asDid, isDid } from "@atproto/did";
 
 import type { User } from "~/models/user";
 import type { IAccountPdsRepository } from "~/server/infrastructure/accountPdsRepository";
@@ -21,13 +21,19 @@ export const userRepositoryFactory = ({
   accountPdsRepository: IAccountPdsRepository;
 }): IUserRepository => ({
   async findByHandleOrDid(handleOrDid) {
+    // ハンドルとDIDの対応は写しから引き、閲覧時にハンドルを解決しない
+    // 写しに無いハンドルはnullを返す
     const cached = await (isDid(handleOrDid)
       ? userDbRepository.findByDid(handleOrDid)
       : userDbRepository.findByHandle(handleOrDid));
+    if (!cached && !isDid(handleOrDid)) {
+      return null;
+    }
     if (cached && isFresh(cached)) {
       return cached;
     }
-    const fetched = await accountPdsRepository.findByHandleOrDid(handleOrDid);
+    const did = cached?.did ?? asDid(handleOrDid);
+    const fetched = await accountPdsRepository.findByDid(did);
     if (!fetched) {
       return cached;
     }
