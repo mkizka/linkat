@@ -86,9 +86,6 @@ export async function loader({ request }: Route.LoaderArgs) {
   if (!user) {
     throw redirect("/login");
   }
-  if (user.isHidden()) {
-    throw new Response("Not Found", { status: 404 });
-  }
   const board = await di.boardService.findBoard(user.did);
   return {
     user,

@@ -1,6 +1,6 @@
 import type { Did } from "@atproto/did";
 
-import { User } from "./user";
+import { type AccountStatus, User } from "./user";
 
 const createUser = (props: Partial<ConstructorParameters<typeof User>[0]>) =>
   new User({
@@ -39,17 +39,14 @@ describe("isOwnedBy", () => {
 
 describe("isHidden", () => {
   test.each`
-    status              | expected
-    ${"active"}         | ${false}
-    ${"takendown"}      | ${true}
-    ${"suspended"}      | ${true}
-    ${"deleted"}        | ${true}
-    ${"deactivated"}    | ${true}
-    ${"desynchronized"} | ${false}
-    ${"throttled"}      | ${false}
+    status           | expected
+    ${"active"}      | ${false}
+    ${"suspended"}   | ${true}
+    ${"deleted"}     | ${true}
+    ${"deactivated"} | ${true}
   `(
     "$status",
-    ({ status, expected }: { status: string; expected: boolean }) => {
+    ({ status, expected }: { status: AccountStatus; expected: boolean }) => {
       expect(createUser({ status }).isHidden()).toBe(expected);
     },
   );

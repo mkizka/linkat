@@ -93,12 +93,17 @@ describe("jetstreamService", () => {
     });
 
     test.each`
-      account                                     | expected
-      ${{ active: false, status: "deactivated" }} | ${"deactivated"}
-      ${{ active: false }}                        | ${"inactive"}
-      ${{ active: true }}                         | ${"active"}
+      account                                        | expected
+      ${{ active: false, status: "takendown" }}      | ${"suspended"}
+      ${{ active: false, status: "suspended" }}      | ${"suspended"}
+      ${{ active: false, status: "deleted" }}        | ${"deleted"}
+      ${{ active: false, status: "deactivated" }}    | ${"deactivated"}
+      ${{ active: false, status: "desynchronized" }} | ${"active"}
+      ${{ active: false, status: "throttled" }}      | ${"active"}
+      ${{ active: false }}                           | ${"active"}
+      ${{ active: true }}                            | ${"active"}
     `(
-      "$expected の状態を記録する",
+      "$account.status を $expected として記録する",
       async ({
         account,
         expected,
@@ -107,7 +112,7 @@ describe("jetstreamService", () => {
         expected: string;
       }) => {
         // arrange
-        const user = await UserFactory.create({ status: "suspended" });
+        const user = await UserFactory.create({ status: "deleted" });
         // act
         await jetstreamService.handleAccount(accountEvent(user.did, account));
         // assert

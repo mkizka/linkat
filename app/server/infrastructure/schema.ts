@@ -9,13 +9,15 @@ import {
   uniqueIndex,
 } from "drizzle-orm/pg-core";
 
+import type { AccountStatus } from "~/models/user";
+
 export const userTable = pgTable("User", {
   did: text().primaryKey(),
   avatar: text(),
   description: text(),
   displayName: text(),
   handle: text().notNull(),
-  status: text().notNull().default("active"),
+  status: text().$type<AccountStatus>().notNull().default("active"),
   createdAt: timestamp({ precision: 3 }).notNull().defaultNow(),
   updatedAt: timestamp({ precision: 3 }).notNull(),
 });

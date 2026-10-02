@@ -7,6 +7,7 @@ import { Jetstream } from "@skyware/jetstream";
 import WebSocket from "ws";
 
 import { Board } from "~/models/board";
+import type { AccountStatus } from "~/models/user";
 import type { ICursorRepository } from "~/server/infrastructure/cursorRepository";
 import type { IBoardService } from "~/server/service/boardService/board";
 import type { IUserService } from "~/server/service/userService/user";
@@ -17,6 +18,23 @@ import { tryCatch } from "~/utils/tryCatch";
 const logger = createLogger("jetstream");
 
 const CURSOR_SAVE_INTERVAL_MS = 30_000;
+
+const toAccountStatus = (account: AccountEvent["account"]): AccountStatus => {
+  if (account.active) {
+    return "active";
+  }
+  switch (account.status) {
+    case "takendown":
+    case "suspended":
+      return "suspended";
+    case "deleted":
+      return "deleted";
+    case "deactivated":
+      return "deactivated";
+    default:
+      return "active";
+  }
+};
 
 export interface IJetstreamService {
   handleCreateOrUpdate: (
@@ -74,8 +92,7 @@ export const jetstreamServiceFactory = ({
   };
 
   const handleAccount = async ({ account }: AccountEvent) => {
-    const status = account.active ? "active" : (account.status ?? "inactive");
-    await userService.updateStatus(account.did, status);
+    await userService.updateStatus(account.did, toAccountStatus(account));
   };
 
   jetstream.on("open", () => {

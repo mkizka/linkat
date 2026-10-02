@@ -1,6 +1,6 @@
 import { asDid, type Did } from "@atproto/did";
 
-const HIDDEN_STATUSES = ["takendown", "suspended", "deleted", "deactivated"];
+export type AccountStatus = "active" | "suspended" | "deleted" | "deactivated";
 
 export class User {
   readonly did: Did;
@@ -8,7 +8,7 @@ export class User {
   readonly description: string | null;
   readonly displayName: string | null;
   readonly handle: string;
-  readonly status: string;
+  readonly status: AccountStatus;
   readonly createdAt: Date;
   readonly updatedAt: Date;
 
@@ -18,7 +18,7 @@ export class User {
     description: string | null;
     displayName: string | null;
     handle: string;
-    status: string;
+    status: AccountStatus;
     createdAt: Date;
     updatedAt: Date;
   }) {
@@ -33,7 +33,7 @@ export class User {
   }
 
   isHidden() {
-    return HIDDEN_STATUSES.includes(this.status);
+    return this.status !== "active";
   }
 
   isOwnedBy(viewerDid: Did | null) {

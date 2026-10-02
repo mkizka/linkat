@@ -133,16 +133,16 @@ describe("userDbRepository", () => {
       // arrange
       const existing = await UserFactory.create();
       // act
-      await userDbRepository.updateStatus(asDid(existing.did), "takendown");
+      await userDbRepository.updateStatus(asDid(existing.did), "suspended");
       // assert
       const actual = await userDbRepository.findByDid(asDid(existing.did));
-      expect(actual?.status).toBe("takendown");
+      expect(actual?.status).toBe("suspended");
     });
     test("ユーザーが保存されていない場合は何もしない", async () => {
       // arrange
       const did = asDid("did:plc:notfound");
       // act
-      await userDbRepository.updateStatus(did, "takendown");
+      await userDbRepository.updateStatus(did, "suspended");
       // assert
       const actual = await userDbRepository.findByDid(did);
       expect(actual).toBeNull();

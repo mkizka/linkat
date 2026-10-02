@@ -1,6 +1,6 @@
 import { type Did, isDid } from "@atproto/did";
 
-import type { User } from "~/models/user";
+import type { AccountStatus, User } from "~/models/user";
 import type { IUserBskyRepository } from "~/server/infrastructure/userBskyRepository";
 import type { IUserDbRepository } from "~/server/infrastructure/userDbRepository";
 
@@ -11,7 +11,7 @@ const isFresh = (user: User) =>
 
 export interface IUserRepository {
   findByHandleOrDid: (handleOrDid: string) => Promise<User | null>;
-  updateStatus: (did: Did, status: string) => Promise<void>;
+  updateStatus: (did: Did, status: AccountStatus) => Promise<void>;
 }
 
 export const userRepositoryFactory = ({
