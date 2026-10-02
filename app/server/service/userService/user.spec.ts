@@ -1,10 +1,10 @@
 import { mock } from "vitest-mock-extended";
 
 import { UserFactory } from "~/server/factories/user";
+import { accountPdsRepositoryFactory } from "~/server/infrastructure/accountPdsRepository";
 import { db } from "~/server/infrastructure/drizzle";
 import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
 import { userDbRepositoryFactory } from "~/server/infrastructure/userDbRepository";
-import { userPdsRepositoryFactory } from "~/server/infrastructure/userPdsRepository";
 import { userRepositoryFactory } from "~/server/infrastructure/userRepository";
 
 import { userServiceFactory } from "./user";
@@ -12,7 +12,7 @@ import { userServiceFactory } from "./user";
 const userService = userServiceFactory({
   userRepository: userRepositoryFactory({
     userDbRepository: userDbRepositoryFactory({ db }),
-    userPdsRepository: userPdsRepositoryFactory({
+    accountPdsRepository: accountPdsRepositoryFactory({
       identityResolver: mock<IIdentityResolver>(),
     }),
   }),

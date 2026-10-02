@@ -4,10 +4,10 @@ import { mock } from "vitest-mock-extended";
 
 import { server } from "~/mocks/server";
 import { UserFactory } from "~/server/factories/user";
+import { accountPdsRepositoryFactory } from "~/server/infrastructure/accountPdsRepository";
 import { db } from "~/server/infrastructure/drizzle";
 import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
 import { userDbRepositoryFactory } from "~/server/infrastructure/userDbRepository";
-import { userPdsRepositoryFactory } from "~/server/infrastructure/userPdsRepository";
 
 import { userRepositoryFactory } from "./userRepository";
 
@@ -15,7 +15,7 @@ const identityResolver = mock<IIdentityResolver>();
 
 const userRepository = userRepositoryFactory({
   userDbRepository: userDbRepositoryFactory({ db }),
-  userPdsRepository: userPdsRepositoryFactory({ identityResolver }),
+  accountPdsRepository: accountPdsRepositoryFactory({ identityResolver }),
 });
 
 const AVATAR_CID =
@@ -133,7 +133,7 @@ describe("userRepository", () => {
         updatedAt: expect.any(Date),
       });
     });
-    test("DBにユーザーがいて最終更新から一定時間経過しているが、プロフィールが取得できなかった場合、既存のプロフィールを残す", async () => {
+    test("DBに写しがあって最終更新から一定時間経過しているが、プロフィールが取得できなかった場合、既存のプロフィールを残す", async () => {
       // arrange
       vi.useFakeTimers();
       vi.setSystemTime(new Date("2024-01-01T00:10:00.000Z"));

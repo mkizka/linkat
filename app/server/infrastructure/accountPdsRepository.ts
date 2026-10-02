@@ -8,14 +8,14 @@ import type { IIdentityResolver } from "~/server/infrastructure/identityResolver
 import { createLogger } from "~/utils/logger";
 import { tryCatch } from "~/utils/tryCatch";
 
-const logger = createLogger("userPdsRepository");
+const logger = createLogger("accountPdsRepository");
 
 type Profile = Pick<
   User,
   "avatar" | "avatarCid" | "description" | "displayName"
 >;
 
-export interface IUserPdsRepository {
+export interface IAccountPdsRepository {
   findByHandleOrDid: (
     handleOrDid: string,
   ) => Promise<{ did: Did; handle: string; profile: Profile | null } | null>;
@@ -33,11 +33,11 @@ const fetchProfile = async ({ did, pds }: { did: Did; pds: string }) => {
   };
 };
 
-export const userPdsRepositoryFactory = ({
+export const accountPdsRepositoryFactory = ({
   identityResolver,
 }: {
   identityResolver: IIdentityResolver;
-}): IUserPdsRepository => ({
+}): IAccountPdsRepository => ({
   async findByHandleOrDid(handleOrDid) {
     const identity = await identityResolver.resolve(handleOrDid);
     if (!identity) {

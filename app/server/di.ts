@@ -1,5 +1,6 @@
 import { createRegistry } from "@gyaku/di";
 
+import { accountPdsRepositoryFactory } from "~/server/infrastructure/accountPdsRepository";
 import { atpassportClientFactory } from "~/server/infrastructure/atpassportClient";
 import { boardRepositoryFactory } from "~/server/infrastructure/boardRepository";
 import { cookieSessionStorageFactory } from "~/server/infrastructure/cookieSessionStorage";
@@ -12,7 +13,6 @@ import {
   stateStoreFactory,
 } from "~/server/infrastructure/oauthStorage";
 import { userDbRepositoryFactory } from "~/server/infrastructure/userDbRepository";
-import { userPdsRepositoryFactory } from "~/server/infrastructure/userPdsRepository";
 import { userRepositoryFactory } from "~/server/infrastructure/userRepository";
 import { atpassportServiceFactory } from "~/server/service/atpassportService/atpassport";
 import { authServiceFactory } from "~/server/service/authService/auth";
@@ -34,10 +34,14 @@ export const di = await createRegistry()
     ["oauthStateStore", "oauthSessionStore"],
     oauthClientFactory,
   )
-  .service("userPdsRepository", ["identityResolver"], userPdsRepositoryFactory)
+  .service(
+    "accountPdsRepository",
+    ["identityResolver"],
+    accountPdsRepositoryFactory,
+  )
   .service(
     "userRepository",
-    ["userDbRepository", "userPdsRepository"],
+    ["userDbRepository", "accountPdsRepository"],
     userRepositoryFactory,
   )
   .service("atpassportClient", atpassportClientFactory)
