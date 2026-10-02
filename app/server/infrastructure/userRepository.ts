@@ -1,6 +1,6 @@
 import { isDid } from "@atproto/did";
 
-import { User } from "~/models/user";
+import type { User } from "~/models/user";
 import type { IAccountPdsRepository } from "~/server/infrastructure/accountPdsRepository";
 import type { IUserDbRepository } from "~/server/infrastructure/userDbRepository";
 
@@ -33,17 +33,14 @@ export const userRepositoryFactory = ({
     }
     const profile =
       fetched.profile ?? (cached?.did === fetched.did ? cached : null);
-    return await userDbRepository.save(
-      new User({
-        did: fetched.did,
-        avatar: profile?.avatar ?? null,
-        avatarCid: profile?.avatarCid ?? null,
-        description: profile?.description ?? null,
-        displayName: profile?.displayName ?? null,
-        handle: fetched.handle,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      }),
-    );
+    return await userDbRepository.save({
+      did: fetched.did,
+      avatar: profile?.avatar ?? null,
+      avatarCid: profile?.avatarCid ?? null,
+      description: profile?.description ?? null,
+      displayName: profile?.displayName ?? null,
+      handle: fetched.handle,
+      updatedAt: new Date(),
+    });
   },
 });

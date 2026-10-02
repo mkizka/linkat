@@ -41,31 +41,85 @@ describe("userDbRepository", () => {
     });
     test("handleを指定してユーザーを取得できる", async () => {
       // arrange
-      const user = await UserFactory.create();
-      // act
-      const actual = await userDbRepository.findByHandle(user.handle);
-      // assert
-      expect(actual).toEqual(user);
-    });
-    test("handleが同じユーザーが複数DBにある場合は、最後に作成された方を取得する", async () => {
-      // arrange
-      const user1 = await UserFactory.create({
-        handle: "example.com",
-        createdAt: new Date("2024-01-01T00:00:00.000Z"),
-      });
-      const user2 = await UserFactory.create({
-        handle: "example.com",
-        createdAt: new Date("2024-01-02T00:00:00.000Z"),
-      });
+      const user = await UserFactory.create({ handle: "example.com" });
       // act
       const actual = await userDbRepository.findByHandle("example.com");
       // assert
-      expect(user1.did).not.toEqual(user2.did);
-      expect(actual).toEqual(user2);
+      expect(actual).toEqual(user);
     });
   });
 
   describe("save", () => {
+    const userToSave = {
+      did: "did:plc:abcdefghijklmnopqrstuvwx",
+      avatar: null,
+      avatarCid: null,
+      description: null,
+      displayName: null,
+      updatedAt: new Date("2024-02-01T00:00:00.000Z"),
+    };
+    test("他のユーザーが同じhandleを持っている場合、そのユーザーのhandleをnullにする", async () => {
+      // arrange
+      const other = await UserFactory.create({ handle: "example.com" });
+      // act
+      const actual = await userDbRepository.save({
+        ...userToSave,
+        handle: "example.com",
+      });
+      // assert
+      expect(actual.handle).toBe("example.com");
+      const otherActual = await userDbRepository.findByDid(asDid(other.did));
+      expect(otherActual?.handle).toBeNull();
+    });
+    test("handleがundefinedの場合、既存のhandleを残す", async () => {
+      // arrange
+      await UserFactory.create({
+        did: userToSave.did,
+        handle: "example.com",
+      });
+      // act
+      const actual = await userDbRepository.save({
+        ...userToSave,
+        handle: undefined,
+      });
+      // assert
+      expect(actual.handle).toBe("example.com");
+    });
+    test("handleがundefinedで既存のユーザーがいない場合、handleをnullで保存する", async () => {
+      // arrange
+      // act
+      const actual = await userDbRepository.save({
+        ...userToSave,
+        handle: undefined,
+      });
+      // assert
+      expect(actual.handle).toBeNull();
+    });
+    test("handleがnullの場合、handleをnullにする", async () => {
+      // arrange
+      await UserFactory.create({
+        did: userToSave.did,
+        handle: "example.com",
+      });
+      // act
+      const actual = await userDbRepository.save({
+        ...userToSave,
+        handle: null,
+      });
+      // assert
+      expect(actual.handle).toBeNull();
+    });
+    test("handleがnullのユーザーは複数保存できる", async () => {
+      // arrange
+      await UserFactory.create({ handle: null });
+      // act
+      const actual = await userDbRepository.save({
+        ...userToSave,
+        handle: null,
+      });
+      // assert
+      expect(actual.handle).toBeNull();
+    });
     test("新しいユーザーを保存できる", async () => {
       // arrange
       const user = new User({

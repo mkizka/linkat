@@ -102,7 +102,7 @@ const renderImage = async (user: User) => {
                 marginTop: "-1rem",
               }}
             >
-              @{user.handle}
+              {user.handle ? `@${user.handle}` : user.did}
             </p>
           </div>
         </div>

@@ -8,7 +8,7 @@ import { Button } from "~/components/button";
 import { Card } from "~/components/card";
 import { BlueskyIcon } from "~/components/icons/bluesky";
 import { useUmami } from "~/hooks/useUmami";
-import { getAvatarUrl, type User } from "~/models/user";
+import { getAvatarUrl, getHandleOrDid, type User } from "~/models/user";
 
 function Avatar({ avatar }: { avatar: string }) {
   return (
@@ -77,11 +77,11 @@ export function ProfileCard({ user, url, showEditButton }: ProfileCardProps) {
             ) : (
               <a
                 className="btn-bluesky btn text-white"
-                href={`https://bsky.app/profile/${user.handle}`}
+                href={`https://bsky.app/profile/${getHandleOrDid(user)}`}
                 target="_blank"
                 rel="noreferrer"
                 data-umami-event="click-bsky-link"
-                data-umami-event-handle={user.handle}
+                data-umami-event-handle={getHandleOrDid(user)}
               >
                 <BlueskyIcon className="size-6" />
                 Bluesky
@@ -98,7 +98,9 @@ export function ProfileCard({ user, url, showEditButton }: ProfileCardProps) {
         </div>
         <div>
           <h2 className="text-xl font-bold">{user.displayName}</h2>
-          <p className="text-gray-500">@{user.handle}</p>
+          <p className="text-gray-500">
+            {user.handle ? `@${user.handle}` : user.did}
+          </p>
         </div>
       </div>
     </Card>

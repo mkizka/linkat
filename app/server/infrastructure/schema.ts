@@ -9,16 +9,20 @@ import {
   uniqueIndex,
 } from "drizzle-orm/pg-core";
 
-export const userTable = pgTable("User", {
-  did: text().primaryKey(),
-  avatar: text(),
-  avatarCid: text(),
-  description: text(),
-  displayName: text(),
-  handle: text().notNull(),
-  createdAt: timestamp({ precision: 3 }).notNull().defaultNow(),
-  updatedAt: timestamp({ precision: 3 }).notNull(),
-});
+export const userTable = pgTable(
+  "User",
+  {
+    did: text().primaryKey(),
+    avatar: text(),
+    avatarCid: text(),
+    description: text(),
+    displayName: text(),
+    handle: text(),
+    createdAt: timestamp({ precision: 3 }).notNull().defaultNow(),
+    updatedAt: timestamp({ precision: 3 }).notNull(),
+  },
+  (table) => [uniqueIndex("User_handle_key").on(table.handle)],
+);
 
 export const boardTable = pgTable(
   "Board",

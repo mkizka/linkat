@@ -6,7 +6,7 @@ export class User {
   readonly avatarCid: string | null;
   readonly description: string | null;
   readonly displayName: string | null;
-  readonly handle: string;
+  readonly handle: string | null;
   readonly createdAt: Date;
   readonly updatedAt: Date;
 
@@ -16,7 +16,7 @@ export class User {
     avatarCid: string | null;
     description: string | null;
     displayName: string | null;
-    handle: string;
+    handle: string | null;
     createdAt: Date;
     updatedAt: Date;
   }) {
@@ -34,6 +34,10 @@ export class User {
     return this.did === viewerDid;
   }
 }
+
+// 写しのハンドルが無いときは、表示とURLにDIDを使う
+export const getHandleOrDid = (user: Pick<User, "did" | "handle">) =>
+  user.handle ?? user.did;
 
 export const getAvatarUrl = (
   user: Pick<User, "did" | "avatar" | "avatarCid">,

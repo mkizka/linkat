@@ -15,6 +15,13 @@
       "when": 1790873426375,
       "tag": "0001_avatar_cid",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1790958508252,
+      "tag": "0002_handle_unique",
+      "breakpoints": true
     }
   ]
 }

@@ -58,7 +58,7 @@ describe("jetstreamService", () => {
     test("ユーザーがDBになくDIDも解決できない場合、エラーにせずボードの保存をスキップする", async () => {
       // arrange
       const did = "did:plc:notfounduser0000000000000";
-      identityResolver.resolve.mockResolvedValue(null);
+      identityResolver.resolve.mockResolvedValue({ type: "notFound" });
       // act
       const actual = jetstreamService.handleCreateOrUpdate(dummyEvent(did));
       // assert

@@ -7,6 +7,7 @@ import { Main } from "~/components/layout";
 import { BoardViewer } from "~/features/board/board-viewer";
 import { useUmami } from "~/hooks/useUmami";
 import { getInstance } from "~/i18n/i18n";
+import { getHandleOrDid } from "~/models/user";
 import { di } from "~/server/di";
 import {
   BoardDbSaveError,
@@ -74,11 +75,11 @@ export async function action({ request, context }: Route.ActionArgs) {
         message: i18next.t("edit.save-delayed-warning-message"),
         type: "warning",
       });
-      return redirect(`/${user.handle}`);
+      return redirect(`/${getHandleOrDid(user)}`);
     }
     throw error;
   }
-  return redirect(`/${user.handle}?success`);
+  return redirect(`/${getHandleOrDid(user)}?success`);
 }
 
 export async function loader({ request }: Route.LoaderArgs) {
@@ -90,7 +91,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   return {
     user,
     board: board && { cards: board.cards },
-    url: `${env.PUBLIC_URL}/${user.handle}`,
+    url: `${env.PUBLIC_URL}/${getHandleOrDid(user)}`,
   };
 }
 
@@ -110,7 +111,7 @@ export default function Index({ loaderData }: Route.ComponentProps) {
     ({ currentLocation, nextLocation, historyAction }) =>
       // 保存ボタンを押したときの移動以外のとき
       (currentLocation.pathname !== nextLocation.pathname &&
-        nextLocation.pathname !== `/${user.handle}`) ||
+        nextLocation.pathname !== `/${getHandleOrDid(user)}`) ||
       // /alice.testから/editに移動して戻るとき
       // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
       historyAction === "POP",
