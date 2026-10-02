@@ -48,7 +48,12 @@ export const di = await createRegistry()
   .service("cookieSessionStorage", cookieSessionStorageFactory)
   .service(
     "userService",
-    ["userRepository", "userDbRepository", "accountPdsRepository"],
+    [
+      "userRepository",
+      "userDbRepository",
+      "accountPdsRepository",
+      "identityResolver",
+    ],
     userServiceFactory,
   )
   .service(
@@ -65,7 +70,7 @@ export const di = await createRegistry()
   )
   .service(
     "jetstreamService",
-    ["cursorRepository", "boardService"],
+    ["cursorRepository", "boardService", "userService"],
     jetstreamServiceFactory,
   )
   .resolve();
