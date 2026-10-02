@@ -5,6 +5,7 @@ export type AccountStatus = "active" | "suspended" | "deleted" | "deactivated";
 export class User {
   readonly did: Did;
   readonly avatar: string | null;
+  readonly avatarCid: string | null;
   readonly description: string | null;
   readonly displayName: string | null;
   readonly handle: string;
@@ -15,6 +16,7 @@ export class User {
   constructor(props: {
     did: string;
     avatar: string | null;
+    avatarCid: string | null;
     description: string | null;
     displayName: string | null;
     handle: string;
@@ -24,6 +26,7 @@ export class User {
   }) {
     this.did = asDid(props.did);
     this.avatar = props.avatar;
+    this.avatarCid = props.avatarCid;
     this.description = props.description;
     this.displayName = props.displayName;
     this.handle = props.handle;
@@ -40,3 +43,10 @@ export class User {
     return this.did === viewerDid;
   }
 }
+
+export const getAvatarUrl = (
+  user: Pick<User, "did" | "avatar" | "avatarCid">,
+) =>
+  user.avatarCid
+    ? `https://cdn.bsky.app/img/avatar/plain/${user.did}/${user.avatarCid}@jpeg`
+    : user.avatar;

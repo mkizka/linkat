@@ -39,6 +39,7 @@ export const userDbRepositoryFactory = ({
     const data = {
       did: user.did,
       avatar: user.avatar,
+      avatarCid: user.avatarCid,
       description: user.description,
       displayName: user.displayName,
       handle: user.handle,

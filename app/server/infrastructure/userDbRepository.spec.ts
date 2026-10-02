@@ -70,7 +70,8 @@ describe("userDbRepository", () => {
       // arrange
       const user = new User({
         did: "did:plc:abcdefghijklmnopqrstuvwx",
-        avatar: "https://example.com/avatar.png",
+        avatar: null,
+        avatarCid: "bafkreiavatar",
         description: "description",
         displayName: "display name",
         handle: "example.com",
@@ -85,6 +86,7 @@ describe("userDbRepository", () => {
       expect(actual).toEqual({
         did: user.did,
         avatar: user.avatar,
+        avatarCid: user.avatarCid,
         description: user.description,
         displayName: user.displayName,
         handle: user.handle,
@@ -103,7 +105,8 @@ describe("userDbRepository", () => {
       });
       const updated = new User({
         did: existing.did,
-        avatar: "https://example.com/new-avatar.png",
+        avatar: null,
+        avatarCid: "bafkreinewavatar",
         description: "new description",
         displayName: "new display name",
         handle: "new.example.com",
@@ -118,6 +121,7 @@ describe("userDbRepository", () => {
       expect(actual).toEqual({
         did: existing.did,
         avatar: updated.avatar,
+        avatarCid: updated.avatarCid,
         description: updated.description,
         displayName: updated.displayName,
         handle: updated.handle,

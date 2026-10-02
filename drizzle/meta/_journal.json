@@ -12,8 +12,15 @@
     {
       "idx": 1,
       "version": "7",
-      "when": 1790870444607,
-      "tag": "0001_user_status",
+      "when": 1790873426375,
+      "tag": "0001_avatar_cid",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1790955717794,
+      "tag": "0002_user_status",
       "breakpoints": true
     }
   ]
