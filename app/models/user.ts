@@ -1,5 +1,7 @@
 import { asDid, type Did } from "@atproto/did";
 
+export type AccountStatus = "active" | "suspended" | "deleted" | "deactivated";
+
 export class User {
   readonly did: Did;
   readonly avatar: string | null;
@@ -7,6 +9,7 @@ export class User {
   readonly description: string | null;
   readonly displayName: string | null;
   readonly handle: string;
+  readonly status: AccountStatus;
   readonly createdAt: Date;
   readonly updatedAt: Date;
 
@@ -17,6 +20,7 @@ export class User {
     description: string | null;
     displayName: string | null;
     handle: string;
+    status: AccountStatus;
     createdAt: Date;
     updatedAt: Date;
   }) {
@@ -26,8 +30,13 @@ export class User {
     this.description = props.description;
     this.displayName = props.displayName;
     this.handle = props.handle;
+    this.status = props.status;
     this.createdAt = props.createdAt;
     this.updatedAt = props.updatedAt;
+  }
+
+  isHidden() {
+    return this.status !== "active";
   }
 
   isOwnedBy(viewerDid: Did | null) {

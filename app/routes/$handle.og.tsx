@@ -146,7 +146,7 @@ export async function loader({ params }: Route.LoaderArgs) {
   const user = await di.userService.findUser({
     handleOrDid: params.handle,
   });
-  if (!user) {
+  if (!user || user.isHidden()) {
     throw new Response(null, { status: 404 });
   }
   let image = cache.get(user.did);
