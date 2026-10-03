@@ -78,7 +78,8 @@ export async function action({ request, context }: Route.ActionArgs) {
     }
     throw error;
   }
-  return redirect(`/${user.toView().handleOrDid}?success`);
+  const owner = (await di.userService.refreshUser({ did: user.did })) ?? user;
+  return redirect(`/${owner.toView().handleOrDid}?success`);
 }
 
 export async function loader({ request }: Route.LoaderArgs) {

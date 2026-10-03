@@ -16,8 +16,7 @@ type Profile = Pick<
 >;
 
 export interface IAccountPdsRepository {
-  findByHandleOrDid: (handleOrDid: string) => Promise<{
-    did: Did;
+  findByDid: (did: Did) => Promise<{
     handle: string | null;
     profile: Profile | null;
   } | null>;
@@ -40,8 +39,8 @@ export const accountPdsRepositoryFactory = ({
 }: {
   identityResolver: IIdentityResolver;
 }): IAccountPdsRepository => ({
-  async findByHandleOrDid(handleOrDid) {
-    const identity = await identityResolver.resolve(handleOrDid);
+  async findByDid(did) {
+    const identity = await identityResolver.resolve(did);
     if (!identity) {
       return null;
     }
@@ -50,7 +49,6 @@ export const accountPdsRepositoryFactory = ({
       logger.warn(fetched, "プロフィールの取得に失敗しました");
     }
     return {
-      did: identity.did,
       handle: identity.handle,
       profile: fetched instanceof Error ? null : fetched,
     };

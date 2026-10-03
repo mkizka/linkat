@@ -1,4 +1,4 @@
-import { isDid } from "@atproto/did";
+import { type Did, isDid } from "@atproto/did";
 
 import { User } from "~/models/user";
 import type { IAccountPdsRepository } from "~/server/infrastructure/accountPdsRepository";
@@ -11,6 +11,7 @@ const isFresh = (user: User) =>
 
 export interface IUserRepository {
   findByHandleOrDid: (handleOrDid: string) => Promise<User | null>;
+  refresh: (did: Did) => Promise<User | null>;
 }
 
 export const userRepositoryFactory = ({
@@ -19,23 +20,16 @@ export const userRepositoryFactory = ({
 }: {
   userDbRepository: IUserDbRepository;
   accountPdsRepository: IAccountPdsRepository;
-}): IUserRepository => ({
-  async findByHandleOrDid(handleOrDid) {
-    const cached = await (isDid(handleOrDid)
-      ? userDbRepository.findByDid(handleOrDid)
-      : userDbRepository.findByHandle(handleOrDid));
-    if (cached && isFresh(cached)) {
-      return cached;
-    }
-    const fetched = await accountPdsRepository.findByHandleOrDid(handleOrDid);
+}): IUserRepository => {
+  const fetchAndSave = async (did: Did, cached: User | null) => {
+    const fetched = await accountPdsRepository.findByDid(did);
     if (!fetched) {
       return cached;
     }
-    const profile =
-      fetched.profile ?? (cached?.did === fetched.did ? cached : null);
+    const profile = fetched.profile ?? cached;
     return await userDbRepository.save(
       new User({
-        did: fetched.did,
+        did,
         avatar: profile?.avatar ?? null,
         avatarCid: profile?.avatarCid ?? null,
         description: profile?.description ?? null,
@@ -45,5 +39,24 @@ export const userRepositoryFactory = ({
         updatedAt: new Date(),
       }),
     );
-  },
-});
+  };
+
+  return {
+    async findByHandleOrDid(handleOrDid) {
+      if (isDid(handleOrDid)) {
+        const cached = await userDbRepository.findByDid(handleOrDid);
+        return cached && isFresh(cached)
+          ? cached
+          : await fetchAndSave(handleOrDid, cached);
+      }
+      const cached = await userDbRepository.findByHandle(handleOrDid);
+      if (!cached || isFresh(cached)) {
+        return cached;
+      }
+      return await fetchAndSave(cached.did, cached);
+    },
+    async refresh(did) {
+      return await fetchAndSave(did, await userDbRepository.findByDid(did));
+    },
+  };
+};
