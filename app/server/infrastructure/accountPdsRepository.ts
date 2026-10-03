@@ -20,7 +20,6 @@ type Profile = Pick<
 
 export interface IAccountPdsRepository {
   findByDid: (did: Did) => Promise<{
-    did: Did;
     handle: Identity["handle"];
     profile: Profile | null;
   } | null>;
@@ -54,7 +53,6 @@ export const accountPdsRepositoryFactory = ({
       logger.warn(fetched, "プロフィールの取得に失敗しました");
     }
     return {
-      did: identity.did,
       handle: identity.handle,
       profile: fetched instanceof Error ? null : fetched,
     };
