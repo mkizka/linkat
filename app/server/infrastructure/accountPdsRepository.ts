@@ -44,11 +44,10 @@ export const accountPdsRepositoryFactory = ({
   identityResolver: IIdentityResolver;
 }): IAccountPdsRepository => ({
   async findByHandleOrDid(handleOrDid) {
-    const resolution = await identityResolver.resolve(handleOrDid);
-    if (resolution.type !== "found") {
+    const identity = await identityResolver.resolve(handleOrDid);
+    if (!identity) {
       return null;
     }
-    const { identity } = resolution;
     const fetched = await tryCatch(fetchProfile)(identity);
     if (fetched instanceof Error) {
       logger.warn(fetched, "プロフィールの取得に失敗しました");

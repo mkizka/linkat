@@ -51,12 +51,9 @@ describe("identityResolver", () => {
     const actual = await identityResolver.resolve(DID);
     // assert
     expect(actual).toEqual({
-      type: "found",
-      identity: {
-        did: DID,
-        pds: "https://pds.example.com",
-        handle: "alice.example.com",
-      },
+      did: DID,
+      pds: "https://pds.example.com",
+      handle: "alice.example.com",
     });
   });
   test("handleからDIDを解決して返す", async () => {
@@ -67,12 +64,9 @@ describe("identityResolver", () => {
     const actual = await identityResolver.resolve("alice.example.com");
     // assert
     expect(actual).toEqual({
-      type: "found",
-      identity: {
-        did: DID,
-        pds: "https://pds.example.com",
-        handle: "alice.example.com",
-      },
+      did: DID,
+      pds: "https://pds.example.com",
+      handle: "alice.example.com",
     });
   });
   test("handleがhandle.invalidならnullにする", async () => {
@@ -82,8 +76,9 @@ describe("identityResolver", () => {
     const actual = await identityResolver.resolve(DID);
     // assert
     expect(actual).toEqual({
-      type: "found",
-      identity: { did: DID, pds: "https://pds.example.com", handle: null },
+      did: DID,
+      pds: "https://pds.example.com",
+      handle: null,
     });
   });
   test("DIDドキュメントにhandleが無ければnullにする", async () => {
@@ -93,8 +88,9 @@ describe("identityResolver", () => {
     const actual = await identityResolver.resolve(DID);
     // assert
     expect(actual).toEqual({
-      type: "found",
-      identity: { did: DID, pds: "https://pds.example.com", handle: null },
+      did: DID,
+      pds: "https://pds.example.com",
+      handle: null,
     });
   });
   test("handleが別のDIDを指していればnullにする", async () => {
@@ -105,8 +101,9 @@ describe("identityResolver", () => {
     const actual = await identityResolver.resolve(DID);
     // assert
     expect(actual).toEqual({
-      type: "found",
-      identity: { did: DID, pds: "https://pds.example.com", handle: null },
+      did: DID,
+      pds: "https://pds.example.com",
+      handle: null,
     });
   });
   test("handleを解決できなければnullにする", async () => {
@@ -117,8 +114,9 @@ describe("identityResolver", () => {
     const actual = await identityResolver.resolve(DID);
     // assert
     expect(actual).toEqual({
-      type: "found",
-      identity: { did: DID, pds: "https://pds.example.com", handle: null },
+      did: DID,
+      pds: "https://pds.example.com",
+      handle: null,
     });
   });
   test("handleの検証が一時的な障害で失敗したらundefinedにする", async () => {
@@ -129,40 +127,25 @@ describe("identityResolver", () => {
     const actual = await identityResolver.resolve(DID);
     // assert
     expect(actual).toEqual({
-      type: "found",
-      identity: { did: DID, pds: "https://pds.example.com", handle: undefined },
+      did: DID,
+      pds: "https://pds.example.com",
+      handle: undefined,
     });
   });
-  test("DIDが存在しなければnotFoundを返す", async () => {
+  test("DIDを解決できなければnullを返す", async () => {
     // arrange
     mockPlc(() => HttpResponse.json({}, { status: 404 }));
     // act
     const actual = await identityResolver.resolve(DID);
     // assert
-    expect(actual).toEqual({ type: "notFound" });
+    expect(actual).toBeNull();
   });
-  test("DIDの解決が一時的な障害で失敗したらunavailableを返す", async () => {
-    // arrange
-    mockPlc(() => HttpResponse.json({}, { status: 503 }));
-    // act
-    const actual = await identityResolver.resolve(DID);
-    // assert
-    expect(actual).toEqual({ type: "unavailable" });
-  });
-  test("handleを解決できなければnotFoundを返す", async () => {
+  test("handleを解決できなければnullを返す", async () => {
     // arrange
     mockResolveHandle(unableToResolve);
     // act
     const actual = await identityResolver.resolve("notfound.example.com");
     // assert
-    expect(actual).toEqual({ type: "notFound" });
-  });
-  test("handleの解決が一時的な障害で失敗したらunavailableを返す", async () => {
-    // arrange
-    mockResolveHandle(() => HttpResponse.json({}, { status: 500 }));
-    // act
-    const actual = await identityResolver.resolve("alice.example.com");
-    // assert
-    expect(actual).toEqual({ type: "unavailable" });
+    expect(actual).toBeNull();
   });
 });
