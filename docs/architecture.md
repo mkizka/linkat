@@ -23,7 +23,7 @@ DBにあるデータは、すべて外部の値の写しである。Linkatが守
 
 ### 外部の値は境界で変換する
 
-ATProto・PDS・Jetstreamから受け取った値は、インフラと入口でLinkatの言葉に変換し、サービスへは外部の形のまま渡さない。例えば、`handle.invalid`はnullに変え、解決の失敗はnullで返す。
+ATProto・PDS・Jetstreamから受け取った値は、インフラと入口でLinkatの言葉に変換し、サービスへは外部の形のまま渡さない。例えば、`handle.invalid`はnullに変え、解決の失敗は理由を区別せずnullで返す。
 
 ### 写しのハンドルは1つの処理で書き込む
 
