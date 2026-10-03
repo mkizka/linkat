@@ -1,4 +1,4 @@
-import { type Did, isDid } from "@atproto/did";
+import type { Did } from "@atproto/did";
 
 import { type AccountStatus, User } from "~/models/user";
 import type { IAccountPdsRepository } from "~/server/infrastructure/accountPdsRepository";
@@ -10,7 +10,8 @@ const isFresh = (user: User) =>
   user.updatedAt.getTime() > Date.now() - REFETCH_INTERVAL_MS;
 
 export interface IUserRepository {
-  findByHandleOrDid: (handleOrDid: string) => Promise<User | null>;
+  findDidByHandle: (handle: string) => Promise<Did | null>;
+  findByDid: (did: Did) => Promise<User | null>;
   updateStatus: (did: Did, status: AccountStatus) => Promise<void>;
 }
 
@@ -43,13 +44,10 @@ export const userRepositoryFactory = ({
   };
 
   return {
-    async findByHandleOrDid(handleOrDid) {
-      const did = isDid(handleOrDid)
-        ? handleOrDid
-        : (await userDbRepository.findByHandle(handleOrDid))?.did;
-      if (!did) {
-        return null;
-      }
+    async findDidByHandle(handle) {
+      return (await userDbRepository.findByHandle(handle))?.did ?? null;
+    },
+    async findByDid(did) {
       const cached = await userDbRepository.findByDid(did);
       return cached && isFresh(cached)
         ? cached

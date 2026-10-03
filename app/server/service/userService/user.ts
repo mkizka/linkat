@@ -17,7 +17,10 @@ export const userServiceFactory = ({
     if (!handleOrDid.includes(".") && !isDid(handleOrDid)) {
       return null;
     }
-    return await userRepository.findByHandleOrDid(handleOrDid);
+    const did = isDid(handleOrDid)
+      ? handleOrDid
+      : await userRepository.findDidByHandle(handleOrDid);
+    return did && (await userRepository.findByDid(did));
   },
   async updateStatus(did, status) {
     await userRepository.updateStatus(did, status);
