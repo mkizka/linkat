@@ -88,11 +88,10 @@ export async function loader({ request }: Route.LoaderArgs) {
     di.ownerService.findEditor(agent),
     di.boardService.findBoard(agent.assertDid),
   ]);
-  const view = editor.toView();
   return {
-    editor: view,
+    editor,
     board: board && { cards: board.cards },
-    url: `${env.PUBLIC_URL}/${view.handleOrDid}`,
+    url: `${env.PUBLIC_URL}/${editor.handleOrDid}`,
   };
 }
 

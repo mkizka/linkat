@@ -1,7 +1,7 @@
 import { type Did, isDid } from "@atproto/did";
 
 import type { LinkatAgent } from "~/libs/agent";
-import { Owner } from "~/models/owner";
+import { Owner, type OwnerView } from "~/models/owner";
 import {
   emptyProfile,
   type IAccountPdsRepository,
@@ -12,7 +12,7 @@ import type { IOwnerDbRepository } from "~/server/infrastructure/ownerDbReposito
 
 export interface IOwnerService {
   findOwner: (params: { handleOrDid: string }) => Promise<Owner | null>;
-  findEditor: (agent: LinkatAgent) => Promise<Owner>;
+  findEditor: (agent: LinkatAgent) => Promise<OwnerView>;
   updateProfile: (params: {
     did: Did;
     profile: Profile;
@@ -37,7 +37,7 @@ export const ownerServiceFactory = ({
     const did = agent.assertDid;
     const owner = await ownerDbRepository.findByDid(did);
     if (owner) {
-      return owner;
+      return owner.toView();
     }
     const profile = await accountPdsRepository.fetchSessionProfile(agent);
     return new Owner({
@@ -46,7 +46,7 @@ export const ownerServiceFactory = ({
       ...(profile ?? emptyProfile),
       createdAt: new Date(),
       updatedAt: new Date(),
-    });
+    }).toView();
   },
   async updateProfile({ did, profile }) {
     const existing = await ownerDbRepository.findByDid(did);

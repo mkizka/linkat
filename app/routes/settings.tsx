@@ -15,9 +15,7 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
   if (!agent) {
     throw redirect("/login");
   }
-  return {
-    editor: (await di.ownerService.findEditor(agent)).toView(),
-  };
+  return { editor: await di.ownerService.findEditor(agent) };
 };
 
 export default function SettingsPage({ loaderData }: Route.ComponentProps) {

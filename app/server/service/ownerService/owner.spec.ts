@@ -4,6 +4,7 @@ import { mock, mockReset } from "vitest-mock-extended";
 
 import { LinkatAgent } from "~/libs/agent";
 import { server } from "~/mocks/server";
+import { Owner } from "~/models/owner";
 import { OwnerFactory } from "~/server/factories/owner";
 import { accountPdsRepositoryFactory } from "~/server/infrastructure/accountPdsRepository";
 import { db } from "~/server/infrastructure/drizzle";
@@ -123,7 +124,7 @@ describe("ownerService", () => {
       // act
       const actual = await ownerService.findEditor(createAgent(owner.did));
       // assert
-      expect(actual).toEqual(owner);
+      expect(actual).toEqual(new Owner(owner).toView());
       expect(identityResolver.resolve).not.toHaveBeenCalled();
     });
     test("写しが無ければ、DIDとセッションのPDSから取得したプロフィールを返し、保存しない", async () => {
@@ -152,13 +153,12 @@ describe("ownerService", () => {
       // act
       const actual = await ownerService.findEditor(createAgent(did));
       // assert
-      expect(actual).toMatchObject({
+      expect(actual).toEqual({
         did,
-        handle: null,
-        avatar: null,
-        avatarCid: AVATAR_CID,
-        description: null,
+        handleOrDid: did,
+        displayHandle: `@${did}`,
         displayName: "Alice",
+        avatarUrl: `https://cdn.bsky.app/img/avatar/plain/${did}/${AVATAR_CID}@jpeg`,
       });
       expect(requestedRepo).toBe(did);
       expect(identityResolver.resolve).not.toHaveBeenCalled();
@@ -175,13 +175,12 @@ describe("ownerService", () => {
       // act
       const actual = await ownerService.findEditor(createAgent(did));
       // assert
-      expect(actual).toMatchObject({
+      expect(actual).toEqual({
         did,
-        handle: null,
-        avatar: null,
-        avatarCid: null,
-        description: null,
+        handleOrDid: did,
+        displayHandle: `@${did}`,
         displayName: null,
+        avatarUrl: null,
       });
       expect(await ownerDbRepository.findByDid(asDid(did))).toBeNull();
     });
