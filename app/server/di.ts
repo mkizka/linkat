@@ -63,6 +63,7 @@ export const di = await createRegistry()
       "userService",
       "userDbRepository",
       "identityResolver",
+      "accountPdsRepository",
     ],
     jetstreamServiceFactory,
   )

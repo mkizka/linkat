@@ -21,6 +21,7 @@ import { jetstreamServiceFactory } from "./jetstream";
 
 const identityResolver = mock<IIdentityResolver>();
 const userDbRepository = userDbRepositoryFactory({ db });
+const accountPdsRepository = accountPdsRepositoryFactory({ identityResolver });
 
 const jetstreamService = jetstreamServiceFactory({
   cursorRepository: cursorRepositoryFactory({ db }),
@@ -30,11 +31,12 @@ const jetstreamService = jetstreamServiceFactory({
   userService: userServiceFactory({
     userRepository: userRepositoryFactory({
       userDbRepository,
-      accountPdsRepository: accountPdsRepositoryFactory({ identityResolver }),
+      accountPdsRepository,
     }),
   }),
   userDbRepository,
   identityResolver,
+  accountPdsRepository,
 });
 
 const pool = new Pool({ connectionString: env.DATABASE_URL });

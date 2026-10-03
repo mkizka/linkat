@@ -18,6 +18,7 @@ export interface IAccountPdsRepository {
     handle: string | null;
     profile: Profile | null;
   } | null>;
+  parseProfile: (record: unknown) => Profile | null;
 }
 
 const toProfile = (value: ProfileRecord): Profile => ({
@@ -26,15 +27,6 @@ const toProfile = (value: ProfileRecord): Profile => ({
   description: value.description ?? null,
   displayName: value.displayName ?? null,
 });
-
-export const parseProfileRecord = (json: unknown): Profile | null => {
-  try {
-    const result = profile.safeParse(lexParse(JSON.stringify(json)));
-    return result.success ? toProfile(result.value) : null;
-  } catch {
-    return null;
-  }
-};
 
 const fetchProfile = async ({ did, pds }: { did: Did; pds: string }) => {
   logger.info({ did, pds }, "プロフィールを取得します");
@@ -62,5 +54,13 @@ export const accountPdsRepositoryFactory = ({
       handle: identity.handle,
       profile: fetched instanceof Error ? null : fetched,
     };
+  },
+  parseProfile(record) {
+    try {
+      const result = profile.safeParse(lexParse(JSON.stringify(record)));
+      return result.success ? toProfile(result.value) : null;
+    } catch {
+      return null;
+    }
   },
 });
