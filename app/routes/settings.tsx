@@ -6,7 +6,6 @@ import { Card } from "~/components/card";
 import { Footer, Main } from "~/components/layout";
 import { DeleteBoardButton } from "~/features/settings/delete-button";
 import { LogoutButton } from "~/features/settings/logout-button";
-import { getHandleOrDid } from "~/models/user";
 import { di } from "~/server/di";
 
 import type { Route } from "./+types/settings";
@@ -16,7 +15,7 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
   if (!user) {
     throw redirect("/login");
   }
-  return { user };
+  return { user: user.toView() };
 };
 
 export default function SettingsPage({ loaderData }: Route.ComponentProps) {
@@ -37,7 +36,7 @@ export default function SettingsPage({ loaderData }: Route.ComponentProps) {
             <h2 className="border-b-2 border-gray-200 pb-1 font-bold">
               {t("settings.header-board")}
             </h2>
-            <DeleteBoardButton handle={getHandleOrDid(user)} />
+            <DeleteBoardButton handle={user.handleOrDid} />
             <p className="text-gray-400">
               {t("settings.delete-board-warning")}
             </p>

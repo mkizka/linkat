@@ -7,6 +7,7 @@ import { Jetstream } from "@skyware/jetstream";
 import WebSocket from "ws";
 
 import { Board } from "~/models/board";
+import { User } from "~/models/user";
 import type { ICursorRepository } from "~/server/infrastructure/cursorRepository";
 import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
 import type { IUserDbRepository } from "~/server/infrastructure/userDbRepository";
@@ -84,23 +85,19 @@ export const jetstreamServiceFactory = ({
     if (!user) {
       return;
     }
-    const resolution = await identityResolver.resolve(event.did);
-    if (resolution.type !== "found") {
-      logger.warn(
-        { did: event.did, resolution },
-        "DIDを解決できないためハンドルの更新をスキップしました",
-      );
-      return;
-    }
-    const saved = await userDbRepository.save({
-      did: user.did,
-      avatar: user.avatar,
-      avatarCid: user.avatarCid,
-      description: user.description,
-      displayName: user.displayName,
-      handle: resolution.identity.handle,
-      updatedAt: new Date(),
-    });
+    const identity = await identityResolver.resolve(event.did);
+    const saved = await userDbRepository.save(
+      new User({
+        did: user.did,
+        avatar: user.avatar,
+        avatarCid: user.avatarCid,
+        description: user.description,
+        displayName: user.displayName,
+        handle: identity?.handle ?? null,
+        createdAt: user.createdAt,
+        updatedAt: new Date(),
+      }),
+    );
     logger.info(
       { did: saved.did, handle: saved.handle },
       "ハンドルを更新しました",
