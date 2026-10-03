@@ -76,7 +76,7 @@ const build = viteDevServer
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     ((await import("../build/server/index.js")) as ServerBuild);
 
-const allowedMethods = ["GET", "HEAD", "POST", "PUT", "PATCH", "DELETE"];
+const allowedMethods = ["GET", "HEAD", "POST"];
 app.use((req, res, next) => {
   if (allowedMethods.includes(req.method)) {
     next();
