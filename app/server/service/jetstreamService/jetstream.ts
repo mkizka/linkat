@@ -2,6 +2,7 @@ import type {
   AccountEvent,
   CommitCreateEvent,
   CommitUpdateEvent,
+  IdentityEvent,
 } from "@skyware/jetstream";
 import { Jetstream } from "@skyware/jetstream";
 import WebSocket from "ws";
@@ -9,6 +10,8 @@ import WebSocket from "ws";
 import { Board } from "~/models/board";
 import type { AccountStatus } from "~/models/user";
 import type { ICursorRepository } from "~/server/infrastructure/cursorRepository";
+import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
+import type { IUserDbRepository } from "~/server/infrastructure/userDbRepository";
 import type { IBoardService } from "~/server/service/boardService/board";
 import type { IUserService } from "~/server/service/userService/user";
 import { env } from "~/utils/env";
@@ -42,6 +45,7 @@ export interface IJetstreamService {
       | CommitCreateEvent<"blue.linkat.board">
       | CommitUpdateEvent<"blue.linkat.board">,
   ) => Promise<void>;
+  handleIdentity: (event: IdentityEvent) => Promise<void>;
   handleAccount: (event: AccountEvent) => Promise<void>;
   startJetstream: () => Promise<void>;
 }
@@ -50,10 +54,14 @@ export const jetstreamServiceFactory = ({
   cursorRepository,
   boardService,
   userService,
+  userDbRepository,
+  identityResolver,
 }: {
   cursorRepository: ICursorRepository;
   boardService: IBoardService;
   userService: IUserService;
+  userDbRepository: IUserDbRepository;
+  identityResolver: IIdentityResolver;
 }): IJetstreamService => {
   const jetstream = new Jetstream({
     ws: WebSocket,
@@ -91,6 +99,21 @@ export const jetstreamServiceFactory = ({
     logger.info({ user, board }, "ボードを更新しました");
   };
 
+  const handleIdentity = async (event: IdentityEvent) => {
+    const user = await userDbRepository.findByDid(event.did);
+    if (!user) {
+      return;
+    }
+    const identity = await identityResolver.resolve(event.did);
+    const saved = await userDbRepository.save(
+      user.withHandle(identity?.handle ?? null),
+    );
+    logger.info(
+      { did: saved.did, handle: saved.handle },
+      "ハンドルを更新しました",
+    );
+  };
+
   const handleAccount = async ({ account }: AccountEvent) => {
     const status = toAccountStatus(account);
     await userService.updateStatus(account.did, status);
@@ -112,6 +135,12 @@ export const jetstreamServiceFactory = ({
     logger.error(error, "Jetstreamでエラーが発生しました");
   });
 
+  jetstream.on("identity", (event) => {
+    handleIdentity(event).catch((error: unknown) => {
+      logger.error(error, "ハンドルの更新に失敗しました");
+    });
+  });
+
   jetstream.on("account", (event) => {
     handleAccount(event).catch((error: unknown) => {
       logger.error(error, "アカウントの状態の更新に失敗しました");
@@ -129,6 +158,7 @@ export const jetstreamServiceFactory = ({
 
   return {
     handleCreateOrUpdate,
+    handleIdentity,
     handleAccount,
     async startJetstream() {
       const savedCursor = await cursorRepository.load();

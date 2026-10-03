@@ -1,7 +1,7 @@
 import { asDid } from "@atproto/did";
 import { CommitType, EventType } from "@skyware/jetstream";
 import { Pool } from "pg";
-import { mock } from "vitest-mock-extended";
+import { mock, mockReset } from "vitest-mock-extended";
 
 import { mockedLogger } from "~/mocks/logger";
 import { UserFactory } from "~/server/factories/user";
@@ -20,6 +20,8 @@ import { jetstreamServiceFactory } from "./jetstream";
 
 const identityResolver = mock<IIdentityResolver>();
 
+const userDbRepository = userDbRepositoryFactory({ db });
+
 const jetstreamService = jetstreamServiceFactory({
   cursorRepository: cursorRepositoryFactory({ db }),
   boardService: boardServiceFactory({
@@ -27,14 +29,17 @@ const jetstreamService = jetstreamServiceFactory({
   }),
   userService: userServiceFactory({
     userRepository: userRepositoryFactory({
-      userDbRepository: userDbRepositoryFactory({ db }),
+      userDbRepository,
       accountPdsRepository: accountPdsRepositoryFactory({ identityResolver }),
     }),
   }),
+  userDbRepository,
+  identityResolver,
 });
 
 const pool = new Pool({ connectionString: env.DATABASE_URL });
 afterAll(() => pool.end());
+beforeEach(() => mockReset(identityResolver));
 
 const dummyEvent = (did: string) =>
   ({
@@ -53,6 +58,25 @@ const dummyEvent = (did: string) =>
       },
     },
   }) as const;
+
+const identityEvent = (did: string, handle?: `${string}.${string}`) =>
+  ({
+    did: asDid(did),
+    time_us: Date.now() * 1000,
+    kind: EventType.Identity,
+    identity: {
+      did: asDid(did),
+      handle,
+      seq: 1,
+      time: new Date().toISOString(),
+    },
+  }) as const;
+
+const found = (did: string, handle: string | null) => ({
+  did: asDid(did),
+  pds: "https://pds.example.com",
+  handle,
+});
 
 describe("jetstreamService", () => {
   describe("handleCreateOrUpdate", () => {
@@ -73,6 +97,74 @@ describe("jetstreamService", () => {
         [did],
       );
       expect(rows).toHaveLength(0);
+    });
+  });
+
+  describe("handleIdentity", () => {
+    test("持ち主の写しが無いアカウントのイベントは、解決せずに捨てる", async () => {
+      // arrange
+      const did = "did:plc:notowner";
+      // act
+      await jetstreamService.handleIdentity(
+        identityEvent(did, "new.example.com"),
+      );
+      // assert
+      expect(identityResolver.resolve).not.toHaveBeenCalled();
+      expect(await userDbRepository.findByDid(asDid(did))).toBeNull();
+    });
+    test("持ち主の写しがあれば、DIDからハンドルを解決し直して更新する", async () => {
+      // arrange
+      const user = await UserFactory.create({
+        handle: "old.example.com",
+        displayName: "表示名",
+      });
+      identityResolver.resolve.mockResolvedValue(
+        found(user.did, "new.example.com"),
+      );
+      // act
+      await jetstreamService.handleIdentity(
+        identityEvent(user.did, "unverified.example.com"),
+      );
+      // assert
+      expect(identityResolver.resolve).toHaveBeenCalledWith(user.did);
+      const actual = await userDbRepository.findByDid(asDid(user.did));
+      expect(actual?.handle).toBe("new.example.com");
+      expect(actual?.displayName).toBe("表示名");
+    });
+    test("解決したハンドルを他の写しが持っていれば、そちらをnullにする", async () => {
+      // arrange
+      const other = await UserFactory.create({ handle: "new.example.com" });
+      const user = await UserFactory.create({ handle: "old.example.com" });
+      identityResolver.resolve.mockResolvedValue(
+        found(user.did, "new.example.com"),
+      );
+      // act
+      await jetstreamService.handleIdentity(identityEvent(user.did));
+      // assert
+      const actual = await userDbRepository.findByDid(asDid(user.did));
+      expect(actual?.handle).toBe("new.example.com");
+      const otherActual = await userDbRepository.findByDid(asDid(other.did));
+      expect(otherActual?.handle).toBeNull();
+    });
+    test("ハンドルの検証に失敗したら、写しのハンドルをnullにする", async () => {
+      // arrange
+      const user = await UserFactory.create({ handle: "old.example.com" });
+      identityResolver.resolve.mockResolvedValue(found(user.did, null));
+      // act
+      await jetstreamService.handleIdentity(identityEvent(user.did));
+      // assert
+      const actual = await userDbRepository.findByDid(asDid(user.did));
+      expect(actual?.handle).toBeNull();
+    });
+    test("DIDを解決できなければ、写しのハンドルをnullにする", async () => {
+      // arrange
+      const user = await UserFactory.create({ handle: "old.example.com" });
+      identityResolver.resolve.mockResolvedValue(null);
+      // act
+      await jetstreamService.handleIdentity(identityEvent(user.did));
+      // assert
+      const actual = await userDbRepository.findByDid(asDid(user.did));
+      expect(actual?.handle).toBeNull();
     });
   });
 
