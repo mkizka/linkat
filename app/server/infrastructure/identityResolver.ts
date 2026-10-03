@@ -26,7 +26,9 @@ export const identityResolverFactory = (): IIdentityResolver => {
   return {
     async resolve(did) {
       try {
-        const { didDoc, handle } = await resolver.resolve(did);
+        const { didDoc, handle } = await resolver.resolve(did, {
+          noCache: true,
+        });
         return {
           did,
           handle: handle === HANDLE_INVALID ? null : handle,
