@@ -33,14 +33,18 @@ export class Owner {
   isOwnedBy(viewerDid: Did | null) {
     return this.did === viewerDid;
   }
+
+  toView() {
+    return {
+      did: this.did,
+      handleOrDid: this.handle ?? this.did,
+      displayHandle: `@${this.handle ?? this.did}`,
+      displayName: this.displayName,
+      avatarUrl: this.avatarCid
+        ? `https://cdn.bsky.app/img/avatar/plain/${this.did}/${this.avatarCid}@jpeg`
+        : this.avatar,
+    };
+  }
 }
 
-export const getHandleOrDid = (owner: Pick<Owner, "did" | "handle">) =>
-  owner.handle ?? owner.did;
-
-export const getAvatarUrl = (
-  owner: Pick<Owner, "did" | "avatar" | "avatarCid">,
-) =>
-  owner.avatarCid
-    ? `https://cdn.bsky.app/img/avatar/plain/${owner.did}/${owner.avatarCid}@jpeg`
-    : owner.avatar;
+export type OwnerView = ReturnType<Owner["toView"]>;

@@ -118,12 +118,9 @@ describe("jetstreamService", () => {
         displayName: "古い名前",
       });
       identityResolver.resolve.mockResolvedValue({
-        type: "found",
-        identity: {
-          did: asDid(owner.did),
-          pds: "https://pds.example.com",
-          handle: "new.example.com",
-        },
+        did: asDid(owner.did),
+        pds: "https://pds.example.com",
+        handle: "new.example.com",
       });
       // act
       await jetstreamService.handleProfileCommit(
@@ -146,13 +143,13 @@ describe("jetstreamService", () => {
         description: "古い説明",
         avatarCid,
       });
-      identityResolver.resolve.mockResolvedValue({ type: "unavailable" });
+      identityResolver.resolve.mockResolvedValue(null);
       // act
       await jetstreamService.handleProfileCommit(profileDeleteEvent(owner.did));
       // assert
       const actual = await ownerDbRepository.findByDid(asDid(owner.did));
       expect(actual).toMatchObject({
-        handle: owner.handle,
+        handle: null,
         displayName: null,
         description: null,
         avatarCid: null,
@@ -201,7 +198,7 @@ describe("jetstreamService", () => {
     test("持ち主の写しが無くても、写しを作成してボードを保存する", async () => {
       // arrange
       const did = "did:plc:newowner";
-      identityResolver.resolve.mockResolvedValue({ type: "notFound" });
+      identityResolver.resolve.mockResolvedValue(null);
       // act
       await jetstreamService.handleCreateOrUpdate(dummyEvent(did));
       // assert

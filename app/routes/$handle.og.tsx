@@ -3,7 +3,7 @@ import fs from "fs";
 import { LRUCache } from "lru-cache";
 import satori from "satori";
 
-import { getAvatarUrl, type Owner } from "~/models/owner";
+import type { Owner, OwnerView } from "~/models/owner";
 import { di } from "~/server/di";
 import { createLogger } from "~/utils/logger";
 
@@ -18,8 +18,7 @@ const cache = new LRUCache<string, Uint8Array<ArrayBuffer>>({
 
 const fontData = fs.readFileSync("./fonts/Murecho-Bold.ttf");
 
-const renderImage = async (owner: Owner) => {
-  const avatarUrl = getAvatarUrl(owner);
+const renderImage = async (owner: OwnerView) => {
   //
   // カード内の割合
   // 100px(padding) + 200px(avatar) + 50px(mariginLeft) + 650px(handle/displayName) + 100px(padding) = 1100px
@@ -56,9 +55,9 @@ const renderImage = async (owner: Owner) => {
             alignItems: "center",
           }}
         >
-          {avatarUrl ? (
+          {owner.avatarUrl ? (
             <img
-              src={avatarUrl}
+              src={owner.avatarUrl}
               style={{
                 width: "200px",
                 height: "200px",
@@ -102,7 +101,7 @@ const renderImage = async (owner: Owner) => {
                 marginTop: "-1rem",
               }}
             >
-              {owner.handle ? `@${owner.handle}` : owner.did}
+              {owner.displayHandle}
             </p>
           </div>
         </div>
@@ -137,7 +136,7 @@ const renderImage = async (owner: Owner) => {
 };
 
 const createImage = async (owner: Owner) => {
-  const image = await renderImage(owner);
+  const image = await renderImage(owner.toView());
   cache.set(owner.did, image);
   return image;
 };

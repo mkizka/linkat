@@ -2,7 +2,6 @@ import { Footer, Main } from "~/components/layout";
 import { BoardViewer } from "~/features/board/board-viewer";
 import { ShareModal } from "~/features/board/share-modal";
 import { getInstance } from "~/i18n/i18n";
-import { getHandleOrDid } from "~/models/owner";
 import { di } from "~/server/di";
 import { env } from "~/utils/env";
 import { createMeta } from "~/utils/meta";
@@ -24,19 +23,20 @@ export async function loader({ request, params, context }: Route.LoaderArgs) {
   if (!board) {
     return notFound();
   }
+  const view = owner.toView();
   const i18next = getInstance(context);
   const title = i18next.t("board.meta-title", {
     displayName: owner.displayName,
-    handle: getHandleOrDid(owner),
+    handle: view.handleOrDid,
   });
   const viewerDid = await di.sessionService.getSessionDid(request);
   return {
-    owner,
+    owner: view,
     board: { cards: board.cards },
     isMine: owner.isOwnedBy(viewerDid),
     title: `${title} | Linkat`,
-    url: `${env.PUBLIC_URL}/${getHandleOrDid(owner)}`,
-    ogImageUrl: `${env.PUBLIC_URL}/${getHandleOrDid(owner)}/og`,
+    url: `${env.PUBLIC_URL}/${view.handleOrDid}`,
+    ogImageUrl: `${env.PUBLIC_URL}/${view.handleOrDid}/og`,
     atUri: `at://${owner.did}/blue.linkat.board/self`,
   };
 }

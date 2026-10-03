@@ -6,10 +6,7 @@ import profile, {
 } from "~/generated/app/bsky/actor/profile";
 import { LinkatAgent } from "~/libs/agent";
 import type { Owner } from "~/models/owner";
-import type {
-  Identity,
-  IIdentityResolver,
-} from "~/server/infrastructure/identityResolver";
+import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
 import { createLogger } from "~/utils/logger";
 import { tryCatch } from "~/utils/tryCatch";
 
@@ -29,7 +26,7 @@ export const emptyProfile: Profile = {
 
 export interface IAccountPdsRepository {
   resolveAccount: (did: Did) => Promise<{
-    handle: Identity["handle"];
+    handle: string | null;
     profile: Profile | null;
   }>;
   fetchSessionProfile: (agent: LinkatAgent) => Promise<Profile | null>;
@@ -76,18 +73,14 @@ export const accountPdsRepositoryFactory = ({
   identityResolver: IIdentityResolver;
 }): IAccountPdsRepository => ({
   async resolveAccount(did) {
-    const resolution = await identityResolver.resolve(did);
-    switch (resolution.type) {
-      case "found":
-        return {
-          handle: resolution.identity.handle,
-          profile: await fetchProfileFromPds(resolution.identity),
-        };
-      case "notFound":
-        return { handle: null, profile: null };
-      case "unavailable":
-        return { handle: undefined, profile: null };
+    const identity = await identityResolver.resolve(did);
+    if (!identity) {
+      return { handle: null, profile: null };
     }
+    return {
+      handle: identity.handle,
+      profile: await fetchProfileFromPds(identity),
+    };
   },
   async fetchSessionProfile(agent) {
     return await tryFetchProfile(agent, agent.assertDid);

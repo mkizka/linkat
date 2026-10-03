@@ -8,7 +8,7 @@ import { Button } from "~/components/button";
 import { Card } from "~/components/card";
 import { BlueskyIcon } from "~/components/icons/bluesky";
 import { useUmami } from "~/hooks/useUmami";
-import { getAvatarUrl, getHandleOrDid, type Owner } from "~/models/owner";
+import type { OwnerView } from "~/models/owner";
 
 function Avatar({ avatar }: { avatar: string }) {
   return (
@@ -31,7 +31,7 @@ function AvatarPlaceholder() {
 }
 
 export type ProfileCardProps = {
-  owner: Pick<Owner, "did" | "avatar" | "avatarCid" | "displayName" | "handle">;
+  owner: OwnerView;
   url: string;
   showEditButton?: boolean;
 };
@@ -40,7 +40,6 @@ export function ProfileCard({ owner, url, showEditButton }: ProfileCardProps) {
   const [loading, setLoading] = useState(false);
   const { t } = useTranslation();
   const umami = useUmami();
-  const avatarUrl = getAvatarUrl(owner);
   const shareText = t("profile-card.share-text", {
     url,
     displayName: owner.displayName,
@@ -63,7 +62,11 @@ export function ProfileCard({ owner, url, showEditButton }: ProfileCardProps) {
     <Card>
       <div className="card-body gap-2">
         <div className="flex items-center">
-          {avatarUrl ? <Avatar avatar={avatarUrl} /> : <AvatarPlaceholder />}
+          {owner.avatarUrl ? (
+            <Avatar avatar={owner.avatarUrl} />
+          ) : (
+            <AvatarPlaceholder />
+          )}
           <div className="flex flex-1 justify-end gap-2">
             {showEditButton ? (
               <Link
@@ -77,11 +80,11 @@ export function ProfileCard({ owner, url, showEditButton }: ProfileCardProps) {
             ) : (
               <a
                 className="btn-bluesky btn text-white"
-                href={`https://bsky.app/profile/${getHandleOrDid(owner)}`}
+                href={`https://bsky.app/profile/${owner.handleOrDid}`}
                 target="_blank"
                 rel="noreferrer"
                 data-umami-event="click-bsky-link"
-                data-umami-event-handle={getHandleOrDid(owner)}
+                data-umami-event-handle={owner.handleOrDid}
               >
                 <BlueskyIcon className="size-6" />
                 Bluesky
@@ -98,9 +101,7 @@ export function ProfileCard({ owner, url, showEditButton }: ProfileCardProps) {
         </div>
         <div>
           <h2 className="text-xl font-bold">{owner.displayName}</h2>
-          <p className="text-gray-500">
-            {owner.handle ? `@${owner.handle}` : owner.did}
-          </p>
+          <p className="text-gray-500">{owner.displayHandle}</p>
         </div>
       </div>
     </Card>

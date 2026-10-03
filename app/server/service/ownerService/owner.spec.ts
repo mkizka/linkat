@@ -28,9 +28,10 @@ const profile = {
   displayName: "新しい名前",
 };
 
-const found = (did: string, handle: string | null | undefined) => ({
-  type: "found" as const,
-  identity: { did: asDid(did), pds: "https://pds.example.com", handle },
+const found = (did: string, handle: string | null) => ({
+  did: asDid(did),
+  pds: "https://pds.example.com",
+  handle,
 });
 
 const AVATAR_CID =
@@ -151,7 +152,7 @@ describe("ownerService", () => {
       // act
       const actual = await ownerService.findEditor(createAgent(did));
       // assert
-      expect(actual).toEqual({
+      expect(actual).toMatchObject({
         did,
         handle: null,
         avatar: null,
@@ -174,7 +175,7 @@ describe("ownerService", () => {
       // act
       const actual = await ownerService.findEditor(createAgent(did));
       // assert
-      expect(actual).toEqual({
+      expect(actual).toMatchObject({
         did,
         handle: null,
         avatar: null,
@@ -230,25 +231,19 @@ describe("ownerService", () => {
       expect(actual?.handle).toBeNull();
       expect(actual?.displayName).toBe("新しい名前");
     });
-    test.each([
-      { resolution: { type: "unavailable" as const } },
-      { resolution: found("did:plc:dummy", undefined) },
-    ])(
-      "ハンドルを解決できなかった場合($resolution.type)、既存のハンドルを残してプロフィールは更新する",
-      async ({ resolution }) => {
-        // arrange
-        const owner = await OwnerFactory.create({ handle: "old.example.com" });
-        identityResolver.resolve.mockResolvedValue(resolution);
-        // act
-        const actual = await ownerService.updateProfile({
-          did: asDid(owner.did),
-          profile,
-        });
-        // assert
-        expect(actual?.handle).toBe("old.example.com");
-        expect(actual?.displayName).toBe("新しい名前");
-      },
-    );
+    test("DIDを解決できなかった場合、写しのハンドルをnullにしてプロフィールは更新する", async () => {
+      // arrange
+      const owner = await OwnerFactory.create({ handle: "old.example.com" });
+      identityResolver.resolve.mockResolvedValue(null);
+      // act
+      const actual = await ownerService.updateProfile({
+        did: asDid(owner.did),
+        profile,
+      });
+      // assert
+      expect(actual?.handle).toBeNull();
+      expect(actual?.displayName).toBe("新しい名前");
+    });
     test("持ち主の写しが無い場合、何もせずnullを返す", async () => {
       // arrange
       const did = asDid("did:plc:notowner0000000000000000");

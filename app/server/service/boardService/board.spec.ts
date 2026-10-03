@@ -51,15 +51,16 @@ const dummyProfileRecord = {
 
 const getRecordUrl = "https://pds.example.com/xrpc/com.atproto.repo.getRecord";
 
-const mockIdentity = (did: string, handle: string | null | undefined) =>
+const mockIdentity = (did: string, handle: string | null) =>
   identityResolver.resolve.mockResolvedValue({
-    type: "found",
-    identity: { did: asDid(did), pds: "https://pds.example.com", handle },
+    did: asDid(did),
+    pds: "https://pds.example.com",
+    handle,
   });
 
 beforeEach(() => {
   vi.resetAllMocks();
-  identityResolver.resolve.mockResolvedValue({ type: "unavailable" });
+  identityResolver.resolve.mockResolvedValue(null);
 });
 
 const dummyCards = [
@@ -165,10 +166,9 @@ describe("boardService", () => {
       // assert
       expect(actual.handle).toBeNull();
     });
-    test("DIDが見つからなければ、写しのハンドルをnullにしてボードは保存する", async () => {
+    test("DIDを解決できなければ、写しのハンドルをnullにしてボードは保存する", async () => {
       // arrange
       const did = "did:plc:owner";
-      identityResolver.resolve.mockResolvedValue({ type: "notFound" });
       const board = new Board(did, dummyCards);
       // act
       const actual = await boardService.saveBoard(board);
@@ -181,7 +181,7 @@ describe("boardService", () => {
       });
       expect(await boardRepository.find(asDid(did))).toEqual(board);
     });
-    test("一時的な障害なら、既存のハンドルとプロフィールを残す", async () => {
+    test("DIDを解決できなければ、既存の写しのハンドルをnullにしてプロフィールは残す", async () => {
       // arrange
       const owner = await OwnerFactory.create({
         handle: "alice.example.com",
@@ -194,7 +194,7 @@ describe("boardService", () => {
       );
       // assert
       expect(actual).toMatchObject({
-        handle: "alice.example.com",
+        handle: null,
         displayName: "Alice",
         avatarCid: AVATAR_CID,
       });

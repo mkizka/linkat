@@ -7,10 +7,8 @@ import { ownerTable } from "~/server/infrastructure/schema";
 
 export type OwnerToSave = Omit<
   ConstructorParameters<typeof Owner>[0],
-  "createdAt" | "handle"
-> & {
-  handle: string | null | undefined;
-};
+  "createdAt"
+>;
 
 export interface IOwnerDbRepository {
   findByDid: (did: Did) => Promise<Owner | null>;
@@ -47,6 +45,7 @@ export const ownerDbRepositoryFactory = ({
       avatarCid: owner.avatarCid,
       description: owner.description,
       displayName: owner.displayName,
+      handle: owner.handle,
       updatedAt: owner.updatedAt,
     };
     return await db.transaction(async (tx) => {
@@ -63,14 +62,8 @@ export const ownerDbRepositoryFactory = ({
       }
       const [row] = await tx
         .insert(ownerTable)
-        .values({ ...data, handle: owner.handle ?? null })
-        .onConflictDoUpdate({
-          target: ownerTable.did,
-          set:
-            owner.handle === undefined
-              ? data
-              : { ...data, handle: owner.handle },
-        })
+        .values(data)
+        .onConflictDoUpdate({ target: ownerTable.did, set: data })
         .returning();
       if (!row) {
         throw new Error("持ち主の写しの保存に失敗しました");

@@ -71,30 +71,6 @@ describe("ownerDbRepository", () => {
       const otherActual = await ownerDbRepository.findByDid(asDid(other.did));
       expect(otherActual?.handle).toBeNull();
     });
-    test("handleがundefinedの場合、既存のhandleを残す", async () => {
-      // arrange
-      await OwnerFactory.create({
-        did: ownerToSave.did,
-        handle: "example.com",
-      });
-      // act
-      const actual = await ownerDbRepository.save({
-        ...ownerToSave,
-        handle: undefined,
-      });
-      // assert
-      expect(actual.handle).toBe("example.com");
-    });
-    test("handleがundefinedで既存の写しが無い場合、handleをnullで保存する", async () => {
-      // arrange
-      // act
-      const actual = await ownerDbRepository.save({
-        ...ownerToSave,
-        handle: undefined,
-      });
-      // assert
-      expect(actual.handle).toBeNull();
-    });
     test("handleがnullの場合、handleをnullにする", async () => {
       // arrange
       await OwnerFactory.create({

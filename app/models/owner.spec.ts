@@ -1,6 +1,6 @@
 import type { Did } from "@atproto/did";
 
-import { getAvatarUrl, Owner } from "./owner";
+import { Owner } from "./owner";
 
 const createOwner = (props: Partial<ConstructorParameters<typeof Owner>[0]>) =>
   new Owner({
@@ -37,12 +37,34 @@ describe("isOwnedBy", () => {
   );
 });
 
-describe("getAvatarUrl", () => {
+describe("toView", () => {
+  test("ハンドルがあればURLと表示にハンドルを使う", () => {
+    // arrange
+    const owner = createOwner({ handle: "example.com" });
+    // act
+    const actual = owner.toView();
+    // assert
+    expect(actual).toMatchObject({
+      handleOrDid: "example.com",
+      displayHandle: "@example.com",
+    });
+  });
+  test("ハンドルがnullならURLと表示にDIDを使う", () => {
+    // arrange
+    const owner = createOwner({ handle: null });
+    // act
+    const actual = owner.toView();
+    // assert
+    expect(actual).toMatchObject({
+      handleOrDid: "did:plc:dummy",
+      displayHandle: "@did:plc:dummy",
+    });
+  });
   test("アバターのCIDからBlueskyのCDNのURLを返す", () => {
     // arrange
     const owner = createOwner({ avatarCid: "bafkreiavatar" });
     // act
-    const actual = getAvatarUrl(owner);
+    const actual = owner.toView().avatarUrl;
     // assert
     expect(actual).toBe(
       "https://cdn.bsky.app/img/avatar/plain/did:plc:dummy/bafkreiavatar@jpeg",
@@ -55,7 +77,7 @@ describe("getAvatarUrl", () => {
       avatarCid: null,
     });
     // act
-    const actual = getAvatarUrl(owner);
+    const actual = owner.toView().avatarUrl;
     // assert
     expect(actual).toBe("https://example.com/avatar.png");
   });
@@ -63,7 +85,7 @@ describe("getAvatarUrl", () => {
     // arrange
     const owner = createOwner({ avatarCid: null });
     // act
-    const actual = getAvatarUrl(owner);
+    const actual = owner.toView().avatarUrl;
     // assert
     expect(actual).toBeNull();
   });

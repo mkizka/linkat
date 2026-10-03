@@ -1,7 +1,7 @@
 import { type Did, isDid } from "@atproto/did";
 
 import type { LinkatAgent } from "~/libs/agent";
-import type { Owner } from "~/models/owner";
+import { Owner } from "~/models/owner";
 import {
   emptyProfile,
   type IAccountPdsRepository,
@@ -10,14 +10,9 @@ import {
 import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
 import type { IOwnerDbRepository } from "~/server/infrastructure/ownerDbRepository";
 
-export type Editor = Pick<
-  Owner,
-  "did" | "handle" | "avatar" | "avatarCid" | "description" | "displayName"
->;
-
 export interface IOwnerService {
   findOwner: (params: { handleOrDid: string }) => Promise<Owner | null>;
-  findEditor: (agent: LinkatAgent) => Promise<Editor>;
+  findEditor: (agent: LinkatAgent) => Promise<Owner>;
   updateProfile: (params: {
     did: Did;
     profile: Profile;
@@ -45,19 +40,24 @@ export const ownerServiceFactory = ({
       return owner;
     }
     const profile = await accountPdsRepository.fetchSessionProfile(agent);
-    return { did, handle: null, ...(profile ?? emptyProfile) };
+    return new Owner({
+      did,
+      handle: null,
+      ...(profile ?? emptyProfile),
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
   },
   async updateProfile({ did, profile }) {
     const existing = await ownerDbRepository.findByDid(did);
     if (!existing) {
       return null;
     }
-    const resolution = await identityResolver.resolve(did);
+    const identity = await identityResolver.resolve(did);
     return await ownerDbRepository.save({
       did,
       ...profile,
-      handle:
-        resolution.type === "found" ? resolution.identity.handle : undefined,
+      handle: identity?.handle ?? null,
       updatedAt: new Date(),
     });
   },
