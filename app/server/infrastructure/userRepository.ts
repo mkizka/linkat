@@ -31,8 +31,8 @@ export const userRepositoryFactory = ({
     if (!fetched) {
       return cached;
     }
-    const existing = cached?.did === fetched.did ? cached : null;
-    const profile = fetched.profile ?? existing;
+    const profile =
+      fetched.profile ?? (cached?.did === fetched.did ? cached : null);
     return await userDbRepository.save(
       new User({
         did: fetched.did,
@@ -40,10 +40,7 @@ export const userRepositoryFactory = ({
         avatarCid: profile?.avatarCid ?? null,
         description: profile?.description ?? null,
         displayName: profile?.displayName ?? null,
-        handle:
-          fetched.handle === undefined
-            ? (existing?.handle ?? null)
-            : fetched.handle,
+        handle: fetched.handle,
         createdAt: new Date(),
         updatedAt: new Date(),
       }),

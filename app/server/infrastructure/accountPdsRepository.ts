@@ -4,10 +4,7 @@ import { getBlobCidString } from "@atproto/lex";
 import profile from "~/generated/app/bsky/actor/profile";
 import { LinkatAgent } from "~/libs/agent";
 import type { User } from "~/models/user";
-import type {
-  Identity,
-  IIdentityResolver,
-} from "~/server/infrastructure/identityResolver";
+import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
 import { createLogger } from "~/utils/logger";
 import { tryCatch } from "~/utils/tryCatch";
 
@@ -21,7 +18,7 @@ type Profile = Pick<
 export interface IAccountPdsRepository {
   findByHandleOrDid: (handleOrDid: string) => Promise<{
     did: Did;
-    handle: Identity["handle"];
+    handle: string | null;
     profile: Profile | null;
   } | null>;
 }
