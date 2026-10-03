@@ -10,17 +10,10 @@ import { tryCatch } from "~/utils/tryCatch";
 
 const logger = createLogger("accountPdsRepository");
 
-export type Profile = Pick<
+type Profile = Pick<
   User,
   "avatar" | "avatarCid" | "description" | "displayName"
 >;
-
-export const emptyProfile: Profile = {
-  avatar: null,
-  avatarCid: null,
-  description: null,
-  displayName: null,
-};
 
 export interface IAccountPdsRepository {
   findByHandleOrDid: (handleOrDid: string) => Promise<{

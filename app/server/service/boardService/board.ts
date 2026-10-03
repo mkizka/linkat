@@ -3,10 +3,7 @@ import type { Did } from "@atproto/did";
 import type { LinkatAgent } from "~/libs/agent";
 import { Board } from "~/models/board";
 import { User } from "~/models/user";
-import {
-  emptyProfile,
-  type IAccountPdsRepository,
-} from "~/server/infrastructure/accountPdsRepository";
+import type { IAccountPdsRepository } from "~/server/infrastructure/accountPdsRepository";
 import type { IBoardRepository } from "~/server/infrastructure/boardRepository";
 import type { IUserDbRepository } from "~/server/infrastructure/userDbRepository";
 import { tryCatch } from "~/utils/tryCatch";
@@ -58,23 +55,9 @@ export const boardServiceFactory = ({
 }): IBoardService => {
   const saveOwner = async (did: Did) => {
     const { handle, profile } = await accountPdsRepository.resolveAccount(did);
-    const existing = profile ? null : await userDbRepository.findByDid(did);
-    const now = new Date();
+    const owner = (await userDbRepository.findByDid(did)) ?? User.create(did);
     return await userDbRepository.save(
-      new User({
-        did,
-        ...(profile ??
-          (existing && {
-            avatar: existing.avatar,
-            avatarCid: existing.avatarCid,
-            description: existing.description,
-            displayName: existing.displayName,
-          }) ??
-          emptyProfile),
-        handle,
-        createdAt: now,
-        updatedAt: now,
-      }),
+      (profile ? owner.withProfile(profile) : owner).withHandle(handle),
     );
   };
 

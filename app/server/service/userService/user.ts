@@ -1,17 +1,15 @@
-import { isDid } from "@atproto/did";
+import { type Did, isDid } from "@atproto/did";
 
 import type { LinkatAgent } from "~/libs/agent";
-import { User, type UserView } from "~/models/user";
-import {
-  emptyProfile,
-  type IAccountPdsRepository,
-} from "~/server/infrastructure/accountPdsRepository";
+import { type AccountStatus, User, type UserView } from "~/models/user";
+import type { IAccountPdsRepository } from "~/server/infrastructure/accountPdsRepository";
 import type { IUserDbRepository } from "~/server/infrastructure/userDbRepository";
 import type { IUserRepository } from "~/server/infrastructure/userRepository";
 
 export interface IUserService {
   findUser: (params: { handleOrDid: string }) => Promise<User | null>;
   findEditor: (agent: LinkatAgent) => Promise<UserView>;
+  updateStatus: (did: Did, status: AccountStatus) => Promise<void>;
 }
 
 export const userServiceFactory = ({
@@ -36,13 +34,9 @@ export const userServiceFactory = ({
       return owner.toView();
     }
     const profile = await accountPdsRepository.fetchSessionProfile(agent);
-    const now = new Date();
-    return new User({
-      did,
-      handle: null,
-      ...(profile ?? emptyProfile),
-      createdAt: now,
-      updatedAt: now,
-    }).toView();
+    return User.create(did).withProfile(profile).toView();
+  },
+  async updateStatus(did, status) {
+    await userRepository.updateStatus(did, status);
   },
 });

@@ -1,6 +1,6 @@
 import type { Did } from "@atproto/did";
 
-import { User } from "./user";
+import { type AccountStatus, User } from "./user";
 
 const createUser = (props: Partial<ConstructorParameters<typeof User>[0]>) =>
   new User({
@@ -10,6 +10,7 @@ const createUser = (props: Partial<ConstructorParameters<typeof User>[0]>) =>
     description: null,
     displayName: null,
     handle: "example.com",
+    status: "active",
     createdAt: new Date(),
     updatedAt: new Date(),
     ...props,
@@ -88,5 +89,44 @@ describe("toView", () => {
     const actual = user.toView().avatarUrl;
     // assert
     expect(actual).toBeNull();
+  });
+});
+
+describe("isHidden", () => {
+  test.each`
+    status           | expected
+    ${"active"}      | ${false}
+    ${"suspended"}   | ${true}
+    ${"deleted"}     | ${true}
+    ${"deactivated"} | ${true}
+    ${"inactive"}    | ${true}
+  `(
+    "$status",
+    ({ status, expected }: { status: AccountStatus; expected: boolean }) => {
+      expect(createUser({ status }).isHidden()).toBe(expected);
+    },
+  );
+});
+
+describe("withProfile", () => {
+  test("nullを渡すとプロフィールを空にし、ハンドルと状態は残す", () => {
+    // arrange
+    const user = createUser({
+      avatarCid: "bafkreidummy",
+      description: "説明",
+      displayName: "Alice",
+      status: "suspended",
+    });
+    // act
+    const actual = user.withProfile(null);
+    // assert
+    expect(actual).toMatchObject({
+      avatar: null,
+      avatarCid: null,
+      description: null,
+      displayName: null,
+      handle: "example.com",
+      status: "suspended",
+    });
   });
 });
