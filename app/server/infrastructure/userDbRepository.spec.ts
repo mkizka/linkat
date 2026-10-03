@@ -41,27 +41,11 @@ describe("userDbRepository", () => {
     });
     test("handleを指定してユーザーを取得できる", async () => {
       // arrange
-      const user = await UserFactory.create();
-      // act
-      const actual = await userDbRepository.findByHandle(user.handle);
-      // assert
-      expect(actual).toEqual(user);
-    });
-    test("handleが同じユーザーが複数DBにある場合は、最後に作成された方を取得する", async () => {
-      // arrange
-      const user1 = await UserFactory.create({
-        handle: "example.com",
-        createdAt: new Date("2024-01-01T00:00:00.000Z"),
-      });
-      const user2 = await UserFactory.create({
-        handle: "example.com",
-        createdAt: new Date("2024-01-02T00:00:00.000Z"),
-      });
+      const user = await UserFactory.create({ handle: "example.com" });
       // act
       const actual = await userDbRepository.findByHandle("example.com");
       // assert
-      expect(user1.did).not.toEqual(user2.did);
-      expect(actual).toEqual(user2);
+      expect(actual).toEqual(user);
     });
   });
 
@@ -124,6 +108,27 @@ describe("userDbRepository", () => {
         createdAt: existing.createdAt,
         updatedAt: updated.updatedAt,
       });
+    });
+    test("他のユーザーが同じhandleを持っている場合、そのユーザーのhandleをnullにする", async () => {
+      // arrange
+      const other = await UserFactory.create({ handle: "example.com" });
+      // act
+      await userDbRepository.save(
+        new User({ ...other, did: "did:plc:abcdefghijklmnopqrstuvwx" }),
+      );
+      // assert
+      const actual = await userDbRepository.findByDid(asDid(other.did));
+      expect(actual?.handle).toBeNull();
+    });
+    test("handleがnullのユーザーは複数保存できる", async () => {
+      // arrange
+      const other = await UserFactory.create({ handle: null });
+      // act
+      const actual = await userDbRepository.save(
+        new User({ ...other, did: "did:plc:abcdefghijklmnopqrstuvwx" }),
+      );
+      // assert
+      expect(actual.handle).toBeNull();
     });
   });
 });

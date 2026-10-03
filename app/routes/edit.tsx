@@ -74,11 +74,11 @@ export async function action({ request, context }: Route.ActionArgs) {
         message: i18next.t("edit.save-delayed-warning-message"),
         type: "warning",
       });
-      return redirect(`/${user.handle}`);
+      return redirect(`/${user.toView().handleOrDid}`);
     }
     throw error;
   }
-  return redirect(`/${user.handle}?success`);
+  return redirect(`/${user.toView().handleOrDid}?success`);
 }
 
 export async function loader({ request }: Route.LoaderArgs) {
@@ -87,10 +87,11 @@ export async function loader({ request }: Route.LoaderArgs) {
     throw redirect("/login");
   }
   const board = await di.boardService.findBoard(user.did);
+  const view = user.toView();
   return {
-    user,
+    user: view,
     board: board && { cards: board.cards },
-    url: `${env.PUBLIC_URL}/${user.handle}`,
+    url: `${env.PUBLIC_URL}/${view.handleOrDid}`,
   };
 }
 
@@ -110,7 +111,7 @@ export default function Index({ loaderData }: Route.ComponentProps) {
     ({ currentLocation, nextLocation, historyAction }) =>
       // 保存ボタンを押したときの移動以外のとき
       (currentLocation.pathname !== nextLocation.pathname &&
-        nextLocation.pathname !== `/${user.handle}`) ||
+        nextLocation.pathname !== `/${user.handleOrDid}`) ||
       // /alice.testから/editに移動して戻るとき
       // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
       historyAction === "POP",

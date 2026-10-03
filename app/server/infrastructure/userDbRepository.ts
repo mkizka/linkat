@@ -1,5 +1,5 @@
 import type { Did } from "@atproto/did";
-import { desc, eq } from "drizzle-orm";
+import { and, eq, ne } from "drizzle-orm";
 
 import { User } from "~/models/user";
 import type { Db } from "~/server/infrastructure/drizzle";
@@ -21,7 +21,6 @@ export const userDbRepositoryFactory = ({
       .select()
       .from(userTable)
       .where(eq(userTable.did, did))
-      .orderBy(desc(userTable.createdAt))
       .limit(1);
     return row ? new User(row) : null;
   },
@@ -30,7 +29,6 @@ export const userDbRepositoryFactory = ({
       .select()
       .from(userTable)
       .where(eq(userTable.handle, handle))
-      .orderBy(desc(userTable.createdAt))
       .limit(1);
     return row ? new User(row) : null;
   },
@@ -44,14 +42,24 @@ export const userDbRepositoryFactory = ({
       handle: user.handle,
       updatedAt: user.updatedAt,
     };
-    const [row] = await db
-      .insert(userTable)
-      .values(data)
-      .onConflictDoUpdate({ target: userTable.did, set: data })
-      .returning();
-    if (!row) {
-      throw new Error("ユーザーの保存に失敗しました");
-    }
-    return new User(row);
+    return await db.transaction(async (tx) => {
+      if (user.handle) {
+        await tx
+          .update(userTable)
+          .set({ handle: null })
+          .where(
+            and(eq(userTable.handle, user.handle), ne(userTable.did, user.did)),
+          );
+      }
+      const [row] = await tx
+        .insert(userTable)
+        .values(data)
+        .onConflictDoUpdate({ target: userTable.did, set: data })
+        .returning();
+      if (!row) {
+        throw new Error("ユーザーの保存に失敗しました");
+      }
+      return new User(row);
+    });
   },
 });

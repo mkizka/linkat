@@ -15,7 +15,7 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
   if (!user) {
     throw redirect("/login");
   }
-  return { user };
+  return { user: user.toView() };
 };
 
 export default function SettingsPage({ loaderData }: Route.ComponentProps) {
@@ -36,7 +36,7 @@ export default function SettingsPage({ loaderData }: Route.ComponentProps) {
             <h2 className="border-b-2 border-gray-200 pb-1 font-bold">
               {t("settings.header-board")}
             </h2>
-            <DeleteBoardButton handle={user.handle} />
+            <DeleteBoardButton handle={user.handleOrDid} />
             <p className="text-gray-400">
               {t("settings.delete-board-warning")}
             </p>

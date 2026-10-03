@@ -6,7 +6,7 @@ export class User {
   readonly avatarCid: string | null;
   readonly description: string | null;
   readonly displayName: string | null;
-  readonly handle: string;
+  readonly handle: string | null;
   readonly createdAt: Date;
   readonly updatedAt: Date;
 
@@ -16,7 +16,7 @@ export class User {
     avatarCid: string | null;
     description: string | null;
     displayName: string | null;
-    handle: string;
+    handle: string | null;
     createdAt: Date;
     updatedAt: Date;
   }) {
@@ -33,11 +33,18 @@ export class User {
   isOwnedBy(viewerDid: Did | null) {
     return this.did === viewerDid;
   }
+
+  toView() {
+    return {
+      did: this.did,
+      handleOrDid: this.handle ?? this.did,
+      displayHandle: `@${this.handle ?? this.did}`,
+      displayName: this.displayName,
+      avatarUrl: this.avatarCid
+        ? `https://cdn.bsky.app/img/avatar/plain/${this.did}/${this.avatarCid}@jpeg`
+        : this.avatar,
+    };
+  }
 }
 
-export const getAvatarUrl = (
-  user: Pick<User, "did" | "avatar" | "avatarCid">,
-) =>
-  user.avatarCid
-    ? `https://cdn.bsky.app/img/avatar/plain/${user.did}/${user.avatarCid}@jpeg`
-    : user.avatar;
+export type UserView = ReturnType<User["toView"]>;

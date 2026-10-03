@@ -16,9 +16,11 @@ type Profile = Pick<
 >;
 
 export interface IAccountPdsRepository {
-  findByHandleOrDid: (
-    handleOrDid: string,
-  ) => Promise<{ did: Did; handle: string; profile: Profile | null } | null>;
+  findByHandleOrDid: (handleOrDid: string) => Promise<{
+    did: Did;
+    handle: string | null;
+    profile: Profile | null;
+  } | null>;
 }
 
 const fetchProfile = async ({ did, pds }: { did: Did; pds: string }) => {

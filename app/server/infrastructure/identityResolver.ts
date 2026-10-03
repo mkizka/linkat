@@ -1,6 +1,9 @@
 import { type Did, extractPdsUrl } from "@atproto/did";
 import { AtprotoHandleResolverNode } from "@atproto-labs/handle-resolver-node";
-import { createIdentityResolver } from "@atproto-labs/identity-resolver";
+import {
+  createIdentityResolver,
+  HANDLE_INVALID,
+} from "@atproto-labs/identity-resolver";
 
 import { env, isProduction } from "~/utils/env";
 import { createLogger } from "~/utils/logger";
@@ -10,7 +13,7 @@ const logger = createLogger("identityResolver");
 export interface IIdentityResolver {
   resolve: (
     handleOrDid: string,
-  ) => Promise<{ did: Did; handle: string; pds: string } | null>;
+  ) => Promise<{ did: Did; handle: string | null; pds: string } | null>;
 }
 
 export const identityResolverFactory = (): IIdentityResolver => {
@@ -24,7 +27,11 @@ export const identityResolverFactory = (): IIdentityResolver => {
     async resolve(handleOrDid) {
       try {
         const { did, didDoc, handle } = await resolver.resolve(handleOrDid);
-        return { did, handle, pds: extractPdsUrl(didDoc).origin };
+        return {
+          did,
+          handle: handle === HANDLE_INVALID ? null : handle,
+          pds: extractPdsUrl(didDoc).origin,
+        };
       } catch (error) {
         logger.warn(error, "DIDまたはhandleの解決に失敗しました");
         return null;
