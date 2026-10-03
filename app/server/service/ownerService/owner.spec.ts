@@ -1,0 +1,178 @@
+import { asDid } from "@atproto/did";
+import { http, HttpResponse } from "msw";
+import { mock, mockReset } from "vitest-mock-extended";
+
+import { LinkatAgent } from "~/libs/agent";
+import { server } from "~/mocks/server";
+import { Owner } from "~/models/owner";
+import { OwnerFactory } from "~/server/factories/owner";
+import { accountPdsRepositoryFactory } from "~/server/infrastructure/accountPdsRepository";
+import { db } from "~/server/infrastructure/drizzle";
+import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
+import { ownerDbRepositoryFactory } from "~/server/infrastructure/ownerDbRepository";
+import { profileRecordParserFactory } from "~/server/infrastructure/profileRecordParser";
+
+import { ownerServiceFactory } from "./owner";
+
+const identityResolver = mock<IIdentityResolver>();
+const ownerDbRepository = ownerDbRepositoryFactory({ db });
+const accountPdsRepository = accountPdsRepositoryFactory({
+  identityResolver,
+  profileRecordParser: profileRecordParserFactory(),
+});
+const ownerService = ownerServiceFactory({
+  ownerDbRepository,
+  accountPdsRepository,
+});
+
+const AVATAR_CID =
+  "bafkreigh2akiscaildcqabsyg3dfr6chu3fgpregiymsck7e7aqa4s52zy";
+
+const getRecordUrl = "https://pds.example.com/xrpc/com.atproto.repo.getRecord";
+
+const createAgent = (did: string) =>
+  new LinkatAgent({ did: asDid(did), service: "https://pds.example.com" });
+
+describe("ownerService", () => {
+  describe("findOwner", () => {
+    beforeEach(() => {
+      mockReset(identityResolver);
+    });
+    test("DIDを指定して持ち主の写しを取得できる", async () => {
+      // arrange
+      const owner = await OwnerFactory.create();
+      // act
+      const actual = await ownerService.findOwner({ handleOrDid: owner.did });
+      // assert
+      expect(actual).toEqual(owner);
+    });
+    test("ハンドルを指定して持ち主の写しを取得できる", async () => {
+      // arrange
+      const owner = await OwnerFactory.create({ handle: "example.com" });
+      // act
+      const actual = await ownerService.findOwner({
+        handleOrDid: "example.com",
+      });
+      // assert
+      expect(actual).toEqual(owner);
+    });
+    test("写しが古くても、ハンドルを解決せずに写しをそのまま返す", async () => {
+      // arrange
+      const owner = await OwnerFactory.create({
+        updatedAt: new Date("2000-01-01T00:00:00Z"),
+      });
+      // act
+      const actual = await ownerService.findOwner({ handleOrDid: owner.did });
+      // assert
+      expect(actual).toEqual(owner);
+      expect(identityResolver.resolve).not.toHaveBeenCalled();
+    });
+    test("写しに無いDIDはnullを返し、写しを作らない", async () => {
+      // arrange
+      const did = asDid("did:plc:notowner0000000000000000");
+      // act
+      const actual = await ownerService.findOwner({ handleOrDid: did });
+      // assert
+      expect(actual).toBeNull();
+      expect(identityResolver.resolve).not.toHaveBeenCalled();
+      expect(await ownerDbRepository.findByDid(did)).toBeNull();
+    });
+    test("写しに無いハンドルはnullを返す", async () => {
+      // arrange
+      // act
+      const actual = await ownerService.findOwner({
+        handleOrDid: "unknown.example.com",
+      });
+      // assert
+      expect(actual).toBeNull();
+      expect(identityResolver.resolve).not.toHaveBeenCalled();
+    });
+    test("入力が明らかにドメインでなければnullを返す", async () => {
+      // arrange
+      // act
+      const actual = await ownerService.findOwner({
+        handleOrDid: "invalid",
+      });
+      // assert
+      expect(actual).toBeNull();
+    });
+    test("入力がDIDとして不正であればnullを返す", async () => {
+      // arrange
+      // act
+      const actual = await ownerService.findOwner({
+        handleOrDid: "did:invalid",
+      });
+      // assert
+      expect(actual).toBeNull();
+    });
+  });
+
+  describe("findEditor", () => {
+    test("持ち主の写しがあれば、それを返す", async () => {
+      // arrange
+      const owner = await OwnerFactory.create();
+      // act
+      const actual = await ownerService.findEditor(createAgent(owner.did));
+      // assert
+      expect(actual).toEqual(new Owner(owner).toView());
+      expect(identityResolver.resolve).not.toHaveBeenCalled();
+    });
+    test("写しが無ければ、DIDとセッションのPDSから取得したプロフィールを返し、保存しない", async () => {
+      // arrange
+      const did = "did:plc:editor";
+      let requestedRepo: string | null = null;
+      server.use(
+        http.get(getRecordUrl, ({ request }) => {
+          requestedRepo = new URL(request.url).searchParams.get("repo");
+          return HttpResponse.json({
+            uri: `at://${did}/app.bsky.actor.profile/self`,
+            cid: "bafyreidfayvfuwqa7qlnopdjiqrxzs6blmoeu4rujcjtnci5beludirz2a",
+            value: {
+              $type: "app.bsky.actor.profile",
+              displayName: "Alice",
+              avatar: {
+                $type: "blob",
+                ref: { $link: AVATAR_CID },
+                mimeType: "image/jpeg",
+                size: 1000,
+              },
+            },
+          });
+        }),
+      );
+      // act
+      const actual = await ownerService.findEditor(createAgent(did));
+      // assert
+      expect(actual).toEqual({
+        did,
+        handleOrDid: did,
+        displayHandle: `@${did}`,
+        displayName: "Alice",
+        avatarUrl: `https://cdn.bsky.app/img/avatar/plain/${did}/${AVATAR_CID}@jpeg`,
+      });
+      expect(requestedRepo).toBe(did);
+      expect(identityResolver.resolve).not.toHaveBeenCalled();
+      expect(await ownerDbRepository.findByDid(asDid(did))).toBeNull();
+    });
+    test("写しが無くプロフィールの取得にも失敗したら、DIDだけを返す", async () => {
+      // arrange
+      const did = "did:plc:editor";
+      server.use(
+        http.get(getRecordUrl, () =>
+          HttpResponse.json({ error: "InternalServerError" }, { status: 500 }),
+        ),
+      );
+      // act
+      const actual = await ownerService.findEditor(createAgent(did));
+      // assert
+      expect(actual).toEqual({
+        did,
+        handleOrDid: did,
+        displayHandle: `@${did}`,
+        displayName: null,
+        avatarUrl: null,
+      });
+      expect(await ownerDbRepository.findByDid(asDid(did))).toBeNull();
+    });
+  });
+});

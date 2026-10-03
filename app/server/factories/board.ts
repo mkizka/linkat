@@ -1,7 +1,7 @@
 import { db } from "~/server/infrastructure/drizzle";
 import { boardTable } from "~/server/infrastructure/schema";
 
-import { UserFactory } from "./user";
+import { OwnerFactory } from "./owner";
 
 export const cardsFromFactory = [
   {
@@ -12,14 +12,14 @@ export const cardsFromFactory = [
 
 export const BoardFactory = {
   create: async (overrides: Partial<typeof boardTable.$inferInsert> = {}) => {
-    const userDid = overrides.userDid ?? (await UserFactory.create()).did;
+    const ownerDid = overrides.ownerDid ?? (await OwnerFactory.create()).did;
     const [board] = await db
       .insert(boardTable)
       .values({
         record: JSON.stringify({ cards: cardsFromFactory }),
         updatedAt: new Date(),
         ...overrides,
-        userDid,
+        ownerDid,
       })
       .returning();
     if (!board) {
