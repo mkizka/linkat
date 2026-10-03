@@ -11,6 +11,7 @@ const isFresh = (user: User) =>
 
 export interface IUserRepository {
   findByHandleOrDid: (handleOrDid: string) => Promise<User | null>;
+  refresh: (did: Did) => Promise<User | null>;
   updateStatus: (did: Did, status: AccountStatus) => Promise<void>;
 }
 
@@ -20,23 +21,16 @@ export const userRepositoryFactory = ({
 }: {
   userDbRepository: IUserDbRepository;
   accountPdsRepository: IAccountPdsRepository;
-}): IUserRepository => ({
-  async findByHandleOrDid(handleOrDid) {
-    const cached = await (isDid(handleOrDid)
-      ? userDbRepository.findByDid(handleOrDid)
-      : userDbRepository.findByHandle(handleOrDid));
-    if (cached && isFresh(cached)) {
-      return cached;
-    }
-    const fetched = await accountPdsRepository.findByHandleOrDid(handleOrDid);
+}): IUserRepository => {
+  const fetchAndSave = async (did: Did, cached: User | null) => {
+    const fetched = await accountPdsRepository.findByDid(did);
     if (!fetched) {
-      return cached;
+      return cached && (await userDbRepository.save(cached.withHandle(null)));
     }
-    const profile =
-      fetched.profile ?? (cached?.did === fetched.did ? cached : null);
+    const profile = fetched.profile ?? cached;
     return await userDbRepository.save(
       new User({
-        did: fetched.did,
+        did,
         avatar: profile?.avatar ?? null,
         avatarCid: profile?.avatarCid ?? null,
         description: profile?.description ?? null,
@@ -47,8 +41,27 @@ export const userRepositoryFactory = ({
         updatedAt: new Date(),
       }),
     );
-  },
-  async updateStatus(did, status) {
-    await userDbRepository.updateStatus(did, status);
-  },
-});
+  };
+
+  return {
+    async findByHandleOrDid(handleOrDid) {
+      if (isDid(handleOrDid)) {
+        const cached = await userDbRepository.findByDid(handleOrDid);
+        return cached && isFresh(cached)
+          ? cached
+          : await fetchAndSave(handleOrDid, cached);
+      }
+      const cached = await userDbRepository.findByHandle(handleOrDid);
+      if (!cached || isFresh(cached)) {
+        return cached;
+      }
+      return await fetchAndSave(cached.did, cached);
+    },
+    async refresh(did) {
+      return await fetchAndSave(did, await userDbRepository.findByDid(did));
+    },
+    async updateStatus(did, status) {
+      await userDbRepository.updateStatus(did, status);
+    },
+  };
+};

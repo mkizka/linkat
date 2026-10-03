@@ -2,7 +2,9 @@ import type { Did } from "@atproto/did";
 
 import type { LinkatAgent } from "~/libs/agent";
 import { Board } from "~/models/board";
+import type { User } from "~/models/user";
 import type { IBoardRepository } from "~/server/infrastructure/boardRepository";
+import type { IUserRepository } from "~/server/infrastructure/userRepository";
 import { tryCatch } from "~/utils/tryCatch";
 
 export class BoardPdsSaveError extends Error {
@@ -34,8 +36,8 @@ export interface IBoardService {
     userDid: Did,
     rawBoard: string,
   ) => Promise<Board | Error>;
-  saveBoard: (board: Board) => Promise<void>;
-  publishBoard: (agent: LinkatAgent, board: Board) => Promise<void>;
+  saveBoard: (board: Board) => Promise<User | null>;
+  publishBoard: (agent: LinkatAgent, board: Board) => Promise<User | null>;
   findBoard: (userDid: Did) => Promise<Board | null>;
   deleteBoard: (userDid: Did) => Promise<void>;
   unpublishBoard: (agent: LinkatAgent, userDid: Did) => Promise<void>;
@@ -43,17 +45,26 @@ export interface IBoardService {
 
 export const boardServiceFactory = ({
   boardRepository,
+  userRepository,
 }: {
   boardRepository: IBoardRepository;
+  userRepository: IUserRepository;
 }): IBoardService => {
+  const saveBoard = async (board: Board) => {
+    const owner = await userRepository.refresh(board.userDid);
+    if (!owner) {
+      return null;
+    }
+    await boardRepository.save(board);
+    return owner;
+  };
+
   return {
     parseBoardFromForm: tryCatch(
       (userDid: Did, rawBoard: string) =>
         new Board(userDid, Board.parseCards(JSON.parse(rawBoard))),
     ),
-    async saveBoard(board) {
-      await boardRepository.save(board);
-    },
+    saveBoard,
     async publishBoard(agent, board) {
       try {
         await agent.updateBoard(board);
@@ -61,7 +72,7 @@ export const boardServiceFactory = ({
         throw new BoardPdsSaveError(error);
       }
       try {
-        await boardRepository.save(board);
+        return await saveBoard(board);
       } catch (error) {
         throw new BoardDbSaveError(error);
       }

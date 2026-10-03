@@ -1,13 +1,19 @@
 import { asDid } from "@atproto/did";
 import { http, HttpResponse } from "msw";
+import { mock } from "vitest-mock-extended";
 
 import { LinkatAgent } from "~/libs/agent";
 import { server } from "~/mocks/server";
 import { Board, BoardParseError } from "~/models/board";
 import { BoardFactory, cardsFromFactory } from "~/server/factories/board";
 import { UserFactory } from "~/server/factories/user";
+import { accountPdsRepositoryFactory } from "~/server/infrastructure/accountPdsRepository";
 import { boardRepositoryFactory } from "~/server/infrastructure/boardRepository";
 import { db } from "~/server/infrastructure/drizzle";
+import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
+import { profileRecordParserFactory } from "~/server/infrastructure/profileRecordParser";
+import { userDbRepositoryFactory } from "~/server/infrastructure/userDbRepository";
+import { userRepositoryFactory } from "~/server/infrastructure/userRepository";
 
 import {
   BoardDbDeleteError,
@@ -18,8 +24,16 @@ import {
 } from "./board";
 
 const boardRepository = boardRepositoryFactory({ db });
+const identityResolver = mock<IIdentityResolver>();
 const boardService = boardServiceFactory({
   boardRepository,
+  userRepository: userRepositoryFactory({
+    userDbRepository: userDbRepositoryFactory({ db }),
+    accountPdsRepository: accountPdsRepositoryFactory({
+      identityResolver,
+      profileRecordParser: profileRecordParserFactory(),
+    }),
+  }),
 });
 
 const dummyCards = [

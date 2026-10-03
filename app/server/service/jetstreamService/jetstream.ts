@@ -98,9 +98,7 @@ export const jetstreamServiceFactory = ({
       return;
     }
     const board = new Board(event.did, cards);
-    const user = await userService.findUser({
-      handleOrDid: event.did,
-    });
+    const user = await boardService.saveBoard(board);
     if (!user) {
       logger.warn(
         { did: event.did },
@@ -108,7 +106,6 @@ export const jetstreamServiceFactory = ({
       );
       return;
     }
-    await boardService.saveBoard(board);
     logger.info({ user, board }, "ボードを更新しました");
   };
 
