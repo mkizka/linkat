@@ -3,6 +3,13 @@ import { asDid, type Did } from "@atproto/did";
 export type AccountStatus =
   "active" | "suspended" | "deleted" | "deactivated" | "inactive";
 
+export type Profile = {
+  avatar: string | null;
+  avatarCid: string | null;
+  description: string | null;
+  displayName: string | null;
+};
+
 export class User {
   readonly did: Did;
   readonly avatar: string | null;
@@ -99,10 +106,5 @@ export class User {
     };
   }
 }
-
-export type Profile = Pick<
-  User,
-  "avatar" | "avatarCid" | "description" | "displayName"
->;
 
 export type UserView = ReturnType<User["toView"]>;

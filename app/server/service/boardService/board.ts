@@ -54,10 +54,13 @@ export const boardServiceFactory = ({
   accountPdsRepository: IAccountPdsRepository;
 }): IBoardService => {
   const saveOwner = async (did: Did) => {
-    const { handle, profile } = await accountPdsRepository.resolveAccount(did);
+    const fetched = await accountPdsRepository.findByDid(did);
     const owner = (await userDbRepository.findByDid(did)) ?? User.create(did);
     return await userDbRepository.save(
-      (profile ? owner.withProfile(profile) : owner).withHandle(handle),
+      (fetched?.profile
+        ? owner.withProfile(fetched.profile)
+        : owner
+      ).withHandle(fetched?.handle ?? null),
     );
   };
 
