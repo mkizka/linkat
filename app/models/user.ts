@@ -58,12 +58,7 @@ export class User {
     });
   }
 
-  withProfile(
-    profile: Pick<
-      User,
-      "avatar" | "avatarCid" | "description" | "displayName"
-    > | null,
-  ) {
+  withProfile(profile: Profile | null) {
     return new User({
       did: this.did,
       avatar: profile?.avatar ?? null,
@@ -89,5 +84,10 @@ export class User {
     };
   }
 }
+
+export type Profile = Pick<
+  User,
+  "avatar" | "avatarCid" | "description" | "displayName"
+>;
 
 export type UserView = ReturnType<User["toView"]>;

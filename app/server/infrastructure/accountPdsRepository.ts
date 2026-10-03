@@ -5,17 +5,12 @@ import profile, {
   type Main as ProfileRecord,
 } from "~/generated/app/bsky/actor/profile";
 import { LinkatAgent } from "~/libs/agent";
-import type { User } from "~/models/user";
+import type { Profile } from "~/models/user";
 import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
 import { createLogger } from "~/utils/logger";
 import { tryCatch } from "~/utils/tryCatch";
 
 const logger = createLogger("accountPdsRepository");
-
-type Profile = Pick<
-  User,
-  "avatar" | "avatarCid" | "description" | "displayName"
->;
 
 export interface IAccountPdsRepository {
   findByHandleOrDid: (handleOrDid: string) => Promise<{
