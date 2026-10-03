@@ -40,7 +40,6 @@ export interface IBoardService {
     userDid: Did,
     rawBoard: string,
   ) => Promise<Board | Error>;
-  // ボードを公開・更新した(/editのPOST、Jetstreamのcommit)。保存した持ち主の写しを返す
   saveBoard: (board: Board) => Promise<User>;
   publishBoard: (agent: LinkatAgent, board: Board) => Promise<User>;
   findBoard: (userDid: Did) => Promise<Board | null>;
@@ -66,7 +65,6 @@ export const boardServiceFactory = ({
 }): IBoardService => {
   const saveOwner = async (did: Did) => {
     const { handle, profile } = await accountPdsRepository.resolveAccount(did);
-    // プロフィールの取得に失敗したときは、初回は空のまま、更新時は既存の値を残す
     const existing = profile ? null : await userDbRepository.findByDid(did);
     return await userDbRepository.save({
       did,
@@ -84,7 +82,6 @@ export const boardServiceFactory = ({
   };
 
   const saveBoard = async (board: Board) => {
-    // Boardは持ち主の写しへの外部キーを持つため、持ち主の写しを先に保存する
     const owner = await saveOwner(board.userDid);
     await boardRepository.save(board);
     return owner;

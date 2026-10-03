@@ -59,7 +59,6 @@ const mockIdentity = (did: string, handle: string | null | undefined) =>
 
 beforeEach(() => {
   vi.resetAllMocks();
-  // 既定では、ハンドルとプロフィールは一時的な障害で取得できないものとする
   identityResolver.resolve.mockResolvedValue({ type: "unavailable" });
 });
 

@@ -13,8 +13,6 @@ export type Editor = Pick<
 
 export interface IUserService {
   findUser: (params: { handleOrDid: string }) => Promise<User | null>;
-  // 編集者はセッションのDIDだけで成り立つ。写しが無いときは、DIDで表示し、
-  // プロフィールはその場でPDSから取得する。どちらも保存しない
   findEditor: (agent: LinkatAgent) => Promise<Editor>;
 }
 

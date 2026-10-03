@@ -24,13 +24,10 @@ export interface IAccountPdsRepository {
     handle: Identity["handle"];
     profile: Profile | null;
   } | null>;
-  // ハンドルを解決し、プロフィールを取得する。写しへの書き込みの中でだけ使う
-  // プロフィールの取得に失敗したときは、profileをnullにする
   resolveAccount: (did: Did) => Promise<{
     handle: Identity["handle"];
     profile: Profile | null;
   }>;
-  // OAuthセッションのPDSからプロフィールを取得する。ハンドルは解決しない
   fetchSessionProfile: (agent: LinkatAgent) => Promise<Profile | null>;
 }
 
@@ -83,10 +80,8 @@ export const accountPdsRepositoryFactory = ({
           handle: resolution.identity.handle,
           profile: await fetchProfileFromPds(resolution.identity),
         };
-      // DIDドキュメントが無ければ、検証済みのハンドルも無い
       case "notFound":
         return { handle: null, profile: null };
-      // 一時的な障害のときは、既存のハンドルを残す
       case "unavailable":
         return { handle: undefined, profile: null };
     }
