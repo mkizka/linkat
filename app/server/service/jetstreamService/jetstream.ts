@@ -93,7 +93,6 @@ export const jetstreamServiceFactory = ({
     }
     let profile: Profile;
     if (event.commit.operation === "delete") {
-      // プロフィールのレコードが消えたときは、空のプロフィールとして扱う
       profile = {
         avatar: null,
         avatarCid: null,
@@ -111,7 +110,6 @@ export const jetstreamServiceFactory = ({
       }
       profile = parsed;
     }
-    // 持ち主の写しが無いアカウントのイベントは捨てる
     const user = await userService.updateProfile({ did: event.did, profile });
     if (user) {
       logger.info({ user }, "プロフィールを更新しました");

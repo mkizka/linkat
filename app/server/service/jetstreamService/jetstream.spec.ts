@@ -178,7 +178,6 @@ describe("jetstreamService", () => {
       await jetstreamService.handleProfileCommit(
         profileUpdateEvent(user.did, {
           $type: "app.bsky.actor.profile",
-          // 表示名の上限(64文字)を超えている
           displayName: "あ".repeat(65),
         }),
       );

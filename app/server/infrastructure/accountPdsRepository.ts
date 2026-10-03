@@ -35,7 +35,6 @@ const toProfile = (value: ProfileRecord): Profile => ({
   displayName: value.displayName ?? null,
 });
 
-// JetstreamなどからJSONで受け取ったプロフィールのレコードを変換する。不正な値ならnullを返す
 export const parseProfileRecord = (json: unknown): Profile | null => {
   try {
     const result = profile.safeParse(lexParse(JSON.stringify(json)));

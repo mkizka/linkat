@@ -29,7 +29,6 @@ export const userServiceFactory = ({
     }
     return await userRepository.findByHandleOrDid(handleOrDid);
   },
-  // プロフィールが変わった。持ち主の写しがあれば、レコードの値で更新し、ハンドルを解決し直す
   async updateProfile({ did, profile }) {
     const existing = await userDbRepository.findByDid(did);
     if (!existing) {
@@ -39,7 +38,6 @@ export const userServiceFactory = ({
     return await userDbRepository.save({
       did,
       ...profile,
-      // 一時的な障害などで解決できなかったときは、既存の値を残す
       handle:
         resolution.type === "found" ? resolution.identity.handle : undefined,
       updatedAt: new Date(),
