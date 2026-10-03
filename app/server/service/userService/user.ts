@@ -2,7 +2,10 @@ import { isDid } from "@atproto/did";
 
 import type { LinkatAgent } from "~/libs/agent";
 import type { User } from "~/models/user";
-import type { IAccountPdsRepository } from "~/server/infrastructure/accountPdsRepository";
+import {
+  emptyProfile,
+  type IAccountPdsRepository,
+} from "~/server/infrastructure/accountPdsRepository";
 import type { IUserDbRepository } from "~/server/infrastructure/userDbRepository";
 import type { IUserRepository } from "~/server/infrastructure/userRepository";
 
@@ -38,13 +41,6 @@ export const userServiceFactory = ({
       return owner;
     }
     const profile = await accountPdsRepository.fetchSessionProfile(agent);
-    return {
-      did,
-      handle: null,
-      avatar: profile?.avatar ?? null,
-      avatarCid: profile?.avatarCid ?? null,
-      description: profile?.description ?? null,
-      displayName: profile?.displayName ?? null,
-    };
+    return { did, handle: null, ...(profile ?? emptyProfile) };
   },
 });
