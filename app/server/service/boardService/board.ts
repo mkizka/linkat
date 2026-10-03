@@ -2,7 +2,7 @@ import type { Did } from "@atproto/did";
 
 import type { LinkatAgent } from "~/libs/agent";
 import { Board } from "~/models/board";
-import type { User } from "~/models/user";
+import { User } from "~/models/user";
 import {
   emptyProfile,
   type IAccountPdsRepository,
@@ -59,19 +59,23 @@ export const boardServiceFactory = ({
   const saveOwner = async (did: Did) => {
     const { handle, profile } = await accountPdsRepository.resolveAccount(did);
     const existing = profile ? null : await userDbRepository.findByDid(did);
-    return await userDbRepository.save({
-      did,
-      ...(profile ??
-        (existing && {
-          avatar: existing.avatar,
-          avatarCid: existing.avatarCid,
-          description: existing.description,
-          displayName: existing.displayName,
-        }) ??
-        emptyProfile),
-      handle,
-      updatedAt: new Date(),
-    });
+    const now = new Date();
+    return await userDbRepository.save(
+      new User({
+        did,
+        ...(profile ??
+          (existing && {
+            avatar: existing.avatar,
+            avatarCid: existing.avatarCid,
+            description: existing.description,
+            displayName: existing.displayName,
+          }) ??
+          emptyProfile),
+        handle,
+        createdAt: now,
+        updatedAt: now,
+      }),
+    );
   };
 
   const saveBoard = async (board: Board) => {

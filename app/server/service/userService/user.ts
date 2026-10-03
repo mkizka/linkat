@@ -1,7 +1,7 @@
 import { isDid } from "@atproto/did";
 
 import type { LinkatAgent } from "~/libs/agent";
-import type { User } from "~/models/user";
+import { User, type UserView } from "~/models/user";
 import {
   emptyProfile,
   type IAccountPdsRepository,
@@ -9,14 +9,9 @@ import {
 import type { IUserDbRepository } from "~/server/infrastructure/userDbRepository";
 import type { IUserRepository } from "~/server/infrastructure/userRepository";
 
-export type Editor = Pick<
-  User,
-  "did" | "handle" | "avatar" | "avatarCid" | "description" | "displayName"
->;
-
 export interface IUserService {
   findUser: (params: { handleOrDid: string }) => Promise<User | null>;
-  findEditor: (agent: LinkatAgent) => Promise<Editor>;
+  findEditor: (agent: LinkatAgent) => Promise<UserView>;
 }
 
 export const userServiceFactory = ({
@@ -38,9 +33,16 @@ export const userServiceFactory = ({
     const did = agent.assertDid;
     const owner = await userDbRepository.findByDid(did);
     if (owner) {
-      return owner;
+      return owner.toView();
     }
     const profile = await accountPdsRepository.fetchSessionProfile(agent);
-    return { did, handle: null, ...(profile ?? emptyProfile) };
+    const now = new Date();
+    return new User({
+      did,
+      handle: null,
+      ...(profile ?? emptyProfile),
+      createdAt: now,
+      updatedAt: now,
+    }).toView();
   },
 });

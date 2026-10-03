@@ -7,7 +7,6 @@ import { Main } from "~/components/layout";
 import { BoardViewer } from "~/features/board/board-viewer";
 import { useUmami } from "~/hooks/useUmami";
 import { getInstance } from "~/i18n/i18n";
-import { getHandleOrDid } from "~/models/user";
 import { di } from "~/server/di";
 import {
   BoardDbSaveError,
@@ -77,7 +76,7 @@ export async function action({ request, context }: Route.ActionArgs) {
     }
     throw error;
   }
-  return redirect(`/${getHandleOrDid(owner)}?success`);
+  return redirect(`/${owner.toView().handleOrDid}?success`);
 }
 
 export async function loader({ request }: Route.LoaderArgs) {
@@ -92,7 +91,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   return {
     user,
     board: board && { cards: board.cards },
-    url: `${env.PUBLIC_URL}/${getHandleOrDid(user)}`,
+    url: `${env.PUBLIC_URL}/${user.handleOrDid}`,
   };
 }
 
@@ -112,7 +111,7 @@ export default function Index({ loaderData }: Route.ComponentProps) {
     ({ currentLocation, nextLocation, historyAction }) =>
       // 保存ボタンを押したときの移動以外のとき
       (currentLocation.pathname !== nextLocation.pathname &&
-        nextLocation.pathname !== `/${getHandleOrDid(user)}`) ||
+        nextLocation.pathname !== `/${user.handleOrDid}`) ||
       // /alice.testから/editに移動して戻るとき
       // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
       historyAction === "POP",

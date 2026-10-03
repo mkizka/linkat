@@ -51,7 +51,7 @@ describe("jetstreamService", () => {
     test("持ち主の写しが無くても、写しを作成してボードを保存する", async () => {
       // arrange
       const did = "did:plc:newowner";
-      identityResolver.resolve.mockResolvedValue({ type: "notFound" });
+      identityResolver.resolve.mockResolvedValue(null);
       // act
       await jetstreamService.handleCreateOrUpdate(dummyEvent(did));
       // assert

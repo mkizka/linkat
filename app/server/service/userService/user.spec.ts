@@ -4,6 +4,7 @@ import { mock } from "vitest-mock-extended";
 
 import { LinkatAgent } from "~/libs/agent";
 import { server } from "~/mocks/server";
+import { User } from "~/models/user";
 import { UserFactory } from "~/server/factories/user";
 import { accountPdsRepositoryFactory } from "~/server/infrastructure/accountPdsRepository";
 import { db } from "~/server/infrastructure/drizzle";
@@ -70,7 +71,7 @@ describe("userService", () => {
       // act
       const actual = await userService.findEditor(createAgent(user.did));
       // assert
-      expect(actual).toEqual(user);
+      expect(actual).toEqual(new User(user).toView());
       expect(identityResolver.resolve).not.toHaveBeenCalled();
     });
     test("写しが無ければ、DIDとセッションのPDSから取得したプロフィールを返し、保存しない", async () => {
@@ -101,11 +102,10 @@ describe("userService", () => {
       // assert
       expect(actual).toEqual({
         did,
-        handle: null,
-        avatar: null,
-        avatarCid: AVATAR_CID,
-        description: null,
+        handleOrDid: did,
+        displayHandle: `@${did}`,
         displayName: "Alice",
+        avatarUrl: `https://cdn.bsky.app/img/avatar/plain/${did}/${AVATAR_CID}@jpeg`,
       });
       expect(requestedRepo).toBe(did);
       expect(identityResolver.resolve).not.toHaveBeenCalled();
@@ -124,11 +124,10 @@ describe("userService", () => {
       // assert
       expect(actual).toEqual({
         did,
-        handle: null,
-        avatar: null,
-        avatarCid: null,
-        description: null,
+        handleOrDid: did,
+        displayHandle: `@${did}`,
         displayName: null,
+        avatarUrl: null,
       });
       expect(await userDbRepository.findByDid(asDid(did))).toBeNull();
     });
