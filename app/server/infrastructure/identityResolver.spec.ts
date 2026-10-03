@@ -38,7 +38,6 @@ const unableToResolve = () =>
   );
 
 describe("identityResolver", () => {
-  // mswがfetchを差し替えた後に作る
   let identityResolver: ReturnType<typeof identityResolverFactory>;
   beforeEach(() => {
     identityResolver = identityResolverFactory();
