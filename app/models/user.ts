@@ -77,15 +77,6 @@ export class User {
     });
   }
 
-  withoutProfile() {
-    return this.withProfile({
-      avatar: null,
-      avatarCid: null,
-      description: null,
-      displayName: null,
-    });
-  }
-
   toView() {
     return {
       did: this.did,
