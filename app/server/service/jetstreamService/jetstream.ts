@@ -19,22 +19,17 @@ const logger = createLogger("jetstream");
 
 const CURSOR_SAVE_INTERVAL_MS = 30_000;
 
-const toAccountStatus = (account: AccountEvent["account"]): AccountStatus => {
-  if (account.active) {
-    return "active";
-  }
-  switch (account.status) {
-    case "takendown":
-    case "suspended":
-      return "suspended";
-    case "deleted":
-      return "deleted";
-    case "deactivated":
-      return "deactivated";
-    default:
-      return "active";
-  }
+const inactiveStatuses: Record<string, AccountStatus> = {
+  takendown: "suspended",
+  suspended: "suspended",
+  deleted: "deleted",
+  deactivated: "deactivated",
 };
+
+const toAccountStatus = (account: AccountEvent["account"]): AccountStatus =>
+  account.active
+    ? "active"
+    : (inactiveStatuses[account.status ?? ""] ?? "active");
 
 export interface IJetstreamService {
   handleCreateOrUpdate: (
