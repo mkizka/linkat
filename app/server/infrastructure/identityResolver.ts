@@ -20,8 +20,6 @@ const logger = createLogger("identityResolver");
 export type Identity = {
   did: Did;
   pds: string;
-  // 双方向の検証に成功したハンドル。handle.invalidや検証の失敗はnull、
-  // 一時的な障害で検証できなかったときはundefined
   handle: string | null | undefined;
 };
 
@@ -44,7 +42,6 @@ const extractHandle = (didDoc: AtprotoDidDocument) => {
     : null;
 };
 
-// サーバーが4xxを返したときは「存在しない」、それ以外は「一時的な障害」とみなす
 const isNotFoundError = (error: unknown): boolean => {
   if (!(error instanceof Error)) {
     return false;
@@ -55,8 +52,6 @@ const isNotFoundError = (error: unknown): boolean => {
   return isNotFoundError(error.cause);
 };
 
-// DNSとHTTPによるハンドルの解決。AtprotoHandleResolverNodeは通信の失敗でも
-// nullを返すため、HTTPの通信の失敗を記録して一時的な障害と区別する
 const resolveHandleWithNode = async (handle: string) => {
   const failure = { unavailable: false };
   const resolver = new AtprotoHandleResolverNode({
@@ -81,7 +76,6 @@ const resolveHandleWithNode = async (handle: string) => {
 };
 
 export const identityResolverFactory = (): IIdentityResolver => {
-  // 書き込みのたびに解決し直すため、DIDドキュメントはキャッシュしない
   const didResolver = new DidResolverCommon({
     plcDirectoryUrl: env.ATPROTO_PLC_URL,
     allowHttp: !isProduction,

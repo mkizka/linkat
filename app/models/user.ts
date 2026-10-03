@@ -35,7 +35,6 @@ export class User {
   }
 }
 
-// 写しのハンドルが無いときは、表示とURLにDIDを使う
 export const getHandleOrDid = (user: Pick<User, "did" | "handle">) =>
   user.handle ?? user.did;
 
