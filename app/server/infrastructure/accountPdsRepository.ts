@@ -1,5 +1,4 @@
 import type { Did } from "@atproto/did";
-import { lexToJson } from "@atproto/lex";
 
 import profile from "~/generated/app/bsky/actor/profile";
 import { LinkatAgent } from "~/libs/agent";
@@ -46,9 +45,7 @@ export const accountPdsRepositoryFactory = ({
       did: identity.did,
       handle: identity.handle,
       profile:
-        fetched instanceof Error
-          ? null
-          : profileRecordParser.parse(lexToJson(fetched)),
+        fetched instanceof Error ? null : profileRecordParser.parse(fetched),
     };
   },
 });

@@ -1,3 +1,4 @@
+import { lexParse } from "@atproto/lex";
 import type {
   AccountEvent,
   CommitCreateEvent,
@@ -23,6 +24,8 @@ import { tryCatch } from "~/utils/tryCatch";
 const logger = createLogger("jetstream");
 
 const CURSOR_SAVE_INTERVAL_MS = 30_000;
+
+const jsonToLex = tryCatch((json: unknown) => lexParse(JSON.stringify(json)));
 
 const toAccountStatus = (account: AccountEvent["account"]): AccountStatus => {
   if (account.active) {
@@ -109,6 +112,11 @@ export const jetstreamServiceFactory = ({
     logger.info({ user, board }, "ボードを更新しました");
   };
 
+  const parseProfile = async (json: unknown) => {
+    const record = await jsonToLex(json);
+    return record instanceof Error ? null : profileRecordParser.parse(record);
+  };
+
   const handleProfileCommit = async (
     event:
       | CommitCreateEvent<"app.bsky.actor.profile">
@@ -125,7 +133,7 @@ export const jetstreamServiceFactory = ({
     const profile =
       event.commit.operation === "delete"
         ? null
-        : profileRecordParser.parse(event.commit.record);
+        : await parseProfile(event.commit.record);
     if (event.commit.operation !== "delete" && !profile) {
       logger.warn({ event }, "プロフィールのパースに失敗しました");
       return;
