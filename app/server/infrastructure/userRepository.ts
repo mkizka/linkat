@@ -31,10 +31,7 @@ export const userRepositoryFactory = ({
     if (!fetched) {
       return cached;
     }
-    const existing =
-      cached?.did === fetched.did
-        ? cached
-        : await userDbRepository.findByDid(fetched.did);
+    const existing = cached?.did === fetched.did ? cached : null;
     const profile = fetched.profile ?? existing;
     return await userDbRepository.save(
       new User({

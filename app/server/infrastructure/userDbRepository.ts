@@ -1,5 +1,5 @@
 import type { Did } from "@atproto/did";
-import { and, eq, ne } from "drizzle-orm";
+import { and, desc, eq, ne } from "drizzle-orm";
 
 import { User } from "~/models/user";
 import type { Db } from "~/server/infrastructure/drizzle";
@@ -21,6 +21,7 @@ export const userDbRepositoryFactory = ({
       .select()
       .from(userTable)
       .where(eq(userTable.did, did))
+      .orderBy(desc(userTable.createdAt))
       .limit(1);
     return row ? new User(row) : null;
   },
@@ -29,6 +30,7 @@ export const userDbRepositoryFactory = ({
       .select()
       .from(userTable)
       .where(eq(userTable.handle, handle))
+      .orderBy(desc(userTable.createdAt))
       .limit(1);
     return row ? new User(row) : null;
   },
