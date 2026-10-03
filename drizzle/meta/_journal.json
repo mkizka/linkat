@@ -19,8 +19,15 @@
     {
       "idx": 2,
       "version": "7",
-      "when": 1790958350788,
-      "tag": "0002_user_status",
+      "when": 1790958508252,
+      "tag": "0002_handle_unique",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1791012116838,
+      "tag": "0003_user_status",
       "breakpoints": true
     }
   ]

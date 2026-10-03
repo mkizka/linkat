@@ -25,19 +25,20 @@ export async function loader({ request, params, context }: Route.LoaderArgs) {
   if (!board) {
     return notFound();
   }
+  const view = user.toView();
   const i18next = getInstance(context);
   const title = i18next.t("board.meta-title", {
     displayName: user.displayName,
-    handle: user.handle,
+    handle: view.handleOrDid,
   });
   const userDid = await di.sessionService.getSessionUserDid(request);
   return {
-    user,
+    user: view,
     board: { cards: board.cards },
     isMine: user.isOwnedBy(userDid),
     title: `${title} | Linkat`,
-    url: `${env.PUBLIC_URL}/${user.handle}`,
-    ogImageUrl: `${env.PUBLIC_URL}/${user.handle}/og`,
+    url: `${env.PUBLIC_URL}/${view.handleOrDid}`,
+    ogImageUrl: `${env.PUBLIC_URL}/${view.handleOrDid}/og`,
     atUri: `at://${user.did}/blue.linkat.board/self`,
   };
 }

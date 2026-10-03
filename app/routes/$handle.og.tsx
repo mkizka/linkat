@@ -3,7 +3,7 @@ import fs from "fs";
 import { LRUCache } from "lru-cache";
 import satori from "satori";
 
-import { getAvatarUrl, type User } from "~/models/user";
+import type { User, UserView } from "~/models/user";
 import { di } from "~/server/di";
 import { createLogger } from "~/utils/logger";
 
@@ -18,8 +18,7 @@ const cache = new LRUCache<string, Uint8Array<ArrayBuffer>>({
 
 const fontData = fs.readFileSync("./fonts/Murecho-Bold.ttf");
 
-const renderImage = async (user: User) => {
-  const avatarUrl = getAvatarUrl(user);
+const renderImage = async (user: UserView) => {
   //
   // カード内の割合
   // 100px(padding) + 200px(avatar) + 50px(mariginLeft) + 650px(handle/displayName) + 100px(padding) = 1100px
@@ -56,9 +55,9 @@ const renderImage = async (user: User) => {
             alignItems: "center",
           }}
         >
-          {avatarUrl ? (
+          {user.avatarUrl ? (
             <img
-              src={avatarUrl}
+              src={user.avatarUrl}
               style={{
                 width: "200px",
                 height: "200px",
@@ -102,7 +101,7 @@ const renderImage = async (user: User) => {
                 marginTop: "-1rem",
               }}
             >
-              @{user.handle}
+              {user.displayHandle}
             </p>
           </div>
         </div>
@@ -137,7 +136,7 @@ const renderImage = async (user: User) => {
 };
 
 const createImage = async (user: User) => {
-  const image = await renderImage(user);
+  const image = await renderImage(user.toView());
   cache.set(user.did, image);
   return image;
 };

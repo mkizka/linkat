@@ -11,17 +11,21 @@ import {
 
 import type { AccountStatus } from "~/models/user";
 
-export const userTable = pgTable("User", {
-  did: text().primaryKey(),
-  avatar: text(),
-  avatarCid: text(),
-  description: text(),
-  displayName: text(),
-  handle: text().notNull(),
-  status: text().$type<AccountStatus>().notNull().default("active"),
-  createdAt: timestamp({ precision: 3 }).notNull().defaultNow(),
-  updatedAt: timestamp({ precision: 3 }).notNull(),
-});
+export const userTable = pgTable(
+  "User",
+  {
+    did: text().primaryKey(),
+    avatar: text(),
+    avatarCid: text(),
+    description: text(),
+    displayName: text(),
+    handle: text(),
+    status: text().$type<AccountStatus>().notNull().default("active"),
+    createdAt: timestamp({ precision: 3 }).notNull().defaultNow(),
+    updatedAt: timestamp({ precision: 3 }).notNull(),
+  },
+  (table) => [uniqueIndex("User_handle_key").on(table.handle)],
+);
 
 export const boardTable = pgTable(
   "Board",

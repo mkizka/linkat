@@ -57,9 +57,9 @@ describe("userRepository", () => {
     });
     test("handleを指定してユーザーを検索できる", async () => {
       // arrange
-      const user = await UserFactory.create();
+      const user = await UserFactory.create({ handle: "example.com" });
       // act
-      const actual = await userRepository.findByHandleOrDid(user.handle);
+      const actual = await userRepository.findByHandleOrDid("example.com");
       // assert
       expect(actual).toEqual(user);
     });
