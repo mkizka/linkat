@@ -33,14 +33,18 @@ export class User {
   isOwnedBy(viewerDid: Did | null) {
     return this.did === viewerDid;
   }
+
+  toView() {
+    return {
+      did: this.did,
+      handleOrDid: this.handle ?? this.did,
+      displayHandle: `@${this.handle ?? this.did}`,
+      displayName: this.displayName,
+      avatarUrl: this.avatarCid
+        ? `https://cdn.bsky.app/img/avatar/plain/${this.did}/${this.avatarCid}@jpeg`
+        : this.avatar,
+    };
+  }
 }
 
-export const getHandleOrDid = (user: Pick<User, "did" | "handle">) =>
-  user.handle ?? user.did;
-
-export const getAvatarUrl = (
-  user: Pick<User, "did" | "avatar" | "avatarCid">,
-) =>
-  user.avatarCid
-    ? `https://cdn.bsky.app/img/avatar/plain/${user.did}/${user.avatarCid}@jpeg`
-    : user.avatar;
+export type UserView = ReturnType<User["toView"]>;

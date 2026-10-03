@@ -5,17 +5,10 @@ import { User } from "~/models/user";
 import type { Db } from "~/server/infrastructure/drizzle";
 import { userTable } from "~/server/infrastructure/schema";
 
-export type UserToSave = Omit<
-  ConstructorParameters<typeof User>[0],
-  "createdAt" | "handle"
-> & {
-  handle: string | null | undefined;
-};
-
 export interface IUserDbRepository {
   findByDid: (did: Did) => Promise<User | null>;
   findByHandle: (handle: string) => Promise<User | null>;
-  save: (user: UserToSave) => Promise<User>;
+  save: (user: User) => Promise<User>;
 }
 
 export const userDbRepositoryFactory = ({
@@ -46,6 +39,7 @@ export const userDbRepositoryFactory = ({
       avatarCid: user.avatarCid,
       description: user.description,
       displayName: user.displayName,
+      handle: user.handle,
       updatedAt: user.updatedAt,
     };
     return await db.transaction(async (tx) => {
@@ -59,12 +53,8 @@ export const userDbRepositoryFactory = ({
       }
       const [row] = await tx
         .insert(userTable)
-        .values({ ...data, handle: user.handle ?? null })
-        .onConflictDoUpdate({
-          target: userTable.did,
-          set:
-            user.handle === undefined ? data : { ...data, handle: user.handle },
-        })
+        .values(data)
+        .onConflictDoUpdate({ target: userTable.did, set: data })
         .returning();
       if (!row) {
         throw new Error("ユーザーの保存に失敗しました");

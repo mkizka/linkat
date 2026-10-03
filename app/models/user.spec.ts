@@ -1,6 +1,6 @@
 import type { Did } from "@atproto/did";
 
-import { getAvatarUrl, User } from "./user";
+import { User } from "./user";
 
 const createUser = (props: Partial<ConstructorParameters<typeof User>[0]>) =>
   new User({
@@ -37,12 +37,34 @@ describe("isOwnedBy", () => {
   );
 });
 
-describe("getAvatarUrl", () => {
+describe("toView", () => {
+  test("ハンドルがあればURLと表示にハンドルを使う", () => {
+    // arrange
+    const user = createUser({ handle: "example.com" });
+    // act
+    const actual = user.toView();
+    // assert
+    expect(actual).toMatchObject({
+      handleOrDid: "example.com",
+      displayHandle: "@example.com",
+    });
+  });
+  test("ハンドルがnullならURLと表示にDIDを使う", () => {
+    // arrange
+    const user = createUser({ handle: null });
+    // act
+    const actual = user.toView();
+    // assert
+    expect(actual).toMatchObject({
+      handleOrDid: "did:plc:dummy",
+      displayHandle: "@did:plc:dummy",
+    });
+  });
   test("アバターのCIDからBlueskyのCDNのURLを返す", () => {
     // arrange
     const user = createUser({ avatarCid: "bafkreiavatar" });
     // act
-    const actual = getAvatarUrl(user);
+    const actual = user.toView().avatarUrl;
     // assert
     expect(actual).toBe(
       "https://cdn.bsky.app/img/avatar/plain/did:plc:dummy/bafkreiavatar@jpeg",
@@ -55,7 +77,7 @@ describe("getAvatarUrl", () => {
       avatarCid: null,
     });
     // act
-    const actual = getAvatarUrl(user);
+    const actual = user.toView().avatarUrl;
     // assert
     expect(actual).toBe("https://example.com/avatar.png");
   });
@@ -63,7 +85,7 @@ describe("getAvatarUrl", () => {
     // arrange
     const user = createUser({ avatarCid: null });
     // act
-    const actual = getAvatarUrl(user);
+    const actual = user.toView().avatarUrl;
     // assert
     expect(actual).toBeNull();
   });

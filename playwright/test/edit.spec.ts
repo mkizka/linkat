@@ -1,7 +1,7 @@
 import { expect, test } from "./fixtures";
 
 test.describe("編集", () => {
-  test("カードの編集操作を一通り確認", async ({ page, login }) => {
+  test("カードの編集操作を一通り確認", async ({ page, login, account }) => {
     page.on("dialog", (dialog) => dialog.accept());
 
     await test.step("ログイン", async () => {
@@ -39,8 +39,9 @@ test.describe("編集", () => {
 
     await test.step("保存して閲覧ページで順番を確認", async () => {
       await page.getByTestId("board-viewer__submit").click();
-      await page.waitForURL((url) => url.pathname !== "/edit");
+      await page.waitForURL((url) => url.pathname === `/${account.handle}`);
       await page.getByTestId("show-modal__close").click();
+      await expect(page.getByText(`@${account.handle}`)).toBeVisible();
       await expect(card1).toBeVisible();
       await expect(card2).toBeVisible();
       const allCards = await page

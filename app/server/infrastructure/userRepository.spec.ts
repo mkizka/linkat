@@ -45,10 +45,6 @@ const dummyIdentity = {
 
 const getRecordUrl = "https://pds.example.com/xrpc/com.atproto.repo.getRecord";
 
-beforeEach(() => {
-  identityResolver.resolve.mockReset();
-});
-
 describe("userRepository", () => {
   describe("findByHandleOrDid", () => {
     test("didを指定してユーザーを検索できる", async () => {
@@ -69,15 +65,12 @@ describe("userRepository", () => {
     });
     test("DBにユーザーがいないとき、PDSから取得して作成できる", async () => {
       // arrange
-      identityResolver.resolve.mockResolvedValue({
-        type: "found",
-        identity: dummyIdentity,
-      });
+      identityResolver.resolve.mockResolvedValue(dummyIdentity);
       server.use(
         http.get(getRecordUrl, () => HttpResponse.json(dummyProfileRecord)),
       );
       // act
-      const actual = await userRepository.findByHandleOrDid(dummyIdentity.did);
+      const actual = await userRepository.findByHandleOrDid("example.com");
       // assert
       expect(actual).toEqual({
         avatar: null,
@@ -100,10 +93,7 @@ describe("userRepository", () => {
         createdAt: new Date("2024-01-01T00:00:00.000Z"),
         updatedAt: new Date("2024-01-01T00:00:00.000Z"),
       });
-      identityResolver.resolve.mockResolvedValue({
-        type: "found",
-        identity: dummyIdentity,
-      });
+      identityResolver.resolve.mockResolvedValue(dummyIdentity);
       server.use(
         http.get(getRecordUrl, () => HttpResponse.json(dummyProfileRecord)),
       );
@@ -125,15 +115,12 @@ describe("userRepository", () => {
     });
     test("DBにユーザーがいないとき、プロフィールが取得できなくてもDIDとhandleだけで作成できる", async () => {
       // arrange
-      identityResolver.resolve.mockResolvedValue({
-        type: "found",
-        identity: dummyIdentity,
-      });
+      identityResolver.resolve.mockResolvedValue(dummyIdentity);
       server.use(
         http.get(getRecordUrl, () => HttpResponse.json("", { status: 500 })),
       );
       // act
-      const actual = await userRepository.findByHandleOrDid(dummyIdentity.did);
+      const actual = await userRepository.findByHandleOrDid("example.com");
       // assert
       expect(actual).toEqual({
         avatar: null,
@@ -159,10 +146,7 @@ describe("userRepository", () => {
         createdAt: new Date("2024-01-01T00:00:00.000Z"),
         updatedAt: new Date("2024-01-01T00:00:00.000Z"),
       });
-      identityResolver.resolve.mockResolvedValue({
-        type: "found",
-        identity: dummyIdentity,
-      });
+      identityResolver.resolve.mockResolvedValue(dummyIdentity);
       server.use(
         http.get(getRecordUrl, () => HttpResponse.json("", { status: 500 })),
       );
@@ -182,54 +166,6 @@ describe("userRepository", () => {
         updatedAt: new Date("2024-01-01T00:10:00.000Z"),
       });
     });
-    test("handleの検証が一時的な障害で失敗した場合、既存のhandleを残す", async () => {
-      // arrange
-      vi.useFakeTimers();
-      vi.setSystemTime(new Date("2024-01-01T00:10:00.000Z"));
-      await UserFactory.create({
-        did: "did:plc:dfbe2uvzisfdxwscnwcxdta6",
-        handle: "old.example.com",
-        createdAt: new Date("2024-01-01T00:00:00.000Z"),
-        updatedAt: new Date("2024-01-01T00:00:00.000Z"),
-      });
-      identityResolver.resolve.mockResolvedValue({
-        type: "found",
-        identity: { ...dummyIdentity, handle: undefined },
-      });
-      server.use(
-        http.get(getRecordUrl, () => HttpResponse.json(dummyProfileRecord)),
-      );
-      // act
-      const actual = await userRepository.findByHandleOrDid(
-        "did:plc:dfbe2uvzisfdxwscnwcxdta6",
-      );
-      // assert
-      expect(actual?.handle).toBe("old.example.com");
-    });
-    test("handleが無効な場合、handleをnullにする", async () => {
-      // arrange
-      vi.useFakeTimers();
-      vi.setSystemTime(new Date("2024-01-01T00:10:00.000Z"));
-      await UserFactory.create({
-        did: "did:plc:dfbe2uvzisfdxwscnwcxdta6",
-        handle: "old.example.com",
-        createdAt: new Date("2024-01-01T00:00:00.000Z"),
-        updatedAt: new Date("2024-01-01T00:00:00.000Z"),
-      });
-      identityResolver.resolve.mockResolvedValue({
-        type: "found",
-        identity: { ...dummyIdentity, handle: null },
-      });
-      server.use(
-        http.get(getRecordUrl, () => HttpResponse.json(dummyProfileRecord)),
-      );
-      // act
-      const actual = await userRepository.findByHandleOrDid(
-        "did:plc:dfbe2uvzisfdxwscnwcxdta6",
-      );
-      // assert
-      expect(actual?.handle).toBeNull();
-    });
     test("DBにユーザーがいて最終更新から一定時間経過しているが、DIDを解決できなかった場合、そのまま返す", async () => {
       // arrange
       vi.useFakeTimers();
@@ -239,7 +175,7 @@ describe("userRepository", () => {
         createdAt: new Date("2024-01-01T00:00:00.000Z"),
         updatedAt: new Date("2024-01-01T00:00:00.000Z"),
       });
-      identityResolver.resolve.mockResolvedValue({ type: "notFound" });
+      identityResolver.resolve.mockResolvedValue(null);
       // act
       const actual = await userRepository.findByHandleOrDid(
         "did:plc:dfbe2uvzisfdxwscnwcxdta6",
@@ -249,48 +185,13 @@ describe("userRepository", () => {
     });
     test("DBにユーザーがなく、DIDを解決できないときnullを返す", async () => {
       // arrange
-      identityResolver.resolve.mockResolvedValue({ type: "notFound" });
+      identityResolver.resolve.mockResolvedValue(null);
       // act
-      const actual = await userRepository.findByHandleOrDid("did:plc:notfound");
+      const actual = await userRepository.findByHandleOrDid(
+        "notfound.example.com",
+      );
       // assert
       expect(actual).toBeNull();
-    });
-    test("写しに無いhandleはハンドルを解決せずにnullを返す", async () => {
-      // arrange
-      identityResolver.resolve.mockResolvedValue({
-        type: "found",
-        identity: dummyIdentity,
-      });
-      // act
-      const actual = await userRepository.findByHandleOrDid("example.com");
-      // assert
-      expect(actual).toBeNull();
-      expect(identityResolver.resolve).not.toHaveBeenCalled();
-    });
-    test("handleの写しが古いときは、ハンドルではなく写しのDIDから更新する", async () => {
-      // arrange
-      vi.useFakeTimers();
-      vi.setSystemTime(new Date("2024-01-01T00:10:00.000Z"));
-      await UserFactory.create({
-        did: "did:plc:dfbe2uvzisfdxwscnwcxdta6",
-        handle: "example.com",
-        createdAt: new Date("2024-01-01T00:00:00.000Z"),
-        updatedAt: new Date("2024-01-01T00:00:00.000Z"),
-      });
-      identityResolver.resolve.mockResolvedValue({
-        type: "found",
-        identity: dummyIdentity,
-      });
-      server.use(
-        http.get(getRecordUrl, () => HttpResponse.json(dummyProfileRecord)),
-      );
-      // act
-      const actual = await userRepository.findByHandleOrDid("example.com");
-      // assert
-      expect(actual?.did).toBe("did:plc:dfbe2uvzisfdxwscnwcxdta6");
-      expect(identityResolver.resolve).toHaveBeenCalledExactlyOnceWith(
-        "did:plc:dfbe2uvzisfdxwscnwcxdta6",
-      );
     });
   });
 });
