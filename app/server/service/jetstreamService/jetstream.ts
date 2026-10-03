@@ -117,7 +117,7 @@ export const jetstreamServiceFactory = ({
   const handleAccount = async ({ account }: AccountEvent) => {
     const status = toAccountStatus(account);
     await userService.updateStatus(account.did, status);
-    logger.info(
+    logger.debug(
       { did: account.did, status },
       "アカウントの状態を受け取りました",
     );
