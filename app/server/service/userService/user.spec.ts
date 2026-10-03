@@ -48,6 +48,22 @@ describe("userService", () => {
       // assert
       expect(actual).toEqual(user);
     });
+    test("handleを指定するとDBの写しからDIDを引いて取得する", async () => {
+      // arrange
+      const user = await UserFactory.create({ handle: "example.com" });
+      // act
+      const actual = await userService.findUser({ handleOrDid: "example.com" });
+      // assert
+      expect(actual).toEqual(user);
+    });
+    test("写しに無いhandleはハンドルを解決せずにnullを返す", async () => {
+      // arrange
+      // act
+      const actual = await userService.findUser({ handleOrDid: "example.com" });
+      // assert
+      expect(actual).toBeNull();
+      expect(identityResolver.resolve).not.toHaveBeenCalled();
+    });
     test("入力が明らかにドメインでなければnullを返す", async () => {
       // arrange
       // act
