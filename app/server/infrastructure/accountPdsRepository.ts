@@ -20,6 +20,13 @@ export type Profile = Pick<
   "avatar" | "avatarCid" | "description" | "displayName"
 >;
 
+export const emptyProfile: Profile = {
+  avatar: null,
+  avatarCid: null,
+  description: null,
+  displayName: null,
+};
+
 export interface IAccountPdsRepository {
   resolveAccount: (did: Did) => Promise<{
     handle: Identity["handle"];

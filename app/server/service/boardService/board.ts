@@ -3,9 +3,9 @@ import type { Did } from "@atproto/did";
 import type { LinkatAgent } from "~/libs/agent";
 import { Board } from "~/models/board";
 import type { Owner } from "~/models/owner";
-import type {
-  IAccountPdsRepository,
-  Profile,
+import {
+  emptyProfile,
+  type IAccountPdsRepository,
 } from "~/server/infrastructure/accountPdsRepository";
 import type { IBoardRepository } from "~/server/infrastructure/boardRepository";
 import type { IOwnerDbRepository } from "~/server/infrastructure/ownerDbRepository";
@@ -46,13 +46,6 @@ export interface IBoardService {
   deleteBoard: (ownerDid: Did) => Promise<void>;
   unpublishBoard: (agent: LinkatAgent, ownerDid: Did) => Promise<void>;
 }
-
-const emptyProfile: Profile = {
-  avatar: null,
-  avatarCid: null,
-  description: null,
-  displayName: null,
-};
 
 export const boardServiceFactory = ({
   boardRepository,

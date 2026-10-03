@@ -2,9 +2,10 @@ import { type Did, isDid } from "@atproto/did";
 
 import type { LinkatAgent } from "~/libs/agent";
 import type { Owner } from "~/models/owner";
-import type {
-  IAccountPdsRepository,
-  Profile,
+import {
+  emptyProfile,
+  type IAccountPdsRepository,
+  type Profile,
 } from "~/server/infrastructure/accountPdsRepository";
 import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
 import type { IOwnerDbRepository } from "~/server/infrastructure/ownerDbRepository";
@@ -47,14 +48,7 @@ export const ownerServiceFactory = ({
       return owner;
     }
     const profile = await accountPdsRepository.fetchSessionProfile(agent);
-    return {
-      did,
-      handle: null,
-      avatar: profile?.avatar ?? null,
-      avatarCid: profile?.avatarCid ?? null,
-      description: profile?.description ?? null,
-      displayName: profile?.displayName ?? null,
-    };
+    return { did, handle: null, ...(profile ?? emptyProfile) };
   },
   async updateProfile({ did, profile }) {
     const existing = await ownerDbRepository.findByDid(did);
