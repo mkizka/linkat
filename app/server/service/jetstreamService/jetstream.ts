@@ -8,8 +8,8 @@ import WebSocket from "ws";
 
 import { Board } from "~/models/board";
 import {
+  emptyProfile,
   parseProfileRecord,
-  type Profile,
 } from "~/server/infrastructure/accountPdsRepository";
 import type { ICursorRepository } from "~/server/infrastructure/cursorRepository";
 import type { IBoardService } from "~/server/service/boardService/board";
@@ -81,24 +81,13 @@ export const jetstreamServiceFactory = ({
     if (event.commit.rkey !== "self") {
       return;
     }
-    let profile: Profile;
-    if (event.commit.operation === "delete") {
-      profile = {
-        avatar: null,
-        avatarCid: null,
-        description: null,
-        displayName: null,
-      };
-    } else {
-      const parsed = parseProfileRecord(event.commit.record);
-      if (!parsed) {
-        logger.warn(
-          { did: event.did, record: event.commit.record },
-          "プロフィールのパースに失敗しました",
-        );
-        return;
-      }
-      profile = parsed;
+    const profile =
+      event.commit.operation === "delete"
+        ? emptyProfile
+        : parseProfileRecord(event.commit.record);
+    if (!profile) {
+      logger.warn({ event }, "プロフィールのパースに失敗しました");
+      return;
     }
     const owner = await ownerService.updateProfile({ did: event.did, profile });
     if (owner) {
