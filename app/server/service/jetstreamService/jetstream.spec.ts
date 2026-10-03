@@ -1,9 +1,11 @@
 import { asDid } from "@atproto/did";
 import { CommitType, EventType } from "@skyware/jetstream";
+import { http, HttpResponse } from "msw";
 import { Pool } from "pg";
 import { mock, mockReset } from "vitest-mock-extended";
 
 import { mockedLogger } from "~/mocks/logger";
+import { server } from "~/mocks/server";
 import { UserFactory } from "~/server/factories/user";
 import { accountPdsRepositoryFactory } from "~/server/infrastructure/accountPdsRepository";
 import { boardRepositoryFactory } from "~/server/infrastructure/boardRepository";
@@ -21,18 +23,18 @@ import { jetstreamServiceFactory } from "./jetstream";
 const identityResolver = mock<IIdentityResolver>();
 
 const userDbRepository = userDbRepositoryFactory({ db });
+const userRepository = userRepositoryFactory({
+  userDbRepository,
+  accountPdsRepository: accountPdsRepositoryFactory({ identityResolver }),
+});
 
 const jetstreamService = jetstreamServiceFactory({
   cursorRepository: cursorRepositoryFactory({ db }),
   boardService: boardServiceFactory({
     boardRepository: boardRepositoryFactory({ db }),
+    userRepository,
   }),
-  userService: userServiceFactory({
-    userRepository: userRepositoryFactory({
-      userDbRepository,
-      accountPdsRepository: accountPdsRepositoryFactory({ identityResolver }),
-    }),
-  }),
+  userService: userServiceFactory({ userRepository }),
   userDbRepository,
   identityResolver,
 });
@@ -97,6 +99,30 @@ describe("jetstreamService", () => {
         [did],
       );
       expect(rows).toHaveLength(0);
+    });
+    test("ボードを保存し、持ち主の写しが新しくてもハンドルを解決し直す", async () => {
+      // arrange
+      const user = await UserFactory.create({ handle: "old.example.com" });
+      identityResolver.resolve.mockResolvedValue(
+        found(user.did, "new.example.com"),
+      );
+      server.use(
+        http.get(
+          "https://pds.example.com/xrpc/com.atproto.repo.getRecord",
+          () => HttpResponse.json("", { status: 500 }),
+        ),
+      );
+      // act
+      await jetstreamService.handleCreateOrUpdate(dummyEvent(user.did));
+      // assert
+      expect((await userDbRepository.findByDid(asDid(user.did)))?.handle).toBe(
+        "new.example.com",
+      );
+      const { rows } = await pool.query(
+        `SELECT * FROM "Board" WHERE "userDid" = $1`,
+        [user.did],
+      );
+      expect(rows).toHaveLength(1);
     });
   });
 
