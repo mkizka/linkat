@@ -129,9 +129,8 @@ export const jetstreamServiceFactory = ({
       return;
     }
     const identity = await identityResolver.resolve(event.did);
-    const updated = profile ? user.withProfile(profile) : user.withoutProfile();
     const saved = await userDbRepository.save(
-      updated.withHandle(identity?.handle ?? null),
+      user.withProfile(profile).withHandle(identity?.handle ?? null),
     );
     logger.info({ user: saved }, "プロフィールを更新しました");
   };
