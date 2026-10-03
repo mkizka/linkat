@@ -1,6 +1,7 @@
 import { asDid, type Did } from "@atproto/did";
 
-export type AccountStatus = "active" | "suspended" | "deleted" | "deactivated";
+export type AccountStatus =
+  "active" | "suspended" | "deleted" | "deactivated" | "inactive";
 
 export class User {
   readonly did: Did;

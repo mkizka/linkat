@@ -32,7 +32,7 @@ const toAccountStatus = (account: AccountEvent["account"]): AccountStatus => {
     case "deactivated":
       return "deactivated";
     default:
-      return "active";
+      return "inactive";
   }
 };
 

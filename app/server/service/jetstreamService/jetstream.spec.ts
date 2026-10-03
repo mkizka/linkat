@@ -98,9 +98,9 @@ describe("jetstreamService", () => {
       ${{ active: false, status: "suspended" }}      | ${"suspended"}
       ${{ active: false, status: "deleted" }}        | ${"deleted"}
       ${{ active: false, status: "deactivated" }}    | ${"deactivated"}
-      ${{ active: false, status: "desynchronized" }} | ${"active"}
-      ${{ active: false, status: "throttled" }}      | ${"active"}
-      ${{ active: false }}                           | ${"active"}
+      ${{ active: false, status: "desynchronized" }} | ${"inactive"}
+      ${{ active: false, status: "throttled" }}      | ${"inactive"}
+      ${{ active: false }}                           | ${"inactive"}
       ${{ active: true }}                            | ${"active"}
     `(
       "$account.status を $expected として記録する",

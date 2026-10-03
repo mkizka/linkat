@@ -99,6 +99,7 @@ describe("isHidden", () => {
     ${"suspended"}   | ${true}
     ${"deleted"}     | ${true}
     ${"deactivated"} | ${true}
+    ${"inactive"}    | ${true}
   `(
     "$status",
     ({ status, expected }: { status: AccountStatus; expected: boolean }) => {
