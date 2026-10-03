@@ -59,7 +59,13 @@ export const di = await createRegistry()
   )
   .service(
     "jetstreamService",
-    ["cursorRepository", "boardService", "ownerService"],
+    [
+      "cursorRepository",
+      "boardService",
+      "ownerService",
+      "ownerDbRepository",
+      "identityResolver",
+    ],
     jetstreamServiceFactory,
   )
   .resolve();
