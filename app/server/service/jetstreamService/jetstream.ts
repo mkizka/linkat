@@ -10,9 +10,9 @@ import WebSocket from "ws";
 
 import { Board } from "~/models/board";
 import type { AccountStatus } from "~/models/user";
-import type { IAccountPdsRepository } from "~/server/infrastructure/accountPdsRepository";
 import type { ICursorRepository } from "~/server/infrastructure/cursorRepository";
 import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
+import type { IProfileRecordParser } from "~/server/infrastructure/profileRecordParser";
 import type { IUserDbRepository } from "~/server/infrastructure/userDbRepository";
 import type { IBoardService } from "~/server/service/boardService/board";
 import type { IUserService } from "~/server/service/userService/user";
@@ -64,14 +64,14 @@ export const jetstreamServiceFactory = ({
   userService,
   userDbRepository,
   identityResolver,
-  accountPdsRepository,
+  profileRecordParser,
 }: {
   cursorRepository: ICursorRepository;
   boardService: IBoardService;
   userService: IUserService;
   userDbRepository: IUserDbRepository;
   identityResolver: IIdentityResolver;
-  accountPdsRepository: IAccountPdsRepository;
+  profileRecordParser: IProfileRecordParser;
 }): IJetstreamService => {
   const jetstream = new Jetstream({
     ws: WebSocket,
@@ -125,7 +125,7 @@ export const jetstreamServiceFactory = ({
     const profile =
       event.commit.operation === "delete"
         ? null
-        : accountPdsRepository.parseProfile(event.commit.record);
+        : profileRecordParser.parse(event.commit.record);
     if (event.commit.operation !== "delete" && !profile) {
       logger.warn({ event }, "プロフィールのパースに失敗しました");
       return;

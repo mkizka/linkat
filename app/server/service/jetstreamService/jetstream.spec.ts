@@ -11,6 +11,7 @@ import { boardRepositoryFactory } from "~/server/infrastructure/boardRepository"
 import { cursorRepositoryFactory } from "~/server/infrastructure/cursorRepository";
 import { db } from "~/server/infrastructure/drizzle";
 import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
+import { profileRecordParserFactory } from "~/server/infrastructure/profileRecordParser";
 import { userDbRepositoryFactory } from "~/server/infrastructure/userDbRepository";
 import { userRepositoryFactory } from "~/server/infrastructure/userRepository";
 import { boardServiceFactory } from "~/server/service/boardService/board";
@@ -21,7 +22,11 @@ import { jetstreamServiceFactory } from "./jetstream";
 
 const identityResolver = mock<IIdentityResolver>();
 const userDbRepository = userDbRepositoryFactory({ db });
-const accountPdsRepository = accountPdsRepositoryFactory({ identityResolver });
+const profileRecordParser = profileRecordParserFactory();
+const accountPdsRepository = accountPdsRepositoryFactory({
+  identityResolver,
+  profileRecordParser,
+});
 
 const jetstreamService = jetstreamServiceFactory({
   cursorRepository: cursorRepositoryFactory({ db }),
@@ -36,7 +41,7 @@ const jetstreamService = jetstreamServiceFactory({
   }),
   userDbRepository,
   identityResolver,
-  accountPdsRepository,
+  profileRecordParser,
 });
 
 const pool = new Pool({ connectionString: env.DATABASE_URL });
