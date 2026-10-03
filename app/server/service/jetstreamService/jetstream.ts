@@ -1,6 +1,8 @@
+import { lexParse } from "@atproto/lex";
 import type {
   AccountEvent,
   CommitCreateEvent,
+  CommitDeleteEvent,
   CommitUpdateEvent,
   IdentityEvent,
 } from "@skyware/jetstream";
@@ -11,6 +13,7 @@ import { Board } from "~/models/board";
 import type { AccountStatus } from "~/models/user";
 import type { ICursorRepository } from "~/server/infrastructure/cursorRepository";
 import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
+import type { IProfileRecordParser } from "~/server/infrastructure/profileRecordParser";
 import type { IUserDbRepository } from "~/server/infrastructure/userDbRepository";
 import type { IBoardService } from "~/server/service/boardService/board";
 import type { IUserService } from "~/server/service/userService/user";
@@ -21,6 +24,8 @@ import { tryCatch } from "~/utils/tryCatch";
 const logger = createLogger("jetstream");
 
 const CURSOR_SAVE_INTERVAL_MS = 30_000;
+
+const jsonToLex = tryCatch((json: unknown) => lexParse(JSON.stringify(json)));
 
 const toAccountStatus = (account: AccountEvent["account"]): AccountStatus => {
   if (account.active) {
@@ -45,6 +50,12 @@ export interface IJetstreamService {
       | CommitCreateEvent<"blue.linkat.board">
       | CommitUpdateEvent<"blue.linkat.board">,
   ) => Promise<void>;
+  handleProfileCommit: (
+    event:
+      | CommitCreateEvent<"app.bsky.actor.profile">
+      | CommitUpdateEvent<"app.bsky.actor.profile">
+      | CommitDeleteEvent<"app.bsky.actor.profile">,
+  ) => Promise<void>;
   handleIdentity: (event: IdentityEvent) => Promise<void>;
   handleAccount: (event: AccountEvent) => Promise<void>;
   startJetstream: () => Promise<void>;
@@ -56,17 +67,19 @@ export const jetstreamServiceFactory = ({
   userService,
   userDbRepository,
   identityResolver,
+  profileRecordParser,
 }: {
   cursorRepository: ICursorRepository;
   boardService: IBoardService;
   userService: IUserService;
   userDbRepository: IUserDbRepository;
   identityResolver: IIdentityResolver;
+  profileRecordParser: IProfileRecordParser;
 }): IJetstreamService => {
   const jetstream = new Jetstream({
     ws: WebSocket,
     endpoint: env.JETSTREAM_URL,
-    wantedCollections: ["blue.linkat.board"],
+    wantedCollections: ["blue.linkat.board", "app.bsky.actor.profile"],
   });
 
   const handleCreateOrUpdate = async (
@@ -96,6 +109,39 @@ export const jetstreamServiceFactory = ({
     logger.info({ user, board }, "ボードを更新しました");
   };
 
+  const parseProfile = async (json: unknown) => {
+    const record = await jsonToLex(json);
+    return record instanceof Error ? null : profileRecordParser.parse(record);
+  };
+
+  const handleProfileCommit = async (
+    event:
+      | CommitCreateEvent<"app.bsky.actor.profile">
+      | CommitUpdateEvent<"app.bsky.actor.profile">
+      | CommitDeleteEvent<"app.bsky.actor.profile">,
+  ) => {
+    if (event.commit.rkey !== "self") {
+      return;
+    }
+    const user = await userDbRepository.findByDid(event.did);
+    if (!user) {
+      return;
+    }
+    const profile =
+      event.commit.operation === "delete"
+        ? null
+        : await parseProfile(event.commit.record);
+    if (event.commit.operation !== "delete" && !profile) {
+      logger.warn({ event }, "プロフィールのパースに失敗しました");
+      return;
+    }
+    const identity = await identityResolver.resolve(event.did);
+    const saved = await userDbRepository.save(
+      user.withProfile(profile).withHandle(identity?.handle ?? null),
+    );
+    logger.info({ user: saved }, "プロフィールを更新しました");
+  };
+
   const handleIdentity = async (event: IdentityEvent) => {
     const user = await userDbRepository.findByDid(event.did);
     if (!user) {
@@ -114,7 +160,7 @@ export const jetstreamServiceFactory = ({
   const handleAccount = async ({ account }: AccountEvent) => {
     const status = toAccountStatus(account);
     await userService.updateStatus(account.did, status);
-    logger.info(
+    logger.debug(
       { did: account.did, status },
       "アカウントの状態を受け取りました",
     );
@@ -153,8 +199,15 @@ export const jetstreamServiceFactory = ({
     logger.info({ userDid: event.did }, "ボードを削除しました");
   });
 
+  jetstream.onCreate("app.bsky.actor.profile", handleProfileCommit);
+
+  jetstream.onUpdate("app.bsky.actor.profile", handleProfileCommit);
+
+  jetstream.onDelete("app.bsky.actor.profile", handleProfileCommit);
+
   return {
     handleCreateOrUpdate,
+    handleProfileCommit,
     handleIdentity,
     handleAccount,
     async startJetstream() {

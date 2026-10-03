@@ -11,6 +11,7 @@ import { accountPdsRepositoryFactory } from "~/server/infrastructure/accountPdsR
 import { boardRepositoryFactory } from "~/server/infrastructure/boardRepository";
 import { db } from "~/server/infrastructure/drizzle";
 import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
+import { profileRecordParserFactory } from "~/server/infrastructure/profileRecordParser";
 import { userDbRepositoryFactory } from "~/server/infrastructure/userDbRepository";
 import { userRepositoryFactory } from "~/server/infrastructure/userRepository";
 
@@ -28,7 +29,10 @@ const boardService = boardServiceFactory({
   boardRepository,
   userRepository: userRepositoryFactory({
     userDbRepository: userDbRepositoryFactory({ db }),
-    accountPdsRepository: accountPdsRepositoryFactory({ identityResolver }),
+    accountPdsRepository: accountPdsRepositoryFactory({
+      identityResolver,
+      profileRecordParser: profileRecordParserFactory(),
+    }),
   }),
 });
 

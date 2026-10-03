@@ -7,6 +7,7 @@ import { UserFactory } from "~/server/factories/user";
 import { accountPdsRepositoryFactory } from "~/server/infrastructure/accountPdsRepository";
 import { db } from "~/server/infrastructure/drizzle";
 import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
+import { profileRecordParserFactory } from "~/server/infrastructure/profileRecordParser";
 import { userDbRepositoryFactory } from "~/server/infrastructure/userDbRepository";
 
 import { userRepositoryFactory } from "./userRepository";
@@ -15,7 +16,10 @@ const identityResolver = mock<IIdentityResolver>();
 
 const userRepository = userRepositoryFactory({
   userDbRepository: userDbRepositoryFactory({ db }),
-  accountPdsRepository: accountPdsRepositoryFactory({ identityResolver }),
+  accountPdsRepository: accountPdsRepositoryFactory({
+    identityResolver,
+    profileRecordParser: profileRecordParserFactory(),
+  }),
 });
 
 const AVATAR_CID =

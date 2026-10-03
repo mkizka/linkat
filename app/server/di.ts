@@ -12,6 +12,7 @@ import {
   sessionStoreFactory,
   stateStoreFactory,
 } from "~/server/infrastructure/oauthStorage";
+import { profileRecordParserFactory } from "~/server/infrastructure/profileRecordParser";
 import { userDbRepositoryFactory } from "~/server/infrastructure/userDbRepository";
 import { userRepositoryFactory } from "~/server/infrastructure/userRepository";
 import { atpassportServiceFactory } from "~/server/service/atpassportService/atpassport";
@@ -29,6 +30,7 @@ export const di = await createRegistry()
   .service("oauthStateStore", ["db"], stateStoreFactory)
   .service("oauthSessionStore", ["db"], sessionStoreFactory)
   .service("identityResolver", identityResolverFactory)
+  .service("profileRecordParser", profileRecordParserFactory)
   .service(
     "oauthClient",
     ["oauthStateStore", "oauthSessionStore"],
@@ -36,7 +38,7 @@ export const di = await createRegistry()
   )
   .service(
     "accountPdsRepository",
-    ["identityResolver"],
+    ["identityResolver", "profileRecordParser"],
     accountPdsRepositoryFactory,
   )
   .service(
@@ -67,6 +69,7 @@ export const di = await createRegistry()
       "userService",
       "userDbRepository",
       "identityResolver",
+      "profileRecordParser",
     ],
     jetstreamServiceFactory,
   )
