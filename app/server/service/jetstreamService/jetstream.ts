@@ -79,8 +79,6 @@ export const jetstreamServiceFactory = ({
     logger.info({ user, board }, "ボードを更新しました");
   };
 
-  // ハンドルが変わったら、持ち主の写しがあるときだけハンドルを解決し直す。
-  // イベントに含まれるハンドルは検証されていないため使わない
   const handleIdentity = async (event: IdentityEvent) => {
     const user = await userDbRepository.findByDid(event.did);
     if (!user) {
