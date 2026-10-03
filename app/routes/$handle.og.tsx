@@ -145,7 +145,7 @@ export async function loader({ params }: Route.LoaderArgs) {
   const owner = await di.ownerService.findOwner({
     handleOrDid: params.handle,
   });
-  if (!owner) {
+  if (!owner || owner.isHidden()) {
     throw new Response(null, { status: 404 });
   }
   let image = cache.get(owner.did);

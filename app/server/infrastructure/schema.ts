@@ -8,6 +8,8 @@ import {
   uniqueIndex,
 } from "drizzle-orm/pg-core";
 
+import type { AccountStatus } from "~/models/owner";
+
 export const ownerTable = pgTable(
   "Owner",
   {
@@ -17,6 +19,7 @@ export const ownerTable = pgTable(
     description: text(),
     displayName: text(),
     handle: text(),
+    status: text().$type<AccountStatus>().notNull().default("active"),
     createdAt: timestamp({ precision: 3 }).notNull().defaultNow(),
     updatedAt: timestamp({ precision: 3 }).notNull(),
   },

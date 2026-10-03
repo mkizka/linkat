@@ -16,7 +16,7 @@ export async function loader({ request, params, context }: Route.LoaderArgs) {
   const owner = await di.ownerService.findOwner({
     handleOrDid: params.handle,
   });
-  if (!owner) {
+  if (!owner || owner.isHidden()) {
     return notFound();
   }
   const board = await di.boardService.findBoard(owner.did);

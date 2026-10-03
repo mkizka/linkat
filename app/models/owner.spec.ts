@@ -1,6 +1,6 @@
 import type { Did } from "@atproto/did";
 
-import { Owner } from "./owner";
+import { type AccountStatus, Owner } from "./owner";
 
 const createOwner = (props: Partial<ConstructorParameters<typeof Owner>[0]>) =>
   new Owner({
@@ -10,6 +10,7 @@ const createOwner = (props: Partial<ConstructorParameters<typeof Owner>[0]>) =>
     description: null,
     displayName: null,
     handle: "example.com",
+    status: "active",
     createdAt: new Date(),
     updatedAt: new Date(),
     ...props,
@@ -89,4 +90,20 @@ describe("toView", () => {
     // assert
     expect(actual).toBeNull();
   });
+});
+
+describe("isHidden", () => {
+  test.each`
+    status           | expected
+    ${"active"}      | ${false}
+    ${"suspended"}   | ${true}
+    ${"deleted"}     | ${true}
+    ${"deactivated"} | ${true}
+    ${"inactive"}    | ${true}
+  `(
+    "$status",
+    ({ status, expected }: { status: AccountStatus; expected: boolean }) => {
+      expect(createOwner({ status }).isHidden()).toBe(expected);
+    },
+  );
 });

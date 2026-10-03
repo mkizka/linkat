@@ -1,4 +1,5 @@
 import type {
+  AccountEvent,
   CommitCreateEvent,
   CommitDeleteEvent,
   CommitUpdateEvent,
@@ -7,6 +8,7 @@ import { Jetstream } from "@skyware/jetstream";
 import WebSocket from "ws";
 
 import { Board } from "~/models/board";
+import type { AccountStatus } from "~/models/owner";
 import {
   emptyProfile,
   parseProfileRecord,
@@ -22,6 +24,23 @@ const logger = createLogger("jetstream");
 
 const CURSOR_SAVE_INTERVAL_MS = 30_000;
 
+const toAccountStatus = (account: AccountEvent["account"]): AccountStatus => {
+  if (account.active) {
+    return "active";
+  }
+  switch (account.status) {
+    case "takendown":
+    case "suspended":
+      return "suspended";
+    case "deleted":
+      return "deleted";
+    case "deactivated":
+      return "deactivated";
+    default:
+      return "inactive";
+  }
+};
+
 export interface IJetstreamService {
   handleCreateOrUpdate: (
     event:
@@ -34,6 +53,7 @@ export interface IJetstreamService {
       | CommitUpdateEvent<"app.bsky.actor.profile">
       | CommitDeleteEvent<"app.bsky.actor.profile">,
   ) => Promise<void>;
+  handleAccount: (event: AccountEvent) => Promise<void>;
   startJetstream: () => Promise<void>;
 }
 
@@ -95,6 +115,15 @@ export const jetstreamServiceFactory = ({
     }
   };
 
+  const handleAccount = async ({ account }: AccountEvent) => {
+    const status = toAccountStatus(account);
+    await ownerService.updateStatus(account.did, status);
+    logger.info(
+      { did: account.did, status },
+      "アカウントの状態を受け取りました",
+    );
+  };
+
   jetstream.on("open", () => {
     logger.info(`Jetstream subscription started to ${env.JETSTREAM_URL}`);
   });
@@ -105,6 +134,12 @@ export const jetstreamServiceFactory = ({
 
   jetstream.on("error", (error) => {
     logger.error(error, "Jetstreamでエラーが発生しました");
+  });
+
+  jetstream.on("account", (event) => {
+    handleAccount(event).catch((error: unknown) => {
+      logger.error(error, "アカウントの状態の更新に失敗しました");
+    });
   });
 
   jetstream.onCreate("blue.linkat.board", handleCreateOrUpdate);
@@ -125,6 +160,7 @@ export const jetstreamServiceFactory = ({
   return {
     handleCreateOrUpdate,
     handleProfileCommit,
+    handleAccount,
     async startJetstream() {
       const savedCursor = await cursorRepository.load();
       if (savedCursor !== undefined) {

@@ -1,6 +1,6 @@
 {
-  "id": "01e33e21-72f9-4420-aa6a-6889b69ce38e",
-  "prevId": "968dfe26-962f-4c55-91e7-b59de083f780",
+  "id": "968dfe26-962f-4c55-91e7-b59de083f780",
+  "prevId": "d420c414-333f-4dc4-b47b-8e76b70d600c",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -64,8 +64,8 @@
           "primaryKey": true,
           "notNull": true
         },
-        "ownerDid": {
-          "name": "ownerDid",
+        "userDid": {
+          "name": "userDid",
           "type": "text",
           "primaryKey": false,
           "notNull": true
@@ -91,23 +91,33 @@
         }
       },
       "indexes": {
-        "Board_ownerDid_key": {
-          "name": "Board_ownerDid_key",
+        "Board_userDid_key": {
+          "name": "Board_userDid_key",
           "columns": [
             {
-              "expression": "ownerDid",
+              "expression": "userDid",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
             }
           ],
           "isUnique": true,
-          "with": {},
+          "concurrently": false,
           "method": "btree",
-          "concurrently": false
+          "with": {}
         }
       },
-      "foreignKeys": {},
+      "foreignKeys": {
+        "Board_userDid_fkey": {
+          "name": "Board_userDid_fkey",
+          "tableFrom": "Board",
+          "tableTo": "User",
+          "columnsFrom": ["userDid"],
+          "columnsTo": ["did"],
+          "onDelete": "restrict",
+          "onUpdate": "cascade"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
@@ -140,8 +150,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.Owner": {
-      "name": "Owner",
+    "public.User": {
+      "name": "User",
       "schema": "",
       "columns": {
         "did": {
@@ -202,8 +212,8 @@
         }
       },
       "indexes": {
-        "Owner_handle_key": {
-          "name": "Owner_handle_key",
+        "User_handle_key": {
+          "name": "User_handle_key",
           "columns": [
             {
               "expression": "handle",
@@ -213,9 +223,9 @@
             }
           ],
           "isUnique": true,
-          "with": {},
+          "concurrently": false,
           "method": "btree",
-          "concurrently": false
+          "with": {}
         }
       },
       "foreignKeys": {},
@@ -228,10 +238,10 @@
   },
   "enums": {},
   "schemas": {},
-  "views": {},
   "sequences": {},
   "roles": {},
   "policies": {},
+  "views": {},
   "_meta": {
     "columns": {},
     "schemas": {},

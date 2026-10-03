@@ -1,7 +1,7 @@
 import { type Did, isDid } from "@atproto/did";
 
 import type { LinkatAgent } from "~/libs/agent";
-import { Owner, type OwnerView } from "~/models/owner";
+import { type AccountStatus, Owner, type OwnerView } from "~/models/owner";
 import {
   emptyProfile,
   type IAccountPdsRepository,
@@ -17,6 +17,7 @@ export interface IOwnerService {
     did: Did;
     profile: Profile;
   }) => Promise<Owner | null>;
+  updateStatus: (did: Did, status: AccountStatus) => Promise<void>;
 }
 
 export const ownerServiceFactory = ({
@@ -43,6 +44,7 @@ export const ownerServiceFactory = ({
     return new Owner({
       did,
       handle: null,
+      status: "active",
       ...(profile ?? emptyProfile),
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -60,5 +62,8 @@ export const ownerServiceFactory = ({
       handle: identity?.handle ?? null,
       updatedAt: new Date(),
     });
+  },
+  async updateStatus(did, status) {
+    await ownerDbRepository.updateStatus(did, status);
   },
 });

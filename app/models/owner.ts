@@ -1,5 +1,8 @@
 import { asDid, type Did } from "@atproto/did";
 
+export type AccountStatus =
+  "active" | "suspended" | "deleted" | "deactivated" | "inactive";
+
 export class Owner {
   readonly did: Did;
   readonly avatar: string | null;
@@ -7,6 +10,7 @@ export class Owner {
   readonly description: string | null;
   readonly displayName: string | null;
   readonly handle: string | null;
+  readonly status: AccountStatus;
   readonly createdAt: Date;
   readonly updatedAt: Date;
 
@@ -17,6 +21,7 @@ export class Owner {
     description: string | null;
     displayName: string | null;
     handle: string | null;
+    status: AccountStatus;
     createdAt: Date;
     updatedAt: Date;
   }) {
@@ -26,8 +31,13 @@ export class Owner {
     this.description = props.description;
     this.displayName = props.displayName;
     this.handle = props.handle;
+    this.status = props.status;
     this.createdAt = props.createdAt;
     this.updatedAt = props.updatedAt;
+  }
+
+  isHidden() {
+    return this.status !== "active";
   }
 
   isOwnedBy(viewerDid: Did | null) {
