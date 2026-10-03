@@ -12,7 +12,7 @@ import { tryCatch } from "~/utils/tryCatch";
 
 const logger = createLogger("accountPdsRepository");
 
-export type Profile = Pick<
+type Profile = Pick<
   User,
   "avatar" | "avatarCid" | "description" | "displayName"
 >;

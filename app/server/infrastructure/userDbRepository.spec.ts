@@ -59,6 +59,7 @@ describe("userDbRepository", () => {
         description: "description",
         displayName: "display name",
         handle: "example.com",
+        status: "active",
         createdAt: new Date("2024-01-01T00:00:00.000Z"),
         updatedAt: new Date("2024-01-02T00:00:00.000Z"),
       });
@@ -73,16 +74,18 @@ describe("userDbRepository", () => {
         description: user.description,
         displayName: user.displayName,
         handle: user.handle,
+        status: "active",
         createdAt: expect.any(Date),
         updatedAt: user.updatedAt,
       });
     });
-    test("既存のユーザーを上書きできる", async () => {
+    test("既存のユーザーを上書きでき、状態は変えない", async () => {
       // arrange
       const existing = await UserFactory.create({
         did: "did:plc:abcdefghijklmnopqrstuvwx",
         handle: "old.example.com",
         avatar: "https://example.com/old-avatar.png",
+        status: "deactivated",
       });
       const updated = new User({
         did: existing.did,
@@ -91,6 +94,7 @@ describe("userDbRepository", () => {
         description: "new description",
         displayName: "new display name",
         handle: "new.example.com",
+        status: "active",
         createdAt: existing.createdAt,
         updatedAt: new Date("2024-02-01T00:00:00.000Z"),
       });
@@ -105,6 +109,7 @@ describe("userDbRepository", () => {
         description: updated.description,
         displayName: updated.displayName,
         handle: updated.handle,
+        status: "deactivated",
         createdAt: existing.createdAt,
         updatedAt: updated.updatedAt,
       });
@@ -129,6 +134,27 @@ describe("userDbRepository", () => {
       );
       // assert
       expect(actual.handle).toBeNull();
+    });
+  });
+
+  describe("updateStatus", () => {
+    test("ユーザーの状態を更新できる", async () => {
+      // arrange
+      const existing = await UserFactory.create();
+      // act
+      await userDbRepository.updateStatus(asDid(existing.did), "suspended");
+      // assert
+      const actual = await userDbRepository.findByDid(asDid(existing.did));
+      expect(actual?.status).toBe("suspended");
+    });
+    test("ユーザーが保存されていない場合は何もしない", async () => {
+      // arrange
+      const did = asDid("did:plc:notfound");
+      // act
+      await userDbRepository.updateStatus(did, "suspended");
+      // assert
+      const actual = await userDbRepository.findByDid(did);
+      expect(actual).toBeNull();
     });
   });
 });

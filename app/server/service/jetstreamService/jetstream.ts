@@ -1,17 +1,22 @@
 import type {
+  AccountEvent,
   CommitCreateEvent,
   CommitDeleteEvent,
   CommitUpdateEvent,
+  IdentityEvent,
 } from "@skyware/jetstream";
 import { Jetstream } from "@skyware/jetstream";
 import WebSocket from "ws";
 
 import { Board } from "~/models/board";
+import type { AccountStatus } from "~/models/user";
 import {
   emptyProfile,
   parseProfileRecord,
 } from "~/server/infrastructure/accountPdsRepository";
 import type { ICursorRepository } from "~/server/infrastructure/cursorRepository";
+import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
+import type { IUserDbRepository } from "~/server/infrastructure/userDbRepository";
 import type { IBoardService } from "~/server/service/boardService/board";
 import type { IUserService } from "~/server/service/userService/user";
 import { env } from "~/utils/env";
@@ -21,6 +26,23 @@ import { tryCatch } from "~/utils/tryCatch";
 const logger = createLogger("jetstream");
 
 const CURSOR_SAVE_INTERVAL_MS = 30_000;
+
+const toAccountStatus = (account: AccountEvent["account"]): AccountStatus => {
+  if (account.active) {
+    return "active";
+  }
+  switch (account.status) {
+    case "takendown":
+    case "suspended":
+      return "suspended";
+    case "deleted":
+      return "deleted";
+    case "deactivated":
+      return "deactivated";
+    default:
+      return "inactive";
+  }
+};
 
 export interface IJetstreamService {
   handleCreateOrUpdate: (
@@ -34,6 +56,8 @@ export interface IJetstreamService {
       | CommitUpdateEvent<"app.bsky.actor.profile">
       | CommitDeleteEvent<"app.bsky.actor.profile">,
   ) => Promise<void>;
+  handleIdentity: (event: IdentityEvent) => Promise<void>;
+  handleAccount: (event: AccountEvent) => Promise<void>;
   startJetstream: () => Promise<void>;
 }
 
@@ -41,10 +65,14 @@ export const jetstreamServiceFactory = ({
   cursorRepository,
   boardService,
   userService,
+  userDbRepository,
+  identityResolver,
 }: {
   cursorRepository: ICursorRepository;
   boardService: IBoardService;
   userService: IUserService;
+  userDbRepository: IUserDbRepository;
+  identityResolver: IIdentityResolver;
 }): IJetstreamService => {
   const jetstream = new Jetstream({
     ws: WebSocket,
@@ -99,10 +127,39 @@ export const jetstreamServiceFactory = ({
       logger.warn({ event }, "プロフィールのパースに失敗しました");
       return;
     }
-    const user = await userService.updateProfile({ did: event.did, profile });
-    if (user) {
-      logger.info({ user }, "プロフィールを更新しました");
+    const user = await userDbRepository.findByDid(event.did);
+    if (!user) {
+      return;
     }
+    const identity = await identityResolver.resolve(event.did);
+    const saved = await userDbRepository.save(
+      user.withProfile(profile).withHandle(identity?.handle ?? null),
+    );
+    logger.info({ user: saved }, "プロフィールを更新しました");
+  };
+
+  const handleIdentity = async (event: IdentityEvent) => {
+    const user = await userDbRepository.findByDid(event.did);
+    if (!user) {
+      return;
+    }
+    const identity = await identityResolver.resolve(event.did);
+    const saved = await userDbRepository.save(
+      user.withHandle(identity?.handle ?? null),
+    );
+    logger.info(
+      { did: saved.did, handle: saved.handle },
+      "ハンドルを更新しました",
+    );
+  };
+
+  const handleAccount = async ({ account }: AccountEvent) => {
+    const status = toAccountStatus(account);
+    await userService.updateStatus(account.did, status);
+    logger.info(
+      { did: account.did, status },
+      "アカウントの状態を受け取りました",
+    );
   };
 
   jetstream.on("open", () => {
@@ -115,6 +172,18 @@ export const jetstreamServiceFactory = ({
 
   jetstream.on("error", (error) => {
     logger.error(error, "Jetstreamでエラーが発生しました");
+  });
+
+  jetstream.on("identity", (event) => {
+    handleIdentity(event).catch((error: unknown) => {
+      logger.error(error, "ハンドルの更新に失敗しました");
+    });
+  });
+
+  jetstream.on("account", (event) => {
+    handleAccount(event).catch((error: unknown) => {
+      logger.error(error, "アカウントの状態の更新に失敗しました");
+    });
   });
 
   jetstream.onCreate("blue.linkat.board", handleCreateOrUpdate);
@@ -135,6 +204,8 @@ export const jetstreamServiceFactory = ({
   return {
     handleCreateOrUpdate,
     handleProfileCommit,
+    handleIdentity,
+    handleAccount,
     async startJetstream() {
       const savedCursor = await cursorRepository.load();
       if (savedCursor !== undefined) {

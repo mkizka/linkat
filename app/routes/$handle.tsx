@@ -18,7 +18,7 @@ export async function loader({ request, params, context }: Route.LoaderArgs) {
   const user = await di.userService.findUser({
     handleOrDid: params.handle,
   });
-  if (!user) {
+  if (!user || user.isHidden()) {
     return notFound();
   }
   const board = await di.boardService.findBoard(user.did);
