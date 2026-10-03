@@ -40,11 +40,9 @@ export interface IBoardService {
     ownerDid: Did,
     rawBoard: string,
   ) => Promise<Board | Error>;
-  // ボードを公開・更新した(/editのPOST、Jetstreamのcommit)。保存した持ち主の写しを返す
   saveBoard: (board: Board) => Promise<Owner>;
   publishBoard: (agent: LinkatAgent, board: Board) => Promise<Owner>;
   findBoard: (ownerDid: Did) => Promise<Board | null>;
-  // ボードが削除された(Jetstream、/delete)
   deleteBoard: (ownerDid: Did) => Promise<void>;
   unpublishBoard: (agent: LinkatAgent, ownerDid: Did) => Promise<void>;
 }
@@ -67,7 +65,6 @@ export const boardServiceFactory = ({
 }): IBoardService => {
   const saveOwner = async (did: Did) => {
     const { handle, profile } = await accountPdsRepository.resolveAccount(did);
-    // プロフィールの取得に失敗したときは、初回は空のまま、更新時は既存の値を残す
     const existing = profile ? null : await ownerDbRepository.findByDid(did);
     return await ownerDbRepository.save({
       did,
@@ -90,8 +87,6 @@ export const boardServiceFactory = ({
     return owner;
   };
 
-  // 写しを持つのはボードの持ち主だけなので、ボードと一緒に持ち主の写しも削除する
-  // 途中で失敗したときに持ち主でない人の写しが残らないよう、持ち主の写しを先に削除する
   const deleteBoard = async (ownerDid: Did) => {
     await ownerDbRepository.delete(ownerDid);
     await boardRepository.delete(ownerDid);

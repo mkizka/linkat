@@ -16,8 +16,6 @@ export type Editor = Pick<
 
 export interface IOwnerService {
   findOwner: (params: { handleOrDid: string }) => Promise<Owner | null>;
-  // 編集者はセッションのDIDだけで成り立つ。写しが無いときは、DIDで表示し、
-  // プロフィールはその場でPDSから取得する。どちらも保存しない
   findEditor: (agent: LinkatAgent) => Promise<Editor>;
   updateProfile: (params: {
     did: Did;
@@ -38,7 +36,6 @@ export const ownerServiceFactory = ({
     if (!handleOrDid.includes(".") && !isDid(handleOrDid)) {
       return null;
     }
-    // ログインと閲覧では写しを読むだけにする。ハンドルとDIDの対応は写しから引く
     return await (isDid(handleOrDid)
       ? ownerDbRepository.findByDid(handleOrDid)
       : ownerDbRepository.findByHandle(handleOrDid));
@@ -59,7 +56,6 @@ export const ownerServiceFactory = ({
       displayName: profile?.displayName ?? null,
     };
   },
-  // プロフィールが変わった。持ち主の写しがあれば、レコードの値で更新し、ハンドルを解決し直す
   async updateProfile({ did, profile }) {
     const existing = await ownerDbRepository.findByDid(did);
     if (!existing) {
@@ -69,7 +65,6 @@ export const ownerServiceFactory = ({
     return await ownerDbRepository.save({
       did,
       ...profile,
-      // 一時的な障害などで解決できなかったときは、既存の値を残す
       handle:
         resolution.type === "found" ? resolution.identity.handle : undefined,
       updatedAt: new Date(),

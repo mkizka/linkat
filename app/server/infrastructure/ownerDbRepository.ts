@@ -9,7 +9,6 @@ export type OwnerToSave = Omit<
   ConstructorParameters<typeof Owner>[0],
   "createdAt" | "handle"
 > & {
-  // undefinedのときは、既存の値を残す
   handle: string | null | undefined;
 };
 
@@ -41,7 +40,6 @@ export const ownerDbRepositoryFactory = ({
       .limit(1);
     return row ? new Owner(row) : null;
   },
-  // 写しのハンドルを書き込む処理は、すべてこれを通す
   async save(owner) {
     const data = {
       did: owner.did,
@@ -52,7 +50,6 @@ export const ownerDbRepositoryFactory = ({
       updatedAt: owner.updatedAt,
     };
     return await db.transaction(async (tx) => {
-      // ハンドルは他のアカウントに移ることがあるため、同じハンドルを持つ他の行を先にnullにする
       if (owner.handle) {
         await tx
           .update(ownerTable)

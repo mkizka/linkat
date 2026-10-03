@@ -32,7 +32,6 @@ export const boardTable = pgTable(
     createdAt: timestamp({ precision: 3 }).notNull().defaultNow(),
     updatedAt: timestamp({ precision: 3 }).notNull(),
   },
-  // 持ち主の写しが無いボードもあるため、外部キーは張らない
   (table) => [uniqueIndex("Board_ownerDid_key").on(table.ownerDid)],
 );
 
