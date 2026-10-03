@@ -6,10 +6,7 @@ import profile, {
 } from "~/generated/app/bsky/actor/profile";
 import { LinkatAgent } from "~/libs/agent";
 import type { User } from "~/models/user";
-import type {
-  Identity,
-  IIdentityResolver,
-} from "~/server/infrastructure/identityResolver";
+import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
 import { createLogger } from "~/utils/logger";
 import { tryCatch } from "~/utils/tryCatch";
 
@@ -30,7 +27,7 @@ export const emptyProfile: Profile = {
 export interface IAccountPdsRepository {
   findByHandleOrDid: (handleOrDid: string) => Promise<{
     did: Did;
-    handle: Identity["handle"];
+    handle: string | null;
     profile: Profile | null;
   } | null>;
 }
@@ -64,11 +61,10 @@ export const accountPdsRepositoryFactory = ({
   identityResolver: IIdentityResolver;
 }): IAccountPdsRepository => ({
   async findByHandleOrDid(handleOrDid) {
-    const resolution = await identityResolver.resolve(handleOrDid);
-    if (resolution.type !== "found") {
+    const identity = await identityResolver.resolve(handleOrDid);
+    if (!identity) {
       return null;
     }
-    const { identity } = resolution;
     const fetched = await tryCatch(fetchProfile)(identity);
     if (fetched instanceof Error) {
       logger.warn(fetched, "プロフィールの取得に失敗しました");

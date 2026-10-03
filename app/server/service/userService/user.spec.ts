@@ -29,9 +29,10 @@ const profile = {
   displayName: "新しい名前",
 };
 
-const found = (did: string, handle: string | null | undefined) => ({
-  type: "found" as const,
-  identity: { did: asDid(did), pds: "https://pds.example.com", handle },
+const identity = (did: string, handle: string | null) => ({
+  did: asDid(did),
+  pds: "https://pds.example.com",
+  handle,
 });
 
 describe("userService", () => {
@@ -77,7 +78,7 @@ describe("userService", () => {
         avatar: "https://example.com/avatar.jpg",
       });
       identityResolver.resolve.mockResolvedValue(
-        found(user.did, "new.example.com"),
+        identity(user.did, "new.example.com"),
       );
       // act
       const actual = await userService.updateProfile({
@@ -93,24 +94,11 @@ describe("userService", () => {
       });
       expect(await userDbRepository.findByDid(asDid(user.did))).toEqual(actual);
     });
-    test("ハンドルの検証に失敗した場合、写しのハンドルをnullにする", async () => {
-      // arrange
-      const user = await UserFactory.create({ handle: "old.example.com" });
-      identityResolver.resolve.mockResolvedValue(found(user.did, null));
-      // act
-      const actual = await userService.updateProfile({
-        did: asDid(user.did),
-        profile,
-      });
-      // assert
-      expect(actual?.handle).toBeNull();
-      expect(actual?.displayName).toBe("新しい名前");
-    });
     test.each([
-      { resolution: { type: "unavailable" as const } },
-      { resolution: found("did:plc:dummy", undefined) },
+      { resolution: identity("did:plc:dummy", null) },
+      { resolution: null },
     ])(
-      "ハンドルを解決できなかった場合($resolution.type)、既存のハンドルを残してプロフィールは更新する",
+      "ハンドルを解決できなかった場合($resolution)、写しのハンドルをnullにしてプロフィールは更新する",
       async ({ resolution }) => {
         // arrange
         const user = await UserFactory.create({ handle: "old.example.com" });
@@ -121,7 +109,7 @@ describe("userService", () => {
           profile,
         });
         // assert
-        expect(actual?.handle).toBe("old.example.com");
+        expect(actual?.handle).toBeNull();
         expect(actual?.displayName).toBe("新しい名前");
       },
     );

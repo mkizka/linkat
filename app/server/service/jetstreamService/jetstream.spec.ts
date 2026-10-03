@@ -120,12 +120,9 @@ describe("jetstreamService", () => {
         displayName: "古い名前",
       });
       identityResolver.resolve.mockResolvedValue({
-        type: "found",
-        identity: {
-          did: asDid(user.did),
-          pds: "https://pds.example.com",
-          handle: "new.example.com",
-        },
+        did: asDid(user.did),
+        pds: "https://pds.example.com",
+        handle: "new.example.com",
       });
       // act
       await jetstreamService.handleProfileCommit(
@@ -148,7 +145,11 @@ describe("jetstreamService", () => {
         description: "古い説明",
         avatarCid,
       });
-      identityResolver.resolve.mockResolvedValue({ type: "unavailable" });
+      identityResolver.resolve.mockResolvedValue({
+        did: asDid(user.did),
+        pds: "https://pds.example.com",
+        handle: user.handle,
+      });
       // act
       await jetstreamService.handleProfileCommit(profileDeleteEvent(user.did));
       // assert
@@ -203,7 +204,7 @@ describe("jetstreamService", () => {
     test("ユーザーがDBになくDIDも解決できない場合、エラーにせずボードの保存をスキップする", async () => {
       // arrange
       const did = "did:plc:notfounduser0000000000000";
-      identityResolver.resolve.mockResolvedValue({ type: "notFound" });
+      identityResolver.resolve.mockResolvedValue(null);
       // act
       const actual = jetstreamService.handleCreateOrUpdate(dummyEvent(did));
       // assert

@@ -1,6 +1,6 @@
 import { type Did, isDid } from "@atproto/did";
 
-import type { User } from "~/models/user";
+import { User } from "~/models/user";
 import type { Profile } from "~/server/infrastructure/accountPdsRepository";
 import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
 import type { IUserDbRepository } from "~/server/infrastructure/userDbRepository";
@@ -34,13 +34,15 @@ export const userServiceFactory = ({
     if (!existing) {
       return null;
     }
-    const resolution = await identityResolver.resolve(did);
-    return await userDbRepository.save({
-      did,
-      ...profile,
-      handle:
-        resolution.type === "found" ? resolution.identity.handle : undefined,
-      updatedAt: new Date(),
-    });
+    const identity = await identityResolver.resolve(did);
+    return await userDbRepository.save(
+      new User({
+        ...profile,
+        did,
+        createdAt: existing.createdAt,
+        handle: identity?.handle ?? null,
+        updatedAt: new Date(),
+      }),
+    );
   },
 });
