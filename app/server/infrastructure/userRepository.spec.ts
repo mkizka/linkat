@@ -170,12 +170,13 @@ describe("userRepository", () => {
         updatedAt: new Date("2024-01-01T00:10:00.000Z"),
       });
     });
-    test("DBにユーザーがいて最終更新から一定時間経過しているが、DIDを解決できなかった場合、そのまま返す", async () => {
+    test("DBにユーザーがいて最終更新から一定時間経過しているが、DIDを解決できなかった場合、ハンドルをnullにする", async () => {
       // arrange
       vi.useFakeTimers();
       vi.setSystemTime(new Date("2024-01-01T00:10:00.000Z"));
       const user = await UserFactory.create({
         did: "did:plc:dfbe2uvzisfdxwscnwcxdta6",
+        handle: "example.com",
         createdAt: new Date("2024-01-01T00:00:00.000Z"),
         updatedAt: new Date("2024-01-01T00:00:00.000Z"),
       });
@@ -185,7 +186,11 @@ describe("userRepository", () => {
         "did:plc:dfbe2uvzisfdxwscnwcxdta6",
       );
       // assert
-      expect(actual).toEqual(user);
+      expect(actual).toEqual({
+        ...user,
+        handle: null,
+        updatedAt: new Date("2024-01-01T00:10:00.000Z"),
+      });
     });
     test("DBにユーザーがなく、DIDを解決できないときnullを返す", async () => {
       // arrange

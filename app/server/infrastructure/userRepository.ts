@@ -23,10 +23,10 @@ export const userRepositoryFactory = ({
 }): IUserRepository => {
   const fetchAndSave = async (did: Did, cached: User | null) => {
     const fetched = await accountPdsRepository.findByDid(did);
-    if (!fetched) {
-      return cached;
+    if (!fetched && !cached) {
+      return null;
     }
-    const profile = fetched.profile ?? cached;
+    const profile = fetched?.profile ?? cached;
     return await userDbRepository.save(
       new User({
         did,
@@ -34,7 +34,7 @@ export const userRepositoryFactory = ({
         avatarCid: profile?.avatarCid ?? null,
         description: profile?.description ?? null,
         displayName: profile?.displayName ?? null,
-        handle: fetched.handle,
+        handle: fetched?.handle ?? null,
         createdAt: new Date(),
         updatedAt: new Date(),
       }),
