@@ -2,7 +2,10 @@ import type { Did } from "@atproto/did";
 
 import type { LinkatAgent } from "~/libs/agent";
 import { Board } from "~/models/board";
+import { User } from "~/models/user";
+import type { IAccountPdsRepository } from "~/server/infrastructure/accountPdsRepository";
 import type { IBoardRepository } from "~/server/infrastructure/boardRepository";
+import type { IUserDbRepository } from "~/server/infrastructure/userDbRepository";
 import { tryCatch } from "~/utils/tryCatch";
 
 export class BoardPdsSaveError extends Error {
@@ -34,8 +37,8 @@ export interface IBoardService {
     userDid: Did,
     rawBoard: string,
   ) => Promise<Board | Error>;
-  saveBoard: (board: Board) => Promise<void>;
-  publishBoard: (agent: LinkatAgent, board: Board) => Promise<void>;
+  saveBoard: (board: Board) => Promise<User>;
+  publishBoard: (agent: LinkatAgent, board: Board) => Promise<User>;
   findBoard: (userDid: Did) => Promise<Board | null>;
   deleteBoard: (userDid: Did) => Promise<void>;
   unpublishBoard: (agent: LinkatAgent, userDid: Did) => Promise<void>;
@@ -43,17 +46,36 @@ export interface IBoardService {
 
 export const boardServiceFactory = ({
   boardRepository,
+  userDbRepository,
+  accountPdsRepository,
 }: {
   boardRepository: IBoardRepository;
+  userDbRepository: IUserDbRepository;
+  accountPdsRepository: IAccountPdsRepository;
 }): IBoardService => {
+  const saveOwner = async (did: Did) => {
+    const fetched = await accountPdsRepository.findByDid(did);
+    const owner = (await userDbRepository.findByDid(did)) ?? User.create(did);
+    return await userDbRepository.save(
+      (fetched?.profile
+        ? owner.withProfile(fetched.profile)
+        : owner
+      ).withHandle(fetched?.handle ?? null),
+    );
+  };
+
+  const saveBoard = async (board: Board) => {
+    const owner = await saveOwner(board.userDid);
+    await boardRepository.save(board);
+    return owner;
+  };
+
   return {
     parseBoardFromForm: tryCatch(
       (userDid: Did, rawBoard: string) =>
         new Board(userDid, Board.parseCards(JSON.parse(rawBoard))),
     ),
-    async saveBoard(board) {
-      await boardRepository.save(board);
-    },
+    saveBoard,
     async publishBoard(agent, board) {
       try {
         await agent.updateBoard(board);
@@ -61,7 +83,7 @@ export const boardServiceFactory = ({
         throw new BoardPdsSaveError(error);
       }
       try {
-        await boardRepository.save(board);
+        return await saveBoard(board);
       } catch (error) {
         throw new BoardDbSaveError(error);
       }

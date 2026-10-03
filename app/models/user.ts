@@ -43,6 +43,21 @@ export class User {
     this.updatedAt = props.updatedAt;
   }
 
+  static create(did: Did) {
+    const now = new Date();
+    return new User({
+      did,
+      avatar: null,
+      avatarCid: null,
+      description: null,
+      displayName: null,
+      handle: null,
+      status: "active",
+      createdAt: now,
+      updatedAt: now,
+    });
+  }
+
   isHidden() {
     return this.status !== "active";
   }
