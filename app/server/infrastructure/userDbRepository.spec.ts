@@ -56,44 +56,20 @@ describe("userDbRepository", () => {
       avatarCid: null,
       description: null,
       displayName: null,
+      createdAt: new Date("2024-02-01T00:00:00.000Z"),
       updatedAt: new Date("2024-02-01T00:00:00.000Z"),
     };
     test("他のユーザーが同じhandleを持っている場合、そのユーザーのhandleをnullにする", async () => {
       // arrange
       const other = await UserFactory.create({ handle: "example.com" });
       // act
-      const actual = await userDbRepository.save({
-        ...userToSave,
-        handle: "example.com",
-      });
+      const actual = await userDbRepository.save(
+        new User({ ...userToSave, handle: "example.com" }),
+      );
       // assert
       expect(actual.handle).toBe("example.com");
       const otherActual = await userDbRepository.findByDid(asDid(other.did));
       expect(otherActual?.handle).toBeNull();
-    });
-    test("handleがundefinedの場合、既存のhandleを残す", async () => {
-      // arrange
-      await UserFactory.create({
-        did: userToSave.did,
-        handle: "example.com",
-      });
-      // act
-      const actual = await userDbRepository.save({
-        ...userToSave,
-        handle: undefined,
-      });
-      // assert
-      expect(actual.handle).toBe("example.com");
-    });
-    test("handleがundefinedで既存のユーザーがいない場合、handleをnullで保存する", async () => {
-      // arrange
-      // act
-      const actual = await userDbRepository.save({
-        ...userToSave,
-        handle: undefined,
-      });
-      // assert
-      expect(actual.handle).toBeNull();
     });
     test("handleがnullの場合、handleをnullにする", async () => {
       // arrange
@@ -102,10 +78,9 @@ describe("userDbRepository", () => {
         handle: "example.com",
       });
       // act
-      const actual = await userDbRepository.save({
-        ...userToSave,
-        handle: null,
-      });
+      const actual = await userDbRepository.save(
+        new User({ ...userToSave, handle: null }),
+      );
       // assert
       expect(actual.handle).toBeNull();
     });
@@ -113,10 +88,9 @@ describe("userDbRepository", () => {
       // arrange
       await UserFactory.create({ handle: null });
       // act
-      const actual = await userDbRepository.save({
-        ...userToSave,
-        handle: null,
-      });
+      const actual = await userDbRepository.save(
+        new User({ ...userToSave, handle: null }),
+      );
       // assert
       expect(actual.handle).toBeNull();
     });
