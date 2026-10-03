@@ -44,17 +44,16 @@ export const userRepositoryFactory = ({
 
   return {
     async findByHandleOrDid(handleOrDid) {
-      if (isDid(handleOrDid)) {
-        const cached = await userDbRepository.findByDid(handleOrDid);
-        return cached && isFresh(cached)
-          ? cached
-          : await fetchAndSave(handleOrDid, cached);
+      const did = isDid(handleOrDid)
+        ? handleOrDid
+        : (await userDbRepository.findByHandle(handleOrDid))?.did;
+      if (!did) {
+        return null;
       }
-      const cached = await userDbRepository.findByHandle(handleOrDid);
-      if (!cached || isFresh(cached)) {
-        return cached;
-      }
-      return await fetchAndSave(cached.did, cached);
+      const cached = await userDbRepository.findByDid(did);
+      return cached && isFresh(cached)
+        ? cached
+        : await fetchAndSave(did, cached);
     },
     async updateStatus(did, status) {
       await userDbRepository.updateStatus(did, status);
