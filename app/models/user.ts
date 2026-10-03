@@ -59,15 +59,30 @@ export class User {
   }
 
   withProfile(
-    profile: Pick<User, "avatar" | "avatarCid" | "description" | "displayName">,
+    profile: Pick<
+      User,
+      "avatar" | "avatarCid" | "description" | "displayName"
+    > | null,
   ) {
     return new User({
       did: this.did,
-      ...profile,
+      avatar: profile?.avatar ?? null,
+      avatarCid: profile?.avatarCid ?? null,
+      description: profile?.description ?? null,
+      displayName: profile?.displayName ?? null,
       handle: this.handle,
       status: this.status,
       createdAt: this.createdAt,
       updatedAt: new Date(),
+    });
+  }
+
+  withoutProfile() {
+    return this.withProfile({
+      avatar: null,
+      avatarCid: null,
+      description: null,
+      displayName: null,
     });
   }
 

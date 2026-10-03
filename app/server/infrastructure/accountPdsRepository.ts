@@ -17,13 +17,6 @@ type Profile = Pick<
   "avatar" | "avatarCid" | "description" | "displayName"
 >;
 
-export const emptyProfile: Profile = {
-  avatar: null,
-  avatarCid: null,
-  description: null,
-  displayName: null,
-};
-
 export interface IAccountPdsRepository {
   findByHandleOrDid: (handleOrDid: string) => Promise<{
     did: Did;

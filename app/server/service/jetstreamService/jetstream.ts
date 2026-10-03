@@ -10,10 +10,7 @@ import WebSocket from "ws";
 
 import { Board } from "~/models/board";
 import type { AccountStatus } from "~/models/user";
-import {
-  emptyProfile,
-  parseProfileRecord,
-} from "~/server/infrastructure/accountPdsRepository";
+import { parseProfileRecord } from "~/server/infrastructure/accountPdsRepository";
 import type { ICursorRepository } from "~/server/infrastructure/cursorRepository";
 import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
 import type { IUserDbRepository } from "~/server/infrastructure/userDbRepository";
@@ -121,9 +118,9 @@ export const jetstreamServiceFactory = ({
     }
     const profile =
       event.commit.operation === "delete"
-        ? emptyProfile
+        ? null
         : parseProfileRecord(event.commit.record);
-    if (!profile) {
+    if (event.commit.operation !== "delete" && !profile) {
       logger.warn({ event }, "プロフィールのパースに失敗しました");
       return;
     }
@@ -132,8 +129,9 @@ export const jetstreamServiceFactory = ({
       return;
     }
     const identity = await identityResolver.resolve(event.did);
+    const updated = profile ? user.withProfile(profile) : user.withoutProfile();
     const saved = await userDbRepository.save(
-      user.withProfile(profile).withHandle(identity?.handle ?? null),
+      updated.withHandle(identity?.handle ?? null),
     );
     logger.info({ user: saved }, "プロフィールを更新しました");
   };
