@@ -1,3 +1,6 @@
+import { useTranslation } from "react-i18next";
+
+import { Card } from "~/components/card";
 import { Footer, Main } from "~/components/layout";
 import { BoardViewer } from "~/features/board/board-viewer";
 import { ShareModal } from "~/features/board/share-modal";
@@ -18,8 +21,11 @@ export async function loader({ request, params, context }: Route.LoaderArgs) {
   const user = await di.userService.findUser({
     handleOrDid: params.handle,
   });
-  if (!user || user.isHidden()) {
+  if (!user) {
     return notFound();
+  }
+  if (user.isHidden()) {
+    return { hidden: true as const };
   }
   const board = await di.boardService.findBoard(user.did);
   if (!board) {
@@ -40,15 +46,38 @@ export async function loader({ request, params, context }: Route.LoaderArgs) {
     url: `${env.PUBLIC_URL}/${view.handleOrDid}`,
     ogImageUrl: `${env.PUBLIC_URL}/${view.handleOrDid}/og`,
     atUri: `at://${user.did}/blue.linkat.board/self`,
+    hidden: false as const,
   };
 }
 
 export const meta: Route.MetaFunction = ({ loaderData }) => {
+  if (loaderData.hidden) {
+    return [{ title: "Linkat" }];
+  }
   const { title, url, ogImageUrl, atUri } = loaderData;
   return createMeta({ title, url, ogImageUrl, atUri });
 };
 
+function HiddenBoard() {
+  const { t } = useTranslation();
+  return (
+    <>
+      <Main className="utils--center">
+        <Card>
+          <div className="card-body">
+            <p>{t("board.hidden-message")}</p>
+          </div>
+        </Card>
+      </Main>
+      <Footer withNavigation />
+    </>
+  );
+}
+
 export default function Index({ loaderData }: Route.ComponentProps) {
+  if (loaderData.hidden) {
+    return <HiddenBoard />;
+  }
   const { user, board, url, isMine } = loaderData;
   return (
     <>
