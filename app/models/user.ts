@@ -34,6 +34,19 @@ export class User {
     return this.did === viewerDid;
   }
 
+  withHandle(handle: string | null) {
+    return new User({
+      did: this.did,
+      avatar: this.avatar,
+      avatarCid: this.avatarCid,
+      description: this.description,
+      displayName: this.displayName,
+      handle,
+      createdAt: this.createdAt,
+      updatedAt: new Date(),
+    });
+  }
+
   toView() {
     return {
       did: this.did,
