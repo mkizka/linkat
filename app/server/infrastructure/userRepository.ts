@@ -1,6 +1,6 @@
 import { type Did, isDid } from "@atproto/did";
 
-import { User } from "~/models/user";
+import { type AccountStatus, User } from "~/models/user";
 import type { IAccountPdsRepository } from "~/server/infrastructure/accountPdsRepository";
 import type { IUserDbRepository } from "~/server/infrastructure/userDbRepository";
 
@@ -12,6 +12,7 @@ const isFresh = (user: User) =>
 export interface IUserRepository {
   findByHandleOrDid: (handleOrDid: string) => Promise<User | null>;
   refresh: (did: Did) => Promise<User | null>;
+  updateStatus: (did: Did, status: AccountStatus) => Promise<void>;
 }
 
 export const userRepositoryFactory = ({
@@ -23,10 +24,10 @@ export const userRepositoryFactory = ({
 }): IUserRepository => {
   const fetchAndSave = async (did: Did, cached: User | null) => {
     const fetched = await accountPdsRepository.findByDid(did);
-    if (!fetched && !cached) {
-      return null;
+    if (!fetched) {
+      return cached && (await userDbRepository.save(cached.withHandle(null)));
     }
-    const profile = fetched?.profile ?? cached;
+    const profile = fetched.profile ?? cached;
     return await userDbRepository.save(
       new User({
         did,
@@ -34,7 +35,8 @@ export const userRepositoryFactory = ({
         avatarCid: profile?.avatarCid ?? null,
         description: profile?.description ?? null,
         displayName: profile?.displayName ?? null,
-        handle: fetched?.handle ?? null,
+        handle: fetched.handle,
+        status: "active",
         createdAt: new Date(),
         updatedAt: new Date(),
       }),
@@ -57,6 +59,9 @@ export const userRepositoryFactory = ({
     },
     async refresh(did) {
       return await fetchAndSave(did, await userDbRepository.findByDid(did));
+    },
+    async updateStatus(did, status) {
+      await userDbRepository.updateStatus(did, status);
     },
   };
 };
