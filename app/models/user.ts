@@ -38,7 +38,7 @@ export class User {
     return {
       did: this.did,
       handleOrDid: this.handle ?? this.did,
-      displayHandle: this.handle ? `@${this.handle}` : this.did,
+      displayHandle: `@${this.handle ?? this.did}`,
       displayName: this.displayName,
       avatarUrl: this.avatarCid
         ? `https://cdn.bsky.app/img/avatar/plain/${this.did}/${this.avatarCid}@jpeg`

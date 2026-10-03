@@ -57,7 +57,7 @@ describe("toView", () => {
     // assert
     expect(actual).toMatchObject({
       handleOrDid: "did:plc:dummy",
-      displayHandle: "did:plc:dummy",
+      displayHandle: "@did:plc:dummy",
     });
   });
   test("アバターのCIDからBlueskyのCDNのURLを返す", () => {
