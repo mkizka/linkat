@@ -34,9 +34,6 @@ export const ownerServiceFactory = ({
   identityResolver: IIdentityResolver;
 }): IOwnerService => ({
   async findOwner({ handleOrDid }) {
-    if (!handleOrDid.includes(".") && !isDid(handleOrDid)) {
-      return null;
-    }
     return await (isDid(handleOrDid)
       ? ownerDbRepository.findByDid(handleOrDid)
       : ownerDbRepository.findByHandle(handleOrDid));
