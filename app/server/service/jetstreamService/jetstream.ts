@@ -118,16 +118,16 @@ export const jetstreamServiceFactory = ({
     if (event.commit.rkey !== "self") {
       return;
     }
+    const user = await userDbRepository.findByDid(event.did);
+    if (!user) {
+      return;
+    }
     const profile =
       event.commit.operation === "delete"
         ? null
         : accountPdsRepository.parseProfile(event.commit.record);
     if (event.commit.operation !== "delete" && !profile) {
       logger.warn({ event }, "プロフィールのパースに失敗しました");
-      return;
-    }
-    const user = await userDbRepository.findByDid(event.did);
-    if (!user) {
       return;
     }
     const identity = await identityResolver.resolve(event.did);
