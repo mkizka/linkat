@@ -21,8 +21,6 @@ export const userRepositoryFactory = ({
   accountPdsRepository: IAccountPdsRepository;
 }): IUserRepository => ({
   async findByHandleOrDid(handleOrDid) {
-    // ハンドルとDIDの対応は写しから引き、閲覧時にハンドルを解決しない
-    // 写しに無いハンドルはnullを返す
     const cached = await (isDid(handleOrDid)
       ? userDbRepository.findByDid(handleOrDid)
       : userDbRepository.findByHandle(handleOrDid));
