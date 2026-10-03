@@ -1,19 +1,14 @@
 import type { Did } from "@atproto/did";
-import { getBlobCidString } from "@atproto/lex";
 
 import profile from "~/generated/app/bsky/actor/profile";
 import { LinkatAgent } from "~/libs/agent";
-import type { User } from "~/models/user";
+import type { Profile } from "~/models/user";
 import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
+import type { IProfileRecordParser } from "~/server/infrastructure/profileRecordParser";
 import { createLogger } from "~/utils/logger";
 import { tryCatch } from "~/utils/tryCatch";
 
 const logger = createLogger("accountPdsRepository");
-
-type Profile = Pick<
-  User,
-  "avatar" | "avatarCid" | "description" | "displayName"
->;
 
 export interface IAccountPdsRepository {
   findByHandleOrDid: (handleOrDid: string) => Promise<{
@@ -23,36 +18,34 @@ export interface IAccountPdsRepository {
   } | null>;
 }
 
-const fetchProfile = async ({ did, pds }: { did: Did; pds: string }) => {
+const fetchProfileRecord = async ({ did, pds }: { did: Did; pds: string }) => {
   logger.info({ did, pds }, "プロフィールを取得します");
   const agent = LinkatAgent.credential(pds);
   const { value } = await agent.get(profile, { repo: did });
-  return {
-    avatar: null,
-    avatarCid: getBlobCidString(value.avatar) ?? null,
-    description: value.description ?? null,
-    displayName: value.displayName ?? null,
-  };
+  return value;
 };
 
 export const accountPdsRepositoryFactory = ({
   identityResolver,
+  profileRecordParser,
 }: {
   identityResolver: IIdentityResolver;
+  profileRecordParser: IProfileRecordParser;
 }): IAccountPdsRepository => ({
   async findByHandleOrDid(handleOrDid) {
     const identity = await identityResolver.resolve(handleOrDid);
     if (!identity) {
       return null;
     }
-    const fetched = await tryCatch(fetchProfile)(identity);
+    const fetched = await tryCatch(fetchProfileRecord)(identity);
     if (fetched instanceof Error) {
       logger.warn(fetched, "プロフィールの取得に失敗しました");
     }
     return {
       did: identity.did,
       handle: identity.handle,
-      profile: fetched instanceof Error ? null : fetched,
+      profile:
+        fetched instanceof Error ? null : profileRecordParser.parse(fetched),
     };
   },
 });

@@ -4,6 +4,7 @@ import { UserFactory } from "~/server/factories/user";
 import { accountPdsRepositoryFactory } from "~/server/infrastructure/accountPdsRepository";
 import { db } from "~/server/infrastructure/drizzle";
 import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
+import { profileRecordParserFactory } from "~/server/infrastructure/profileRecordParser";
 import { userDbRepositoryFactory } from "~/server/infrastructure/userDbRepository";
 import { userRepositoryFactory } from "~/server/infrastructure/userRepository";
 
@@ -14,6 +15,7 @@ const userService = userServiceFactory({
     userDbRepository: userDbRepositoryFactory({ db }),
     accountPdsRepository: accountPdsRepositoryFactory({
       identityResolver: mock<IIdentityResolver>(),
+      profileRecordParser: profileRecordParserFactory(),
     }),
   }),
 });
