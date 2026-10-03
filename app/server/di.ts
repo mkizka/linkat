@@ -13,6 +13,7 @@ import {
   stateStoreFactory,
 } from "~/server/infrastructure/oauthStorage";
 import { ownerDbRepositoryFactory } from "~/server/infrastructure/ownerDbRepository";
+import { profileRecordParserFactory } from "~/server/infrastructure/profileRecordParser";
 import { atpassportServiceFactory } from "~/server/service/atpassportService/atpassport";
 import { authServiceFactory } from "~/server/service/authService/auth";
 import { boardServiceFactory } from "~/server/service/boardService/board";
@@ -28,6 +29,7 @@ export const di = await createRegistry()
   .service("oauthStateStore", ["db"], stateStoreFactory)
   .service("oauthSessionStore", ["db"], sessionStoreFactory)
   .service("identityResolver", identityResolverFactory)
+  .service("profileRecordParser", profileRecordParserFactory)
   .service(
     "oauthClient",
     ["oauthStateStore", "oauthSessionStore"],
@@ -35,14 +37,14 @@ export const di = await createRegistry()
   )
   .service(
     "accountPdsRepository",
-    ["identityResolver"],
+    ["identityResolver", "profileRecordParser"],
     accountPdsRepositoryFactory,
   )
   .service("atpassportClient", atpassportClientFactory)
   .service("cookieSessionStorage", cookieSessionStorageFactory)
   .service(
     "ownerService",
-    ["ownerDbRepository", "accountPdsRepository", "identityResolver"],
+    ["ownerDbRepository", "accountPdsRepository"],
     ownerServiceFactory,
   )
   .service(
@@ -65,6 +67,7 @@ export const di = await createRegistry()
       "ownerService",
       "ownerDbRepository",
       "identityResolver",
+      "profileRecordParser",
     ],
     jetstreamServiceFactory,
   )

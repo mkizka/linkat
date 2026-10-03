@@ -2,11 +2,8 @@ import type { Did } from "@atproto/did";
 
 import type { LinkatAgent } from "~/libs/agent";
 import { Board } from "~/models/board";
-import type { Owner } from "~/models/owner";
-import {
-  emptyProfile,
-  type IAccountPdsRepository,
-} from "~/server/infrastructure/accountPdsRepository";
+import { Owner } from "~/models/owner";
+import type { IAccountPdsRepository } from "~/server/infrastructure/accountPdsRepository";
 import type { IBoardRepository } from "~/server/infrastructure/boardRepository";
 import type { IOwnerDbRepository } from "~/server/infrastructure/ownerDbRepository";
 import { tryCatch } from "~/utils/tryCatch";
@@ -57,21 +54,14 @@ export const boardServiceFactory = ({
   accountPdsRepository: IAccountPdsRepository;
 }): IBoardService => {
   const saveOwner = async (did: Did) => {
-    const { handle, profile } = await accountPdsRepository.resolveAccount(did);
-    const existing = profile ? null : await ownerDbRepository.findByDid(did);
-    return await ownerDbRepository.save({
-      did,
-      ...(profile ??
-        (existing && {
-          avatar: existing.avatar,
-          avatarCid: existing.avatarCid,
-          description: existing.description,
-          displayName: existing.displayName,
-        }) ??
-        emptyProfile),
-      handle,
-      updatedAt: new Date(),
-    });
+    const fetched = await accountPdsRepository.findByDid(did);
+    const owner = (await ownerDbRepository.findByDid(did)) ?? Owner.create(did);
+    return await ownerDbRepository.save(
+      (fetched?.profile
+        ? owner.withProfile(fetched.profile)
+        : owner
+      ).withHandle(fetched?.handle ?? null),
+    );
   };
 
   const saveBoard = async (board: Board) => {

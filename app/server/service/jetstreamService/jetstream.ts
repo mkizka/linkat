@@ -1,3 +1,4 @@
+import { lexParse } from "@atproto/lex";
 import type {
   AccountEvent,
   CommitCreateEvent,
@@ -10,13 +11,10 @@ import WebSocket from "ws";
 
 import { Board } from "~/models/board";
 import type { AccountStatus } from "~/models/owner";
-import {
-  emptyProfile,
-  parseProfileRecord,
-} from "~/server/infrastructure/accountPdsRepository";
 import type { ICursorRepository } from "~/server/infrastructure/cursorRepository";
 import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
 import type { IOwnerDbRepository } from "~/server/infrastructure/ownerDbRepository";
+import type { IProfileRecordParser } from "~/server/infrastructure/profileRecordParser";
 import type { IBoardService } from "~/server/service/boardService/board";
 import type { IOwnerService } from "~/server/service/ownerService/owner";
 import { env } from "~/utils/env";
@@ -26,6 +24,8 @@ import { tryCatch } from "~/utils/tryCatch";
 const logger = createLogger("jetstream");
 
 const CURSOR_SAVE_INTERVAL_MS = 30_000;
+
+const jsonToLex = tryCatch((json: unknown) => lexParse(JSON.stringify(json)));
 
 const toAccountStatus = (account: AccountEvent["account"]): AccountStatus => {
   if (account.active) {
@@ -67,12 +67,14 @@ export const jetstreamServiceFactory = ({
   ownerService,
   ownerDbRepository,
   identityResolver,
+  profileRecordParser,
 }: {
   cursorRepository: ICursorRepository;
   boardService: IBoardService;
   ownerService: IOwnerService;
   ownerDbRepository: IOwnerDbRepository;
   identityResolver: IIdentityResolver;
+  profileRecordParser: IProfileRecordParser;
 }): IJetstreamService => {
   const jetstream = new Jetstream({
     ws: WebSocket,
@@ -100,6 +102,11 @@ export const jetstreamServiceFactory = ({
     logger.info({ owner, board }, "ボードを更新しました");
   };
 
+  const parseProfile = async (json: unknown) => {
+    const record = await jsonToLex(json);
+    return record instanceof Error ? null : profileRecordParser.parse(record);
+  };
+
   const handleProfileCommit = async (
     event:
       | CommitCreateEvent<"app.bsky.actor.profile">
@@ -109,18 +116,23 @@ export const jetstreamServiceFactory = ({
     if (event.commit.rkey !== "self") {
       return;
     }
+    const owner = await ownerDbRepository.findByDid(event.did);
+    if (!owner) {
+      return;
+    }
     const profile =
       event.commit.operation === "delete"
-        ? emptyProfile
-        : parseProfileRecord(event.commit.record);
-    if (!profile) {
+        ? null
+        : await parseProfile(event.commit.record);
+    if (event.commit.operation !== "delete" && !profile) {
       logger.warn({ event }, "プロフィールのパースに失敗しました");
       return;
     }
-    const owner = await ownerService.updateProfile({ did: event.did, profile });
-    if (owner) {
-      logger.info({ owner }, "プロフィールを更新しました");
-    }
+    const identity = await identityResolver.resolve(event.did);
+    const saved = await ownerDbRepository.save(
+      owner.withProfile(profile).withHandle(identity?.handle ?? null),
+    );
+    logger.info({ owner: saved }, "プロフィールを更新しました");
   };
 
   const handleIdentity = async (event: IdentityEvent) => {
@@ -141,7 +153,7 @@ export const jetstreamServiceFactory = ({
   const handleAccount = async ({ account }: AccountEvent) => {
     const status = toAccountStatus(account);
     await ownerService.updateStatus(account.did, status);
-    logger.info(
+    logger.debug(
       { did: account.did, status },
       "アカウントの状態を受け取りました",
     );

@@ -12,6 +12,7 @@ import { boardRepositoryFactory } from "~/server/infrastructure/boardRepository"
 import { db } from "~/server/infrastructure/drizzle";
 import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
 import { ownerDbRepositoryFactory } from "~/server/infrastructure/ownerDbRepository";
+import { profileRecordParserFactory } from "~/server/infrastructure/profileRecordParser";
 
 import {
   BoardDbDeleteError,
@@ -27,7 +28,10 @@ const ownerDbRepository = ownerDbRepositoryFactory({ db });
 const boardService = boardServiceFactory({
   boardRepository,
   ownerDbRepository,
-  accountPdsRepository: accountPdsRepositoryFactory({ identityResolver }),
+  accountPdsRepository: accountPdsRepositoryFactory({
+    identityResolver,
+    profileRecordParser: profileRecordParserFactory(),
+  }),
 });
 
 const AVATAR_CID =

@@ -11,6 +11,7 @@ import { cursorRepositoryFactory } from "~/server/infrastructure/cursorRepositor
 import { db } from "~/server/infrastructure/drizzle";
 import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
 import { ownerDbRepositoryFactory } from "~/server/infrastructure/ownerDbRepository";
+import { profileRecordParserFactory } from "~/server/infrastructure/profileRecordParser";
 import { boardServiceFactory } from "~/server/service/boardService/board";
 import { ownerServiceFactory } from "~/server/service/ownerService/owner";
 import { env } from "~/utils/env";
@@ -19,7 +20,11 @@ import { jetstreamServiceFactory } from "./jetstream";
 
 const identityResolver = mock<IIdentityResolver>();
 const ownerDbRepository = ownerDbRepositoryFactory({ db });
-const accountPdsRepository = accountPdsRepositoryFactory({ identityResolver });
+const profileRecordParser = profileRecordParserFactory();
+const accountPdsRepository = accountPdsRepositoryFactory({
+  identityResolver,
+  profileRecordParser,
+});
 
 const jetstreamService = jetstreamServiceFactory({
   cursorRepository: cursorRepositoryFactory({ db }),
@@ -31,10 +36,10 @@ const jetstreamService = jetstreamServiceFactory({
   ownerService: ownerServiceFactory({
     ownerDbRepository,
     accountPdsRepository,
-    identityResolver,
   }),
   ownerDbRepository,
   identityResolver,
+  profileRecordParser,
 });
 
 const pool = new Pool({ connectionString: env.DATABASE_URL });
@@ -172,6 +177,18 @@ describe("jetstreamService", () => {
         description: null,
         avatarCid: null,
       });
+    });
+    test("ハンドルを解決できなかった場合、写しのハンドルをnullにしてプロフィールは更新する", async () => {
+      // arrange
+      const owner = await OwnerFactory.create({ handle: "old.example.com" });
+      identityResolver.resolve.mockResolvedValue(null);
+      // act
+      await jetstreamService.handleProfileCommit(
+        profileUpdateEvent(owner.did, profileRecord),
+      );
+      // assert
+      const actual = await ownerDbRepository.findByDid(asDid(owner.did));
+      expect(actual).toMatchObject({ handle: null, displayName: "新しい名前" });
     });
     test("持ち主の写しが無いアカウントのイベントは捨てる", async () => {
       // arrange

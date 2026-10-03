@@ -50,22 +50,14 @@ describe("ownerDbRepository", () => {
   });
 
   describe("save", () => {
-    const ownerToSave = {
-      did: "did:plc:abcdefghijklmnopqrstuvwx",
-      avatar: null,
-      avatarCid: null,
-      description: null,
-      displayName: null,
-      updatedAt: new Date("2024-02-01T00:00:00.000Z"),
-    };
+    const ownerToSave = Owner.create(asDid("did:plc:abcdefghijklmnopqrstuvwx"));
     test("他の持ち主が同じhandleを持っている場合、その持ち主のhandleをnullにする", async () => {
       // arrange
       const other = await OwnerFactory.create({ handle: "example.com" });
       // act
-      const actual = await ownerDbRepository.save({
-        ...ownerToSave,
-        handle: "example.com",
-      });
+      const actual = await ownerDbRepository.save(
+        ownerToSave.withHandle("example.com"),
+      );
       // assert
       expect(actual.handle).toBe("example.com");
       const otherActual = await ownerDbRepository.findByDid(asDid(other.did));
@@ -78,10 +70,7 @@ describe("ownerDbRepository", () => {
         handle: "example.com",
       });
       // act
-      const actual = await ownerDbRepository.save({
-        ...ownerToSave,
-        handle: null,
-      });
+      const actual = await ownerDbRepository.save(ownerToSave.withHandle(null));
       // assert
       expect(actual.handle).toBeNull();
     });
@@ -89,10 +78,7 @@ describe("ownerDbRepository", () => {
       // arrange
       await OwnerFactory.create({ handle: null });
       // act
-      const actual = await ownerDbRepository.save({
-        ...ownerToSave,
-        handle: null,
-      });
+      const actual = await ownerDbRepository.save(ownerToSave.withHandle(null));
       // assert
       expect(actual.handle).toBeNull();
     });

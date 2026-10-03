@@ -10,29 +10,19 @@ import { accountPdsRepositoryFactory } from "~/server/infrastructure/accountPdsR
 import { db } from "~/server/infrastructure/drizzle";
 import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
 import { ownerDbRepositoryFactory } from "~/server/infrastructure/ownerDbRepository";
+import { profileRecordParserFactory } from "~/server/infrastructure/profileRecordParser";
 
 import { ownerServiceFactory } from "./owner";
 
 const identityResolver = mock<IIdentityResolver>();
 const ownerDbRepository = ownerDbRepositoryFactory({ db });
-const accountPdsRepository = accountPdsRepositoryFactory({ identityResolver });
+const accountPdsRepository = accountPdsRepositoryFactory({
+  identityResolver,
+  profileRecordParser: profileRecordParserFactory(),
+});
 const ownerService = ownerServiceFactory({
   ownerDbRepository,
   accountPdsRepository,
-  identityResolver,
-});
-
-const profile = {
-  avatar: null,
-  avatarCid: "bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku",
-  description: "新しい説明",
-  displayName: "新しい名前",
-};
-
-const found = (did: string, handle: string | null) => ({
-  did: asDid(did),
-  pds: "https://pds.example.com",
-  handle,
 });
 
 const AVATAR_CID =
@@ -183,75 +173,6 @@ describe("ownerService", () => {
         avatarUrl: null,
       });
       expect(await ownerDbRepository.findByDid(asDid(did))).toBeNull();
-    });
-  });
-
-  describe("updateProfile", () => {
-    beforeEach(() => {
-      mockReset(identityResolver);
-    });
-    test("持ち主の写しがあれば、プロフィールを更新しハンドルを解決し直す", async () => {
-      // arrange
-      const owner = await OwnerFactory.create({
-        handle: "old.example.com",
-        displayName: "古い名前",
-        description: "古い説明",
-        avatar: "https://example.com/avatar.jpg",
-      });
-      identityResolver.resolve.mockResolvedValue(
-        found(owner.did, "new.example.com"),
-      );
-      // act
-      const actual = await ownerService.updateProfile({
-        did: asDid(owner.did),
-        profile,
-      });
-      // assert
-      expect(identityResolver.resolve).toHaveBeenCalledWith(owner.did);
-      expect(actual).toMatchObject({
-        did: owner.did,
-        handle: "new.example.com",
-        ...profile,
-      });
-      expect(await ownerDbRepository.findByDid(asDid(owner.did))).toEqual(
-        actual,
-      );
-    });
-    test("ハンドルの検証に失敗した場合、写しのハンドルをnullにする", async () => {
-      // arrange
-      const owner = await OwnerFactory.create({ handle: "old.example.com" });
-      identityResolver.resolve.mockResolvedValue(found(owner.did, null));
-      // act
-      const actual = await ownerService.updateProfile({
-        did: asDid(owner.did),
-        profile,
-      });
-      // assert
-      expect(actual?.handle).toBeNull();
-      expect(actual?.displayName).toBe("新しい名前");
-    });
-    test("DIDを解決できなかった場合、写しのハンドルをnullにしてプロフィールは更新する", async () => {
-      // arrange
-      const owner = await OwnerFactory.create({ handle: "old.example.com" });
-      identityResolver.resolve.mockResolvedValue(null);
-      // act
-      const actual = await ownerService.updateProfile({
-        did: asDid(owner.did),
-        profile,
-      });
-      // assert
-      expect(actual?.handle).toBeNull();
-      expect(actual?.displayName).toBe("新しい名前");
-    });
-    test("持ち主の写しが無い場合、何もせずnullを返す", async () => {
-      // arrange
-      const did = asDid("did:plc:notowner0000000000000000");
-      // act
-      const actual = await ownerService.updateProfile({ did, profile });
-      // assert
-      expect(actual).toBeNull();
-      expect(identityResolver.resolve).not.toHaveBeenCalled();
-      expect(await ownerDbRepository.findByDid(did)).toBeNull();
     });
   });
 });
