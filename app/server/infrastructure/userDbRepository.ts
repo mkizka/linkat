@@ -9,7 +9,6 @@ export type UserToSave = Omit<
   ConstructorParameters<typeof User>[0],
   "createdAt" | "handle"
 > & {
-  // undefinedのときは、既存の値を残す
   handle: string | null | undefined;
 };
 
@@ -40,7 +39,6 @@ export const userDbRepositoryFactory = ({
       .limit(1);
     return row ? new User(row) : null;
   },
-  // 写しのハンドルを書き込む処理は、すべてこれを通す
   async save(user) {
     const data = {
       did: user.did,
@@ -51,7 +49,6 @@ export const userDbRepositoryFactory = ({
       updatedAt: user.updatedAt,
     };
     return await db.transaction(async (tx) => {
-      // ハンドルは他のアカウントに移ることがあるため、同じハンドルを持つ他の行を先にnullにする
       if (user.handle) {
         await tx
           .update(userTable)
