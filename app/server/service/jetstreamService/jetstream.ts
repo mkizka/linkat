@@ -1,4 +1,5 @@
 import type {
+  AccountEvent,
   CommitCreateEvent,
   CommitUpdateEvent,
   IdentityEvent,
@@ -7,6 +8,7 @@ import { Jetstream } from "@skyware/jetstream";
 import WebSocket from "ws";
 
 import { Board } from "~/models/board";
+import type { AccountStatus } from "~/models/user";
 import type { ICursorRepository } from "~/server/infrastructure/cursorRepository";
 import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
 import type { IUserDbRepository } from "~/server/infrastructure/userDbRepository";
@@ -20,6 +22,23 @@ const logger = createLogger("jetstream");
 
 const CURSOR_SAVE_INTERVAL_MS = 30_000;
 
+const toAccountStatus = (account: AccountEvent["account"]): AccountStatus => {
+  if (account.active) {
+    return "active";
+  }
+  switch (account.status) {
+    case "takendown":
+    case "suspended":
+      return "suspended";
+    case "deleted":
+      return "deleted";
+    case "deactivated":
+      return "deactivated";
+    default:
+      return "inactive";
+  }
+};
+
 export interface IJetstreamService {
   handleCreateOrUpdate: (
     event:
@@ -27,6 +46,7 @@ export interface IJetstreamService {
       | CommitUpdateEvent<"blue.linkat.board">,
   ) => Promise<void>;
   handleIdentity: (event: IdentityEvent) => Promise<void>;
+  handleAccount: (event: AccountEvent) => Promise<void>;
   startJetstream: () => Promise<void>;
 }
 
@@ -94,6 +114,15 @@ export const jetstreamServiceFactory = ({
     );
   };
 
+  const handleAccount = async ({ account }: AccountEvent) => {
+    const status = toAccountStatus(account);
+    await userService.updateStatus(account.did, status);
+    logger.info(
+      { did: account.did, status },
+      "アカウントの状態を受け取りました",
+    );
+  };
+
   jetstream.on("open", () => {
     logger.info(`Jetstream subscription started to ${env.JETSTREAM_URL}`);
   });
@@ -112,6 +141,12 @@ export const jetstreamServiceFactory = ({
     });
   });
 
+  jetstream.on("account", (event) => {
+    handleAccount(event).catch((error: unknown) => {
+      logger.error(error, "アカウントの状態の更新に失敗しました");
+    });
+  });
+
   jetstream.onCreate("blue.linkat.board", handleCreateOrUpdate);
 
   jetstream.onUpdate("blue.linkat.board", handleCreateOrUpdate);
@@ -124,6 +159,7 @@ export const jetstreamServiceFactory = ({
   return {
     handleCreateOrUpdate,
     handleIdentity,
+    handleAccount,
     async startJetstream() {
       const savedCursor = await cursorRepository.load();
       if (savedCursor !== undefined) {

@@ -1,6 +1,6 @@
-import { isDid } from "@atproto/did";
+import { type Did, isDid } from "@atproto/did";
 
-import { User } from "~/models/user";
+import { type AccountStatus, User } from "~/models/user";
 import type { IAccountPdsRepository } from "~/server/infrastructure/accountPdsRepository";
 import type { IUserDbRepository } from "~/server/infrastructure/userDbRepository";
 
@@ -11,6 +11,7 @@ const isFresh = (user: User) =>
 
 export interface IUserRepository {
   findByHandleOrDid: (handleOrDid: string) => Promise<User | null>;
+  updateStatus: (did: Did, status: AccountStatus) => Promise<void>;
 }
 
 export const userRepositoryFactory = ({
@@ -41,9 +42,13 @@ export const userRepositoryFactory = ({
         description: profile?.description ?? null,
         displayName: profile?.displayName ?? null,
         handle: fetched.handle,
+        status: "active",
         createdAt: new Date(),
         updatedAt: new Date(),
       }),
     );
+  },
+  async updateStatus(did, status) {
+    await userDbRepository.updateStatus(did, status);
   },
 });

@@ -167,4 +167,53 @@ describe("jetstreamService", () => {
       expect(actual?.handle).toBeNull();
     });
   });
+
+  describe("handleAccount", () => {
+    const accountEvent = (
+      did: string,
+      account: { active: boolean; status?: string },
+    ) => ({
+      did: asDid(did),
+      time_us: Date.now() * 1000,
+      kind: EventType.Account,
+      account: {
+        did: asDid(did),
+        seq: 1,
+        time: new Date().toISOString(),
+        ...account,
+      },
+    });
+
+    test.each`
+      account                                        | expected
+      ${{ active: false, status: "takendown" }}      | ${"suspended"}
+      ${{ active: false, status: "suspended" }}      | ${"suspended"}
+      ${{ active: false, status: "deleted" }}        | ${"deleted"}
+      ${{ active: false, status: "deactivated" }}    | ${"deactivated"}
+      ${{ active: false, status: "desynchronized" }} | ${"inactive"}
+      ${{ active: false, status: "throttled" }}      | ${"inactive"}
+      ${{ active: false }}                           | ${"inactive"}
+      ${{ active: true }}                            | ${"active"}
+    `(
+      "$account.status を $expected として記録する",
+      async ({
+        account,
+        expected,
+      }: {
+        account: { active: boolean; status?: string };
+        expected: string;
+      }) => {
+        // arrange
+        const user = await UserFactory.create({ status: "deleted" });
+        // act
+        await jetstreamService.handleAccount(accountEvent(user.did, account));
+        // assert
+        const { rows } = await pool.query(
+          `SELECT status FROM "User" WHERE did = $1`,
+          [user.did],
+        );
+        expect(rows).toEqual([{ status: expected }]);
+      },
+    );
+  });
 });
