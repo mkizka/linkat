@@ -59,22 +59,6 @@ describe("identityResolver", () => {
       },
     });
   });
-  test("handleからDIDを解決して返す", async () => {
-    // arrange
-    mockPlc(() => HttpResponse.json(didDoc("alice.example.com")));
-    mockResolveHandle(() => HttpResponse.json({ did: DID }));
-    // act
-    const actual = await identityResolver.resolve("alice.example.com");
-    // assert
-    expect(actual).toEqual({
-      type: "found",
-      identity: {
-        did: DID,
-        pds: "https://pds.example.com",
-        handle: "alice.example.com",
-      },
-    });
-  });
   test("handleがhandle.invalidならnullにする", async () => {
     // arrange
     mockPlc(() => HttpResponse.json(didDoc("handle.invalid")));
@@ -146,22 +130,6 @@ describe("identityResolver", () => {
     mockPlc(() => HttpResponse.json({}, { status: 503 }));
     // act
     const actual = await identityResolver.resolve(DID);
-    // assert
-    expect(actual).toEqual({ type: "unavailable" });
-  });
-  test("handleを解決できなければnotFoundを返す", async () => {
-    // arrange
-    mockResolveHandle(unableToResolve);
-    // act
-    const actual = await identityResolver.resolve("notfound.example.com");
-    // assert
-    expect(actual).toEqual({ type: "notFound" });
-  });
-  test("handleの解決が一時的な障害で失敗したらunavailableを返す", async () => {
-    // arrange
-    mockResolveHandle(() => HttpResponse.json({}, { status: 500 }));
-    // act
-    const actual = await identityResolver.resolve("alice.example.com");
     // assert
     expect(actual).toEqual({ type: "unavailable" });
   });

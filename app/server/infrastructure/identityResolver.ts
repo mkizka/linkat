@@ -29,7 +29,7 @@ export type IdentityResolution =
   | { type: "unavailable" };
 
 export interface IIdentityResolver {
-  resolve: (handleOrDid: string) => Promise<IdentityResolution>;
+  resolve: (did: Did) => Promise<IdentityResolution>;
 }
 
 class HandleUnavailableError extends Error {}
@@ -85,18 +85,6 @@ export const identityResolverFactory = (): IIdentityResolver => {
       ? new XrpcHandleResolver(env.ATPROTO_HANDLE_RESOLVER_URL)
       : { resolve: resolveHandleWithNode };
 
-  const resolveDidFromHandle = async (
-    handle: string,
-  ): Promise<IdentityResolution | Did> => {
-    try {
-      const did = await handleResolver.resolve(handle.toLowerCase());
-      return did ?? { type: "notFound" };
-    } catch (error) {
-      logger.warn(error, "handleの解決に失敗しました");
-      return { type: "unavailable" };
-    }
-  };
-
   const verifyHandle = async (did: Did, didDoc: AtprotoDidDocument) => {
     const handle = extractHandle(didDoc);
     if (!handle) {
@@ -112,16 +100,9 @@ export const identityResolverFactory = (): IIdentityResolver => {
   };
 
   return {
-    async resolve(handleOrDid) {
-      let did: Did;
-      if (isAtprotoDid(handleOrDid)) {
-        did = handleOrDid;
-      } else {
-        const resolved = await resolveDidFromHandle(handleOrDid);
-        if (typeof resolved !== "string") {
-          return resolved;
-        }
-        did = resolved;
+    async resolve(did) {
+      if (!isAtprotoDid(did)) {
+        return { type: "notFound" };
       }
       let didDoc: AtprotoDidDocument;
       try {
