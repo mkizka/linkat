@@ -276,7 +276,9 @@ describe("jetstreamService", () => {
         identityEvent(user.did, "unverified.example.com"),
       );
       // assert
-      expect(identityResolver.resolve).toHaveBeenCalledWith(user.did);
+      expect(identityResolver.resolve).toHaveBeenCalledWith(user.did, {
+        noCache: true,
+      });
       const actual = await userDbRepository.findByDid(asDid(user.did));
       expect(actual?.handle).toBe("new.example.com");
       expect(actual?.displayName).toBe("表示名");
