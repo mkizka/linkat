@@ -10,7 +10,6 @@ import type { IIdentityResolver } from "~/server/infrastructure/identityResolver
 import { profileFetcherFactory } from "~/server/infrastructure/profileFetcher";
 import { profileRecordParserFactory } from "~/server/infrastructure/profileRecordParser";
 import { userDbRepositoryFactory } from "~/server/infrastructure/userDbRepository";
-import { userRepositoryFactory } from "~/server/infrastructure/userRepository";
 
 import { userServiceFactory } from "./user";
 
@@ -22,11 +21,6 @@ const profileFetcher = profileFetcherFactory({
 
 const userService = userServiceFactory({
   handleIndex: handleIndexFactory({ db }),
-  userRepository: userRepositoryFactory({
-    userDbRepository,
-    profileFetcher,
-    identityResolver,
-  }),
   userDbRepository,
   profileFetcher,
   identityResolver,
@@ -63,6 +57,27 @@ describe("userService", () => {
       const actual = await userService.findUser({ handleOrDid: "example.com" });
       // assert
       expect(actual).toEqual(user);
+    });
+    test("写しが古くても、ハンドルを解決せずに写しをそのまま返す", async () => {
+      // arrange
+      const user = await UserFactory.create({
+        updatedAt: new Date("2000-01-01T00:00:00Z"),
+      });
+      // act
+      const actual = await userService.findUser({ handleOrDid: user.did });
+      // assert
+      expect(actual).toEqual(user);
+      expect(identityResolver.resolve).not.toHaveBeenCalled();
+    });
+    test("写しに無いDIDはnullを返し、写しを作らない", async () => {
+      // arrange
+      const did = asDid("did:plc:notowner0000000000000000");
+      // act
+      const actual = await userService.findUser({ handleOrDid: did });
+      // assert
+      expect(actual).toBeNull();
+      expect(identityResolver.resolve).not.toHaveBeenCalled();
+      expect(await userDbRepository.findByDid(did)).toBeNull();
     });
     test("写しに無いhandleはハンドルを解決せずにnullを返す", async () => {
       // arrange

@@ -17,5 +17,6 @@ export default defineConfig(base, {
         port: 3000,
         stdout: "pipe",
         reuseExistingServer: !process.env.CI,
+        env: { DISABLE_JETSTREAM: "true" },
       },
 });
