@@ -15,12 +15,12 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
   if (!agent) {
     throw redirect("/login");
   }
-  return { user: await di.userService.findEditor(agent) };
+  return { editor: await di.userService.findEditor(agent) };
 };
 
 export default function SettingsPage({ loaderData }: Route.ComponentProps) {
   const { t } = useTranslation();
-  const { user } = loaderData;
+  const { editor } = loaderData;
 
   return (
     <>
@@ -36,7 +36,7 @@ export default function SettingsPage({ loaderData }: Route.ComponentProps) {
             <h2 className="border-b-2 border-gray-200 pb-1 font-bold">
               {t("settings.header-board")}
             </h2>
-            <DeleteBoardButton handle={user.handleOrDid} />
+            <DeleteBoardButton handle={editor.handleOrDid} />
             <p className="text-gray-400">
               {t("settings.delete-board-warning")}
             </p>

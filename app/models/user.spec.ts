@@ -111,14 +111,14 @@ describe("isHidden", () => {
 describe("withProfile", () => {
   test("nullを渡すとプロフィールを空にし、ハンドルと状態は残す", () => {
     // arrange
-    const user = createUser({
+    const owner = createUser({
       avatarCid: "bafkreidummy",
       description: "説明",
       displayName: "Alice",
       status: "suspended",
     });
     // act
-    const actual = user.withProfile(null);
+    const actual = owner.withProfile(null);
     // assert
     expect(actual).toMatchObject({
       avatar: null,

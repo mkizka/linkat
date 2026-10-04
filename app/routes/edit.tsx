@@ -84,19 +84,19 @@ export async function loader({ request }: Route.LoaderArgs) {
   if (!agent) {
     throw redirect("/login");
   }
-  const [user, board] = await Promise.all([
+  const [editor, board] = await Promise.all([
     di.userService.findEditor(agent),
     di.boardService.findBoard(agent.assertDid),
   ]);
   return {
-    user,
+    editor,
     board: board && { cards: board.cards },
-    url: `${env.PUBLIC_URL}/${user.handleOrDid}`,
+    url: `${env.PUBLIC_URL}/${editor.handleOrDid}`,
   };
 }
 
 export default function Index({ loaderData }: Route.ComponentProps) {
-  const { user, board, url } = loaderData;
+  const { editor, board, url } = loaderData;
   const { t } = useTranslation();
   const umami = useUmami();
 
@@ -111,7 +111,7 @@ export default function Index({ loaderData }: Route.ComponentProps) {
     ({ currentLocation, nextLocation, historyAction }) =>
       // 保存ボタンを押したときの移動以外のとき
       (currentLocation.pathname !== nextLocation.pathname &&
-        nextLocation.pathname !== `/${user.handleOrDid}`) ||
+        nextLocation.pathname !== `/${editor.handleOrDid}`) ||
       // /alice.testから/editに移動して戻るとき
       // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
       historyAction === "POP",
@@ -134,7 +134,7 @@ export default function Index({ loaderData }: Route.ComponentProps) {
 
   return (
     <Main>
-      <BoardViewer user={user} board={board} url={url} editable />
+      <BoardViewer user={editor} board={board} url={url} editable />
     </Main>
   );
 }

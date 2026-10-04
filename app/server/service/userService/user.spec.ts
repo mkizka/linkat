@@ -101,11 +101,11 @@ describe("userService", () => {
   describe("findEditor", () => {
     test("持ち主の写しがあれば、それを返す", async () => {
       // arrange
-      const user = await UserFactory.create();
+      const owner = await UserFactory.create();
       // act
-      const actual = await userService.findEditor(createAgent(user.did));
+      const actual = await userService.findEditor(createAgent(owner.did));
       // assert
-      expect(actual).toEqual(new User(user).toView());
+      expect(actual).toEqual(new User(owner).toView());
       expect(identityResolver.resolve).not.toHaveBeenCalled();
     });
     test("写しが無ければ、DIDとセッションのPDSから取得したプロフィールを返し、保存しない", async () => {
