@@ -4,9 +4,9 @@ import { mock } from "vitest-mock-extended";
 
 import { server } from "~/mocks/server";
 import { UserFactory } from "~/server/factories/user";
-import { accountPdsRepositoryFactory } from "~/server/infrastructure/accountPdsRepository";
 import { db } from "~/server/infrastructure/drizzle";
 import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
+import { profilePdsRepositoryFactory } from "~/server/infrastructure/profilePdsRepository";
 import { profileRecordParserFactory } from "~/server/infrastructure/profileRecordParser";
 import { userDbRepositoryFactory } from "~/server/infrastructure/userDbRepository";
 
@@ -16,10 +16,10 @@ const identityResolver = mock<IIdentityResolver>();
 
 const userRepository = userRepositoryFactory({
   userDbRepository: userDbRepositoryFactory({ db }),
-  accountPdsRepository: accountPdsRepositoryFactory({
-    identityResolver,
+  profilePdsRepository: profilePdsRepositoryFactory({
     profileRecordParser: profileRecordParserFactory(),
   }),
+  identityResolver,
 });
 
 const AVATAR_CID =

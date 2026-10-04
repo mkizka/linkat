@@ -1,8 +1,10 @@
 import { type Did, isDid } from "@atproto/did";
 
+import { LinkatAgent } from "~/libs/agent";
 import { type AccountStatus, User } from "~/models/user";
-import type { IAccountPdsRepository } from "~/server/infrastructure/accountPdsRepository";
 import type { IHandleIndex } from "~/server/infrastructure/handleIndex";
+import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
+import type { IProfilePdsRepository } from "~/server/infrastructure/profilePdsRepository";
 import type { IUserDbRepository } from "~/server/infrastructure/userDbRepository";
 import type { IUserRepository } from "~/server/infrastructure/userRepository";
 
@@ -16,12 +18,14 @@ export const userServiceFactory = ({
   handleIndex,
   userRepository,
   userDbRepository,
-  accountPdsRepository,
+  profilePdsRepository,
+  identityResolver,
 }: {
   handleIndex: IHandleIndex;
   userRepository: IUserRepository;
   userDbRepository: IUserDbRepository;
-  accountPdsRepository: IAccountPdsRepository;
+  profilePdsRepository: IProfilePdsRepository;
+  identityResolver: IIdentityResolver;
 }): IUserService => ({
   async findUser({ handleOrDid }) {
     if (!handleOrDid.includes(".") && !isDid(handleOrDid)) {
@@ -33,13 +37,19 @@ export const userServiceFactory = ({
     return did && (await userRepository.findByDid(did));
   },
   async syncOwner(did) {
-    const fetched = await accountPdsRepository.findByDid(did);
+    const identity = await identityResolver.resolve(did);
+    const profile =
+      identity &&
+      (await profilePdsRepository.fetchProfile(
+        LinkatAgent.credential(identity.pds),
+        did,
+      ));
     let owner = (await userDbRepository.findByDid(did)) ?? User.create(did);
-    if (fetched?.profile) {
-      owner = owner.withProfile(fetched.profile);
+    if (profile) {
+      owner = owner.withProfile(profile);
     }
     return await userDbRepository.save(
-      owner.withHandle(fetched?.handle ?? null),
+      owner.withHandle(identity?.handle ?? null),
     );
   },
   async updateStatus(did, status) {
