@@ -1,6 +1,7 @@
 import { type Did, isDid } from "@atproto/did";
 
 import type { AccountStatus, User } from "~/models/user";
+import type { IHandleIndex } from "~/server/infrastructure/handleIndex";
 import type { IUserRepository } from "~/server/infrastructure/userRepository";
 
 export interface IUserService {
@@ -9,8 +10,10 @@ export interface IUserService {
 }
 
 export const userServiceFactory = ({
+  handleIndex,
   userRepository,
 }: {
+  handleIndex: IHandleIndex;
   userRepository: IUserRepository;
 }): IUserService => ({
   async findUser({ handleOrDid }) {
@@ -19,7 +22,7 @@ export const userServiceFactory = ({
     }
     const did = isDid(handleOrDid)
       ? handleOrDid
-      : await userRepository.findDidByHandle(handleOrDid);
+      : await handleIndex.findDid(handleOrDid);
     return did && (await userRepository.findByDid(did));
   },
   async updateStatus(did, status) {
