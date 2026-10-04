@@ -26,7 +26,6 @@ const identityResolver = mock<IIdentityResolver>();
 const userDbRepository = userDbRepositoryFactory({ db });
 const profileRecordParser = profileRecordParserFactory();
 const accountPdsRepository = accountPdsRepositoryFactory({
-  identityResolver,
   profileRecordParser,
 });
 
@@ -40,9 +39,11 @@ const jetstreamService = jetstreamServiceFactory({
     userRepository: userRepositoryFactory({
       userDbRepository,
       accountPdsRepository,
+      identityResolver,
     }),
     userDbRepository,
     accountPdsRepository,
+    identityResolver,
   }),
   userDbRepository,
   identityResolver,

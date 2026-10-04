@@ -19,7 +19,6 @@ import { userServiceFactory } from "./user";
 const identityResolver = mock<IIdentityResolver>();
 const userDbRepository = userDbRepositoryFactory({ db });
 const accountPdsRepository = accountPdsRepositoryFactory({
-  identityResolver,
   profileRecordParser: profileRecordParserFactory(),
 });
 const userService = userServiceFactory({
@@ -27,9 +26,11 @@ const userService = userServiceFactory({
   userRepository: userRepositoryFactory({
     userDbRepository,
     accountPdsRepository,
+    identityResolver,
   }),
   userDbRepository,
   accountPdsRepository,
+  identityResolver,
 });
 
 const AVATAR_CID =

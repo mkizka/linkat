@@ -1,7 +1,9 @@
 import type { Did } from "@atproto/did";
 
+import { LinkatAgent } from "~/libs/agent";
 import { type AccountStatus, User } from "~/models/user";
 import type { IAccountPdsRepository } from "~/server/infrastructure/accountPdsRepository";
+import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
 import type { IUserDbRepository } from "~/server/infrastructure/userDbRepository";
 
 const REFETCH_INTERVAL_MS = 10 * 60 * 1000;
@@ -17,20 +19,26 @@ export interface IUserRepository {
 export const userRepositoryFactory = ({
   userDbRepository,
   accountPdsRepository,
+  identityResolver,
 }: {
   userDbRepository: IUserDbRepository;
   accountPdsRepository: IAccountPdsRepository;
+  identityResolver: IIdentityResolver;
 }): IUserRepository => ({
   async findByDid(did) {
     const cached = await userDbRepository.findByDid(did);
     if (cached && isFresh(cached)) {
       return cached;
     }
-    const fetched = await accountPdsRepository.findByDid(did);
-    if (!fetched) {
+    const identity = await identityResolver.resolve(did);
+    if (!identity) {
       return cached;
     }
-    const profile = fetched.profile ?? cached;
+    const profile =
+      (await accountPdsRepository.fetchProfile(
+        LinkatAgent.credential(identity.pds),
+        did,
+      )) ?? cached;
     return await userDbRepository.save(
       new User({
         did,
@@ -38,7 +46,7 @@ export const userRepositoryFactory = ({
         avatarCid: profile?.avatarCid ?? null,
         description: profile?.description ?? null,
         displayName: profile?.displayName ?? null,
-        handle: fetched.handle,
+        handle: identity.handle,
         status: "active",
         createdAt: new Date(),
         updatedAt: new Date(),

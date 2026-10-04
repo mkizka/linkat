@@ -1,9 +1,10 @@
 import { type Did, isDid } from "@atproto/did";
 
-import type { LinkatAgent } from "~/libs/agent";
+import { LinkatAgent } from "~/libs/agent";
 import { type AccountStatus, User, type UserView } from "~/models/user";
 import type { IAccountPdsRepository } from "~/server/infrastructure/accountPdsRepository";
 import type { IHandleIndex } from "~/server/infrastructure/handleIndex";
+import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
 import type { IUserDbRepository } from "~/server/infrastructure/userDbRepository";
 import type { IUserRepository } from "~/server/infrastructure/userRepository";
 
@@ -19,11 +20,13 @@ export const userServiceFactory = ({
   userRepository,
   userDbRepository,
   accountPdsRepository,
+  identityResolver,
 }: {
   handleIndex: IHandleIndex;
   userRepository: IUserRepository;
   userDbRepository: IUserDbRepository;
   accountPdsRepository: IAccountPdsRepository;
+  identityResolver: IIdentityResolver;
 }): IUserService => ({
   async findUser({ handleOrDid }) {
     if (!handleOrDid.includes(".") && !isDid(handleOrDid)) {
@@ -40,17 +43,23 @@ export const userServiceFactory = ({
     if (owner) {
       return owner.toView();
     }
-    const profile = await accountPdsRepository.fetchSessionProfile(agent);
+    const profile = await accountPdsRepository.fetchProfile(agent, did);
     return User.create(did).withProfile(profile).toView();
   },
   async syncOwner(did) {
-    const fetched = await accountPdsRepository.findByDid(did);
+    const identity = await identityResolver.resolve(did);
+    const profile =
+      identity &&
+      (await accountPdsRepository.fetchProfile(
+        LinkatAgent.credential(identity.pds),
+        did,
+      ));
     let owner = (await userDbRepository.findByDid(did)) ?? User.create(did);
-    if (fetched?.profile) {
-      owner = owner.withProfile(fetched.profile);
+    if (profile) {
+      owner = owner.withProfile(profile);
     }
     return await userDbRepository.save(
-      owner.withHandle(fetched?.handle ?? null),
+      owner.withHandle(identity?.handle ?? null),
     );
   },
   async updateStatus(did, status) {

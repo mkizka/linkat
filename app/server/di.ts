@@ -40,12 +40,12 @@ export const di = await createRegistry()
   )
   .service(
     "accountPdsRepository",
-    ["identityResolver", "profileRecordParser"],
+    ["profileRecordParser"],
     accountPdsRepositoryFactory,
   )
   .service(
     "userRepository",
-    ["userDbRepository", "accountPdsRepository"],
+    ["userDbRepository", "accountPdsRepository", "identityResolver"],
     userRepositoryFactory,
   )
   .service("atpassportClient", atpassportClientFactory)
@@ -57,6 +57,7 @@ export const di = await createRegistry()
       "userRepository",
       "userDbRepository",
       "accountPdsRepository",
+      "identityResolver",
     ],
     userServiceFactory,
   )

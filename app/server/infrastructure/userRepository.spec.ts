@@ -17,9 +17,9 @@ const identityResolver = mock<IIdentityResolver>();
 const userRepository = userRepositoryFactory({
   userDbRepository: userDbRepositoryFactory({ db }),
   accountPdsRepository: accountPdsRepositoryFactory({
-    identityResolver,
     profileRecordParser: profileRecordParserFactory(),
   }),
+  identityResolver,
 });
 
 const AVATAR_CID =
