@@ -1,5 +1,6 @@
 import { TestNetwork } from "@atproto/dev-env";
 import { PostgreSqlContainer } from "@testcontainers/postgresql";
+import { GenericContainer, Wait } from "testcontainers";
 
 import { PORTS } from "./constants";
 
@@ -42,5 +43,17 @@ await agent.com.atproto.repo.createRecord({
     },
   },
 });
+
+await new GenericContainer("ghcr.io/bluesky-social/jetstream:v0.3.3")
+  .withNetworkMode("host")
+  .withEnvironment({
+    JETSTREAM_ADDR: `:${PORTS.jetstream}`,
+    JETSTREAM_RELAY_URL: `http://localhost:${PORTS.pds}`,
+    JETSTREAM_PLC_URL: `http://localhost:${PORTS.plc}`,
+    JETSTREAM_DATA_DIR: "/tmp/jetstream",
+    JETSTREAM_BACKFILL_REPOS: agent.assertDid,
+  })
+  .withWaitStrategy(Wait.forLogMessage(/steady-state consumer running/))
+  .start();
 
 process.stdout.write("atproto network is ready\n");

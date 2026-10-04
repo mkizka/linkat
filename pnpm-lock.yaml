@@ -407,6 +407,9 @@ importers:
       tailwindcss-animate:
         specifier: 1.0.7
         version: 1.0.7(tailwindcss@3.4.19(tsx@4.23.15)(yaml@2.9.1))
+      testcontainers:
+        specifier: 12.2.0
+        version: 12.2.0(supports-color@8.1.1)
       tsx:
         specifier: 4.23.15
         version: 4.23.15
@@ -10117,13 +10120,13 @@ snapshots:
 
   '@types/docker-modem@3.0.6':
     dependencies:
-      '@types/node': 24.13.6
+      '@types/node': 24.19.0
       '@types/ssh2': 1.15.6
 
   '@types/dockerode@4.0.1':
     dependencies:
       '@types/docker-modem': 3.0.6
-      '@types/node': 24.13.6
+      '@types/node': 24.19.0
       '@types/ssh2': 1.15.6
 
   '@types/esrecurse@4.3.1': {}
@@ -10220,11 +10223,11 @@ snapshots:
 
   '@types/ssh2-streams@0.1.13':
     dependencies:
-      '@types/node': 24.13.6
+      '@types/node': 24.19.0
 
   '@types/ssh2@0.5.52':
     dependencies:
-      '@types/node': 24.13.6
+      '@types/node': 24.19.0
       '@types/ssh2-streams': 0.1.13
 
   '@types/ssh2@1.15.6':
