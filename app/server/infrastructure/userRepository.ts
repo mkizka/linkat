@@ -2,8 +2,8 @@ import type { Did } from "@atproto/did";
 
 import { LinkatAgent } from "~/libs/agent";
 import { type AccountStatus, User } from "~/models/user";
-import type { IAccountPdsRepository } from "~/server/infrastructure/accountPdsRepository";
 import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
+import type { IProfilePdsRepository } from "~/server/infrastructure/profilePdsRepository";
 import type { IUserDbRepository } from "~/server/infrastructure/userDbRepository";
 
 const REFETCH_INTERVAL_MS = 10 * 60 * 1000;
@@ -18,11 +18,11 @@ export interface IUserRepository {
 
 export const userRepositoryFactory = ({
   userDbRepository,
-  accountPdsRepository,
+  profilePdsRepository,
   identityResolver,
 }: {
   userDbRepository: IUserDbRepository;
-  accountPdsRepository: IAccountPdsRepository;
+  profilePdsRepository: IProfilePdsRepository;
   identityResolver: IIdentityResolver;
 }): IUserRepository => ({
   async findByDid(did) {
@@ -35,7 +35,7 @@ export const userRepositoryFactory = ({
       return cached;
     }
     const profile =
-      (await accountPdsRepository.fetchProfile(
+      (await profilePdsRepository.fetchProfile(
         LinkatAgent.credential(identity.pds),
         did,
       )) ?? cached;

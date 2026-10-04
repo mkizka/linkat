@@ -2,9 +2,9 @@ import { type Did, isDid } from "@atproto/did";
 
 import { LinkatAgent } from "~/libs/agent";
 import { type AccountStatus, User, type UserView } from "~/models/user";
-import type { IAccountPdsRepository } from "~/server/infrastructure/accountPdsRepository";
 import type { IHandleIndex } from "~/server/infrastructure/handleIndex";
 import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
+import type { IProfilePdsRepository } from "~/server/infrastructure/profilePdsRepository";
 import type { IUserDbRepository } from "~/server/infrastructure/userDbRepository";
 import type { IUserRepository } from "~/server/infrastructure/userRepository";
 
@@ -19,13 +19,13 @@ export const userServiceFactory = ({
   handleIndex,
   userRepository,
   userDbRepository,
-  accountPdsRepository,
+  profilePdsRepository,
   identityResolver,
 }: {
   handleIndex: IHandleIndex;
   userRepository: IUserRepository;
   userDbRepository: IUserDbRepository;
-  accountPdsRepository: IAccountPdsRepository;
+  profilePdsRepository: IProfilePdsRepository;
   identityResolver: IIdentityResolver;
 }): IUserService => ({
   async findUser({ handleOrDid }) {
@@ -43,14 +43,14 @@ export const userServiceFactory = ({
     if (owner) {
       return owner.toView();
     }
-    const profile = await accountPdsRepository.fetchProfile(agent, did);
+    const profile = await profilePdsRepository.fetchProfile(agent, did);
     return User.create(did).withProfile(profile).toView();
   },
   async syncOwner(did) {
     const identity = await identityResolver.resolve(did);
     const profile =
       identity &&
-      (await accountPdsRepository.fetchProfile(
+      (await profilePdsRepository.fetchProfile(
         LinkatAgent.credential(identity.pds),
         did,
       ));

@@ -6,10 +6,10 @@ import { LinkatAgent } from "~/libs/agent";
 import { server } from "~/mocks/server";
 import { User } from "~/models/user";
 import { UserFactory } from "~/server/factories/user";
-import { accountPdsRepositoryFactory } from "~/server/infrastructure/accountPdsRepository";
 import { db } from "~/server/infrastructure/drizzle";
 import { handleIndexFactory } from "~/server/infrastructure/handleIndex";
 import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
+import { profilePdsRepositoryFactory } from "~/server/infrastructure/profilePdsRepository";
 import { profileRecordParserFactory } from "~/server/infrastructure/profileRecordParser";
 import { userDbRepositoryFactory } from "~/server/infrastructure/userDbRepository";
 import { userRepositoryFactory } from "~/server/infrastructure/userRepository";
@@ -18,18 +18,18 @@ import { userServiceFactory } from "./user";
 
 const identityResolver = mock<IIdentityResolver>();
 const userDbRepository = userDbRepositoryFactory({ db });
-const accountPdsRepository = accountPdsRepositoryFactory({
+const profilePdsRepository = profilePdsRepositoryFactory({
   profileRecordParser: profileRecordParserFactory(),
 });
 const userService = userServiceFactory({
   handleIndex: handleIndexFactory({ db }),
   userRepository: userRepositoryFactory({
     userDbRepository,
-    accountPdsRepository,
+    profilePdsRepository,
     identityResolver,
   }),
   userDbRepository,
-  accountPdsRepository,
+  profilePdsRepository,
   identityResolver,
 });
 
