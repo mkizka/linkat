@@ -12,9 +12,7 @@ import { ownerRepositoryFactory } from "~/server/infrastructure/ownerRepository"
 
 import {
   BoardDbDeleteError,
-  BoardDbSaveError,
   BoardPdsDeleteError,
-  BoardPdsSaveError,
   boardServiceFactory,
 } from "./board";
 
@@ -96,7 +94,7 @@ describe("boardService", () => {
     const createAgent = (did: string) =>
       new LinkatAgent({ did: asDid(did), service: "https://pds.example.com" });
 
-    test("PDSに保存してからDBに保存する", async () => {
+    test("PDSに保存し、DBには保存しない", async () => {
       // arrange
       const owner = await OwnerFactory.create();
       const board = new Board(owner.did, dummyCards);
@@ -119,9 +117,9 @@ describe("boardService", () => {
         rkey: "self",
         record: { cards: dummyCards },
       });
-      expect(await boardRepository.find(asDid(owner.did))).toEqual(board);
+      expect(await boardRepository.find(asDid(owner.did))).toBeNull();
     });
-    test("PDSへの保存に失敗したらDBに保存せずBoardPdsSaveErrorを投げる", async () => {
+    test("PDSへの保存に失敗したら例外を投げる", async () => {
       // arrange
       const owner = await OwnerFactory.create();
       server.use(
@@ -135,28 +133,7 @@ describe("boardService", () => {
         new Board(owner.did, dummyCards),
       );
       // assert
-      await expect(actual).rejects.toThrow(BoardPdsSaveError);
-      expect(await boardRepository.find(asDid(owner.did))).toBeNull();
-    });
-    test("DBへの保存に失敗したらBoardDbSaveErrorを投げる", async () => {
-      // arrange
-      const owner = await OwnerFactory.create();
-      server.use(
-        http.post(putRecordUrl, () =>
-          HttpResponse.json({
-            uri: dummyBoardRecord.uri,
-            cid: dummyBoardRecord.cid,
-          }),
-        ),
-      );
-      vi.spyOn(boardRepository, "save").mockRejectedValueOnce(new Error());
-      // act
-      const actual = boardService.publishBoard(
-        createAgent(owner.did),
-        new Board(owner.did, dummyCards),
-      );
-      // assert
-      await expect(actual).rejects.toThrow(BoardDbSaveError);
+      await expect(actual).rejects.toThrow();
     });
   });
 

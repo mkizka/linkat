@@ -8,10 +8,6 @@ import { BoardViewer } from "~/features/board/board-viewer";
 import { useUmami } from "~/hooks/useUmami";
 import { getInstance } from "~/i18n/i18n";
 import { di } from "~/server/di";
-import {
-  BoardDbSaveError,
-  BoardPdsSaveError,
-} from "~/server/service/boardService/board";
 import { env } from "~/utils/env";
 import { createLogger } from "~/utils/logger";
 
@@ -54,29 +50,28 @@ export async function action({ request, context }: Route.ActionArgs) {
     });
     return null;
   }
-  const owner = await di.ownerService.syncOwner(agent.assertDid);
   try {
     await di.boardService.publishBoard(agent, parsedBoard);
   } catch (error) {
-    if (error instanceof BoardPdsSaveError) {
-      logger.error(error, error.message);
-      setToast(context, {
-        message: i18next.t("edit.save-board-error-message"),
-        type: "error",
-      });
-      return null;
-    }
-    if (error instanceof BoardDbSaveError) {
-      logger.error(error, error.message);
-      setToast(context, {
-        message: i18next.t("edit.save-delayed-warning-message"),
-        type: "warning",
-      });
-      return redirect(`/${owner.toView().handleOrDid}`);
-    }
-    throw error;
+    logger.error(error, "PDSへのボードの保存に失敗しました");
+    setToast(context, {
+      message: i18next.t("edit.save-board-error-message"),
+      type: "error",
+    });
+    return null;
   }
-  return redirect(`/${owner.toView().handleOrDid}?success`);
+  try {
+    const owner = await di.ownerService.syncOwner(agent.assertDid);
+    await di.boardService.saveBoard(parsedBoard);
+    return redirect(`/${owner.toView().handleOrDid}?success`);
+  } catch (error) {
+    logger.error(error, "DBへのボードの保存に失敗しました");
+    setToast(context, {
+      message: i18next.t("edit.save-delayed-warning-message"),
+      type: "warning",
+    });
+    return redirect(`/${agent.assertDid}`);
+  }
 }
 
 export async function loader({ request }: Route.LoaderArgs) {
