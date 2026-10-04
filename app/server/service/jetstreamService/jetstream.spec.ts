@@ -15,7 +15,6 @@ import type { IIdentityResolver } from "~/server/infrastructure/identityResolver
 import { profileFetcherFactory } from "~/server/infrastructure/profileFetcher";
 import { profileRecordParserFactory } from "~/server/infrastructure/profileRecordParser";
 import { userDbRepositoryFactory } from "~/server/infrastructure/userDbRepository";
-import { userRepositoryFactory } from "~/server/infrastructure/userRepository";
 import { boardServiceFactory } from "~/server/service/boardService/board";
 import { userServiceFactory } from "~/server/service/userService/user";
 import { env } from "~/utils/env";
@@ -36,11 +35,6 @@ const jetstreamService = jetstreamServiceFactory({
   }),
   userService: userServiceFactory({
     handleIndex: handleIndexFactory({ db }),
-    userRepository: userRepositoryFactory({
-      userDbRepository,
-      profileFetcher,
-      identityResolver,
-    }),
     userDbRepository,
     profileFetcher,
     identityResolver,

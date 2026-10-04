@@ -15,7 +15,6 @@ import {
 import { profileFetcherFactory } from "~/server/infrastructure/profileFetcher";
 import { profileRecordParserFactory } from "~/server/infrastructure/profileRecordParser";
 import { userDbRepositoryFactory } from "~/server/infrastructure/userDbRepository";
-import { userRepositoryFactory } from "~/server/infrastructure/userRepository";
 import { atpassportServiceFactory } from "~/server/service/atpassportService/atpassport";
 import { authServiceFactory } from "~/server/service/authService/auth";
 import { boardServiceFactory } from "~/server/service/boardService/board";
@@ -40,22 +39,11 @@ export const di = await createRegistry()
     oauthClientFactory,
   )
   .service("profileFetcher", ["profileRecordParser"], profileFetcherFactory)
-  .service(
-    "userRepository",
-    ["userDbRepository", "profileFetcher", "identityResolver"],
-    userRepositoryFactory,
-  )
   .service("atpassportClient", atpassportClientFactory)
   .service("cookieSessionStorage", cookieSessionStorageFactory)
   .service(
     "userService",
-    [
-      "handleIndex",
-      "userRepository",
-      "userDbRepository",
-      "profileFetcher",
-      "identityResolver",
-    ],
+    ["handleIndex", "userDbRepository", "profileFetcher", "identityResolver"],
     userServiceFactory,
   )
   .service(
