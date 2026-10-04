@@ -8,10 +8,10 @@ import {
   uniqueIndex,
 } from "drizzle-orm/pg-core";
 
-import type { AccountStatus } from "~/models/user";
+import type { AccountStatus } from "~/models/owner";
 
-export const userTable = pgTable(
-  "User",
+export const ownerTable = pgTable(
+  "Owner",
   {
     did: text().primaryKey(),
     avatar: text(),
@@ -23,19 +23,19 @@ export const userTable = pgTable(
     createdAt: timestamp({ precision: 3 }).notNull().defaultNow(),
     updatedAt: timestamp({ precision: 3 }).notNull(),
   },
-  (table) => [uniqueIndex("User_handle_key").on(table.handle)],
+  (table) => [uniqueIndex("Owner_handle_key").on(table.handle)],
 );
 
 export const boardTable = pgTable(
   "Board",
   {
     id: serial().primaryKey(),
-    userDid: text().notNull(),
+    ownerDid: text().notNull(),
     record: text().notNull(),
     createdAt: timestamp({ precision: 3 }).notNull().defaultNow(),
     updatedAt: timestamp({ precision: 3 }).notNull(),
   },
-  (table) => [uniqueIndex("Board_userDid_key").on(table.userDid)],
+  (table) => [uniqueIndex("Board_ownerDid_key").on(table.ownerDid)],
 );
 
 export const authSessionTable = pgTable("AuthSession", {

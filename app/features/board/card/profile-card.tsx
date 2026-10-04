@@ -8,7 +8,7 @@ import { Button } from "~/components/button";
 import { Card } from "~/components/card";
 import { BlueskyIcon } from "~/components/icons/bluesky";
 import { useUmami } from "~/hooks/useUmami";
-import type { UserView } from "~/models/user";
+import type { OwnerView } from "~/models/owner";
 
 function Avatar({ avatar }: { avatar: string }) {
   return (
@@ -31,18 +31,18 @@ function AvatarPlaceholder() {
 }
 
 export type ProfileCardProps = {
-  user: UserView;
+  owner: OwnerView;
   url: string;
   showEditButton?: boolean;
 };
 
-export function ProfileCard({ user, url, showEditButton }: ProfileCardProps) {
+export function ProfileCard({ owner, url, showEditButton }: ProfileCardProps) {
   const [loading, setLoading] = useState(false);
   const { t } = useTranslation();
   const umami = useUmami();
   const shareText = t("profile-card.share-text", {
     url,
-    displayName: user.displayName,
+    displayName: owner.displayName,
   });
 
   const handlePost = async () => {
@@ -62,8 +62,8 @@ export function ProfileCard({ user, url, showEditButton }: ProfileCardProps) {
     <Card>
       <div className="card-body gap-2">
         <div className="flex items-center">
-          {user.avatarUrl ? (
-            <Avatar avatar={user.avatarUrl} />
+          {owner.avatarUrl ? (
+            <Avatar avatar={owner.avatarUrl} />
           ) : (
             <AvatarPlaceholder />
           )}
@@ -80,11 +80,11 @@ export function ProfileCard({ user, url, showEditButton }: ProfileCardProps) {
             ) : (
               <a
                 className="btn-bluesky btn text-white"
-                href={`https://bsky.app/profile/${user.handleOrDid}`}
+                href={`https://bsky.app/profile/${owner.handleOrDid}`}
                 target="_blank"
                 rel="noreferrer"
                 data-umami-event="click-bsky-link"
-                data-umami-event-handle={user.handleOrDid}
+                data-umami-event-handle={owner.handleOrDid}
               >
                 <BlueskyIcon className="size-6" />
                 Bluesky
@@ -100,8 +100,8 @@ export function ProfileCard({ user, url, showEditButton }: ProfileCardProps) {
           </div>
         </div>
         <div>
-          <h2 className="text-xl font-bold">{user.displayName}</h2>
-          <p className="text-gray-500">{user.displayHandle}</p>
+          <h2 className="text-xl font-bold">{owner.displayName}</h2>
+          <p className="text-gray-500">{owner.displayHandle}</p>
         </div>
       </div>
     </Card>

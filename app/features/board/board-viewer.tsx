@@ -15,7 +15,7 @@ import type { CardFormPayload } from "./form/card-form-provider";
 import { CardFormProvider } from "./form/card-form-provider";
 
 type Props = {
-  user: ProfileCardProps["user"];
+  owner: ProfileCardProps["owner"];
   // loaderDataはシリアライズされるためプレーンなデータ構造で受け取る
   board: { cards: ValidCard[] } | null;
   url: string;
@@ -29,7 +29,7 @@ const withId = (card: ValidCard) => ({
   id: crypto.randomUUID() as string,
 });
 
-export function BoardViewer({ user, board, url, editable, isMine }: Props) {
+export function BoardViewer({ owner, board, url, editable, isMine }: Props) {
   const [cards, setCards] = useState((board?.cards ?? []).map(withId));
   const { t } = useTranslation();
   const navigation = useNavigation();
@@ -74,7 +74,7 @@ export function BoardViewer({ user, board, url, editable, isMine }: Props) {
     >
       <div className="flex flex-col gap-2 py-4">
         <ProfileCard
-          user={user}
+          owner={owner}
           url={url}
           showEditButton={!editable && isMine}
         />

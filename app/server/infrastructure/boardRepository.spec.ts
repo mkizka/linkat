@@ -3,7 +3,7 @@ import { Pool } from "pg";
 
 import { Board } from "~/models/board";
 import { BoardFactory, cardsFromFactory } from "~/server/factories/board";
-import { UserFactory } from "~/server/factories/user";
+import { OwnerFactory } from "~/server/factories/owner";
 import { db } from "~/server/infrastructure/drizzle";
 import { env } from "~/utils/env";
 
@@ -21,9 +21,9 @@ describe("boardRepository", () => {
   describe("find", () => {
     test("ボードが存在しない場合はnullを返す", async () => {
       // arrange
-      const user = await UserFactory.create();
+      const owner = await OwnerFactory.create();
       // act
-      const actual = await boardRepository.find(asDid(user.did));
+      const actual = await boardRepository.find(asDid(owner.did));
       // assert
       expect(actual).toBeNull();
     });
@@ -31,39 +31,39 @@ describe("boardRepository", () => {
       // arrange
       const board = await BoardFactory.create();
       // act
-      const actual = await boardRepository.find(asDid(board.userDid));
+      const actual = await boardRepository.find(asDid(board.ownerDid));
       // assert
-      expect(actual).toEqual(new Board(board.userDid, cardsFromFactory));
+      expect(actual).toEqual(new Board(board.ownerDid, cardsFromFactory));
     });
   });
 
   describe("save", () => {
     test("ボードが存在しない場合は新規作成する", async () => {
       // arrange
-      const user = await UserFactory.create();
-      const board = new Board(user.did, [
+      const owner = await OwnerFactory.create();
+      const board = new Board(owner.did, [
         { url: "https://example.com", text: "新規カード" },
       ]);
       // act
       await boardRepository.save(board);
       // assert
-      const actual = await boardRepository.find(asDid(user.did));
+      const actual = await boardRepository.find(asDid(owner.did));
       expect(actual).toEqual(board);
     });
     test("ボードが存在する場合は上書きする", async () => {
       // arrange
       const existing = await BoardFactory.create();
-      const updated = new Board(existing.userDid, [
+      const updated = new Board(existing.ownerDid, [
         { url: "https://example.com", text: "更新後のカード" },
       ]);
       // act
       await boardRepository.save(updated);
       // assert
-      const actual = await boardRepository.find(asDid(existing.userDid));
+      const actual = await boardRepository.find(asDid(existing.ownerDid));
       expect(actual).toEqual(updated);
       const { rows } = await pool.query(
-        `SELECT id FROM "Board" WHERE "userDid" = $1`,
-        [existing.userDid],
+        `SELECT id FROM "Board" WHERE "ownerDid" = $1`,
+        [existing.ownerDid],
       );
       expect(rows).toHaveLength(1);
     });
@@ -74,15 +74,15 @@ describe("boardRepository", () => {
       // arrange
       const board = await BoardFactory.create();
       // act
-      await boardRepository.delete(asDid(board.userDid));
+      await boardRepository.delete(asDid(board.ownerDid));
       // assert
-      expect(await boardRepository.find(asDid(board.userDid))).toBeNull();
+      expect(await boardRepository.find(asDid(board.ownerDid))).toBeNull();
     });
     test("ボードが存在しなくてもエラーにならない", async () => {
       // arrange
-      const user = await UserFactory.create();
+      const owner = await OwnerFactory.create();
       // act
-      const actual = boardRepository.delete(asDid(user.did));
+      const actual = boardRepository.delete(asDid(owner.did));
       // assert
       await expect(actual).resolves.not.toThrow();
     });

@@ -2,7 +2,7 @@ import type { Did } from "@atproto/did";
 
 import profile from "~/generated/app/bsky/actor/profile";
 import type { LinkatAgent } from "~/libs/agent";
-import type { Profile } from "~/models/user";
+import type { Profile } from "~/models/owner";
 import type { IProfileRecordParser } from "~/server/infrastructure/profileRecordParser";
 import { createLogger } from "~/utils/logger";
 import { tryCatch } from "~/utils/tryCatch";

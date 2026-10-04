@@ -10,7 +10,7 @@ export type Profile = {
   displayName: string | null;
 };
 
-export class User {
+export class Owner {
   readonly did: Did;
   readonly avatar: string | null;
   readonly avatarCid: string | null;
@@ -45,7 +45,7 @@ export class User {
 
   static create(did: Did) {
     const now = new Date();
-    return new User({
+    return new Owner({
       did,
       avatar: null,
       avatarCid: null,
@@ -67,7 +67,7 @@ export class User {
   }
 
   withHandle(handle: string | null) {
-    return new User({
+    return new Owner({
       did: this.did,
       avatar: this.avatar,
       avatarCid: this.avatarCid,
@@ -81,7 +81,7 @@ export class User {
   }
 
   withProfile(profile: Profile | null) {
-    return new User({
+    return new Owner({
       did: this.did,
       avatar: profile?.avatar ?? null,
       avatarCid: profile?.avatarCid ?? null,
@@ -107,4 +107,4 @@ export class User {
   }
 }
 
-export type UserView = ReturnType<User["toView"]>;
+export type OwnerView = ReturnType<Owner["toView"]>;

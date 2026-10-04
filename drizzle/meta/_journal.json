@@ -36,6 +36,13 @@
       "when": 1791113409404,
       "tag": "0004_board_without_user_fkey",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1791117864506,
+      "tag": "0005_owner",
+      "breakpoints": true
     }
   ]
 }
