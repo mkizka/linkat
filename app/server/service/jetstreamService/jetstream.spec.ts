@@ -11,6 +11,7 @@ import { accountPdsRepositoryFactory } from "~/server/infrastructure/accountPdsR
 import { boardRepositoryFactory } from "~/server/infrastructure/boardRepository";
 import { cursorRepositoryFactory } from "~/server/infrastructure/cursorRepository";
 import { db } from "~/server/infrastructure/drizzle";
+import { handleIndexFactory } from "~/server/infrastructure/handleIndex";
 import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
 import { profileRecordParserFactory } from "~/server/infrastructure/profileRecordParser";
 import { userDbRepositoryFactory } from "~/server/infrastructure/userDbRepository";
@@ -37,6 +38,7 @@ const jetstreamService = jetstreamServiceFactory({
     accountPdsRepository,
   }),
   userService: userServiceFactory({
+    handleIndex: handleIndexFactory({ db }),
     userRepository: userRepositoryFactory({
       userDbRepository,
       accountPdsRepository,

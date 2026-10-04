@@ -3,6 +3,7 @@ import { type Did, isDid } from "@atproto/did";
 import type { LinkatAgent } from "~/libs/agent";
 import { type AccountStatus, User, type UserView } from "~/models/user";
 import type { IAccountPdsRepository } from "~/server/infrastructure/accountPdsRepository";
+import type { IHandleIndex } from "~/server/infrastructure/handleIndex";
 import type { IUserDbRepository } from "~/server/infrastructure/userDbRepository";
 import type { IUserRepository } from "~/server/infrastructure/userRepository";
 
@@ -13,10 +14,12 @@ export interface IUserService {
 }
 
 export const userServiceFactory = ({
+  handleIndex,
   userRepository,
   userDbRepository,
   accountPdsRepository,
 }: {
+  handleIndex: IHandleIndex;
   userRepository: IUserRepository;
   userDbRepository: IUserDbRepository;
   accountPdsRepository: IAccountPdsRepository;
@@ -27,7 +30,7 @@ export const userServiceFactory = ({
     }
     const did = isDid(handleOrDid)
       ? handleOrDid
-      : await userRepository.findDidByHandle(handleOrDid);
+      : await handleIndex.findDid(handleOrDid);
     return did && (await userRepository.findByDid(did));
   },
   async findEditor(agent) {

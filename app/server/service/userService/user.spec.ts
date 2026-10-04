@@ -8,6 +8,7 @@ import { User } from "~/models/user";
 import { UserFactory } from "~/server/factories/user";
 import { accountPdsRepositoryFactory } from "~/server/infrastructure/accountPdsRepository";
 import { db } from "~/server/infrastructure/drizzle";
+import { handleIndexFactory } from "~/server/infrastructure/handleIndex";
 import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
 import { profileRecordParserFactory } from "~/server/infrastructure/profileRecordParser";
 import { userDbRepositoryFactory } from "~/server/infrastructure/userDbRepository";
@@ -22,6 +23,7 @@ const accountPdsRepository = accountPdsRepositoryFactory({
   profileRecordParser: profileRecordParserFactory(),
 });
 const userService = userServiceFactory({
+  handleIndex: handleIndexFactory({ db }),
   userRepository: userRepositoryFactory({
     userDbRepository,
     accountPdsRepository,
