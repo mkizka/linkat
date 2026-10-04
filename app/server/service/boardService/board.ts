@@ -37,8 +37,8 @@ export interface IBoardService {
     userDid: Did,
     rawBoard: string,
   ) => Promise<Board | Error>;
-  saveBoard: (board: Board) => Promise<User>;
-  publishBoard: (agent: LinkatAgent, board: Board) => Promise<User>;
+  saveBoard: (board: Board) => Promise<void>;
+  publishBoard: (agent: LinkatAgent, board: Board) => Promise<void>;
   findBoard: (userDid: Did) => Promise<Board | null>;
   deleteBoard: (userDid: Did) => Promise<void>;
   unpublishBoard: (agent: LinkatAgent, userDid: Did) => Promise<void>;
@@ -59,15 +59,12 @@ export const boardServiceFactory = ({
     if (fetched?.profile) {
       owner = owner.withProfile(fetched.profile);
     }
-    return await userDbRepository.save(
-      owner.withHandle(fetched?.handle ?? null),
-    );
+    await userDbRepository.save(owner.withHandle(fetched?.handle ?? null));
   };
 
   const saveBoard = async (board: Board) => {
-    const owner = await saveOwner(board.userDid);
+    await saveOwner(board.userDid);
     await boardRepository.save(board);
-    return owner;
   };
 
   return {
@@ -83,7 +80,7 @@ export const boardServiceFactory = ({
         throw new BoardPdsSaveError(error);
       }
       try {
-        return await saveBoard(board);
+        await saveBoard(board);
       } catch (error) {
         throw new BoardDbSaveError(error);
       }

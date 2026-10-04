@@ -54,9 +54,8 @@ export async function action({ request, context }: Route.ActionArgs) {
     });
     return null;
   }
-  let owner;
   try {
-    owner = await di.boardService.publishBoard(agent, parsedBoard);
+    await di.boardService.publishBoard(agent, parsedBoard);
   } catch (error) {
     if (error instanceof BoardPdsSaveError) {
       logger.error(error, error.message);
@@ -76,6 +75,8 @@ export async function action({ request, context }: Route.ActionArgs) {
     }
     throw error;
   }
+  const owner =
+    (await di.userService.findUser({ handleOrDid: user.did })) ?? user;
   return redirect(`/${owner.toView().handleOrDid}?success`);
 }
 
@@ -111,7 +112,8 @@ export default function Index({ loaderData }: Route.ComponentProps) {
     ({ currentLocation, nextLocation, historyAction }) =>
       // 保存ボタンを押したときの移動以外のとき
       (currentLocation.pathname !== nextLocation.pathname &&
-        nextLocation.pathname !== `/${user.handleOrDid}`) ||
+        nextLocation.pathname !== `/${user.handleOrDid}` &&
+        nextLocation.search !== "?success") ||
       // /alice.testから/editに移動して戻るとき
       // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
       historyAction === "POP",
