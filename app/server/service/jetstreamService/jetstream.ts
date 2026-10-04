@@ -14,7 +14,7 @@ import type { ICursorRepository } from "~/server/infrastructure/cursorRepository
 import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
 import type { IOwnerRepository } from "~/server/infrastructure/ownerRepository";
 import type { IProfileRecordParser } from "~/server/infrastructure/profileRecordParser";
-import type { IBoardService } from "~/server/service/boardService/board";
+import type { IBoardEventService } from "~/server/service/boardEventService/boardEvent";
 import type { IOwnerService } from "~/server/service/ownerService/owner";
 import { env } from "~/utils/env";
 import { createLogger } from "~/utils/logger";
@@ -45,14 +45,14 @@ export interface IJetstreamService {
 
 export const jetstreamServiceFactory = ({
   cursorRepository,
-  boardService,
+  boardEventService,
   ownerService,
   ownerRepository,
   identityResolver,
   profileRecordParser,
 }: {
   cursorRepository: ICursorRepository;
-  boardService: IBoardService;
+  boardEventService: IBoardEventService;
   ownerService: IOwnerService;
   ownerRepository: IOwnerRepository;
   identityResolver: IIdentityResolver;
@@ -80,8 +80,7 @@ export const jetstreamServiceFactory = ({
       return;
     }
     const board = new Board(event.did, cards);
-    await ownerService.syncOwner(event.did);
-    await boardService.saveBoard(board);
+    await boardEventService.saveBoard(board);
     logger.debug({ board }, "ボードを更新しました");
   };
 
@@ -173,7 +172,7 @@ export const jetstreamServiceFactory = ({
   jetstream.onUpdate("blue.linkat.board", handleCreateOrUpdate);
 
   jetstream.onDelete("blue.linkat.board", async (event) => {
-    await boardService.deleteBoard(event.did);
+    await boardEventService.deleteBoard(event.did);
     logger.info({ ownerDid: event.did }, "ボードを削除しました");
   });
 

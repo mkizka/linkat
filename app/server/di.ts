@@ -17,6 +17,7 @@ import { profileFetcherFactory } from "~/server/infrastructure/profileFetcher";
 import { profileRecordParserFactory } from "~/server/infrastructure/profileRecordParser";
 import { atpassportServiceFactory } from "~/server/service/atpassportService/atpassport";
 import { authServiceFactory } from "~/server/service/authService/auth";
+import { boardEventServiceFactory } from "~/server/service/boardEventService/boardEvent";
 import { boardServiceFactory } from "~/server/service/boardService/board";
 import { editorServiceFactory } from "~/server/service/editorService/editor";
 import { jetstreamServiceFactory } from "~/server/service/jetstreamService/jetstream";
@@ -51,10 +52,11 @@ export const di = await createRegistry()
     ["ownerRepository", "profileFetcher"],
     editorServiceFactory,
   )
+  .service("boardService", ["boardRepository"], boardServiceFactory)
   .service(
-    "boardService",
-    ["boardRepository", "ownerRepository"],
-    boardServiceFactory,
+    "boardEventService",
+    ["boardRepository", "ownerRepository", "ownerService"],
+    boardEventServiceFactory,
   )
   .service("atpassportService", ["atpassportClient"], atpassportServiceFactory)
   .service("authService", ["oauthClient"], authServiceFactory)
@@ -67,7 +69,7 @@ export const di = await createRegistry()
     "jetstreamService",
     [
       "cursorRepository",
-      "boardService",
+      "boardEventService",
       "ownerService",
       "ownerRepository",
       "identityResolver",

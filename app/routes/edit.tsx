@@ -11,7 +11,7 @@ import { di } from "~/server/di";
 import {
   BoardDbSaveError,
   BoardPdsSaveError,
-} from "~/server/service/boardService/board";
+} from "~/server/service/boardEventService/boardEvent";
 import { env } from "~/utils/env";
 import { createLogger } from "~/utils/logger";
 
@@ -54,9 +54,9 @@ export async function action({ request, context }: Route.ActionArgs) {
     });
     return null;
   }
-  const owner = await di.ownerService.syncOwner(agent.assertDid);
+  let owner;
   try {
-    await di.boardService.publishBoard(agent, parsedBoard);
+    owner = await di.boardEventService.publishBoard(agent, parsedBoard);
   } catch (error) {
     if (error instanceof BoardPdsSaveError) {
       logger.error(error, error.message);
@@ -72,7 +72,7 @@ export async function action({ request, context }: Route.ActionArgs) {
         message: i18next.t("edit.save-delayed-warning-message"),
         type: "warning",
       });
-      return redirect(`/${owner.toView().handleOrDid}`);
+      return redirect(`/${agent.assertDid}`);
     }
     throw error;
   }

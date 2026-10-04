@@ -25,12 +25,16 @@ export const ownerServiceFactory = ({
   identityResolver: IIdentityResolver;
 }): IOwnerService => ({
   async findOwner({ handleOrDid }) {
-    if (!handleOrDid.includes(".") && !isDid(handleOrDid)) {
+    if (isDid(handleOrDid)) {
+      return (
+        (await ownerRepository.findByDid(handleOrDid)) ??
+        Owner.create(handleOrDid)
+      );
+    }
+    if (!handleOrDid.includes(".")) {
       return null;
     }
-    const did = isDid(handleOrDid)
-      ? handleOrDid
-      : await handleIndex.findDid(handleOrDid);
+    const did = await handleIndex.findDid(handleOrDid);
     return did && (await ownerRepository.findByDid(did));
   },
   async syncOwner(did) {
