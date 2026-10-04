@@ -358,34 +358,35 @@ describe("jetstreamService", () => {
     });
 
     test.each`
-      account                                        | expected
-      ${{ active: false, status: "takendown" }}      | ${"suspended"}
-      ${{ active: false, status: "suspended" }}      | ${"suspended"}
-      ${{ active: false, status: "deleted" }}        | ${"deleted"}
-      ${{ active: false, status: "deactivated" }}    | ${"deactivated"}
-      ${{ active: false, status: "desynchronized" }} | ${"inactive"}
-      ${{ active: false, status: "throttled" }}      | ${"inactive"}
-      ${{ active: false }}                           | ${"inactive"}
-      ${{ active: true }}                            | ${"active"}
+      account
+      ${{ active: false, status: "takendown" }}
+      ${{ active: false, status: "deactivated" }}
+      ${{ active: false, status: "throttled" }}
+      ${{ active: false, status: "unknown-future-status" }}
+      ${{ active: false }}
+      ${{ active: true }}
     `(
-      "$account.status を $expected として記録する",
+      "$account をそのまま記録する",
       async ({
         account,
-        expected,
       }: {
         account: { active: boolean; status?: string };
-        expected: string;
       }) => {
         // arrange
-        const owner = await OwnerFactory.create({ status: "deleted" });
+        const owner = await OwnerFactory.create({
+          active: false,
+          status: "deleted",
+        });
         // act
         await jetstreamService.handleAccount(accountEvent(owner.did, account));
         // assert
         const { rows } = await pool.query(
-          `SELECT status FROM "Owner" WHERE did = $1`,
+          `SELECT active, status FROM "Owner" WHERE did = $1`,
           [owner.did],
         );
-        expect(rows).toEqual([{ status: expected }]);
+        expect(rows).toEqual([
+          { active: account.active, status: account.status ?? null },
+        ]);
       },
     );
   });

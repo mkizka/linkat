@@ -1,14 +1,14 @@
 import type { Did } from "@atproto/did";
 import { and, eq, ne } from "drizzle-orm";
 
-import { type AccountStatus, Owner } from "~/models/owner";
+import { type AccountState, Owner } from "~/models/owner";
 import type { Db } from "~/server/infrastructure/drizzle";
 import { ownerTable } from "~/server/infrastructure/schema";
 
 export interface IOwnerRepository {
   findByDid: (did: Did) => Promise<Owner | null>;
   save: (owner: Owner) => Promise<Owner>;
-  updateStatus: (did: Did, status: AccountStatus) => Promise<void>;
+  updateAccountState: (did: Did, state: AccountState) => Promise<void>;
   delete: (did: Did) => Promise<void>;
 }
 
@@ -58,8 +58,8 @@ export const ownerRepositoryFactory = ({
       return new Owner(row);
     });
   },
-  async updateStatus(did, status) {
-    await db.update(ownerTable).set({ status }).where(eq(ownerTable.did, did));
+  async updateAccountState(did, state) {
+    await db.update(ownerTable).set(state).where(eq(ownerTable.did, did));
   },
   async delete(did) {
     await db.delete(ownerTable).where(eq(ownerTable.did, did));

@@ -1,6 +1,6 @@
 import type { Did } from "@atproto/did";
 
-import { type AccountStatus, Owner } from "./owner";
+import { Owner } from "./owner";
 
 const createOwner = (props: Partial<ConstructorParameters<typeof Owner>[0]>) =>
   new Owner({
@@ -10,7 +10,8 @@ const createOwner = (props: Partial<ConstructorParameters<typeof Owner>[0]>) =>
     description: null,
     displayName: null,
     handle: "example.com",
-    status: "active",
+    active: true,
+    status: null,
     createdAt: new Date(),
     updatedAt: new Date(),
     ...props,
@@ -94,16 +95,13 @@ describe("toView", () => {
 
 describe("isHidden", () => {
   test.each`
-    status           | expected
-    ${"active"}      | ${false}
-    ${"suspended"}   | ${true}
-    ${"deleted"}     | ${true}
-    ${"deactivated"} | ${true}
-    ${"inactive"}    | ${true}
+    active   | expected
+    ${true}  | ${false}
+    ${false} | ${true}
   `(
-    "$status",
-    ({ status, expected }: { status: AccountStatus; expected: boolean }) => {
-      expect(createOwner({ status }).isHidden()).toBe(expected);
+    "active=$active",
+    ({ active, expected }: { active: boolean; expected: boolean }) => {
+      expect(createOwner({ active }).isHidden()).toBe(expected);
     },
   );
 });
@@ -115,6 +113,7 @@ describe("withProfile", () => {
       avatarCid: "bafkreidummy",
       description: "説明",
       displayName: "Alice",
+      active: false,
       status: "suspended",
     });
     // act
@@ -126,6 +125,7 @@ describe("withProfile", () => {
       description: null,
       displayName: null,
       handle: "example.com",
+      active: false,
       status: "suspended",
     });
   });

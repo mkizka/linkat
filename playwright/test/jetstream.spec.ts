@@ -21,7 +21,7 @@ const xrpc = async (nsid: string, body: object, accessJwt?: string) => {
 test.describe("Jetstream", () => {
   test.skip(({ size }) => size === "large", "dev-envのPDSを操作するため");
 
-  test("アカウントを無効化するとボードが404になる", async ({
+  test("アカウントを無効化するとボードが非表示になる", async ({
     page,
     login,
     account,
@@ -43,12 +43,19 @@ test.describe("Jetstream", () => {
       await xrpc("com.atproto.server.deactivateAccount", {}, accessJwt);
     });
 
-    await test.step("ボードが404になる", async () => {
+    await test.step("ボードの代わりにstatusを表示する", async () => {
       await expect(async () => {
-        const response = await page.goto(`/${account.handle}`);
-        expect(response?.status()).toBe(404);
+        await page.goto(`/${account.handle}?lng=ja`);
+        await expect(page.getByTestId("hidden-board__message")).toHaveText(
+          "このボードは表示できません: deactivated",
+          { timeout: 1000 },
+        );
       }).toPass();
-      await expect(page.getByRole("heading", { name: "404" })).toBeVisible();
+    });
+
+    await test.step("OG画像は404にする", async () => {
+      const response = await page.request.get(`/${account.handle}/og`);
+      expect(response.status()).toBe(404);
     });
   });
 });

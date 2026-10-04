@@ -37,7 +37,8 @@ describe("ownerRepository", () => {
         description: "description",
         displayName: "display name",
         handle: "example.com",
-        status: "active",
+        active: true,
+        status: null,
         createdAt: new Date("2024-01-01T00:00:00.000Z"),
         updatedAt: new Date("2024-01-02T00:00:00.000Z"),
       });
@@ -52,7 +53,8 @@ describe("ownerRepository", () => {
         description: owner.description,
         displayName: owner.displayName,
         handle: owner.handle,
-        status: "active",
+        active: true,
+        status: null,
         createdAt: expect.any(Date),
         updatedAt: owner.updatedAt,
       });
@@ -63,6 +65,7 @@ describe("ownerRepository", () => {
         did: "did:plc:abcdefghijklmnopqrstuvwx",
         handle: "old.example.com",
         avatar: "https://example.com/old-avatar.png",
+        active: false,
         status: "deactivated",
       });
       const updated = new Owner({
@@ -72,7 +75,8 @@ describe("ownerRepository", () => {
         description: "new description",
         displayName: "new display name",
         handle: "new.example.com",
-        status: "active",
+        active: true,
+        status: null,
         createdAt: existing.createdAt,
         updatedAt: new Date("2024-02-01T00:00:00.000Z"),
       });
@@ -87,6 +91,7 @@ describe("ownerRepository", () => {
         description: updated.description,
         displayName: updated.displayName,
         handle: updated.handle,
+        active: false,
         status: "deactivated",
         createdAt: existing.createdAt,
         updatedAt: updated.updatedAt,
@@ -115,21 +120,27 @@ describe("ownerRepository", () => {
     });
   });
 
-  describe("updateStatus", () => {
+  describe("updateAccountState", () => {
     test("持ち主の状態を更新できる", async () => {
       // arrange
       const existing = await OwnerFactory.create();
       // act
-      await ownerRepository.updateStatus(asDid(existing.did), "suspended");
+      await ownerRepository.updateAccountState(asDid(existing.did), {
+        active: false,
+        status: "suspended",
+      });
       // assert
       const actual = await ownerRepository.findByDid(asDid(existing.did));
-      expect(actual?.status).toBe("suspended");
+      expect(actual).toMatchObject({ active: false, status: "suspended" });
     });
     test("持ち主が保存されていない場合は何もしない", async () => {
       // arrange
       const did = asDid("did:plc:notfound");
       // act
-      await ownerRepository.updateStatus(did, "suspended");
+      await ownerRepository.updateAccountState(did, {
+        active: false,
+        status: "suspended",
+      });
       // assert
       const actual = await ownerRepository.findByDid(did);
       expect(actual).toBeNull();

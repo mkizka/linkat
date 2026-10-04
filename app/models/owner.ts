@@ -1,7 +1,6 @@
 import { asDid, type Did } from "@atproto/did";
 
-export type AccountStatus =
-  "active" | "suspended" | "deleted" | "deactivated" | "inactive";
+export type AccountState = { active: boolean; status: string | null };
 
 export type Profile = {
   avatar: string | null;
@@ -17,7 +16,8 @@ export class Owner {
   readonly description: string | null;
   readonly displayName: string | null;
   readonly handle: string | null;
-  readonly status: AccountStatus;
+  readonly active: boolean;
+  readonly status: string | null;
   readonly createdAt: Date;
   readonly updatedAt: Date;
 
@@ -28,7 +28,8 @@ export class Owner {
     description: string | null;
     displayName: string | null;
     handle: string | null;
-    status: AccountStatus;
+    active: boolean;
+    status: string | null;
     createdAt: Date;
     updatedAt: Date;
   }) {
@@ -38,6 +39,7 @@ export class Owner {
     this.description = props.description;
     this.displayName = props.displayName;
     this.handle = props.handle;
+    this.active = props.active;
     this.status = props.status;
     this.createdAt = props.createdAt;
     this.updatedAt = props.updatedAt;
@@ -52,14 +54,15 @@ export class Owner {
       description: null,
       displayName: null,
       handle: null,
-      status: "active",
+      active: true,
+      status: null,
       createdAt: now,
       updatedAt: now,
     });
   }
 
   isHidden() {
-    return this.status !== "active";
+    return !this.active;
   }
 
   isOwnedBy(viewerDid: Did | null) {
@@ -74,6 +77,7 @@ export class Owner {
       description: this.description,
       displayName: this.displayName,
       handle,
+      active: this.active,
       status: this.status,
       createdAt: this.createdAt,
       updatedAt: new Date(),
@@ -88,6 +92,7 @@ export class Owner {
       description: profile?.description ?? null,
       displayName: profile?.displayName ?? null,
       handle: this.handle,
+      active: this.active,
       status: this.status,
       createdAt: this.createdAt,
       updatedAt: new Date(),
