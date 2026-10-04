@@ -12,7 +12,7 @@ import { cursorRepositoryFactory } from "~/server/infrastructure/cursorRepositor
 import { db } from "~/server/infrastructure/drizzle";
 import { handleIndexFactory } from "~/server/infrastructure/handleIndex";
 import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
-import { profilePdsRepositoryFactory } from "~/server/infrastructure/profilePdsRepository";
+import { profileFetcherFactory } from "~/server/infrastructure/profileFetcher";
 import { profileRecordParserFactory } from "~/server/infrastructure/profileRecordParser";
 import { userDbRepositoryFactory } from "~/server/infrastructure/userDbRepository";
 import { userRepositoryFactory } from "~/server/infrastructure/userRepository";
@@ -25,7 +25,7 @@ import { jetstreamServiceFactory } from "./jetstream";
 const identityResolver = mock<IIdentityResolver>();
 const userDbRepository = userDbRepositoryFactory({ db });
 const profileRecordParser = profileRecordParserFactory();
-const profilePdsRepository = profilePdsRepositoryFactory({
+const profileFetcher = profileFetcherFactory({
   profileRecordParser,
 });
 
@@ -38,11 +38,11 @@ const jetstreamService = jetstreamServiceFactory({
     handleIndex: handleIndexFactory({ db }),
     userRepository: userRepositoryFactory({
       userDbRepository,
-      profilePdsRepository,
+      profileFetcher,
       identityResolver,
     }),
     userDbRepository,
-    profilePdsRepository,
+    profileFetcher,
     identityResolver,
   }),
   userDbRepository,

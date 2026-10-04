@@ -4,7 +4,7 @@ import { LinkatAgent } from "~/libs/agent";
 import { type AccountStatus, User, type UserView } from "~/models/user";
 import type { IHandleIndex } from "~/server/infrastructure/handleIndex";
 import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
-import type { IProfilePdsRepository } from "~/server/infrastructure/profilePdsRepository";
+import type { IProfileFetcher } from "~/server/infrastructure/profileFetcher";
 import type { IUserDbRepository } from "~/server/infrastructure/userDbRepository";
 import type { IUserRepository } from "~/server/infrastructure/userRepository";
 
@@ -19,13 +19,13 @@ export const userServiceFactory = ({
   handleIndex,
   userRepository,
   userDbRepository,
-  profilePdsRepository,
+  profileFetcher,
   identityResolver,
 }: {
   handleIndex: IHandleIndex;
   userRepository: IUserRepository;
   userDbRepository: IUserDbRepository;
-  profilePdsRepository: IProfilePdsRepository;
+  profileFetcher: IProfileFetcher;
   identityResolver: IIdentityResolver;
 }): IUserService => ({
   async findUser({ handleOrDid }) {
@@ -53,7 +53,7 @@ export const userServiceFactory = ({
       return await userDbRepository.save(owner.withHandle(null));
     }
     const agent = LinkatAgent.credential(identity.pds);
-    const profile = await profilePdsRepository.fetchProfile(agent, did);
+    const profile = await profileFetcher.fetchProfile(agent, did);
     if (profile) {
       owner = owner.withProfile(profile);
     }

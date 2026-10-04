@@ -7,9 +7,9 @@ import type { IProfileRecordParser } from "~/server/infrastructure/profileRecord
 import { createLogger } from "~/utils/logger";
 import { tryCatch } from "~/utils/tryCatch";
 
-const logger = createLogger("profilePdsRepository");
+const logger = createLogger("profileFetcher");
 
-export interface IProfilePdsRepository {
+export interface IProfileFetcher {
   fetchProfile: (agent: LinkatAgent, did: Did) => Promise<Profile | null>;
 }
 
@@ -18,11 +18,11 @@ const fetchProfileRecord = async (agent: LinkatAgent, did: Did) => {
   return value;
 };
 
-export const profilePdsRepositoryFactory = ({
+export const profileFetcherFactory = ({
   profileRecordParser,
 }: {
   profileRecordParser: IProfileRecordParser;
-}): IProfilePdsRepository => ({
+}): IProfileFetcher => ({
   async fetchProfile(agent, did) {
     logger.info({ did }, "プロフィールを取得します");
     const fetched = await tryCatch(fetchProfileRecord)(agent, did);

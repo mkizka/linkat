@@ -9,7 +9,7 @@ import { UserFactory } from "~/server/factories/user";
 import { db } from "~/server/infrastructure/drizzle";
 import { handleIndexFactory } from "~/server/infrastructure/handleIndex";
 import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
-import { profilePdsRepositoryFactory } from "~/server/infrastructure/profilePdsRepository";
+import { profileFetcherFactory } from "~/server/infrastructure/profileFetcher";
 import { profileRecordParserFactory } from "~/server/infrastructure/profileRecordParser";
 import { userDbRepositoryFactory } from "~/server/infrastructure/userDbRepository";
 import { userRepositoryFactory } from "~/server/infrastructure/userRepository";
@@ -18,18 +18,18 @@ import { userServiceFactory } from "./user";
 
 const identityResolver = mock<IIdentityResolver>();
 const userDbRepository = userDbRepositoryFactory({ db });
-const profilePdsRepository = profilePdsRepositoryFactory({
+const profileFetcher = profileFetcherFactory({
   profileRecordParser: profileRecordParserFactory(),
 });
 const userService = userServiceFactory({
   handleIndex: handleIndexFactory({ db }),
   userRepository: userRepositoryFactory({
     userDbRepository,
-    profilePdsRepository,
+    profileFetcher,
     identityResolver,
   }),
   userDbRepository,
-  profilePdsRepository,
+  profileFetcher,
   identityResolver,
 });
 
