@@ -4,10 +4,10 @@ import { mock, mockReset } from "vitest-mock-extended";
 
 import { server } from "~/mocks/server";
 import { UserFactory } from "~/server/factories/user";
-import { accountPdsRepositoryFactory } from "~/server/infrastructure/accountPdsRepository";
 import { db } from "~/server/infrastructure/drizzle";
 import { handleIndexFactory } from "~/server/infrastructure/handleIndex";
 import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
+import { profileFetcherFactory } from "~/server/infrastructure/profileFetcher";
 import { profileRecordParserFactory } from "~/server/infrastructure/profileRecordParser";
 import { userDbRepositoryFactory } from "~/server/infrastructure/userDbRepository";
 import { userRepositoryFactory } from "~/server/infrastructure/userRepository";
@@ -16,8 +16,7 @@ import { userServiceFactory } from "./user";
 
 const identityResolver = mock<IIdentityResolver>();
 const userDbRepository = userDbRepositoryFactory({ db });
-const accountPdsRepository = accountPdsRepositoryFactory({
-  identityResolver,
+const profileFetcher = profileFetcherFactory({
   profileRecordParser: profileRecordParserFactory(),
 });
 
@@ -25,10 +24,12 @@ const userService = userServiceFactory({
   handleIndex: handleIndexFactory({ db }),
   userRepository: userRepositoryFactory({
     userDbRepository,
-    accountPdsRepository,
+    profileFetcher,
+    identityResolver,
   }),
   userDbRepository,
-  accountPdsRepository,
+  profileFetcher,
+  identityResolver,
 });
 
 const getRecordUrl = "https://pds.example.com/xrpc/com.atproto.repo.getRecord";

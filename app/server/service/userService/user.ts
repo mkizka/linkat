@@ -1,8 +1,10 @@
 import { type Did, isDid } from "@atproto/did";
 
+import { LinkatAgent } from "~/libs/agent";
 import { type AccountStatus, User } from "~/models/user";
-import type { IAccountPdsRepository } from "~/server/infrastructure/accountPdsRepository";
 import type { IHandleIndex } from "~/server/infrastructure/handleIndex";
+import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
+import type { IProfileFetcher } from "~/server/infrastructure/profileFetcher";
 import type { IUserDbRepository } from "~/server/infrastructure/userDbRepository";
 import type { IUserRepository } from "~/server/infrastructure/userRepository";
 
@@ -16,12 +18,14 @@ export const userServiceFactory = ({
   handleIndex,
   userRepository,
   userDbRepository,
-  accountPdsRepository,
+  profileFetcher,
+  identityResolver,
 }: {
   handleIndex: IHandleIndex;
   userRepository: IUserRepository;
   userDbRepository: IUserDbRepository;
-  accountPdsRepository: IAccountPdsRepository;
+  profileFetcher: IProfileFetcher;
+  identityResolver: IIdentityResolver;
 }): IUserService => ({
   async findUser({ handleOrDid }) {
     if (!handleOrDid.includes(".") && !isDid(handleOrDid)) {
@@ -33,14 +37,17 @@ export const userServiceFactory = ({
     return did && (await userRepository.findByDid(did));
   },
   async syncOwner(did) {
-    const fetched = await accountPdsRepository.findByDid(did);
     let owner = (await userDbRepository.findByDid(did)) ?? User.create(did);
-    if (fetched?.profile) {
-      owner = owner.withProfile(fetched.profile);
+    const identity = await identityResolver.resolve(did);
+    if (!identity) {
+      return await userDbRepository.save(owner.withHandle(null));
     }
-    return await userDbRepository.save(
-      owner.withHandle(fetched?.handle ?? null),
-    );
+    const agent = LinkatAgent.credential(identity.pds);
+    const profile = await profileFetcher.fetchProfile(agent, did);
+    if (profile) {
+      owner = owner.withProfile(profile);
+    }
+    return await userDbRepository.save(owner.withHandle(identity.handle));
   },
   async updateStatus(did, status) {
     await userRepository.updateStatus(did, status);
