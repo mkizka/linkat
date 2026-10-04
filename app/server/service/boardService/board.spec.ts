@@ -8,6 +8,7 @@ import { BoardFactory, cardsFromFactory } from "~/server/factories/board";
 import { UserFactory } from "~/server/factories/user";
 import { boardRepositoryFactory } from "~/server/infrastructure/boardRepository";
 import { db } from "~/server/infrastructure/drizzle";
+import { userDbRepositoryFactory } from "~/server/infrastructure/userDbRepository";
 
 import {
   BoardDbDeleteError,
@@ -18,8 +19,10 @@ import {
 } from "./board";
 
 const boardRepository = boardRepositoryFactory({ db });
+const userDbRepository = userDbRepositoryFactory({ db });
 const boardService = boardServiceFactory({
   boardRepository,
+  userDbRepository,
 });
 
 const dummyCards = [
@@ -157,6 +160,32 @@ describe("boardService", () => {
     });
   });
 
+  describe("deleteBoard", () => {
+    test("ボードと持ち主の写しを削除する", async () => {
+      // arrange
+      const board = await BoardFactory.create();
+      const other = await BoardFactory.create();
+      // act
+      await boardService.deleteBoard(asDid(board.userDid));
+      // assert
+      expect(await boardRepository.find(asDid(board.userDid))).toBeNull();
+      expect(await userDbRepository.findByDid(asDid(board.userDid))).toBeNull();
+      expect(await boardRepository.find(asDid(other.userDid))).not.toBeNull();
+      expect(
+        await userDbRepository.findByDid(asDid(other.userDid)),
+      ).not.toBeNull();
+    });
+    test("持ち主の写しが無くても、ボードを削除する", async () => {
+      // arrange
+      const did = "did:plc:nocopy";
+      await BoardFactory.create({ userDid: did });
+      // act
+      await boardService.deleteBoard(asDid(did));
+      // assert
+      expect(await boardRepository.find(asDid(did))).toBeNull();
+    });
+  });
+
   describe("unpublishBoard", () => {
     const deleteRecordUrl =
       "https://pds.example.com/xrpc/com.atproto.repo.deleteRecord";
@@ -185,6 +214,7 @@ describe("boardService", () => {
         rkey: "self",
       });
       expect(await boardRepository.find(asDid(board.userDid))).toBeNull();
+      expect(await userDbRepository.findByDid(asDid(board.userDid))).toBeNull();
     });
     test("PDSからの削除に失敗したらDBから削除せずBoardPdsDeleteErrorを投げる", async () => {
       // arrange
@@ -202,6 +232,9 @@ describe("boardService", () => {
       // assert
       await expect(actual).rejects.toThrow(BoardPdsDeleteError);
       expect(await boardRepository.find(asDid(board.userDid))).not.toBeNull();
+      expect(
+        await userDbRepository.findByDid(asDid(board.userDid)),
+      ).not.toBeNull();
     });
     test("DBからの削除に失敗したらBoardDbDeleteErrorを投げる", async () => {
       // arrange
