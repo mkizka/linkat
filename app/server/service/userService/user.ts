@@ -43,7 +43,7 @@ export const userServiceFactory = ({
     if (owner) {
       return owner.toView();
     }
-    const profile = await profilePdsRepository.fetchProfile(agent, did);
+    const profile = await profileFetcher.fetchProfile(agent, did);
     return User.create(did).withProfile(profile).toView();
   },
   async syncOwner(did) {
