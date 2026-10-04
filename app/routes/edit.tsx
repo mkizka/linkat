@@ -85,7 +85,7 @@ export async function loader({ request }: Route.LoaderArgs) {
     throw redirect("/login");
   }
   const [editor, board] = await Promise.all([
-    di.userService.findEditor(agent),
+    di.editorService.findView(agent),
     di.boardService.findBoard(agent.assertDid),
   ]);
   return {

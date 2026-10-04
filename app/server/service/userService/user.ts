@@ -1,7 +1,7 @@
 import { type Did, isDid } from "@atproto/did";
 
 import { LinkatAgent } from "~/libs/agent";
-import { type AccountStatus, User, type UserView } from "~/models/user";
+import { type AccountStatus, User } from "~/models/user";
 import type { IHandleIndex } from "~/server/infrastructure/handleIndex";
 import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
 import type { IProfileFetcher } from "~/server/infrastructure/profileFetcher";
@@ -10,7 +10,6 @@ import type { IUserRepository } from "~/server/infrastructure/userRepository";
 
 export interface IUserService {
   findUser: (params: { handleOrDid: string }) => Promise<User | null>;
-  findEditor: (agent: LinkatAgent) => Promise<UserView>;
   syncOwner: (did: Did) => Promise<User>;
   updateStatus: (did: Did, status: AccountStatus) => Promise<void>;
 }
@@ -36,15 +35,6 @@ export const userServiceFactory = ({
       ? handleOrDid
       : await handleIndex.findDid(handleOrDid);
     return did && (await userRepository.findByDid(did));
-  },
-  async findEditor(agent) {
-    const did = agent.assertDid;
-    const owner = await userDbRepository.findByDid(did);
-    if (owner) {
-      return owner.toView();
-    }
-    const profile = await profileFetcher.fetchProfile(agent, did);
-    return User.create(did).withProfile(profile).toView();
   },
   async syncOwner(did) {
     let owner = (await userDbRepository.findByDid(did)) ?? User.create(did);
