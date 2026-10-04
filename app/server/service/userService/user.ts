@@ -1,7 +1,7 @@
 import { type Did, isDid } from "@atproto/did";
 
 import { LinkatAgent } from "~/libs/agent";
-import { type AccountStatus, User } from "~/models/user";
+import { type AccountState, User } from "~/models/user";
 import type { IHandleIndex } from "~/server/infrastructure/handleIndex";
 import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
 import type { IProfileFetcher } from "~/server/infrastructure/profileFetcher";
@@ -11,7 +11,7 @@ import type { IUserRepository } from "~/server/infrastructure/userRepository";
 export interface IUserService {
   findUser: (params: { handleOrDid: string }) => Promise<User | null>;
   syncOwner: (did: Did) => Promise<User>;
-  updateStatus: (did: Did, status: AccountStatus) => Promise<void>;
+  updateAccountState: (did: Did, state: AccountState) => Promise<void>;
 }
 
 export const userServiceFactory = ({
@@ -49,7 +49,7 @@ export const userServiceFactory = ({
     }
     return await userDbRepository.save(owner.withHandle(identity.handle));
   },
-  async updateStatus(did, status) {
-    await userRepository.updateStatus(did, status);
+  async updateAccountState(did, state) {
+    await userRepository.updateAccountState(did, state);
   },
 });

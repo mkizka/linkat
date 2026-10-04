@@ -10,7 +10,6 @@ import { Jetstream } from "@skyware/jetstream";
 import WebSocket from "ws";
 
 import { Board } from "~/models/board";
-import type { AccountStatus } from "~/models/user";
 import type { ICursorRepository } from "~/server/infrastructure/cursorRepository";
 import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
 import type { IProfileRecordParser } from "~/server/infrastructure/profileRecordParser";
@@ -26,23 +25,6 @@ const logger = createLogger("jetstream");
 const CURSOR_SAVE_INTERVAL_MS = 30_000;
 
 const jsonToLex = tryCatch((json: unknown) => lexParse(JSON.stringify(json)));
-
-const toAccountStatus = (account: AccountEvent["account"]): AccountStatus => {
-  if (account.active) {
-    return "active";
-  }
-  switch (account.status) {
-    case "takendown":
-    case "suspended":
-      return "suspended";
-    case "deleted":
-      return "deleted";
-    case "deactivated":
-      return "deactivated";
-    default:
-      return "inactive";
-  }
-};
 
 export interface IJetstreamService {
   handleCreateOrUpdate: (
@@ -154,10 +136,10 @@ export const jetstreamServiceFactory = ({
   };
 
   const handleAccount = async ({ account }: AccountEvent) => {
-    const status = toAccountStatus(account);
-    await userService.updateStatus(account.did, status);
+    const state = { active: account.active, status: account.status ?? null };
+    await userService.updateAccountState(account.did, state);
     logger.debug(
-      { did: account.did, status },
+      { did: account.did, ...state },
       "アカウントの状態を受け取りました",
     );
   };

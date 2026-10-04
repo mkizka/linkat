@@ -79,7 +79,8 @@ describe("userRepository", () => {
         did: "did:plc:dfbe2uvzisfdxwscnwcxdta6",
         displayName: "Alice",
         handle: "example.com",
-        status: "active",
+        active: true,
+        status: null,
         createdAt: expect.any(Date),
         updatedAt: expect.any(Date),
       });
@@ -108,7 +109,8 @@ describe("userRepository", () => {
         did: "did:plc:dfbe2uvzisfdxwscnwcxdta6",
         displayName: "Alice",
         handle: "example.com",
-        status: "active",
+        active: true,
+        status: null,
         createdAt: new Date("2024-01-01T00:00:00.000Z"),
         updatedAt: new Date("2024-01-01T00:10:00.000Z"),
       });
@@ -129,7 +131,8 @@ describe("userRepository", () => {
         did: "did:plc:dfbe2uvzisfdxwscnwcxdta6",
         displayName: null,
         handle: "example.com",
-        status: "active",
+        active: true,
+        status: null,
         createdAt: expect.any(Date),
         updatedAt: expect.any(Date),
       });
@@ -161,7 +164,8 @@ describe("userRepository", () => {
         did: "did:plc:dfbe2uvzisfdxwscnwcxdta6",
         displayName: "Alice",
         handle: "example.com",
-        status: "active",
+        active: true,
+        status: null,
         createdAt: new Date("2024-01-01T00:00:00.000Z"),
         updatedAt: new Date("2024-01-01T00:10:00.000Z"),
       });

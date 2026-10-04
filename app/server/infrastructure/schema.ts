@@ -1,5 +1,6 @@
 import {
   bigint,
+  boolean,
   foreignKey,
   integer,
   pgTable,
@@ -8,8 +9,6 @@ import {
   timestamp,
   uniqueIndex,
 } from "drizzle-orm/pg-core";
-
-import type { AccountStatus } from "~/models/user";
 
 export const userTable = pgTable(
   "User",
@@ -20,7 +19,8 @@ export const userTable = pgTable(
     description: text(),
     displayName: text(),
     handle: text(),
-    status: text().$type<AccountStatus>().notNull().default("active"),
+    active: boolean().notNull().default(true),
+    status: text(),
     createdAt: timestamp({ precision: 3 }).notNull().defaultNow(),
     updatedAt: timestamp({ precision: 3 }).notNull(),
   },

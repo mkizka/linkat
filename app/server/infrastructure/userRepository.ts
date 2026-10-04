@@ -1,7 +1,7 @@
 import type { Did } from "@atproto/did";
 
 import { LinkatAgent } from "~/libs/agent";
-import { type AccountStatus, User } from "~/models/user";
+import { type AccountState, User } from "~/models/user";
 import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
 import type { IProfileFetcher } from "~/server/infrastructure/profileFetcher";
 import type { IUserDbRepository } from "~/server/infrastructure/userDbRepository";
@@ -13,7 +13,7 @@ const isFresh = (user: User) =>
 
 export interface IUserRepository {
   findByDid: (did: Did) => Promise<User | null>;
-  updateStatus: (did: Did, status: AccountStatus) => Promise<void>;
+  updateAccountState: (did: Did, state: AccountState) => Promise<void>;
 }
 
 export const userRepositoryFactory = ({
@@ -45,13 +45,14 @@ export const userRepositoryFactory = ({
         description: profile?.description ?? null,
         displayName: profile?.displayName ?? null,
         handle: identity.handle,
-        status: "active",
+        active: true,
+        status: null,
         createdAt: new Date(),
         updatedAt: new Date(),
       }),
     );
   },
-  async updateStatus(did, status) {
-    await userDbRepository.updateStatus(did, status);
+  async updateAccountState(did, state) {
+    await userDbRepository.updateAccountState(did, state);
   },
 });

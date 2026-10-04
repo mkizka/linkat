@@ -39,7 +39,8 @@ describe("userDbRepository", () => {
         description: "description",
         displayName: "display name",
         handle: "example.com",
-        status: "active",
+        active: true,
+        status: null,
         createdAt: new Date("2024-01-01T00:00:00.000Z"),
         updatedAt: new Date("2024-01-02T00:00:00.000Z"),
       });
@@ -54,7 +55,8 @@ describe("userDbRepository", () => {
         description: user.description,
         displayName: user.displayName,
         handle: user.handle,
-        status: "active",
+        active: true,
+        status: null,
         createdAt: expect.any(Date),
         updatedAt: user.updatedAt,
       });
@@ -65,6 +67,7 @@ describe("userDbRepository", () => {
         did: "did:plc:abcdefghijklmnopqrstuvwx",
         handle: "old.example.com",
         avatar: "https://example.com/old-avatar.png",
+        active: false,
         status: "deactivated",
       });
       const updated = new User({
@@ -74,7 +77,8 @@ describe("userDbRepository", () => {
         description: "new description",
         displayName: "new display name",
         handle: "new.example.com",
-        status: "active",
+        active: true,
+        status: null,
         createdAt: existing.createdAt,
         updatedAt: new Date("2024-02-01T00:00:00.000Z"),
       });
@@ -89,6 +93,7 @@ describe("userDbRepository", () => {
         description: updated.description,
         displayName: updated.displayName,
         handle: updated.handle,
+        active: false,
         status: "deactivated",
         createdAt: existing.createdAt,
         updatedAt: updated.updatedAt,
@@ -117,21 +122,27 @@ describe("userDbRepository", () => {
     });
   });
 
-  describe("updateStatus", () => {
+  describe("updateAccountState", () => {
     test("ユーザーの状態を更新できる", async () => {
       // arrange
       const existing = await UserFactory.create();
       // act
-      await userDbRepository.updateStatus(asDid(existing.did), "suspended");
+      await userDbRepository.updateAccountState(asDid(existing.did), {
+        active: false,
+        status: "suspended",
+      });
       // assert
       const actual = await userDbRepository.findByDid(asDid(existing.did));
-      expect(actual?.status).toBe("suspended");
+      expect(actual).toMatchObject({ active: false, status: "suspended" });
     });
     test("ユーザーが保存されていない場合は何もしない", async () => {
       // arrange
       const did = asDid("did:plc:notfound");
       // act
-      await userDbRepository.updateStatus(did, "suspended");
+      await userDbRepository.updateAccountState(did, {
+        active: false,
+        status: "suspended",
+      });
       // assert
       const actual = await userDbRepository.findByDid(did);
       expect(actual).toBeNull();

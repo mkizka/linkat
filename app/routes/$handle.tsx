@@ -5,7 +5,6 @@ import { Footer, Main } from "~/components/layout";
 import { BoardViewer } from "~/features/board/board-viewer";
 import { ShareModal } from "~/features/board/share-modal";
 import { getInstance } from "~/i18n/i18n";
-import type { HiddenStatus } from "~/models/user";
 import { di } from "~/server/di";
 import { env } from "~/utils/env";
 import { createMeta } from "~/utils/meta";
@@ -59,7 +58,7 @@ export const meta: Route.MetaFunction = ({ loaderData }) => {
   return createMeta({ title, url, ogImageUrl, atUri });
 };
 
-function HiddenBoard({ status }: { status: HiddenStatus }) {
+function HiddenBoard({ status }: { status: string | null }) {
   const { t } = useTranslation();
   return (
     <>
@@ -67,7 +66,8 @@ function HiddenBoard({ status }: { status: HiddenStatus }) {
         <Card>
           <div className="card-body">
             <p data-testid="hidden-board__message">
-              {t(`board.hidden-message.${status}`)}
+              {t("board.hidden-message")}
+              {status && `: ${status}`}
             </p>
           </div>
         </Card>

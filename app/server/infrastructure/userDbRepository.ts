@@ -1,14 +1,14 @@
 import type { Did } from "@atproto/did";
 import { and, eq, ne } from "drizzle-orm";
 
-import { type AccountStatus, User } from "~/models/user";
+import { type AccountState, User } from "~/models/user";
 import type { Db } from "~/server/infrastructure/drizzle";
 import { userTable } from "~/server/infrastructure/schema";
 
 export interface IUserDbRepository {
   findByDid: (did: Did) => Promise<User | null>;
   save: (user: User) => Promise<User>;
-  updateStatus: (did: Did, status: AccountStatus) => Promise<void>;
+  updateAccountState: (did: Did, state: AccountState) => Promise<void>;
 }
 
 export const userDbRepositoryFactory = ({
@@ -54,7 +54,7 @@ export const userDbRepositoryFactory = ({
       return new User(row);
     });
   },
-  async updateStatus(did, status) {
-    await db.update(userTable).set({ status }).where(eq(userTable.did, did));
+  async updateAccountState(did, state) {
+    await db.update(userTable).set(state).where(eq(userTable.did, did));
   },
 });
