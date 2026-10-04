@@ -21,11 +21,8 @@ const logger = createLogger("edit");
 
 export async function action({ request, context }: Route.ActionArgs) {
   const i18next = getInstance(context);
-  const [user, agent] = await Promise.all([
-    di.sessionService.getSessionUser(request),
-    di.sessionService.getSessionAgent(request),
-  ]);
-  if (!user || !agent) {
+  const agent = await di.sessionService.getSessionAgent(request);
+  if (!agent) {
     setToast(context, {
       message: i18next.t("edit.invalid-session-error-message"),
       type: "error",
@@ -46,7 +43,7 @@ export async function action({ request, context }: Route.ActionArgs) {
     return null;
   }
   const parsedBoard = await di.boardService.parseBoardFromForm(
-    user.did,
+    agent.assertDid,
     rawBoard,
   );
   if (parsedBoard instanceof Error) {
@@ -57,7 +54,7 @@ export async function action({ request, context }: Route.ActionArgs) {
     });
     return null;
   }
-  const owner = await di.userService.syncOwner(user.did);
+  const owner = await di.userService.syncOwner(agent.assertDid);
   try {
     await di.boardService.publishBoard(agent, parsedBoard);
   } catch (error) {
@@ -83,21 +80,23 @@ export async function action({ request, context }: Route.ActionArgs) {
 }
 
 export async function loader({ request }: Route.LoaderArgs) {
-  const user = await di.sessionService.getSessionUser(request);
-  if (!user) {
+  const agent = await di.sessionService.getSessionAgent(request);
+  if (!agent) {
     throw redirect("/login");
   }
-  const board = await di.boardService.findBoard(user.did);
-  const view = user.toView();
+  const [editor, board] = await Promise.all([
+    di.editorService.findView(agent),
+    di.boardService.findBoard(agent.assertDid),
+  ]);
   return {
-    user: view,
+    editor,
     board: board && { cards: board.cards },
-    url: `${env.PUBLIC_URL}/${view.handleOrDid}`,
+    url: `${env.PUBLIC_URL}/${editor.handleOrDid}`,
   };
 }
 
 export default function Index({ loaderData }: Route.ComponentProps) {
-  const { user, board, url } = loaderData;
+  const { editor, board, url } = loaderData;
   const { t } = useTranslation();
   const umami = useUmami();
 
@@ -112,7 +111,7 @@ export default function Index({ loaderData }: Route.ComponentProps) {
     ({ currentLocation, nextLocation, historyAction }) =>
       // 保存ボタンを押したときの移動以外のとき
       (currentLocation.pathname !== nextLocation.pathname &&
-        nextLocation.pathname !== `/${user.handleOrDid}`) ||
+        nextLocation.pathname !== `/${editor.handleOrDid}`) ||
       // /alice.testから/editに移動して戻るとき
       // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
       historyAction === "POP",
@@ -135,7 +134,7 @@ export default function Index({ loaderData }: Route.ComponentProps) {
 
   return (
     <Main>
-      <BoardViewer user={user} board={board} url={url} editable />
+      <BoardViewer user={editor} board={board} url={url} editable />
     </Main>
   );
 }

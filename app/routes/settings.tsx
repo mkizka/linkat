@@ -11,16 +11,16 @@ import { di } from "~/server/di";
 import type { Route } from "./+types/settings";
 
 export const loader = async ({ request }: Route.LoaderArgs) => {
-  const user = await di.sessionService.getSessionUser(request);
-  if (!user) {
+  const agent = await di.sessionService.getSessionAgent(request);
+  if (!agent) {
     throw redirect("/login");
   }
-  return { user: user.toView() };
+  return { editor: await di.editorService.findView(agent) };
 };
 
 export default function SettingsPage({ loaderData }: Route.ComponentProps) {
   const { t } = useTranslation();
-  const { user } = loaderData;
+  const { editor } = loaderData;
 
   return (
     <>
@@ -36,7 +36,7 @@ export default function SettingsPage({ loaderData }: Route.ComponentProps) {
             <h2 className="border-b-2 border-gray-200 pb-1 font-bold">
               {t("settings.header-board")}
             </h2>
-            <DeleteBoardButton handle={user.handleOrDid} />
+            <DeleteBoardButton handle={editor.handleOrDid} />
             <p className="text-gray-400">
               {t("settings.delete-board-warning")}
             </p>

@@ -107,3 +107,26 @@ describe("isHidden", () => {
     },
   );
 });
+
+describe("withProfile", () => {
+  test("nullを渡すとプロフィールを空にし、ハンドルと状態は残す", () => {
+    // arrange
+    const owner = createUser({
+      avatarCid: "bafkreidummy",
+      description: "説明",
+      displayName: "Alice",
+      status: "suspended",
+    });
+    // act
+    const actual = owner.withProfile(null);
+    // assert
+    expect(actual).toMatchObject({
+      avatar: null,
+      avatarCid: null,
+      description: null,
+      displayName: null,
+      handle: "example.com",
+      status: "suspended",
+    });
+  });
+});
