@@ -15,7 +15,7 @@ import type { IIdentityResolver } from "~/server/infrastructure/identityResolver
 import { ownerRepositoryFactory } from "~/server/infrastructure/ownerRepository";
 import { profileFetcherFactory } from "~/server/infrastructure/profileFetcher";
 import { profileRecordParserFactory } from "~/server/infrastructure/profileRecordParser";
-import { boardServiceFactory } from "~/server/service/boardService/board";
+import { boardEventServiceFactory } from "~/server/service/boardEventService/boardEvent";
 import { ownerServiceFactory } from "~/server/service/ownerService/owner";
 import { env } from "~/utils/env";
 
@@ -37,7 +37,7 @@ const ownerService = ownerServiceFactory({
 
 const jetstreamService = jetstreamServiceFactory({
   cursorRepository: cursorRepositoryFactory({ db }),
-  boardService: boardServiceFactory({
+  boardEventService: boardEventServiceFactory({
     boardRepository: boardRepositoryFactory({ db }),
     ownerRepository,
     ownerService,

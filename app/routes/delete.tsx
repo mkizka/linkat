@@ -6,7 +6,7 @@ import { di } from "~/server/di";
 import {
   BoardDbDeleteError,
   BoardPdsDeleteError,
-} from "~/server/service/boardService/board";
+} from "~/server/service/boardEventService/boardEvent";
 import { createLogger } from "~/utils/logger";
 
 import type { Route } from "./+types/delete";
@@ -31,7 +31,7 @@ export async function action({ request, context }: Route.ActionArgs) {
     });
   }
   try {
-    await di.boardService.unpublishBoard(agent, ownerDid);
+    await di.boardEventService.unpublishBoard(agent, ownerDid);
   } catch (error) {
     if (error instanceof BoardPdsDeleteError) {
       logger.error(error, error.message);

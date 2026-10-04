@@ -11,7 +11,7 @@ import { di } from "~/server/di";
 import {
   BoardDbSaveError,
   BoardPdsSaveError,
-} from "~/server/service/boardService/board";
+} from "~/server/service/boardEventService/boardEvent";
 import { env } from "~/utils/env";
 import { createLogger } from "~/utils/logger";
 
@@ -56,7 +56,7 @@ export async function action({ request, context }: Route.ActionArgs) {
   }
   let owner;
   try {
-    owner = await di.boardService.publishBoard(agent, parsedBoard);
+    owner = await di.boardEventService.publishBoard(agent, parsedBoard);
   } catch (error) {
     if (error instanceof BoardPdsSaveError) {
       logger.error(error, error.message);
