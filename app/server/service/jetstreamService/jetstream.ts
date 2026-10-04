@@ -11,8 +11,6 @@ import WebSocket from "ws";
 
 import { Board } from "~/models/board";
 import type { ICursorRepository } from "~/server/infrastructure/cursorRepository";
-import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
-import type { IOwnerRepository } from "~/server/infrastructure/ownerRepository";
 import type { IProfileRecordParser } from "~/server/infrastructure/profileRecordParser";
 import type { IBoardEventService } from "~/server/service/boardEventService/boardEvent";
 import type { IOwnerService } from "~/server/service/ownerService/owner";
@@ -47,15 +45,11 @@ export const jetstreamServiceFactory = ({
   cursorRepository,
   boardEventService,
   ownerService,
-  ownerRepository,
-  identityResolver,
   profileRecordParser,
 }: {
   cursorRepository: ICursorRepository;
   boardEventService: IBoardEventService;
   ownerService: IOwnerService;
-  ownerRepository: IOwnerRepository;
-  identityResolver: IIdentityResolver;
   profileRecordParser: IProfileRecordParser;
 }): IJetstreamService => {
   const jetstream = new Jetstream({
@@ -98,10 +92,6 @@ export const jetstreamServiceFactory = ({
     if (event.commit.rkey !== "self") {
       return;
     }
-    const owner = await ownerRepository.findByDid(event.did);
-    if (!owner) {
-      return;
-    }
     const profile =
       event.commit.operation === "delete"
         ? null
@@ -110,28 +100,20 @@ export const jetstreamServiceFactory = ({
       logger.warn({ event }, "プロフィールのパースに失敗しました");
       return;
     }
-    const identity = await identityResolver.resolve(event.did);
-    const saved = await ownerRepository.save(
-      owner.withProfile(profile).withHandle(identity?.handle ?? null),
-    );
-    logger.info({ owner: saved }, "プロフィールを更新しました");
+    const saved = await ownerService.updateProfile(event.did, profile);
+    if (saved) {
+      logger.info({ owner: saved }, "プロフィールを更新しました");
+    }
   };
 
   const handleIdentity = async (event: IdentityEvent) => {
-    const owner = await ownerRepository.findByDid(event.did);
-    if (!owner) {
-      return;
+    const saved = await ownerService.refreshHandle(event.did);
+    if (saved) {
+      logger.info(
+        { did: saved.did, handle: saved.handle },
+        "ハンドルを更新しました",
+      );
     }
-    const identity = await identityResolver.resolve(event.did, {
-      noCache: true,
-    });
-    const saved = await ownerRepository.save(
-      owner.withHandle(identity?.handle ?? null),
-    );
-    logger.info(
-      { did: saved.did, handle: saved.handle },
-      "ハンドルを更新しました",
-    );
   };
 
   const handleAccount = async ({ account }: AccountEvent) => {

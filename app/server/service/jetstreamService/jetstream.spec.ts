@@ -43,8 +43,6 @@ const jetstreamService = jetstreamServiceFactory({
     ownerService,
   }),
   ownerService,
-  ownerRepository,
-  identityResolver,
   profileRecordParser,
 });
 
@@ -184,29 +182,6 @@ describe("jetstreamService", () => {
         avatarCid: null,
       });
     });
-    test("ハンドルを解決できなかった場合、写しのハンドルをnullにしてプロフィールは更新する", async () => {
-      // arrange
-      const owner = await OwnerFactory.create({ handle: "old.example.com" });
-      identityResolver.resolve.mockResolvedValue(null);
-      // act
-      await jetstreamService.handleProfileCommit(
-        profileUpdateEvent(owner.did, profileRecord),
-      );
-      // assert
-      const actual = await ownerRepository.findByDid(asDid(owner.did));
-      expect(actual).toMatchObject({ handle: null, displayName: "新しい名前" });
-    });
-    test("持ち主の写しが無いアカウントのイベントは捨てる", async () => {
-      // arrange
-      const did = "did:plc:notowner0000000000000000";
-      // act
-      await jetstreamService.handleProfileCommit(
-        profileUpdateEvent(did, profileRecord),
-      );
-      // assert
-      expect(identityResolver.resolve).not.toHaveBeenCalled();
-      expect(await ownerRepository.findByDid(asDid(did))).toBeNull();
-    });
     test("レコードが不正な場合、既存の値を残す", async () => {
       // arrange
       const owner = await OwnerFactory.create({ displayName: "古い名前" });
@@ -275,17 +250,6 @@ describe("jetstreamService", () => {
   });
 
   describe("handleIdentity", () => {
-    test("持ち主の写しが無いアカウントのイベントは、解決せずに捨てる", async () => {
-      // arrange
-      const did = "did:plc:notowner";
-      // act
-      await jetstreamService.handleIdentity(
-        identityEvent(did, "new.example.com"),
-      );
-      // assert
-      expect(identityResolver.resolve).not.toHaveBeenCalled();
-      expect(await ownerRepository.findByDid(asDid(did))).toBeNull();
-    });
     test("持ち主の写しがあれば、DIDからハンドルを解決し直して更新する", async () => {
       // arrange
       const owner = await OwnerFactory.create({
@@ -300,47 +264,9 @@ describe("jetstreamService", () => {
         identityEvent(owner.did, "unverified.example.com"),
       );
       // assert
-      expect(identityResolver.resolve).toHaveBeenCalledWith(owner.did, {
-        noCache: true,
-      });
       const actual = await ownerRepository.findByDid(asDid(owner.did));
       expect(actual?.handle).toBe("new.example.com");
       expect(actual?.displayName).toBe("表示名");
-    });
-    test("解決したハンドルを他の写しが持っていれば、そちらをnullにする", async () => {
-      // arrange
-      const other = await OwnerFactory.create({ handle: "new.example.com" });
-      const owner = await OwnerFactory.create({ handle: "old.example.com" });
-      identityResolver.resolve.mockResolvedValue(
-        found(owner.did, "new.example.com"),
-      );
-      // act
-      await jetstreamService.handleIdentity(identityEvent(owner.did));
-      // assert
-      const actual = await ownerRepository.findByDid(asDid(owner.did));
-      expect(actual?.handle).toBe("new.example.com");
-      const otherActual = await ownerRepository.findByDid(asDid(other.did));
-      expect(otherActual?.handle).toBeNull();
-    });
-    test("ハンドルの検証に失敗したら、写しのハンドルをnullにする", async () => {
-      // arrange
-      const owner = await OwnerFactory.create({ handle: "old.example.com" });
-      identityResolver.resolve.mockResolvedValue(found(owner.did, null));
-      // act
-      await jetstreamService.handleIdentity(identityEvent(owner.did));
-      // assert
-      const actual = await ownerRepository.findByDid(asDid(owner.did));
-      expect(actual?.handle).toBeNull();
-    });
-    test("DIDを解決できなければ、写しのハンドルをnullにする", async () => {
-      // arrange
-      const owner = await OwnerFactory.create({ handle: "old.example.com" });
-      identityResolver.resolve.mockResolvedValue(null);
-      // act
-      await jetstreamService.handleIdentity(identityEvent(owner.did));
-      // assert
-      const actual = await ownerRepository.findByDid(asDid(owner.did));
-      expect(actual?.handle).toBeNull();
     });
   });
 
