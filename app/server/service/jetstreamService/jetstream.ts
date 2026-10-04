@@ -98,18 +98,8 @@ export const jetstreamServiceFactory = ({
       return;
     }
     const board = new Board(event.did, cards);
-    const user = await userService.findUser({
-      handleOrDid: event.did,
-    });
-    if (!user) {
-      logger.warn(
-        { did: event.did },
-        "ユーザーが見つからないためボードの更新をスキップしました",
-      );
-      return;
-    }
-    await boardService.saveBoard(board);
-    logger.info({ user, board }, "ボードを更新しました");
+    const owner = await boardService.saveBoard(board);
+    logger.info({ owner, board }, "ボードを更新しました");
   };
 
   const parseProfile = async (json: unknown) => {
@@ -150,7 +140,9 @@ export const jetstreamServiceFactory = ({
     if (!user) {
       return;
     }
-    const identity = await identityResolver.resolve(event.did);
+    const identity = await identityResolver.resolve(event.did, {
+      noCache: true,
+    });
     const saved = await userDbRepository.save(
       user.withHandle(identity?.handle ?? null),
     );

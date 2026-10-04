@@ -1,13 +1,18 @@
 import { asDid } from "@atproto/did";
 import { http, HttpResponse } from "msw";
+import { mock, mockReset } from "vitest-mock-extended";
 
 import { LinkatAgent } from "~/libs/agent";
 import { server } from "~/mocks/server";
 import { Board, BoardParseError } from "~/models/board";
 import { BoardFactory, cardsFromFactory } from "~/server/factories/board";
 import { UserFactory } from "~/server/factories/user";
+import { accountPdsRepositoryFactory } from "~/server/infrastructure/accountPdsRepository";
 import { boardRepositoryFactory } from "~/server/infrastructure/boardRepository";
 import { db } from "~/server/infrastructure/drizzle";
+import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
+import { profileRecordParserFactory } from "~/server/infrastructure/profileRecordParser";
+import { userDbRepositoryFactory } from "~/server/infrastructure/userDbRepository";
 
 import {
   BoardDbDeleteError,
@@ -17,9 +22,41 @@ import {
   boardServiceFactory,
 } from "./board";
 
+const identityResolver = mock<IIdentityResolver>();
 const boardRepository = boardRepositoryFactory({ db });
+const userDbRepository = userDbRepositoryFactory({ db });
 const boardService = boardServiceFactory({
   boardRepository,
+  userDbRepository,
+  accountPdsRepository: accountPdsRepositoryFactory({
+    identityResolver,
+    profileRecordParser: profileRecordParserFactory(),
+  }),
+});
+
+const getRecordUrl = "https://pds.example.com/xrpc/com.atproto.repo.getRecord";
+
+const mockIdentity = (did: string, handle: string | null) =>
+  identityResolver.resolve.mockResolvedValue({
+    did: asDid(did),
+    pds: "https://pds.example.com",
+    handle,
+  });
+
+const mockProfileRecord = () =>
+  server.use(
+    http.get(getRecordUrl, () =>
+      HttpResponse.json({
+        uri: "at://did:plc:owner/app.bsky.actor.profile/self",
+        cid: "bafyreidfayvfuwqa7qlnopdjiqrxzs6blmoeu4rujcjtnci5beludirz2a",
+        value: { $type: "app.bsky.actor.profile", displayName: "Alice" },
+      }),
+    ),
+  );
+
+beforeEach(() => {
+  mockReset(identityResolver);
+  identityResolver.resolve.mockResolvedValue(null);
 });
 
 const dummyCards = [
@@ -46,6 +83,61 @@ describe("boardService", () => {
       const actual = await boardService.findBoard(asDid(user.did));
       // assert
       expect(actual).toBeNull();
+    });
+  });
+
+  describe("saveBoard", () => {
+    test("持ち主の写しが無ければ、ハンドルを解決しプロフィールを取得して作る", async () => {
+      // arrange
+      const did = "did:plc:owner";
+      mockIdentity(did, "alice.example.com");
+      mockProfileRecord();
+      const board = new Board(did, dummyCards);
+      // act
+      const actual = await boardService.saveBoard(board);
+      // assert
+      expect(actual).toMatchObject({
+        did,
+        handle: "alice.example.com",
+        displayName: "Alice",
+      });
+      expect(await userDbRepository.findByDid(asDid(did))).toEqual(actual);
+      expect(await boardRepository.find(asDid(did))).toEqual(board);
+    });
+    test("DIDを解決できなければ、ハンドルをnullにして既存のプロフィールを残す", async () => {
+      // arrange
+      const user = await UserFactory.create({
+        handle: "alice.example.com",
+        displayName: "Alice",
+      });
+      // act
+      const actual = await boardService.saveBoard(
+        new Board(user.did, dummyCards),
+      );
+      // assert
+      expect(actual).toMatchObject({ handle: null, displayName: "Alice" });
+    });
+    test("プロフィールを取得できなければ、既存のプロフィールを残してハンドルは更新する", async () => {
+      // arrange
+      const user = await UserFactory.create({
+        handle: "old.example.com",
+        displayName: "Alice",
+      });
+      mockIdentity(user.did, "alice.example.com");
+      server.use(
+        http.get(getRecordUrl, () =>
+          HttpResponse.json({ error: "InternalServerError" }, { status: 500 }),
+        ),
+      );
+      // act
+      const actual = await boardService.saveBoard(
+        new Board(user.did, dummyCards),
+      );
+      // assert
+      expect(actual).toMatchObject({
+        handle: "alice.example.com",
+        displayName: "Alice",
+      });
     });
   });
 
@@ -93,9 +185,11 @@ describe("boardService", () => {
     const createAgent = (did: string) =>
       new LinkatAgent({ did: asDid(did), service: "https://pds.example.com" });
 
-    test("PDSに保存してからDBに保存する", async () => {
+    test("PDSに保存してからDBに保存し、持ち主の写しを返す", async () => {
       // arrange
       const user = await UserFactory.create();
+      mockIdentity(user.did, "alice.example.com");
+      mockProfileRecord();
       const board = new Board(user.did, dummyCards);
       let putRecordBody: unknown;
       server.use(
@@ -108,8 +202,12 @@ describe("boardService", () => {
         }),
       );
       // act
-      await boardService.publishBoard(createAgent(user.did), board);
+      const actual = await boardService.publishBoard(
+        createAgent(user.did),
+        board,
+      );
       // assert
+      expect(actual).toMatchObject({ handle: "alice.example.com" });
       expect(putRecordBody).toMatchObject({
         repo: user.did,
         collection: "blue.linkat.board",
