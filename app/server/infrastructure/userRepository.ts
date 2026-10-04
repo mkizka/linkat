@@ -34,11 +34,9 @@ export const userRepositoryFactory = ({
     if (!identity) {
       return cached;
     }
-    const profile =
-      (await profilePdsRepository.fetchProfile(
-        LinkatAgent.credential(identity.pds),
-        did,
-      )) ?? cached;
+    const agent = LinkatAgent.credential(identity.pds);
+    const fetched = await profilePdsRepository.fetchProfile(agent, did);
+    const profile = fetched ?? cached;
     return await userDbRepository.save(
       new User({
         did,

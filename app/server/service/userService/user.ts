@@ -47,20 +47,17 @@ export const userServiceFactory = ({
     return User.create(did).withProfile(profile).toView();
   },
   async syncOwner(did) {
-    const identity = await identityResolver.resolve(did);
-    const profile =
-      identity &&
-      (await profilePdsRepository.fetchProfile(
-        LinkatAgent.credential(identity.pds),
-        did,
-      ));
     let owner = (await userDbRepository.findByDid(did)) ?? User.create(did);
+    const identity = await identityResolver.resolve(did);
+    if (!identity) {
+      return await userDbRepository.save(owner.withHandle(null));
+    }
+    const agent = LinkatAgent.credential(identity.pds);
+    const profile = await profilePdsRepository.fetchProfile(agent, did);
     if (profile) {
       owner = owner.withProfile(profile);
     }
-    return await userDbRepository.save(
-      owner.withHandle(identity?.handle ?? null),
-    );
+    return await userDbRepository.save(owner.withHandle(identity.handle));
   },
   async updateStatus(did, status) {
     await userRepository.updateStatus(did, status);
