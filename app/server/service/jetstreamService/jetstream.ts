@@ -98,8 +98,8 @@ export const jetstreamServiceFactory = ({
       return;
     }
     const board = new Board(event.did, cards);
-    const owner = await boardService.saveBoard(board);
-    logger.info({ owner, board }, "ボードを更新しました");
+    await boardService.saveBoard(board);
+    logger.debug({ board }, "ボードを更新しました");
   };
 
   const parseProfile = async (json: unknown) => {

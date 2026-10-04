@@ -94,14 +94,12 @@ describe("boardService", () => {
       mockProfileRecord();
       const board = new Board(did, dummyCards);
       // act
-      const actual = await boardService.saveBoard(board);
+      await boardService.saveBoard(board);
       // assert
-      expect(actual).toMatchObject({
-        did,
+      expect(await userDbRepository.findByDid(asDid(did))).toMatchObject({
         handle: "alice.example.com",
         displayName: "Alice",
       });
-      expect(await userDbRepository.findByDid(asDid(did))).toEqual(actual);
       expect(await boardRepository.find(asDid(did))).toEqual(board);
     });
     test("DIDを解決できなければ、ハンドルをnullにして既存のプロフィールを残す", async () => {
@@ -111,11 +109,12 @@ describe("boardService", () => {
         displayName: "Alice",
       });
       // act
-      const actual = await boardService.saveBoard(
-        new Board(user.did, dummyCards),
-      );
+      await boardService.saveBoard(new Board(user.did, dummyCards));
       // assert
-      expect(actual).toMatchObject({ handle: null, displayName: "Alice" });
+      expect(await userDbRepository.findByDid(asDid(user.did))).toMatchObject({
+        handle: null,
+        displayName: "Alice",
+      });
     });
     test("プロフィールを取得できなければ、既存のプロフィールを残してハンドルは更新する", async () => {
       // arrange
@@ -130,11 +129,9 @@ describe("boardService", () => {
         ),
       );
       // act
-      const actual = await boardService.saveBoard(
-        new Board(user.did, dummyCards),
-      );
+      await boardService.saveBoard(new Board(user.did, dummyCards));
       // assert
-      expect(actual).toMatchObject({
+      expect(await userDbRepository.findByDid(asDid(user.did))).toMatchObject({
         handle: "alice.example.com",
         displayName: "Alice",
       });
@@ -185,11 +182,9 @@ describe("boardService", () => {
     const createAgent = (did: string) =>
       new LinkatAgent({ did: asDid(did), service: "https://pds.example.com" });
 
-    test("PDSに保存してからDBに保存し、持ち主の写しを返す", async () => {
+    test("PDSに保存してからDBに保存する", async () => {
       // arrange
       const user = await UserFactory.create();
-      mockIdentity(user.did, "alice.example.com");
-      mockProfileRecord();
       const board = new Board(user.did, dummyCards);
       let putRecordBody: unknown;
       server.use(
@@ -202,12 +197,8 @@ describe("boardService", () => {
         }),
       );
       // act
-      const actual = await boardService.publishBoard(
-        createAgent(user.did),
-        board,
-      );
+      await boardService.publishBoard(createAgent(user.did), board);
       // assert
-      expect(actual).toMatchObject({ handle: "alice.example.com" });
       expect(putRecordBody).toMatchObject({
         repo: user.did,
         collection: "blue.linkat.board",
