@@ -1,17 +1,19 @@
 import { createRegistry } from "@gyaku/di";
 
-import { accountPdsRepositoryFactory } from "~/server/infrastructure/accountPdsRepository";
 import { atpassportClientFactory } from "~/server/infrastructure/atpassportClient";
 import { boardRepositoryFactory } from "~/server/infrastructure/boardRepository";
 import { cookieSessionStorageFactory } from "~/server/infrastructure/cookieSessionStorage";
 import { cursorRepositoryFactory } from "~/server/infrastructure/cursorRepository";
 import { db } from "~/server/infrastructure/drizzle";
+import { handleIndexFactory } from "~/server/infrastructure/handleIndex";
 import { identityResolverFactory } from "~/server/infrastructure/identityResolver";
 import { oauthClientFactory } from "~/server/infrastructure/oauthClient";
 import {
   sessionStoreFactory,
   stateStoreFactory,
 } from "~/server/infrastructure/oauthStorage";
+import { profileFetcherFactory } from "~/server/infrastructure/profileFetcher";
+import { profileRecordParserFactory } from "~/server/infrastructure/profileRecordParser";
 import { userDbRepositoryFactory } from "~/server/infrastructure/userDbRepository";
 import { userRepositoryFactory } from "~/server/infrastructure/userRepository";
 import { atpassportServiceFactory } from "~/server/service/atpassportService/atpassport";
@@ -26,27 +28,35 @@ export const di = await createRegistry()
   .service("boardRepository", ["db"], boardRepositoryFactory)
   .service("cursorRepository", ["db"], cursorRepositoryFactory)
   .service("userDbRepository", ["db"], userDbRepositoryFactory)
+  .service("handleIndex", ["db"], handleIndexFactory)
   .service("oauthStateStore", ["db"], stateStoreFactory)
   .service("oauthSessionStore", ["db"], sessionStoreFactory)
   .service("identityResolver", identityResolverFactory)
+  .service("profileRecordParser", profileRecordParserFactory)
   .service(
     "oauthClient",
     ["oauthStateStore", "oauthSessionStore"],
     oauthClientFactory,
   )
-  .service(
-    "accountPdsRepository",
-    ["identityResolver"],
-    accountPdsRepositoryFactory,
-  )
+  .service("profileFetcher", ["profileRecordParser"], profileFetcherFactory)
   .service(
     "userRepository",
-    ["userDbRepository", "accountPdsRepository"],
+    ["userDbRepository", "profileFetcher", "identityResolver"],
     userRepositoryFactory,
   )
   .service("atpassportClient", atpassportClientFactory)
   .service("cookieSessionStorage", cookieSessionStorageFactory)
-  .service("userService", ["userRepository"], userServiceFactory)
+  .service(
+    "userService",
+    [
+      "handleIndex",
+      "userRepository",
+      "userDbRepository",
+      "profileFetcher",
+      "identityResolver",
+    ],
+    userServiceFactory,
+  )
   .service("boardService", ["boardRepository"], boardServiceFactory)
   .service("atpassportService", ["atpassportClient"], atpassportServiceFactory)
   .service("authService", ["oauthClient"], authServiceFactory)
@@ -57,7 +67,14 @@ export const di = await createRegistry()
   )
   .service(
     "jetstreamService",
-    ["cursorRepository", "boardService", "userService"],
+    [
+      "cursorRepository",
+      "boardService",
+      "userService",
+      "userDbRepository",
+      "identityResolver",
+      "profileRecordParser",
+    ],
     jetstreamServiceFactory,
   )
   .resolve();

@@ -7,7 +7,6 @@ import { userTable } from "~/server/infrastructure/schema";
 
 export interface IUserDbRepository {
   findByDid: (did: Did) => Promise<User | null>;
-  findByHandle: (handle: string) => Promise<User | null>;
   save: (user: User) => Promise<User>;
   updateStatus: (did: Did, status: AccountStatus) => Promise<void>;
 }
@@ -22,14 +21,6 @@ export const userDbRepositoryFactory = ({
       .select()
       .from(userTable)
       .where(eq(userTable.did, did))
-      .limit(1);
-    return row ? new User(row) : null;
-  },
-  async findByHandle(handle) {
-    const [row] = await db
-      .select()
-      .from(userTable)
-      .where(eq(userTable.handle, handle))
       .limit(1);
     return row ? new User(row) : null;
   },

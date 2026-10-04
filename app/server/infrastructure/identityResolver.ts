@@ -12,7 +12,8 @@ const logger = createLogger("identityResolver");
 
 export interface IIdentityResolver {
   resolve: (
-    handleOrDid: string,
+    did: Did,
+    options?: { noCache?: boolean },
   ) => Promise<{ did: Did; handle: string | null; pds: string } | null>;
 }
 
@@ -24,9 +25,9 @@ export const identityResolverFactory = (): IIdentityResolver => {
     allowHttp: !isProduction,
   });
   return {
-    async resolve(handleOrDid) {
+    async resolve(did, options) {
       try {
-        const { did, didDoc, handle } = await resolver.resolve(handleOrDid);
+        const { didDoc, handle } = await resolver.resolve(did, options);
         return {
           did,
           handle: handle === HANDLE_INVALID ? null : handle,

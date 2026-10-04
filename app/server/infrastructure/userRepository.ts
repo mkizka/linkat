@@ -1,7 +1,9 @@
-import { type Did, isDid } from "@atproto/did";
+import type { Did } from "@atproto/did";
 
+import { LinkatAgent } from "~/libs/agent";
 import { type AccountStatus, User } from "~/models/user";
-import type { IAccountPdsRepository } from "~/server/infrastructure/accountPdsRepository";
+import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
+import type { IProfileFetcher } from "~/server/infrastructure/profileFetcher";
 import type { IUserDbRepository } from "~/server/infrastructure/userDbRepository";
 
 const REFETCH_INTERVAL_MS = 10 * 60 * 1000;
@@ -10,38 +12,39 @@ const isFresh = (user: User) =>
   user.updatedAt.getTime() > Date.now() - REFETCH_INTERVAL_MS;
 
 export interface IUserRepository {
-  findByHandleOrDid: (handleOrDid: string) => Promise<User | null>;
+  findByDid: (did: Did) => Promise<User | null>;
   updateStatus: (did: Did, status: AccountStatus) => Promise<void>;
 }
 
 export const userRepositoryFactory = ({
   userDbRepository,
-  accountPdsRepository,
+  profileFetcher,
+  identityResolver,
 }: {
   userDbRepository: IUserDbRepository;
-  accountPdsRepository: IAccountPdsRepository;
+  profileFetcher: IProfileFetcher;
+  identityResolver: IIdentityResolver;
 }): IUserRepository => ({
-  async findByHandleOrDid(handleOrDid) {
-    const cached = await (isDid(handleOrDid)
-      ? userDbRepository.findByDid(handleOrDid)
-      : userDbRepository.findByHandle(handleOrDid));
+  async findByDid(did) {
+    const cached = await userDbRepository.findByDid(did);
     if (cached && isFresh(cached)) {
       return cached;
     }
-    const fetched = await accountPdsRepository.findByHandleOrDid(handleOrDid);
-    if (!fetched) {
+    const identity = await identityResolver.resolve(did);
+    if (!identity) {
       return cached;
     }
-    const profile =
-      fetched.profile ?? (cached?.did === fetched.did ? cached : null);
+    const agent = LinkatAgent.credential(identity.pds);
+    const fetched = await profileFetcher.fetchProfile(agent, did);
+    const profile = fetched ?? cached;
     return await userDbRepository.save(
       new User({
-        did: fetched.did,
+        did,
         avatar: profile?.avatar ?? null,
         avatarCid: profile?.avatarCid ?? null,
         description: profile?.description ?? null,
         displayName: profile?.displayName ?? null,
-        handle: fetched.handle,
+        handle: identity.handle,
         status: "active",
         createdAt: new Date(),
         updatedAt: new Date(),

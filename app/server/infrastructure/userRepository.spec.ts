@@ -4,9 +4,10 @@ import { mock } from "vitest-mock-extended";
 
 import { server } from "~/mocks/server";
 import { UserFactory } from "~/server/factories/user";
-import { accountPdsRepositoryFactory } from "~/server/infrastructure/accountPdsRepository";
 import { db } from "~/server/infrastructure/drizzle";
 import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
+import { profileFetcherFactory } from "~/server/infrastructure/profileFetcher";
+import { profileRecordParserFactory } from "~/server/infrastructure/profileRecordParser";
 import { userDbRepositoryFactory } from "~/server/infrastructure/userDbRepository";
 
 import { userRepositoryFactory } from "./userRepository";
@@ -15,7 +16,10 @@ const identityResolver = mock<IIdentityResolver>();
 
 const userRepository = userRepositoryFactory({
   userDbRepository: userDbRepositoryFactory({ db }),
-  accountPdsRepository: accountPdsRepositoryFactory({ identityResolver }),
+  profileFetcher: profileFetcherFactory({
+    profileRecordParser: profileRecordParserFactory(),
+  }),
+  identityResolver,
 });
 
 const AVATAR_CID =
@@ -45,21 +49,17 @@ const dummyIdentity = {
 
 const getRecordUrl = "https://pds.example.com/xrpc/com.atproto.repo.getRecord";
 
+beforeEach(() => {
+  identityResolver.resolve.mockReset();
+});
+
 describe("userRepository", () => {
-  describe("findByHandleOrDid", () => {
-    test("didを指定してユーザーを検索できる", async () => {
+  describe("findByDid", () => {
+    test("ユーザーを検索できる", async () => {
       // arrange
       const user = await UserFactory.create();
       // act
-      const actual = await userRepository.findByHandleOrDid(user.did);
-      // assert
-      expect(actual).toEqual(user);
-    });
-    test("handleを指定してユーザーを検索できる", async () => {
-      // arrange
-      const user = await UserFactory.create({ handle: "example.com" });
-      // act
-      const actual = await userRepository.findByHandleOrDid("example.com");
+      const actual = await userRepository.findByDid(asDid(user.did));
       // assert
       expect(actual).toEqual(user);
     });
@@ -70,7 +70,7 @@ describe("userRepository", () => {
         http.get(getRecordUrl, () => HttpResponse.json(dummyProfileRecord)),
       );
       // act
-      const actual = await userRepository.findByHandleOrDid("example.com");
+      const actual = await userRepository.findByDid(dummyIdentity.did);
       // assert
       expect(actual).toEqual({
         avatar: null,
@@ -99,9 +99,7 @@ describe("userRepository", () => {
         http.get(getRecordUrl, () => HttpResponse.json(dummyProfileRecord)),
       );
       // act
-      const actual = await userRepository.findByHandleOrDid(
-        "did:plc:dfbe2uvzisfdxwscnwcxdta6",
-      );
+      const actual = await userRepository.findByDid(dummyIdentity.did);
       // assert
       expect(actual).toEqual({
         avatar: null,
@@ -122,7 +120,7 @@ describe("userRepository", () => {
         http.get(getRecordUrl, () => HttpResponse.json("", { status: 500 })),
       );
       // act
-      const actual = await userRepository.findByHandleOrDid("example.com");
+      const actual = await userRepository.findByDid(dummyIdentity.did);
       // assert
       expect(actual).toEqual({
         avatar: null,
@@ -154,9 +152,7 @@ describe("userRepository", () => {
         http.get(getRecordUrl, () => HttpResponse.json("", { status: 500 })),
       );
       // act
-      const actual = await userRepository.findByHandleOrDid(
-        "did:plc:dfbe2uvzisfdxwscnwcxdta6",
-      );
+      const actual = await userRepository.findByDid(dummyIdentity.did);
       // assert
       expect(actual).toEqual({
         avatar: "https://example.com/avatar.png",
@@ -181,9 +177,7 @@ describe("userRepository", () => {
       });
       identityResolver.resolve.mockResolvedValue(null);
       // act
-      const actual = await userRepository.findByHandleOrDid(
-        "did:plc:dfbe2uvzisfdxwscnwcxdta6",
-      );
+      const actual = await userRepository.findByDid(dummyIdentity.did);
       // assert
       expect(actual).toEqual(user);
     });
@@ -191,9 +185,7 @@ describe("userRepository", () => {
       // arrange
       identityResolver.resolve.mockResolvedValue(null);
       // act
-      const actual = await userRepository.findByHandleOrDid(
-        "notfound.example.com",
-      );
+      const actual = await userRepository.findByDid(asDid("did:plc:notfound"));
       // assert
       expect(actual).toBeNull();
     });
