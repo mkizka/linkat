@@ -63,7 +63,11 @@ export const di = await createRegistry()
     ["userDbRepository", "profileFetcher"],
     editorServiceFactory,
   )
-  .service("boardService", ["boardRepository"], boardServiceFactory)
+  .service(
+    "boardService",
+    ["boardRepository", "userDbRepository"],
+    boardServiceFactory,
+  )
   .service("atpassportService", ["atpassportClient"], atpassportServiceFactory)
   .service("authService", ["oauthClient"], authServiceFactory)
   .service(

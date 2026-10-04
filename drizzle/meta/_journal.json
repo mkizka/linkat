@@ -29,6 +29,13 @@
       "when": 1791012116838,
       "tag": "0003_user_status",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1791113409404,
+      "tag": "0004_board_without_user_fkey",
+      "breakpoints": true
     }
   ]
 }

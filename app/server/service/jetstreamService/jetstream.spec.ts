@@ -33,6 +33,7 @@ const jetstreamService = jetstreamServiceFactory({
   cursorRepository: cursorRepositoryFactory({ db }),
   boardService: boardServiceFactory({
     boardRepository: boardRepositoryFactory({ db }),
+    userDbRepository,
   }),
   userService: userServiceFactory({
     handleIndex: handleIndexFactory({ db }),
