@@ -57,6 +57,7 @@ export async function action({ request, context }: Route.ActionArgs) {
     });
     return null;
   }
+  const owner = await di.userService.syncOwner(user.did);
   try {
     await di.boardService.publishBoard(agent, parsedBoard);
   } catch (error) {
@@ -74,11 +75,11 @@ export async function action({ request, context }: Route.ActionArgs) {
         message: i18next.t("edit.save-delayed-warning-message"),
         type: "warning",
       });
-      return redirect(`/${user.toView().handleOrDid}`);
+      return redirect(`/${owner.toView().handleOrDid}`);
     }
     throw error;
   }
-  return redirect(`/${user.toView().handleOrDid}?success`);
+  return redirect(`/${owner.toView().handleOrDid}?success`);
 }
 
 export async function loader({ request }: Route.LoaderArgs) {

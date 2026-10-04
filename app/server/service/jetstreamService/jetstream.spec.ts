@@ -1,10 +1,11 @@
 import { asDid } from "@atproto/did";
 import type { CommitDeleteEvent, CommitUpdateEvent } from "@skyware/jetstream";
 import { CommitType, EventType } from "@skyware/jetstream";
+import { http, HttpResponse } from "msw";
 import { Pool } from "pg";
 import { mock, mockReset } from "vitest-mock-extended";
 
-import { mockedLogger } from "~/mocks/logger";
+import { server } from "~/mocks/server";
 import { UserFactory } from "~/server/factories/user";
 import { accountPdsRepositoryFactory } from "~/server/infrastructure/accountPdsRepository";
 import { boardRepositoryFactory } from "~/server/infrastructure/boardRepository";
@@ -40,6 +41,8 @@ const jetstreamService = jetstreamServiceFactory({
       userDbRepository,
       accountPdsRepository,
     }),
+    userDbRepository,
+    accountPdsRepository,
   }),
   userDbRepository,
   identityResolver,
@@ -232,23 +235,41 @@ describe("jetstreamService", () => {
   });
 
   describe("handleCreateOrUpdate", () => {
-    test("ユーザーがDBになくDIDも解決できない場合、エラーにせずボードの保存をスキップする", async () => {
+    test("持ち主の写しが無ければ、DIDを解決できなくても写しを作ってボードを保存する", async () => {
       // arrange
-      const did = "did:plc:notfounduser0000000000000";
+      const did = "did:plc:newowner";
       identityResolver.resolve.mockResolvedValue(null);
       // act
-      const actual = jetstreamService.handleCreateOrUpdate(dummyEvent(did));
+      await jetstreamService.handleCreateOrUpdate(dummyEvent(did));
       // assert
-      await expect(actual).resolves.toBeUndefined();
-      expect(mockedLogger.warn).toHaveBeenCalledWith(
-        { did },
-        "ユーザーが見つからないためボードの更新をスキップしました",
-      );
+      expect(await userDbRepository.findByDid(asDid(did))).toMatchObject({
+        handle: null,
+      });
       const { rows } = await pool.query(
         `SELECT * FROM "Board" WHERE "userDid" = $1`,
         [did],
       );
-      expect(rows).toHaveLength(0);
+      expect(rows).toHaveLength(1);
+    });
+    test("持ち主の写しが新しくても、ハンドルを解決し直す", async () => {
+      // arrange
+      const user = await UserFactory.create({ handle: "old.example.com" });
+      identityResolver.resolve.mockResolvedValue(
+        found(user.did, "new.example.com"),
+      );
+      server.use(
+        http.get(
+          "https://pds.example.com/xrpc/com.atproto.repo.getRecord",
+          () => HttpResponse.json("", { status: 500 }),
+        ),
+      );
+      // act
+      await jetstreamService.handleCreateOrUpdate(dummyEvent(user.did));
+      // assert
+      expect(await userDbRepository.findByDid(asDid(user.did))).toMatchObject({
+        handle: "new.example.com",
+        displayName: user.displayName,
+      });
     });
   });
 

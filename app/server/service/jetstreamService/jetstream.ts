@@ -98,18 +98,9 @@ export const jetstreamServiceFactory = ({
       return;
     }
     const board = new Board(event.did, cards);
-    const user = await userService.findUser({
-      handleOrDid: event.did,
-    });
-    if (!user) {
-      logger.warn(
-        { did: event.did },
-        "ユーザーが見つからないためボードの更新をスキップしました",
-      );
-      return;
-    }
+    await userService.syncOwner(event.did);
     await boardService.saveBoard(board);
-    logger.info({ user, board }, "ボードを更新しました");
+    logger.debug({ board }, "ボードを更新しました");
   };
 
   const parseProfile = async (json: unknown) => {
