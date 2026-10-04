@@ -75,9 +75,8 @@ export async function action({ request, context }: Route.ActionArgs) {
     }
     throw error;
   }
-  const owner =
-    (await di.userService.findUser({ handleOrDid: user.did })) ?? user;
-  return redirect(`/${owner.toView().handleOrDid}?success`);
+  const editor = await di.userService.findEditor(agent);
+  return redirect(`/${editor.handleOrDid}?success`);
 }
 
 export async function loader({ request }: Route.LoaderArgs) {
