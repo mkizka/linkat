@@ -112,8 +112,7 @@ export default function Index({ loaderData }: Route.ComponentProps) {
     ({ currentLocation, nextLocation, historyAction }) =>
       // 保存ボタンを押したときの移動以外のとき
       (currentLocation.pathname !== nextLocation.pathname &&
-        nextLocation.pathname !== `/${user.handleOrDid}` &&
-        nextLocation.search !== "?success") ||
+        nextLocation.pathname !== `/${user.handleOrDid}`) ||
       // /alice.testから/editに移動して戻るとき
       // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
       historyAction === "POP",
