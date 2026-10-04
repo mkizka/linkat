@@ -3,7 +3,6 @@ import { asDid, type Did } from "@atproto/did";
 export type AccountState = { active: boolean; status: string | null };
 
 export type Profile = {
-  avatar: string | null;
   avatarCid: string | null;
   description: string | null;
   displayName: string | null;
@@ -11,7 +10,6 @@ export type Profile = {
 
 export class Owner {
   readonly did: Did;
-  readonly avatar: string | null;
   readonly avatarCid: string | null;
   readonly description: string | null;
   readonly displayName: string | null;
@@ -23,7 +21,6 @@ export class Owner {
 
   constructor(props: {
     did: string;
-    avatar: string | null;
     avatarCid: string | null;
     description: string | null;
     displayName: string | null;
@@ -34,7 +31,6 @@ export class Owner {
     updatedAt: Date;
   }) {
     this.did = asDid(props.did);
-    this.avatar = props.avatar;
     this.avatarCid = props.avatarCid;
     this.description = props.description;
     this.displayName = props.displayName;
@@ -49,7 +45,6 @@ export class Owner {
     const now = new Date();
     return new Owner({
       did,
-      avatar: null,
       avatarCid: null,
       description: null,
       displayName: null,
@@ -68,7 +63,6 @@ export class Owner {
   withHandle(handle: string | null) {
     return new Owner({
       did: this.did,
-      avatar: this.avatar,
       avatarCid: this.avatarCid,
       description: this.description,
       displayName: this.displayName,
@@ -83,7 +77,6 @@ export class Owner {
   withProfile(profile: Profile | null) {
     return new Owner({
       did: this.did,
-      avatar: profile?.avatar ?? null,
       avatarCid: profile?.avatarCid ?? null,
       description: profile?.description ?? null,
       displayName: profile?.displayName ?? null,
@@ -103,7 +96,7 @@ export class Owner {
       displayName: this.displayName,
       avatarUrl: this.avatarCid
         ? `https://cdn.bsky.app/img/avatar/plain/${this.did}/${this.avatarCid}@jpeg`
-        : this.avatar,
+        : null,
     };
   }
 }

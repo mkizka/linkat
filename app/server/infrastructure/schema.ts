@@ -13,7 +13,6 @@ export const ownerTable = pgTable(
   "Owner",
   {
     did: text().primaryKey(),
-    avatar: text(),
     avatarCid: text(),
     description: text(),
     displayName: text(),

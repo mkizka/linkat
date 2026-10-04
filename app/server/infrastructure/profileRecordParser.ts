@@ -14,7 +14,6 @@ export const profileRecordParserFactory = (): IProfileRecordParser => ({
       return null;
     }
     return {
-      avatar: null,
       avatarCid: getBlobCidString(result.value.avatar) ?? null,
       description: result.value.description ?? null,
       displayName: result.value.displayName ?? null,
