@@ -1,5 +1,6 @@
 import {
   bigint,
+  foreignKey,
   integer,
   pgTable,
   serial,
@@ -8,10 +9,10 @@ import {
   uniqueIndex,
 } from "drizzle-orm/pg-core";
 
-import type { AccountStatus } from "~/models/owner";
+import type { AccountStatus } from "~/models/user";
 
-export const ownerTable = pgTable(
-  "Owner",
+export const userTable = pgTable(
+  "User",
   {
     did: text().primaryKey(),
     avatar: text(),
@@ -23,19 +24,28 @@ export const ownerTable = pgTable(
     createdAt: timestamp({ precision: 3 }).notNull().defaultNow(),
     updatedAt: timestamp({ precision: 3 }).notNull(),
   },
-  (table) => [uniqueIndex("Owner_handle_key").on(table.handle)],
+  (table) => [uniqueIndex("User_handle_key").on(table.handle)],
 );
 
 export const boardTable = pgTable(
   "Board",
   {
     id: serial().primaryKey(),
-    ownerDid: text().notNull(),
+    userDid: text().notNull(),
     record: text().notNull(),
     createdAt: timestamp({ precision: 3 }).notNull().defaultNow(),
     updatedAt: timestamp({ precision: 3 }).notNull(),
   },
-  (table) => [uniqueIndex("Board_ownerDid_key").on(table.ownerDid)],
+  (table) => [
+    uniqueIndex("Board_userDid_key").on(table.userDid),
+    foreignKey({
+      columns: [table.userDid],
+      foreignColumns: [userTable.did],
+      name: "Board_userDid_fkey",
+    })
+      .onDelete("restrict")
+      .onUpdate("cascade"),
+  ],
 );
 
 export const authSessionTable = pgTable("AuthSession", {

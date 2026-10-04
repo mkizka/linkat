@@ -11,7 +11,7 @@ import { createLogger } from "~/utils/logger";
 const logger = createLogger("sessionService");
 
 export interface ISessionService {
-  getSessionDid: (request: Request) => Promise<Did | null>;
+  getSessionUserDid: (request: Request) => Promise<Did | null>;
   createSession: (request: Request, did: Did) => Promise<string>;
   destroySession: (request: Request) => Promise<string>;
   getSessionAgent: (request: Request) => Promise<LinkatAgent | null>;
@@ -28,12 +28,12 @@ export const sessionServiceFactory = ({
     cookieSessionStorage.getDid(request.headers.get("Cookie"));
 
   const getSessionAgent = async (request: Request) => {
-    const did = await getCookieDid(request);
-    if (!did) {
+    const userDid = await getCookieDid(request);
+    if (!userDid) {
       return null;
     }
     try {
-      return new LinkatAgent(await oauthClient.restore(did));
+      return new LinkatAgent(await oauthClient.restore(userDid));
     } catch (error) {
       if (error instanceof OAuthSessionInvalidError) {
         return null;
@@ -42,18 +42,18 @@ export const sessionServiceFactory = ({
     }
   };
 
-  const getSessionDid = async (request: Request) =>
+  const getSessionUserDid = async (request: Request) =>
     (await getSessionAgent(request))?.assertDid ?? null;
 
   return {
-    getSessionDid,
+    getSessionUserDid,
     getSessionAgent,
     createSession: (request, did) =>
       cookieSessionStorage.commit(request.headers.get("Cookie"), did),
     async destroySession(request) {
-      const did = await getCookieDid(request);
-      if (did) {
-        await oauthClient.revoke(did).catch((error: unknown) => {
+      const userDid = await getCookieDid(request);
+      if (userDid) {
+        await oauthClient.revoke(userDid).catch((error: unknown) => {
           logger.error(error, "OAuthセッションの失効に失敗しました");
         });
       }

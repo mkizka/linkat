@@ -12,22 +12,22 @@ import {
   sessionStoreFactory,
   stateStoreFactory,
 } from "~/server/infrastructure/oauthStorage";
-import { ownerDbRepositoryFactory } from "~/server/infrastructure/ownerDbRepository";
 import { profileFetcherFactory } from "~/server/infrastructure/profileFetcher";
 import { profileRecordParserFactory } from "~/server/infrastructure/profileRecordParser";
+import { userDbRepositoryFactory } from "~/server/infrastructure/userDbRepository";
 import { atpassportServiceFactory } from "~/server/service/atpassportService/atpassport";
 import { authServiceFactory } from "~/server/service/authService/auth";
 import { boardServiceFactory } from "~/server/service/boardService/board";
 import { editorServiceFactory } from "~/server/service/editorService/editor";
 import { jetstreamServiceFactory } from "~/server/service/jetstreamService/jetstream";
-import { ownerServiceFactory } from "~/server/service/ownerService/owner";
 import { sessionServiceFactory } from "~/server/service/sessionService/session";
+import { userServiceFactory } from "~/server/service/userService/user";
 
 export const di = await createRegistry()
   .value("db", db)
   .service("boardRepository", ["db"], boardRepositoryFactory)
   .service("cursorRepository", ["db"], cursorRepositoryFactory)
-  .service("ownerDbRepository", ["db"], ownerDbRepositoryFactory)
+  .service("userDbRepository", ["db"], userDbRepositoryFactory)
   .service("handleIndex", ["db"], handleIndexFactory)
   .service("oauthStateStore", ["db"], stateStoreFactory)
   .service("oauthSessionStore", ["db"], sessionStoreFactory)
@@ -42,20 +42,16 @@ export const di = await createRegistry()
   .service("atpassportClient", atpassportClientFactory)
   .service("cookieSessionStorage", cookieSessionStorageFactory)
   .service(
-    "ownerService",
-    ["handleIndex", "ownerDbRepository", "profileFetcher", "identityResolver"],
-    ownerServiceFactory,
+    "userService",
+    ["handleIndex", "userDbRepository", "profileFetcher", "identityResolver"],
+    userServiceFactory,
   )
   .service(
     "editorService",
-    ["ownerDbRepository", "profileFetcher"],
+    ["userDbRepository", "profileFetcher"],
     editorServiceFactory,
   )
-  .service(
-    "boardService",
-    ["boardRepository", "ownerDbRepository"],
-    boardServiceFactory,
-  )
+  .service("boardService", ["boardRepository"], boardServiceFactory)
   .service("atpassportService", ["atpassportClient"], atpassportServiceFactory)
   .service("authService", ["oauthClient"], authServiceFactory)
   .service(
@@ -68,8 +64,8 @@ export const di = await createRegistry()
     [
       "cursorRepository",
       "boardService",
-      "ownerService",
-      "ownerDbRepository",
+      "userService",
+      "userDbRepository",
       "identityResolver",
       "profileRecordParser",
     ],

@@ -16,10 +16,10 @@ import { createMeta } from "~/utils/meta";
 import type { Route } from "./+types/_index";
 
 export const loader = async ({ request, context }: Route.LoaderArgs) => {
-  const editorDid = await di.sessionService.getSessionDid(request);
+  const userDid = await di.sessionService.getSessionUserDid(request);
   const i18next = getInstance(context);
   return {
-    isLogin: !!editorDid,
+    isLogin: !!userDid,
     title: i18next.t("_index.meta-title"),
     description: i18next.t("_index.meta-description"),
     url: env.PUBLIC_URL,

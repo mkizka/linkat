@@ -1,4 +1,4 @@
-import { OwnerFactory } from "~/server/factories/owner";
+import { UserFactory } from "~/server/factories/user";
 import { db } from "~/server/infrastructure/drizzle";
 
 import { handleIndexFactory } from "./handleIndex";
@@ -16,11 +16,11 @@ describe("handleIndex", () => {
     });
     test("handleから写しのDIDを返す", async () => {
       // arrange
-      const owner = await OwnerFactory.create({ handle: "example.com" });
+      const user = await UserFactory.create({ handle: "example.com" });
       // act
       const actual = await handleIndex.findDid("example.com");
       // assert
-      expect(actual).toBe(owner.did);
+      expect(actual).toBe(user.did);
     });
   });
 });

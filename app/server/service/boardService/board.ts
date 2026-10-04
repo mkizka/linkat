@@ -3,7 +3,6 @@ import type { Did } from "@atproto/did";
 import type { LinkatAgent } from "~/libs/agent";
 import { Board } from "~/models/board";
 import type { IBoardRepository } from "~/server/infrastructure/boardRepository";
-import type { IOwnerDbRepository } from "~/server/infrastructure/ownerDbRepository";
 import { tryCatch } from "~/utils/tryCatch";
 
 export class BoardPdsSaveError extends Error {
@@ -32,31 +31,25 @@ export class BoardDbDeleteError extends Error {
 
 export interface IBoardService {
   parseBoardFromForm: (
-    ownerDid: Did,
+    userDid: Did,
     rawBoard: string,
   ) => Promise<Board | Error>;
   saveBoard: (board: Board) => Promise<void>;
   publishBoard: (agent: LinkatAgent, board: Board) => Promise<void>;
-  findBoard: (ownerDid: Did) => Promise<Board | null>;
-  deleteBoard: (ownerDid: Did) => Promise<void>;
-  unpublishBoard: (agent: LinkatAgent, ownerDid: Did) => Promise<void>;
+  findBoard: (userDid: Did) => Promise<Board | null>;
+  deleteBoard: (userDid: Did) => Promise<void>;
+  unpublishBoard: (agent: LinkatAgent, userDid: Did) => Promise<void>;
 }
 
 export const boardServiceFactory = ({
   boardRepository,
-  ownerDbRepository,
 }: {
   boardRepository: IBoardRepository;
-  ownerDbRepository: IOwnerDbRepository;
 }): IBoardService => {
-  const deleteBoard = async (ownerDid: Did) => {
-    await ownerDbRepository.delete(ownerDid);
-    await boardRepository.delete(ownerDid);
-  };
   return {
     parseBoardFromForm: tryCatch(
-      (ownerDid: Did, rawBoard: string) =>
-        new Board(ownerDid, Board.parseCards(JSON.parse(rawBoard))),
+      (userDid: Did, rawBoard: string) =>
+        new Board(userDid, Board.parseCards(JSON.parse(rawBoard))),
     ),
     async saveBoard(board) {
       await boardRepository.save(board);
@@ -73,18 +66,20 @@ export const boardServiceFactory = ({
         throw new BoardDbSaveError(error);
       }
     },
-    async findBoard(ownerDid) {
-      return await boardRepository.find(ownerDid);
+    async findBoard(userDid) {
+      return await boardRepository.find(userDid);
     },
-    deleteBoard,
-    async unpublishBoard(agent, ownerDid) {
+    async deleteBoard(userDid) {
+      await boardRepository.delete(userDid);
+    },
+    async unpublishBoard(agent, userDid) {
       try {
         await agent.deleteBoard();
       } catch (error) {
         throw new BoardPdsDeleteError(error);
       }
       try {
-        await deleteBoard(ownerDid);
+        await boardRepository.delete(userDid);
       } catch (error) {
         throw new BoardDbDeleteError(error);
       }

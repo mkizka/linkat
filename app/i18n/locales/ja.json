@@ -24,7 +24,7 @@
     "atpassport-link": "@passportとは？"
   },
   "sample": {
-    "owner-name": "サンプル",
+    "user-name": "サンプル",
     "you-can-write-text-instead-of-url": "URLの代わりにテキストも書ける",
     "you-can-write-only-text": "テキストだけでもOK",
     "bluesky-url-is-embedded": "BlueskyのURLは自動で埋め込まれます"

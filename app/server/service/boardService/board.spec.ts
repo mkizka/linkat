@@ -5,10 +5,9 @@ import { LinkatAgent } from "~/libs/agent";
 import { server } from "~/mocks/server";
 import { Board, BoardParseError } from "~/models/board";
 import { BoardFactory, cardsFromFactory } from "~/server/factories/board";
-import { OwnerFactory } from "~/server/factories/owner";
+import { UserFactory } from "~/server/factories/user";
 import { boardRepositoryFactory } from "~/server/infrastructure/boardRepository";
 import { db } from "~/server/infrastructure/drizzle";
-import { ownerDbRepositoryFactory } from "~/server/infrastructure/ownerDbRepository";
 
 import {
   BoardDbDeleteError,
@@ -19,10 +18,8 @@ import {
 } from "./board";
 
 const boardRepository = boardRepositoryFactory({ db });
-const ownerDbRepository = ownerDbRepositoryFactory({ db });
 const boardService = boardServiceFactory({
   boardRepository,
-  ownerDbRepository,
 });
 
 const dummyCards = [
@@ -38,15 +35,15 @@ describe("boardService", () => {
       // arrange
       const existing = await BoardFactory.create();
       // act
-      const actual = await boardService.findBoard(asDid(existing.ownerDid));
+      const actual = await boardService.findBoard(asDid(existing.userDid));
       // assert
-      expect(actual).toEqual(new Board(existing.ownerDid, cardsFromFactory));
+      expect(actual).toEqual(new Board(existing.userDid, cardsFromFactory));
     });
     test("DBにボードが無ければnullを返す", async () => {
       // arrange
-      const owner = await OwnerFactory.create();
+      const user = await UserFactory.create();
       // act
-      const actual = await boardService.findBoard(asDid(owner.did));
+      const actual = await boardService.findBoard(asDid(user.did));
       // assert
       expect(actual).toBeNull();
     });
@@ -55,19 +52,19 @@ describe("boardService", () => {
   describe("parseBoardFromForm", () => {
     test("正しい形式のJSONならBoardを返す", async () => {
       // arrange
-      const ownerDid = asDid("did:plc:dummy");
+      const userDid = asDid("did:plc:dummy");
       const rawBoard = JSON.stringify({ cards: dummyCards });
       // act
-      const actual = await boardService.parseBoardFromForm(ownerDid, rawBoard);
+      const actual = await boardService.parseBoardFromForm(userDid, rawBoard);
       // assert
-      expect(actual).toEqual(new Board(ownerDid, dummyCards));
+      expect(actual).toEqual(new Board(userDid, dummyCards));
     });
     test("JSONとして不正な文字列ならErrorを返す", async () => {
       // arrange
-      const ownerDid = asDid("did:plc:dummy");
+      const userDid = asDid("did:plc:dummy");
       // act
       const actual = await boardService.parseBoardFromForm(
-        ownerDid,
+        userDid,
         "{invalid-json",
       );
       // assert
@@ -75,10 +72,10 @@ describe("boardService", () => {
     });
     test("cardsを含まない形式ならBoardParseErrorを返す", async () => {
       // arrange
-      const ownerDid = asDid("did:plc:dummy");
+      const userDid = asDid("did:plc:dummy");
       // act
       const actual = await boardService.parseBoardFromForm(
-        ownerDid,
+        userDid,
         JSON.stringify({}),
       );
       // assert
@@ -98,8 +95,8 @@ describe("boardService", () => {
 
     test("PDSに保存してからDBに保存する", async () => {
       // arrange
-      const owner = await OwnerFactory.create();
-      const board = new Board(owner.did, dummyCards);
+      const user = await UserFactory.create();
+      const board = new Board(user.did, dummyCards);
       let putRecordBody: unknown;
       server.use(
         http.post(putRecordUrl, async ({ request }) => {
@@ -111,19 +108,19 @@ describe("boardService", () => {
         }),
       );
       // act
-      await boardService.publishBoard(createAgent(owner.did), board);
+      await boardService.publishBoard(createAgent(user.did), board);
       // assert
       expect(putRecordBody).toMatchObject({
-        repo: owner.did,
+        repo: user.did,
         collection: "blue.linkat.board",
         rkey: "self",
         record: { cards: dummyCards },
       });
-      expect(await boardRepository.find(asDid(owner.did))).toEqual(board);
+      expect(await boardRepository.find(asDid(user.did))).toEqual(board);
     });
     test("PDSへの保存に失敗したらDBに保存せずBoardPdsSaveErrorを投げる", async () => {
       // arrange
-      const owner = await OwnerFactory.create();
+      const user = await UserFactory.create();
       server.use(
         http.post(putRecordUrl, () =>
           HttpResponse.json({ error: "InternalServerError" }, { status: 500 }),
@@ -131,16 +128,16 @@ describe("boardService", () => {
       );
       // act
       const actual = boardService.publishBoard(
-        createAgent(owner.did),
-        new Board(owner.did, dummyCards),
+        createAgent(user.did),
+        new Board(user.did, dummyCards),
       );
       // assert
       await expect(actual).rejects.toThrow(BoardPdsSaveError);
-      expect(await boardRepository.find(asDid(owner.did))).toBeNull();
+      expect(await boardRepository.find(asDid(user.did))).toBeNull();
     });
     test("DBへの保存に失敗したらBoardDbSaveErrorを投げる", async () => {
       // arrange
-      const owner = await OwnerFactory.create();
+      const user = await UserFactory.create();
       server.use(
         http.post(putRecordUrl, () =>
           HttpResponse.json({
@@ -152,39 +149,11 @@ describe("boardService", () => {
       vi.spyOn(boardRepository, "save").mockRejectedValueOnce(new Error());
       // act
       const actual = boardService.publishBoard(
-        createAgent(owner.did),
-        new Board(owner.did, dummyCards),
+        createAgent(user.did),
+        new Board(user.did, dummyCards),
       );
       // assert
       await expect(actual).rejects.toThrow(BoardDbSaveError);
-    });
-  });
-
-  describe("deleteBoard", () => {
-    test("ボードと持ち主の写しを削除する", async () => {
-      // arrange
-      const board = await BoardFactory.create();
-      const other = await BoardFactory.create();
-      // act
-      await boardService.deleteBoard(asDid(board.ownerDid));
-      // assert
-      expect(await boardRepository.find(asDid(board.ownerDid))).toBeNull();
-      expect(
-        await ownerDbRepository.findByDid(asDid(board.ownerDid)),
-      ).toBeNull();
-      expect(await boardRepository.find(asDid(other.ownerDid))).not.toBeNull();
-      expect(
-        await ownerDbRepository.findByDid(asDid(other.ownerDid)),
-      ).not.toBeNull();
-    });
-    test("持ち主の写しが無くても、ボードを削除する", async () => {
-      // arrange
-      const did = "did:plc:nocopy";
-      await BoardFactory.create({ ownerDid: did });
-      // act
-      await boardService.deleteBoard(asDid(did));
-      // assert
-      expect(await boardRepository.find(asDid(did))).toBeNull();
     });
   });
 
@@ -206,19 +175,16 @@ describe("boardService", () => {
       );
       // act
       await boardService.unpublishBoard(
-        createAgent(board.ownerDid),
-        asDid(board.ownerDid),
+        createAgent(board.userDid),
+        asDid(board.userDid),
       );
       // assert
       expect(deleteRecordBody).toMatchObject({
-        repo: board.ownerDid,
+        repo: board.userDid,
         collection: "blue.linkat.board",
         rkey: "self",
       });
-      expect(await boardRepository.find(asDid(board.ownerDid))).toBeNull();
-      expect(
-        await ownerDbRepository.findByDid(asDid(board.ownerDid)),
-      ).toBeNull();
+      expect(await boardRepository.find(asDid(board.userDid))).toBeNull();
     });
     test("PDSからの削除に失敗したらDBから削除せずBoardPdsDeleteErrorを投げる", async () => {
       // arrange
@@ -230,15 +196,12 @@ describe("boardService", () => {
       );
       // act
       const actual = boardService.unpublishBoard(
-        createAgent(board.ownerDid),
-        asDid(board.ownerDid),
+        createAgent(board.userDid),
+        asDid(board.userDid),
       );
       // assert
       await expect(actual).rejects.toThrow(BoardPdsDeleteError);
-      expect(await boardRepository.find(asDid(board.ownerDid))).not.toBeNull();
-      expect(
-        await ownerDbRepository.findByDid(asDid(board.ownerDid)),
-      ).not.toBeNull();
+      expect(await boardRepository.find(asDid(board.userDid))).not.toBeNull();
     });
     test("DBからの削除に失敗したらBoardDbDeleteErrorを投げる", async () => {
       // arrange
@@ -247,8 +210,8 @@ describe("boardService", () => {
       vi.spyOn(boardRepository, "delete").mockRejectedValueOnce(new Error());
       // act
       const actual = boardService.unpublishBoard(
-        createAgent(board.ownerDid),
-        asDid(board.ownerDid),
+        createAgent(board.userDid),
+        asDid(board.userDid),
       );
       // assert
       await expect(actual).rejects.toThrow(BoardDbDeleteError);

@@ -26,11 +26,11 @@ export class BoardParseError extends Error {
 }
 
 export class Board {
-  readonly ownerDid: Did;
+  readonly userDid: Did;
   readonly cards: ValidCard[];
 
-  constructor(ownerDid: string, cards: ValidCard[]) {
-    this.ownerDid = asDid(ownerDid);
+  constructor(userDid: string, cards: ValidCard[]) {
+    this.userDid = asDid(userDid);
     this.cards = cards;
   }
 

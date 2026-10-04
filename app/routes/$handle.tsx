@@ -13,31 +13,31 @@ const notFound = () => {
 };
 
 export async function loader({ request, params, context }: Route.LoaderArgs) {
-  const owner = await di.ownerService.findOwner({
+  const user = await di.userService.findUser({
     handleOrDid: params.handle,
   });
-  if (!owner || owner.isHidden()) {
+  if (!user || user.isHidden()) {
     return notFound();
   }
-  const board = await di.boardService.findBoard(owner.did);
+  const board = await di.boardService.findBoard(user.did);
   if (!board) {
     return notFound();
   }
-  const view = owner.toView();
+  const view = user.toView();
   const i18next = getInstance(context);
   const title = i18next.t("board.meta-title", {
-    displayName: owner.displayName,
+    displayName: user.displayName,
     handle: view.handleOrDid,
   });
-  const viewerDid = await di.sessionService.getSessionDid(request);
+  const userDid = await di.sessionService.getSessionUserDid(request);
   return {
-    owner: view,
+    user: view,
     board: { cards: board.cards },
-    isMine: owner.isOwnedBy(viewerDid),
+    isMine: user.isOwnedBy(userDid),
     title: `${title} | Linkat`,
     url: `${env.PUBLIC_URL}/${view.handleOrDid}`,
     ogImageUrl: `${env.PUBLIC_URL}/${view.handleOrDid}/og`,
-    atUri: `at://${owner.did}/blue.linkat.board/self`,
+    atUri: `at://${user.did}/blue.linkat.board/self`,
   };
 }
 
@@ -47,11 +47,11 @@ export const meta: Route.MetaFunction = ({ loaderData }) => {
 };
 
 export default function Index({ loaderData }: Route.ComponentProps) {
-  const { owner, board, url, isMine } = loaderData;
+  const { user, board, url, isMine } = loaderData;
   return (
     <>
       <Main>
-        <BoardViewer owner={owner} board={board} url={url} isMine={isMine} />
+        <BoardViewer user={user} board={board} url={url} isMine={isMine} />
         <ShareModal url={url} />
       </Main>
       <Footer withNavigation />

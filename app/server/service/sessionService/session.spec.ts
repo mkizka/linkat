@@ -25,7 +25,7 @@ const request = new Request("http://localhost/logout", {
 });
 
 describe("sessionService", () => {
-  describe("getSessionDid", () => {
+  describe("getSessionUserDid", () => {
     beforeEach(() => {
       vi.resetAllMocks();
     });
@@ -34,7 +34,7 @@ describe("sessionService", () => {
       cookieSessionStorage.getDid.mockResolvedValue(did);
       oauthClient.restore.mockResolvedValue(mock<OAuthSession>({ did }));
       // act
-      const actual = await sessionService.getSessionDid(request);
+      const actual = await sessionService.getSessionUserDid(request);
       // assert
       expect(actual).toBe(did);
     });
@@ -45,7 +45,7 @@ describe("sessionService", () => {
         new OAuthSessionInvalidError(new Error("revoked")),
       );
       // act
-      const actual = await sessionService.getSessionDid(request);
+      const actual = await sessionService.getSessionUserDid(request);
       // assert
       expect(actual).toBeNull();
     });
@@ -53,7 +53,7 @@ describe("sessionService", () => {
       // arrange
       cookieSessionStorage.getDid.mockResolvedValue(null);
       // act
-      const actual = await sessionService.getSessionDid(request);
+      const actual = await sessionService.getSessionUserDid(request);
       // assert
       expect(oauthClient.restore).not.toHaveBeenCalled();
       expect(actual).toBeNull();

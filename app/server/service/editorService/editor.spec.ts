@@ -3,18 +3,18 @@ import { http, HttpResponse } from "msw";
 
 import { LinkatAgent } from "~/libs/agent";
 import { server } from "~/mocks/server";
-import { Owner } from "~/models/owner";
-import { OwnerFactory } from "~/server/factories/owner";
+import { User } from "~/models/user";
+import { UserFactory } from "~/server/factories/user";
 import { db } from "~/server/infrastructure/drizzle";
-import { ownerDbRepositoryFactory } from "~/server/infrastructure/ownerDbRepository";
 import { profileFetcherFactory } from "~/server/infrastructure/profileFetcher";
 import { profileRecordParserFactory } from "~/server/infrastructure/profileRecordParser";
+import { userDbRepositoryFactory } from "~/server/infrastructure/userDbRepository";
 
 import { editorServiceFactory } from "./editor";
 
-const ownerDbRepository = ownerDbRepositoryFactory({ db });
+const userDbRepository = userDbRepositoryFactory({ db });
 const editorService = editorServiceFactory({
-  ownerDbRepository,
+  userDbRepository,
   profileFetcher: profileFetcherFactory({
     profileRecordParser: profileRecordParserFactory(),
   }),
@@ -32,11 +32,11 @@ describe("editorService", () => {
   describe("findView", () => {
     test("持ち主の写しがあれば、それを返す", async () => {
       // arrange
-      const owner = await OwnerFactory.create();
+      const owner = await UserFactory.create();
       // act
       const actual = await editorService.findView(createAgent(owner.did));
       // assert
-      expect(actual).toEqual(new Owner(owner).toView());
+      expect(actual).toEqual(new User(owner).toView());
     });
     test("写しが無ければ、DIDとセッションのPDSから取得したプロフィールを返し、保存しない", async () => {
       // arrange
@@ -72,7 +72,7 @@ describe("editorService", () => {
         avatarUrl: `https://cdn.bsky.app/img/avatar/plain/${did}/${AVATAR_CID}@jpeg`,
       });
       expect(requestedRepo).toBe(did);
-      expect(await ownerDbRepository.findByDid(asDid(did))).toBeNull();
+      expect(await userDbRepository.findByDid(asDid(did))).toBeNull();
     });
     test("写しが無くプロフィールの取得にも失敗したら、DIDだけを返す", async () => {
       // arrange
@@ -92,7 +92,7 @@ describe("editorService", () => {
         displayName: null,
         avatarUrl: null,
       });
-      expect(await ownerDbRepository.findByDid(asDid(did))).toBeNull();
+      expect(await userDbRepository.findByDid(asDid(did))).toBeNull();
     });
   });
 });

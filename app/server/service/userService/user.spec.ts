@@ -3,25 +3,25 @@ import { http, HttpResponse } from "msw";
 import { mock, mockReset } from "vitest-mock-extended";
 
 import { server } from "~/mocks/server";
-import { OwnerFactory } from "~/server/factories/owner";
+import { UserFactory } from "~/server/factories/user";
 import { db } from "~/server/infrastructure/drizzle";
 import { handleIndexFactory } from "~/server/infrastructure/handleIndex";
 import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
-import { ownerDbRepositoryFactory } from "~/server/infrastructure/ownerDbRepository";
 import { profileFetcherFactory } from "~/server/infrastructure/profileFetcher";
 import { profileRecordParserFactory } from "~/server/infrastructure/profileRecordParser";
+import { userDbRepositoryFactory } from "~/server/infrastructure/userDbRepository";
 
-import { ownerServiceFactory } from "./owner";
+import { userServiceFactory } from "./user";
 
 const identityResolver = mock<IIdentityResolver>();
-const ownerDbRepository = ownerDbRepositoryFactory({ db });
+const userDbRepository = userDbRepositoryFactory({ db });
 const profileFetcher = profileFetcherFactory({
   profileRecordParser: profileRecordParserFactory(),
 });
 
-const ownerService = ownerServiceFactory({
+const userService = userServiceFactory({
   handleIndex: handleIndexFactory({ db }),
-  ownerDbRepository,
+  userDbRepository,
   profileFetcher,
   identityResolver,
 });
@@ -40,53 +40,49 @@ beforeEach(() => {
   identityResolver.resolve.mockResolvedValue(null);
 });
 
-describe("ownerService", () => {
-  describe("findOwner", () => {
-    test("持ち主の写しを取得できる", async () => {
+describe("userService", () => {
+  describe("findUser", () => {
+    test("ユーザーを取得できる", async () => {
       // arrange
-      const owner = await OwnerFactory.create();
+      const user = await UserFactory.create();
       // act
-      const actual = await ownerService.findOwner({ handleOrDid: owner.did });
+      const actual = await userService.findUser({ handleOrDid: user.did });
       // assert
-      expect(actual).toEqual(owner);
+      expect(actual).toEqual(user);
     });
     test("handleを指定するとDBの写しからDIDを引いて取得する", async () => {
       // arrange
-      const owner = await OwnerFactory.create({ handle: "example.com" });
+      const user = await UserFactory.create({ handle: "example.com" });
       // act
-      const actual = await ownerService.findOwner({
-        handleOrDid: "example.com",
-      });
+      const actual = await userService.findUser({ handleOrDid: "example.com" });
       // assert
-      expect(actual).toEqual(owner);
+      expect(actual).toEqual(user);
     });
     test("写しが古くても、ハンドルを解決せずに写しをそのまま返す", async () => {
       // arrange
-      const owner = await OwnerFactory.create({
+      const user = await UserFactory.create({
         updatedAt: new Date("2000-01-01T00:00:00Z"),
       });
       // act
-      const actual = await ownerService.findOwner({ handleOrDid: owner.did });
+      const actual = await userService.findUser({ handleOrDid: user.did });
       // assert
-      expect(actual).toEqual(owner);
+      expect(actual).toEqual(user);
       expect(identityResolver.resolve).not.toHaveBeenCalled();
     });
     test("写しに無いDIDはnullを返し、写しを作らない", async () => {
       // arrange
       const did = asDid("did:plc:notowner0000000000000000");
       // act
-      const actual = await ownerService.findOwner({ handleOrDid: did });
+      const actual = await userService.findUser({ handleOrDid: did });
       // assert
       expect(actual).toBeNull();
       expect(identityResolver.resolve).not.toHaveBeenCalled();
-      expect(await ownerDbRepository.findByDid(did)).toBeNull();
+      expect(await userDbRepository.findByDid(did)).toBeNull();
     });
     test("写しに無いhandleはハンドルを解決せずにnullを返す", async () => {
       // arrange
       // act
-      const actual = await ownerService.findOwner({
-        handleOrDid: "example.com",
-      });
+      const actual = await userService.findUser({ handleOrDid: "example.com" });
       // assert
       expect(actual).toBeNull();
       expect(identityResolver.resolve).not.toHaveBeenCalled();
@@ -94,7 +90,7 @@ describe("ownerService", () => {
     test("入力が明らかにドメインでなければnullを返す", async () => {
       // arrange
       // act
-      const actual = await ownerService.findOwner({
+      const actual = await userService.findUser({
         handleOrDid: "invalid",
       });
       // assert
@@ -103,7 +99,7 @@ describe("ownerService", () => {
     test("入力がDIDとして不正であればnullを返す", async () => {
       // arrange
       // act
-      const actual = await ownerService.findOwner({
+      const actual = await userService.findUser({
         handleOrDid: "did:invalid",
       });
       // assert
@@ -126,39 +122,39 @@ describe("ownerService", () => {
         ),
       );
       // act
-      const actual = await ownerService.syncOwner(did);
+      const actual = await userService.syncOwner(did);
       // assert
       expect(actual).toMatchObject({
         handle: "alice.example.com",
         displayName: "Alice",
       });
-      expect(await ownerDbRepository.findByDid(did)).toEqual(actual);
+      expect(await userDbRepository.findByDid(did)).toEqual(actual);
     });
     test("DIDを解決できなければ、ハンドルをnullにして既存のプロフィールを残す", async () => {
       // arrange
-      const owner = await OwnerFactory.create({
+      const user = await UserFactory.create({
         handle: "alice.example.com",
         displayName: "Alice",
       });
       // act
-      const actual = await ownerService.syncOwner(asDid(owner.did));
+      const actual = await userService.syncOwner(asDid(user.did));
       // assert
       expect(actual).toMatchObject({ handle: null, displayName: "Alice" });
     });
     test("プロフィールを取得できなければ、既存のプロフィールを残してハンドルは更新する", async () => {
       // arrange
-      const owner = await OwnerFactory.create({
+      const user = await UserFactory.create({
         handle: "old.example.com",
         displayName: "Alice",
       });
-      mockIdentity(owner.did, "alice.example.com");
+      mockIdentity(user.did, "alice.example.com");
       server.use(
         http.get(getRecordUrl, () =>
           HttpResponse.json({ error: "InternalServerError" }, { status: 500 }),
         ),
       );
       // act
-      const actual = await ownerService.syncOwner(asDid(owner.did));
+      const actual = await userService.syncOwner(asDid(user.did));
       // assert
       expect(actual).toMatchObject({
         handle: "alice.example.com",

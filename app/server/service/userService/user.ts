@@ -1,52 +1,52 @@
 import { type Did, isDid } from "@atproto/did";
 
 import { LinkatAgent } from "~/libs/agent";
-import { type AccountStatus, Owner } from "~/models/owner";
+import { type AccountStatus, User } from "~/models/user";
 import type { IHandleIndex } from "~/server/infrastructure/handleIndex";
 import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
-import type { IOwnerDbRepository } from "~/server/infrastructure/ownerDbRepository";
 import type { IProfileFetcher } from "~/server/infrastructure/profileFetcher";
+import type { IUserDbRepository } from "~/server/infrastructure/userDbRepository";
 
-export interface IOwnerService {
-  findOwner: (params: { handleOrDid: string }) => Promise<Owner | null>;
-  syncOwner: (did: Did) => Promise<Owner>;
+export interface IUserService {
+  findUser: (params: { handleOrDid: string }) => Promise<User | null>;
+  syncOwner: (did: Did) => Promise<User>;
   updateStatus: (did: Did, status: AccountStatus) => Promise<void>;
 }
 
-export const ownerServiceFactory = ({
+export const userServiceFactory = ({
   handleIndex,
-  ownerDbRepository,
+  userDbRepository,
   profileFetcher,
   identityResolver,
 }: {
   handleIndex: IHandleIndex;
-  ownerDbRepository: IOwnerDbRepository;
+  userDbRepository: IUserDbRepository;
   profileFetcher: IProfileFetcher;
   identityResolver: IIdentityResolver;
-}): IOwnerService => ({
-  async findOwner({ handleOrDid }) {
+}): IUserService => ({
+  async findUser({ handleOrDid }) {
     if (!handleOrDid.includes(".") && !isDid(handleOrDid)) {
       return null;
     }
     const did = isDid(handleOrDid)
       ? handleOrDid
       : await handleIndex.findDid(handleOrDid);
-    return did && (await ownerDbRepository.findByDid(did));
+    return did && (await userDbRepository.findByDid(did));
   },
   async syncOwner(did) {
-    let owner = (await ownerDbRepository.findByDid(did)) ?? Owner.create(did);
+    let owner = (await userDbRepository.findByDid(did)) ?? User.create(did);
     const identity = await identityResolver.resolve(did);
     if (!identity) {
-      return await ownerDbRepository.save(owner.withHandle(null));
+      return await userDbRepository.save(owner.withHandle(null));
     }
     const agent = LinkatAgent.credential(identity.pds);
     const profile = await profileFetcher.fetchProfile(agent, did);
     if (profile) {
       owner = owner.withProfile(profile);
     }
-    return await ownerDbRepository.save(owner.withHandle(identity.handle));
+    return await userDbRepository.save(owner.withHandle(identity.handle));
   },
   async updateStatus(did, status) {
-    await ownerDbRepository.updateStatus(did, status);
+    await userDbRepository.updateStatus(did, status);
   },
 });

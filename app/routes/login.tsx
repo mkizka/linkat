@@ -44,8 +44,8 @@ export async function action({ request, context }: Route.ActionArgs) {
 }
 
 export const loader = async ({ request }: Route.LoaderArgs) => {
-  const editorDid = await di.sessionService.getSessionDid(request);
-  if (editorDid) {
+  const userDid = await di.sessionService.getSessionUserDid(request);
+  if (userDid) {
     return redirect("/");
   }
   return null;

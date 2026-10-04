@@ -3,7 +3,7 @@ import fs from "fs";
 import { LRUCache } from "lru-cache";
 import satori from "satori";
 
-import type { Owner, OwnerView } from "~/models/owner";
+import type { User, UserView } from "~/models/user";
 import { di } from "~/server/di";
 import { createLogger } from "~/utils/logger";
 
@@ -18,7 +18,7 @@ const cache = new LRUCache<string, Uint8Array<ArrayBuffer>>({
 
 const fontData = fs.readFileSync("./fonts/Murecho-Bold.ttf");
 
-const renderImage = async (owner: OwnerView) => {
+const renderImage = async (user: UserView) => {
   //
   // カード内の割合
   // 100px(padding) + 200px(avatar) + 50px(mariginLeft) + 650px(handle/displayName) + 100px(padding) = 1100px
@@ -55,9 +55,9 @@ const renderImage = async (owner: OwnerView) => {
             alignItems: "center",
           }}
         >
-          {owner.avatarUrl ? (
+          {user.avatarUrl ? (
             <img
-              src={owner.avatarUrl}
+              src={user.avatarUrl}
               style={{
                 width: "200px",
                 height: "200px",
@@ -89,7 +89,7 @@ const renderImage = async (owner: OwnerView) => {
                 overflow: "hidden",
               }}
             >
-              {owner.displayName}
+              {user.displayName}
             </p>
             <p
               style={{
@@ -101,7 +101,7 @@ const renderImage = async (owner: OwnerView) => {
                 marginTop: "-1rem",
               }}
             >
-              {owner.displayHandle}
+              {user.displayHandle}
             </p>
           </div>
         </div>
@@ -135,23 +135,23 @@ const renderImage = async (owner: OwnerView) => {
   return Uint8Array.from(buffer);
 };
 
-const createImage = async (owner: Owner) => {
-  const image = await renderImage(owner.toView());
-  cache.set(owner.did, image);
+const createImage = async (user: User) => {
+  const image = await renderImage(user.toView());
+  cache.set(user.did, image);
   return image;
 };
 
 export async function loader({ params }: Route.LoaderArgs) {
-  const owner = await di.ownerService.findOwner({
+  const user = await di.userService.findUser({
     handleOrDid: params.handle,
   });
-  if (!owner || owner.isHidden()) {
+  if (!user || user.isHidden()) {
     throw new Response(null, { status: 404 });
   }
-  let image = cache.get(owner.did);
+  let image = cache.get(user.did);
   if (!image) {
     try {
-      image = await createImage(owner);
+      image = await createImage(user);
     } catch (error) {
       logger.warn(error, "OGP画像の生成に失敗しました");
       throw new Response(null, { status: 404 });
