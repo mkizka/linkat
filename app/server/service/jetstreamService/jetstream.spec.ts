@@ -28,18 +28,21 @@ const profileFetcher = profileFetcherFactory({
   profileRecordParser,
 });
 
+const ownerService = ownerServiceFactory({
+  handleIndex: handleIndexFactory({ db }),
+  ownerRepository,
+  profileFetcher,
+  identityResolver,
+});
+
 const jetstreamService = jetstreamServiceFactory({
   cursorRepository: cursorRepositoryFactory({ db }),
   boardService: boardServiceFactory({
     boardRepository: boardRepositoryFactory({ db }),
     ownerRepository,
+    ownerService,
   }),
-  ownerService: ownerServiceFactory({
-    handleIndex: handleIndexFactory({ db }),
-    ownerRepository,
-    profileFetcher,
-    identityResolver,
-  }),
+  ownerService,
   ownerRepository,
   identityResolver,
   profileRecordParser,

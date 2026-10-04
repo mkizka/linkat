@@ -80,7 +80,6 @@ export const jetstreamServiceFactory = ({
       return;
     }
     const board = new Board(event.did, cards);
-    await ownerService.syncOwner(event.did);
     await boardService.saveBoard(board);
     logger.debug({ board }, "ボードを更新しました");
   };

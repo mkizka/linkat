@@ -53,7 +53,7 @@ export const di = await createRegistry()
   )
   .service(
     "boardService",
-    ["boardRepository", "ownerRepository"],
+    ["boardRepository", "ownerRepository", "ownerService"],
     boardServiceFactory,
   )
   .service("atpassportService", ["atpassportClient"], atpassportServiceFactory)

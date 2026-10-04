@@ -1,26 +1,37 @@
 import { asDid } from "@atproto/did";
 import { http, HttpResponse } from "msw";
+import { mock, mockReset } from "vitest-mock-extended";
 
 import { LinkatAgent } from "~/libs/agent";
 import { server } from "~/mocks/server";
 import { Board, BoardParseError } from "~/models/board";
+import { Owner } from "~/models/owner";
 import { BoardFactory, cardsFromFactory } from "~/server/factories/board";
 import { OwnerFactory } from "~/server/factories/owner";
 import { boardRepositoryFactory } from "~/server/infrastructure/boardRepository";
 import { db } from "~/server/infrastructure/drizzle";
 import { ownerRepositoryFactory } from "~/server/infrastructure/ownerRepository";
+import type { IOwnerService } from "~/server/service/ownerService/owner";
 
 import {
   BoardDbDeleteError,
+  BoardDbSaveError,
   BoardPdsDeleteError,
+  BoardPdsSaveError,
   boardServiceFactory,
 } from "./board";
 
 const boardRepository = boardRepositoryFactory({ db });
 const ownerRepository = ownerRepositoryFactory({ db });
+const ownerService = mock<IOwnerService>();
 const boardService = boardServiceFactory({
   boardRepository,
   ownerRepository,
+  ownerService,
+});
+
+beforeEach(() => {
+  mockReset(ownerService);
 });
 
 const dummyCards = [
@@ -94,7 +105,7 @@ describe("boardService", () => {
     const createAgent = (did: string) =>
       new LinkatAgent({ did: asDid(did), service: "https://pds.example.com" });
 
-    test("PDSに保存し、DBには保存しない", async () => {
+    test("PDSに保存してからDBに保存する", async () => {
       // arrange
       const owner = await OwnerFactory.create();
       const board = new Board(owner.did, dummyCards);
@@ -108,18 +119,24 @@ describe("boardService", () => {
           });
         }),
       );
+      const synced = Owner.create(asDid(owner.did));
+      ownerService.syncOwner.mockResolvedValue(synced);
       // act
-      await boardService.publishBoard(createAgent(owner.did), board);
+      const actual = await boardService.publishBoard(
+        createAgent(owner.did),
+        board,
+      );
       // assert
+      expect(actual).toBe(synced);
       expect(putRecordBody).toMatchObject({
         repo: owner.did,
         collection: "blue.linkat.board",
         rkey: "self",
         record: { cards: dummyCards },
       });
-      expect(await boardRepository.find(asDid(owner.did))).toBeNull();
+      expect(await boardRepository.find(asDid(owner.did))).toEqual(board);
     });
-    test("PDSへの保存に失敗したら例外を投げる", async () => {
+    test("PDSへの保存に失敗したら写しを保存せずBoardPdsSaveErrorを投げる", async () => {
       // arrange
       const owner = await OwnerFactory.create();
       server.use(
@@ -133,7 +150,29 @@ describe("boardService", () => {
         new Board(owner.did, dummyCards),
       );
       // assert
-      await expect(actual).rejects.toThrow();
+      await expect(actual).rejects.toThrow(BoardPdsSaveError);
+      expect(ownerService.syncOwner).not.toHaveBeenCalled();
+      expect(await boardRepository.find(asDid(owner.did))).toBeNull();
+    });
+    test("DBへの保存に失敗したらBoardDbSaveErrorを投げる", async () => {
+      // arrange
+      const owner = await OwnerFactory.create();
+      server.use(
+        http.post(putRecordUrl, () =>
+          HttpResponse.json({
+            uri: dummyBoardRecord.uri,
+            cid: dummyBoardRecord.cid,
+          }),
+        ),
+      );
+      vi.spyOn(boardRepository, "save").mockRejectedValueOnce(new Error());
+      // act
+      const actual = boardService.publishBoard(
+        createAgent(owner.did),
+        new Board(owner.did, dummyCards),
+      );
+      // assert
+      await expect(actual).rejects.toThrow(BoardDbSaveError);
     });
   });
 
