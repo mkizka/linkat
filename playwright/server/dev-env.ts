@@ -44,7 +44,6 @@ await agent.com.atproto.repo.createRecord({
   },
 });
 
-// PDSをリレーの代わりに購読する。listHostsを持たないPDSでも起動出来るよう、バックフィルの対象を既存のアカウントに絞る
 await new GenericContainer("ghcr.io/bluesky-social/jetstream:v0.3.3")
   .withNetworkMode("host")
   .withEnvironment({

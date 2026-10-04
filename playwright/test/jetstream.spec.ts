@@ -42,11 +42,11 @@ test.describe("Jetstream", () => {
     });
 
     await test.step("ボードが404になる", async () => {
-      await expect
-        .poll(async () =>
-          (await page.request.get(`/${account.handle}`)).status(),
-        )
-        .toBe(404);
+      await expect(async () => {
+        const response = await page.goto(`/${account.handle}`);
+        expect(response?.status()).toBe(404);
+      }).toPass();
+      await expect(page.getByRole("heading", { name: "404" })).toBeVisible();
     });
   });
 });
