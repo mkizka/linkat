@@ -7,21 +7,21 @@ import { OwnerFactory } from "~/server/factories/owner";
 import { db } from "~/server/infrastructure/drizzle";
 import { handleIndexFactory } from "~/server/infrastructure/handleIndex";
 import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
-import { ownerDbRepositoryFactory } from "~/server/infrastructure/ownerDbRepository";
+import { ownerRepositoryFactory } from "~/server/infrastructure/ownerRepository";
 import { profileFetcherFactory } from "~/server/infrastructure/profileFetcher";
 import { profileRecordParserFactory } from "~/server/infrastructure/profileRecordParser";
 
 import { ownerServiceFactory } from "./owner";
 
 const identityResolver = mock<IIdentityResolver>();
-const ownerDbRepository = ownerDbRepositoryFactory({ db });
+const ownerRepository = ownerRepositoryFactory({ db });
 const profileFetcher = profileFetcherFactory({
   profileRecordParser: profileRecordParserFactory(),
 });
 
 const ownerService = ownerServiceFactory({
   handleIndex: handleIndexFactory({ db }),
-  ownerDbRepository,
+  ownerRepository,
   profileFetcher,
   identityResolver,
 });
@@ -79,7 +79,7 @@ describe("ownerService", () => {
       // assert
       expect(actual).toBeNull();
       expect(identityResolver.resolve).not.toHaveBeenCalled();
-      expect(await ownerDbRepository.findByDid(did)).toBeNull();
+      expect(await ownerRepository.findByDid(did)).toBeNull();
     });
     test("写しに無いhandleはハンドルを解決せずにnullを返す", async () => {
       // arrange
@@ -132,7 +132,7 @@ describe("ownerService", () => {
         handle: "alice.example.com",
         displayName: "Alice",
       });
-      expect(await ownerDbRepository.findByDid(did)).toEqual(actual);
+      expect(await ownerRepository.findByDid(did)).toEqual(actual);
     });
     test("DIDを解決できなければ、ハンドルをnullにして既存のプロフィールを残す", async () => {
       // arrange

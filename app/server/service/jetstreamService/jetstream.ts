@@ -13,7 +13,7 @@ import { Board } from "~/models/board";
 import type { AccountStatus } from "~/models/owner";
 import type { ICursorRepository } from "~/server/infrastructure/cursorRepository";
 import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
-import type { IOwnerDbRepository } from "~/server/infrastructure/ownerDbRepository";
+import type { IOwnerRepository } from "~/server/infrastructure/ownerRepository";
 import type { IProfileRecordParser } from "~/server/infrastructure/profileRecordParser";
 import type { IBoardService } from "~/server/service/boardService/board";
 import type { IOwnerService } from "~/server/service/ownerService/owner";
@@ -65,14 +65,14 @@ export const jetstreamServiceFactory = ({
   cursorRepository,
   boardService,
   ownerService,
-  ownerDbRepository,
+  ownerRepository,
   identityResolver,
   profileRecordParser,
 }: {
   cursorRepository: ICursorRepository;
   boardService: IBoardService;
   ownerService: IOwnerService;
-  ownerDbRepository: IOwnerDbRepository;
+  ownerRepository: IOwnerRepository;
   identityResolver: IIdentityResolver;
   profileRecordParser: IProfileRecordParser;
 }): IJetstreamService => {
@@ -117,7 +117,7 @@ export const jetstreamServiceFactory = ({
     if (event.commit.rkey !== "self") {
       return;
     }
-    const owner = await ownerDbRepository.findByDid(event.did);
+    const owner = await ownerRepository.findByDid(event.did);
     if (!owner) {
       return;
     }
@@ -130,21 +130,21 @@ export const jetstreamServiceFactory = ({
       return;
     }
     const identity = await identityResolver.resolve(event.did);
-    const saved = await ownerDbRepository.save(
+    const saved = await ownerRepository.save(
       owner.withProfile(profile).withHandle(identity?.handle ?? null),
     );
     logger.info({ owner: saved }, "プロフィールを更新しました");
   };
 
   const handleIdentity = async (event: IdentityEvent) => {
-    const owner = await ownerDbRepository.findByDid(event.did);
+    const owner = await ownerRepository.findByDid(event.did);
     if (!owner) {
       return;
     }
     const identity = await identityResolver.resolve(event.did, {
       noCache: true,
     });
-    const saved = await ownerDbRepository.save(
+    const saved = await ownerRepository.save(
       owner.withHandle(identity?.handle ?? null),
     );
     logger.info(

@@ -4,18 +4,16 @@ import { Owner } from "~/models/owner";
 import { OwnerFactory } from "~/server/factories/owner";
 import { db } from "~/server/infrastructure/drizzle";
 
-import { ownerDbRepositoryFactory } from "./ownerDbRepository";
+import { ownerRepositoryFactory } from "./ownerRepository";
 
-const ownerDbRepository = ownerDbRepositoryFactory({ db });
+const ownerRepository = ownerRepositoryFactory({ db });
 
-describe("ownerDbRepository", () => {
+describe("ownerRepository", () => {
   describe("findByDid", () => {
     test("保存されていない場合はnullを返す", async () => {
       // arrange
       // act
-      const actual = await ownerDbRepository.findByDid(
-        asDid("did:plc:notfound"),
-      );
+      const actual = await ownerRepository.findByDid(asDid("did:plc:notfound"));
       // assert
       expect(actual).toBeNull();
     });
@@ -23,7 +21,7 @@ describe("ownerDbRepository", () => {
       // arrange
       const owner = await OwnerFactory.create();
       // act
-      const actual = await ownerDbRepository.findByDid(asDid(owner.did));
+      const actual = await ownerRepository.findByDid(asDid(owner.did));
       // assert
       expect(actual).toEqual(owner);
     });
@@ -44,9 +42,9 @@ describe("ownerDbRepository", () => {
         updatedAt: new Date("2024-01-02T00:00:00.000Z"),
       });
       // act
-      await ownerDbRepository.save(owner);
+      await ownerRepository.save(owner);
       // assert
-      const actual = await ownerDbRepository.findByDid(owner.did);
+      const actual = await ownerRepository.findByDid(owner.did);
       expect(actual).toEqual({
         did: owner.did,
         avatar: owner.avatar,
@@ -79,9 +77,9 @@ describe("ownerDbRepository", () => {
         updatedAt: new Date("2024-02-01T00:00:00.000Z"),
       });
       // act
-      await ownerDbRepository.save(updated);
+      await ownerRepository.save(updated);
       // assert
-      const actual = await ownerDbRepository.findByDid(asDid(existing.did));
+      const actual = await ownerRepository.findByDid(asDid(existing.did));
       expect(actual).toEqual({
         did: existing.did,
         avatar: updated.avatar,
@@ -98,18 +96,18 @@ describe("ownerDbRepository", () => {
       // arrange
       const other = await OwnerFactory.create({ handle: "example.com" });
       // act
-      await ownerDbRepository.save(
+      await ownerRepository.save(
         new Owner({ ...other, did: "did:plc:abcdefghijklmnopqrstuvwx" }),
       );
       // assert
-      const actual = await ownerDbRepository.findByDid(asDid(other.did));
+      const actual = await ownerRepository.findByDid(asDid(other.did));
       expect(actual?.handle).toBeNull();
     });
     test("handleがnullの持ち主は複数保存できる", async () => {
       // arrange
       const other = await OwnerFactory.create({ handle: null });
       // act
-      const actual = await ownerDbRepository.save(
+      const actual = await ownerRepository.save(
         new Owner({ ...other, did: "did:plc:abcdefghijklmnopqrstuvwx" }),
       );
       // assert
@@ -122,18 +120,18 @@ describe("ownerDbRepository", () => {
       // arrange
       const existing = await OwnerFactory.create();
       // act
-      await ownerDbRepository.updateStatus(asDid(existing.did), "suspended");
+      await ownerRepository.updateStatus(asDid(existing.did), "suspended");
       // assert
-      const actual = await ownerDbRepository.findByDid(asDid(existing.did));
+      const actual = await ownerRepository.findByDid(asDid(existing.did));
       expect(actual?.status).toBe("suspended");
     });
     test("持ち主が保存されていない場合は何もしない", async () => {
       // arrange
       const did = asDid("did:plc:notfound");
       // act
-      await ownerDbRepository.updateStatus(did, "suspended");
+      await ownerRepository.updateStatus(did, "suspended");
       // assert
-      const actual = await ownerDbRepository.findByDid(did);
+      const actual = await ownerRepository.findByDid(did);
       expect(actual).toBeNull();
     });
   });

@@ -12,7 +12,7 @@ import {
   sessionStoreFactory,
   stateStoreFactory,
 } from "~/server/infrastructure/oauthStorage";
-import { ownerDbRepositoryFactory } from "~/server/infrastructure/ownerDbRepository";
+import { ownerRepositoryFactory } from "~/server/infrastructure/ownerRepository";
 import { profileFetcherFactory } from "~/server/infrastructure/profileFetcher";
 import { profileRecordParserFactory } from "~/server/infrastructure/profileRecordParser";
 import { atpassportServiceFactory } from "~/server/service/atpassportService/atpassport";
@@ -27,7 +27,7 @@ export const di = await createRegistry()
   .value("db", db)
   .service("boardRepository", ["db"], boardRepositoryFactory)
   .service("cursorRepository", ["db"], cursorRepositoryFactory)
-  .service("ownerDbRepository", ["db"], ownerDbRepositoryFactory)
+  .service("ownerRepository", ["db"], ownerRepositoryFactory)
   .service("handleIndex", ["db"], handleIndexFactory)
   .service("oauthStateStore", ["db"], stateStoreFactory)
   .service("oauthSessionStore", ["db"], sessionStoreFactory)
@@ -43,17 +43,17 @@ export const di = await createRegistry()
   .service("cookieSessionStorage", cookieSessionStorageFactory)
   .service(
     "ownerService",
-    ["handleIndex", "ownerDbRepository", "profileFetcher", "identityResolver"],
+    ["handleIndex", "ownerRepository", "profileFetcher", "identityResolver"],
     ownerServiceFactory,
   )
   .service(
     "editorService",
-    ["ownerDbRepository", "profileFetcher"],
+    ["ownerRepository", "profileFetcher"],
     editorServiceFactory,
   )
   .service(
     "boardService",
-    ["boardRepository", "ownerDbRepository"],
+    ["boardRepository", "ownerRepository"],
     boardServiceFactory,
   )
   .service("atpassportService", ["atpassportClient"], atpassportServiceFactory)
@@ -69,7 +69,7 @@ export const di = await createRegistry()
       "cursorRepository",
       "boardService",
       "ownerService",
-      "ownerDbRepository",
+      "ownerRepository",
       "identityResolver",
       "profileRecordParser",
     ],

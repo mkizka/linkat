@@ -4,7 +4,7 @@ import { LinkatAgent } from "~/libs/agent";
 import { type AccountStatus, Owner } from "~/models/owner";
 import type { IHandleIndex } from "~/server/infrastructure/handleIndex";
 import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
-import type { IOwnerDbRepository } from "~/server/infrastructure/ownerDbRepository";
+import type { IOwnerRepository } from "~/server/infrastructure/ownerRepository";
 import type { IProfileFetcher } from "~/server/infrastructure/profileFetcher";
 
 export interface IOwnerService {
@@ -15,12 +15,12 @@ export interface IOwnerService {
 
 export const ownerServiceFactory = ({
   handleIndex,
-  ownerDbRepository,
+  ownerRepository,
   profileFetcher,
   identityResolver,
 }: {
   handleIndex: IHandleIndex;
-  ownerDbRepository: IOwnerDbRepository;
+  ownerRepository: IOwnerRepository;
   profileFetcher: IProfileFetcher;
   identityResolver: IIdentityResolver;
 }): IOwnerService => ({
@@ -31,22 +31,22 @@ export const ownerServiceFactory = ({
     const did = isDid(handleOrDid)
       ? handleOrDid
       : await handleIndex.findDid(handleOrDid);
-    return did && (await ownerDbRepository.findByDid(did));
+    return did && (await ownerRepository.findByDid(did));
   },
   async syncOwner(did) {
-    let owner = (await ownerDbRepository.findByDid(did)) ?? Owner.create(did);
+    let owner = (await ownerRepository.findByDid(did)) ?? Owner.create(did);
     const identity = await identityResolver.resolve(did);
     if (!identity) {
-      return await ownerDbRepository.save(owner.withHandle(null));
+      return await ownerRepository.save(owner.withHandle(null));
     }
     const agent = LinkatAgent.credential(identity.pds);
     const profile = await profileFetcher.fetchProfile(agent, did);
     if (profile) {
       owner = owner.withProfile(profile);
     }
-    return await ownerDbRepository.save(owner.withHandle(identity.handle));
+    return await ownerRepository.save(owner.withHandle(identity.handle));
   },
   async updateStatus(did, status) {
-    await ownerDbRepository.updateStatus(did, status);
+    await ownerRepository.updateStatus(did, status);
   },
 });

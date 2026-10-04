@@ -3,7 +3,7 @@ import type { Did } from "@atproto/did";
 import type { LinkatAgent } from "~/libs/agent";
 import { Board } from "~/models/board";
 import type { IBoardRepository } from "~/server/infrastructure/boardRepository";
-import type { IOwnerDbRepository } from "~/server/infrastructure/ownerDbRepository";
+import type { IOwnerRepository } from "~/server/infrastructure/ownerRepository";
 import { tryCatch } from "~/utils/tryCatch";
 
 export class BoardPdsSaveError extends Error {
@@ -44,13 +44,13 @@ export interface IBoardService {
 
 export const boardServiceFactory = ({
   boardRepository,
-  ownerDbRepository,
+  ownerRepository,
 }: {
   boardRepository: IBoardRepository;
-  ownerDbRepository: IOwnerDbRepository;
+  ownerRepository: IOwnerRepository;
 }): IBoardService => {
   const deleteBoard = async (ownerDid: Did) => {
-    await ownerDbRepository.delete(ownerDid);
+    await ownerRepository.delete(ownerDid);
     await boardRepository.delete(ownerDid);
   };
   return {

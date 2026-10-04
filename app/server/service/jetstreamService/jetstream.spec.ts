@@ -12,7 +12,7 @@ import { cursorRepositoryFactory } from "~/server/infrastructure/cursorRepositor
 import { db } from "~/server/infrastructure/drizzle";
 import { handleIndexFactory } from "~/server/infrastructure/handleIndex";
 import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
-import { ownerDbRepositoryFactory } from "~/server/infrastructure/ownerDbRepository";
+import { ownerRepositoryFactory } from "~/server/infrastructure/ownerRepository";
 import { profileFetcherFactory } from "~/server/infrastructure/profileFetcher";
 import { profileRecordParserFactory } from "~/server/infrastructure/profileRecordParser";
 import { boardServiceFactory } from "~/server/service/boardService/board";
@@ -22,7 +22,7 @@ import { env } from "~/utils/env";
 import { jetstreamServiceFactory } from "./jetstream";
 
 const identityResolver = mock<IIdentityResolver>();
-const ownerDbRepository = ownerDbRepositoryFactory({ db });
+const ownerRepository = ownerRepositoryFactory({ db });
 const profileRecordParser = profileRecordParserFactory();
 const profileFetcher = profileFetcherFactory({
   profileRecordParser,
@@ -32,15 +32,15 @@ const jetstreamService = jetstreamServiceFactory({
   cursorRepository: cursorRepositoryFactory({ db }),
   boardService: boardServiceFactory({
     boardRepository: boardRepositoryFactory({ db }),
-    ownerDbRepository,
+    ownerRepository,
   }),
   ownerService: ownerServiceFactory({
     handleIndex: handleIndexFactory({ db }),
-    ownerDbRepository,
+    ownerRepository,
     profileFetcher,
     identityResolver,
   }),
-  ownerDbRepository,
+  ownerRepository,
   identityResolver,
   profileRecordParser,
 });
@@ -151,7 +151,7 @@ describe("jetstreamService", () => {
         profileUpdateEvent(owner.did, profileRecord),
       );
       // assert
-      const actual = await ownerDbRepository.findByDid(asDid(owner.did));
+      const actual = await ownerRepository.findByDid(asDid(owner.did));
       expect(actual).toMatchObject({
         handle: "new.example.com",
         displayName: "新しい名前",
@@ -173,7 +173,7 @@ describe("jetstreamService", () => {
       // act
       await jetstreamService.handleProfileCommit(profileDeleteEvent(owner.did));
       // assert
-      const actual = await ownerDbRepository.findByDid(asDid(owner.did));
+      const actual = await ownerRepository.findByDid(asDid(owner.did));
       expect(actual).toMatchObject({
         handle: owner.handle,
         displayName: null,
@@ -190,7 +190,7 @@ describe("jetstreamService", () => {
         profileUpdateEvent(owner.did, profileRecord),
       );
       // assert
-      const actual = await ownerDbRepository.findByDid(asDid(owner.did));
+      const actual = await ownerRepository.findByDid(asDid(owner.did));
       expect(actual).toMatchObject({ handle: null, displayName: "新しい名前" });
     });
     test("持ち主の写しが無いアカウントのイベントは捨てる", async () => {
@@ -202,7 +202,7 @@ describe("jetstreamService", () => {
       );
       // assert
       expect(identityResolver.resolve).not.toHaveBeenCalled();
-      expect(await ownerDbRepository.findByDid(asDid(did))).toBeNull();
+      expect(await ownerRepository.findByDid(asDid(did))).toBeNull();
     });
     test("レコードが不正な場合、既存の値を残す", async () => {
       // arrange
@@ -216,7 +216,7 @@ describe("jetstreamService", () => {
       );
       // assert
       expect(identityResolver.resolve).not.toHaveBeenCalled();
-      const actual = await ownerDbRepository.findByDid(asDid(owner.did));
+      const actual = await ownerRepository.findByDid(asDid(owner.did));
       expect(actual).toEqual(owner);
     });
     test("rkeyがself以外のレコードは無視する", async () => {
@@ -227,7 +227,7 @@ describe("jetstreamService", () => {
         profileUpdateEvent(owner.did, profileRecord, "other"),
       );
       // assert
-      const actual = await ownerDbRepository.findByDid(asDid(owner.did));
+      const actual = await ownerRepository.findByDid(asDid(owner.did));
       expect(actual).toEqual(owner);
     });
   });
@@ -240,7 +240,7 @@ describe("jetstreamService", () => {
       // act
       await jetstreamService.handleCreateOrUpdate(dummyEvent(did));
       // assert
-      expect(await ownerDbRepository.findByDid(asDid(did))).toMatchObject({
+      expect(await ownerRepository.findByDid(asDid(did))).toMatchObject({
         handle: null,
       });
       const { rows } = await pool.query(
@@ -264,12 +264,10 @@ describe("jetstreamService", () => {
       // act
       await jetstreamService.handleCreateOrUpdate(dummyEvent(owner.did));
       // assert
-      expect(await ownerDbRepository.findByDid(asDid(owner.did))).toMatchObject(
-        {
-          handle: "new.example.com",
-          displayName: owner.displayName,
-        },
-      );
+      expect(await ownerRepository.findByDid(asDid(owner.did))).toMatchObject({
+        handle: "new.example.com",
+        displayName: owner.displayName,
+      });
     });
   });
 
@@ -283,7 +281,7 @@ describe("jetstreamService", () => {
       );
       // assert
       expect(identityResolver.resolve).not.toHaveBeenCalled();
-      expect(await ownerDbRepository.findByDid(asDid(did))).toBeNull();
+      expect(await ownerRepository.findByDid(asDid(did))).toBeNull();
     });
     test("持ち主の写しがあれば、DIDからハンドルを解決し直して更新する", async () => {
       // arrange
@@ -302,7 +300,7 @@ describe("jetstreamService", () => {
       expect(identityResolver.resolve).toHaveBeenCalledWith(owner.did, {
         noCache: true,
       });
-      const actual = await ownerDbRepository.findByDid(asDid(owner.did));
+      const actual = await ownerRepository.findByDid(asDid(owner.did));
       expect(actual?.handle).toBe("new.example.com");
       expect(actual?.displayName).toBe("表示名");
     });
@@ -316,9 +314,9 @@ describe("jetstreamService", () => {
       // act
       await jetstreamService.handleIdentity(identityEvent(owner.did));
       // assert
-      const actual = await ownerDbRepository.findByDid(asDid(owner.did));
+      const actual = await ownerRepository.findByDid(asDid(owner.did));
       expect(actual?.handle).toBe("new.example.com");
-      const otherActual = await ownerDbRepository.findByDid(asDid(other.did));
+      const otherActual = await ownerRepository.findByDid(asDid(other.did));
       expect(otherActual?.handle).toBeNull();
     });
     test("ハンドルの検証に失敗したら、写しのハンドルをnullにする", async () => {
@@ -328,7 +326,7 @@ describe("jetstreamService", () => {
       // act
       await jetstreamService.handleIdentity(identityEvent(owner.did));
       // assert
-      const actual = await ownerDbRepository.findByDid(asDid(owner.did));
+      const actual = await ownerRepository.findByDid(asDid(owner.did));
       expect(actual?.handle).toBeNull();
     });
     test("DIDを解決できなければ、写しのハンドルをnullにする", async () => {
@@ -338,7 +336,7 @@ describe("jetstreamService", () => {
       // act
       await jetstreamService.handleIdentity(identityEvent(owner.did));
       // assert
-      const actual = await ownerDbRepository.findByDid(asDid(owner.did));
+      const actual = await ownerRepository.findByDid(asDid(owner.did));
       expect(actual?.handle).toBeNull();
     });
   });

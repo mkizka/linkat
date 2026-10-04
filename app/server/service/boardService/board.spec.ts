@@ -8,7 +8,7 @@ import { BoardFactory, cardsFromFactory } from "~/server/factories/board";
 import { OwnerFactory } from "~/server/factories/owner";
 import { boardRepositoryFactory } from "~/server/infrastructure/boardRepository";
 import { db } from "~/server/infrastructure/drizzle";
-import { ownerDbRepositoryFactory } from "~/server/infrastructure/ownerDbRepository";
+import { ownerRepositoryFactory } from "~/server/infrastructure/ownerRepository";
 
 import {
   BoardDbDeleteError,
@@ -19,10 +19,10 @@ import {
 } from "./board";
 
 const boardRepository = boardRepositoryFactory({ db });
-const ownerDbRepository = ownerDbRepositoryFactory({ db });
+const ownerRepository = ownerRepositoryFactory({ db });
 const boardService = boardServiceFactory({
   boardRepository,
-  ownerDbRepository,
+  ownerRepository,
 });
 
 const dummyCards = [
@@ -169,12 +169,10 @@ describe("boardService", () => {
       await boardService.deleteBoard(asDid(board.ownerDid));
       // assert
       expect(await boardRepository.find(asDid(board.ownerDid))).toBeNull();
-      expect(
-        await ownerDbRepository.findByDid(asDid(board.ownerDid)),
-      ).toBeNull();
+      expect(await ownerRepository.findByDid(asDid(board.ownerDid))).toBeNull();
       expect(await boardRepository.find(asDid(other.ownerDid))).not.toBeNull();
       expect(
-        await ownerDbRepository.findByDid(asDid(other.ownerDid)),
+        await ownerRepository.findByDid(asDid(other.ownerDid)),
       ).not.toBeNull();
     });
     test("持ち主の写しが無くても、ボードを削除する", async () => {
@@ -216,9 +214,7 @@ describe("boardService", () => {
         rkey: "self",
       });
       expect(await boardRepository.find(asDid(board.ownerDid))).toBeNull();
-      expect(
-        await ownerDbRepository.findByDid(asDid(board.ownerDid)),
-      ).toBeNull();
+      expect(await ownerRepository.findByDid(asDid(board.ownerDid))).toBeNull();
     });
     test("PDSからの削除に失敗したらDBから削除せずBoardPdsDeleteErrorを投げる", async () => {
       // arrange
@@ -237,7 +233,7 @@ describe("boardService", () => {
       await expect(actual).rejects.toThrow(BoardPdsDeleteError);
       expect(await boardRepository.find(asDid(board.ownerDid))).not.toBeNull();
       expect(
-        await ownerDbRepository.findByDid(asDid(board.ownerDid)),
+        await ownerRepository.findByDid(asDid(board.ownerDid)),
       ).not.toBeNull();
     });
     test("DBからの削除に失敗したらBoardDbDeleteErrorを投げる", async () => {

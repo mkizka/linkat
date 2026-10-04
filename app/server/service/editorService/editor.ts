@@ -1,6 +1,6 @@
 import type { LinkatAgent } from "~/libs/agent";
 import { Owner, type OwnerView } from "~/models/owner";
-import type { IOwnerDbRepository } from "~/server/infrastructure/ownerDbRepository";
+import type { IOwnerRepository } from "~/server/infrastructure/ownerRepository";
 import type { IProfileFetcher } from "~/server/infrastructure/profileFetcher";
 
 export interface IEditorService {
@@ -8,15 +8,15 @@ export interface IEditorService {
 }
 
 export const editorServiceFactory = ({
-  ownerDbRepository,
+  ownerRepository,
   profileFetcher,
 }: {
-  ownerDbRepository: IOwnerDbRepository;
+  ownerRepository: IOwnerRepository;
   profileFetcher: IProfileFetcher;
 }): IEditorService => ({
   async findView(agent) {
     const did = agent.assertDid;
-    const owner = await ownerDbRepository.findByDid(did);
+    const owner = await ownerRepository.findByDid(did);
     if (owner) {
       return owner.toView();
     }

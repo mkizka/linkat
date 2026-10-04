@@ -6,15 +6,15 @@ import { server } from "~/mocks/server";
 import { Owner } from "~/models/owner";
 import { OwnerFactory } from "~/server/factories/owner";
 import { db } from "~/server/infrastructure/drizzle";
-import { ownerDbRepositoryFactory } from "~/server/infrastructure/ownerDbRepository";
+import { ownerRepositoryFactory } from "~/server/infrastructure/ownerRepository";
 import { profileFetcherFactory } from "~/server/infrastructure/profileFetcher";
 import { profileRecordParserFactory } from "~/server/infrastructure/profileRecordParser";
 
 import { editorServiceFactory } from "./editor";
 
-const ownerDbRepository = ownerDbRepositoryFactory({ db });
+const ownerRepository = ownerRepositoryFactory({ db });
 const editorService = editorServiceFactory({
-  ownerDbRepository,
+  ownerRepository,
   profileFetcher: profileFetcherFactory({
     profileRecordParser: profileRecordParserFactory(),
   }),
@@ -72,7 +72,7 @@ describe("editorService", () => {
         avatarUrl: `https://cdn.bsky.app/img/avatar/plain/${did}/${AVATAR_CID}@jpeg`,
       });
       expect(requestedRepo).toBe(did);
-      expect(await ownerDbRepository.findByDid(asDid(did))).toBeNull();
+      expect(await ownerRepository.findByDid(asDid(did))).toBeNull();
     });
     test("写しが無くプロフィールの取得にも失敗したら、DIDだけを返す", async () => {
       // arrange
@@ -92,7 +92,7 @@ describe("editorService", () => {
         displayName: null,
         avatarUrl: null,
       });
-      expect(await ownerDbRepository.findByDid(asDid(did))).toBeNull();
+      expect(await ownerRepository.findByDid(asDid(did))).toBeNull();
     });
   });
 });

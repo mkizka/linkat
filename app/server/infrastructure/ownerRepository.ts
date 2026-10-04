@@ -5,18 +5,18 @@ import { type AccountStatus, Owner } from "~/models/owner";
 import type { Db } from "~/server/infrastructure/drizzle";
 import { ownerTable } from "~/server/infrastructure/schema";
 
-export interface IOwnerDbRepository {
+export interface IOwnerRepository {
   findByDid: (did: Did) => Promise<Owner | null>;
   save: (owner: Owner) => Promise<Owner>;
   updateStatus: (did: Did, status: AccountStatus) => Promise<void>;
   delete: (did: Did) => Promise<void>;
 }
 
-export const ownerDbRepositoryFactory = ({
+export const ownerRepositoryFactory = ({
   db,
 }: {
   db: Db;
-}): IOwnerDbRepository => ({
+}): IOwnerRepository => ({
   async findByDid(did) {
     const [row] = await db
       .select()
