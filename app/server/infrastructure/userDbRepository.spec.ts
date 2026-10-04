@@ -29,26 +29,6 @@ describe("userDbRepository", () => {
     });
   });
 
-  describe("findByHandle", () => {
-    test("保存されていない場合はnullを返す", async () => {
-      // arrange
-      // act
-      const actual = await userDbRepository.findByHandle(
-        "notfound.example.com",
-      );
-      // assert
-      expect(actual).toBeNull();
-    });
-    test("handleを指定してユーザーを取得できる", async () => {
-      // arrange
-      const user = await UserFactory.create({ handle: "example.com" });
-      // act
-      const actual = await userDbRepository.findByHandle("example.com");
-      // assert
-      expect(actual).toEqual(user);
-    });
-  });
-
   describe("save", () => {
     test("新しいユーザーを保存できる", async () => {
       // arrange
