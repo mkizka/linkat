@@ -20,8 +20,12 @@ export const userRepositoryFactory = ({
 }: {
   userDbRepository: IUserDbRepository;
   accountPdsRepository: IAccountPdsRepository;
-}): IUserRepository => {
-  const fetchAndSave = async (did: Did, cached: User | null) => {
+}): IUserRepository => ({
+  async findByDid(did) {
+    const cached = await userDbRepository.findByDid(did);
+    if (cached && isFresh(cached)) {
+      return cached;
+    }
     const fetched = await accountPdsRepository.findByDid(did);
     if (!fetched) {
       return cached;
@@ -40,17 +44,8 @@ export const userRepositoryFactory = ({
         updatedAt: new Date(),
       }),
     );
-  };
-
-  return {
-    async findByDid(did) {
-      const cached = await userDbRepository.findByDid(did);
-      return cached && isFresh(cached)
-        ? cached
-        : await fetchAndSave(did, cached);
-    },
-    async updateStatus(did, status) {
-      await userDbRepository.updateStatus(did, status);
-    },
-  };
-};
+  },
+  async updateStatus(did, status) {
+    await userDbRepository.updateStatus(did, status);
+  },
+});
