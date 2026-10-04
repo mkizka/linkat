@@ -6,9 +6,9 @@ import type { Db } from "~/server/infrastructure/drizzle";
 import { boardTable } from "~/server/infrastructure/schema";
 
 export interface IBoardRepository {
-  find: (userDid: Did) => Promise<Board | null>;
+  find: (ownerDid: Did) => Promise<Board | null>;
   save: (board: Board) => Promise<void>;
-  delete: (userDid: Did) => Promise<void>;
+  delete: (ownerDid: Did) => Promise<void>;
 }
 
 export const boardRepositoryFactory = ({
@@ -16,28 +16,28 @@ export const boardRepositoryFactory = ({
 }: {
   db: Db;
 }): IBoardRepository => ({
-  async find(userDid) {
+  async find(ownerDid) {
     const [row] = await db
       .select()
       .from(boardTable)
-      .where(eq(boardTable.userDid, userDid));
+      .where(eq(boardTable.ownerDid, ownerDid));
     if (!row) {
       return null;
     }
-    return new Board(userDid, Board.parseCards(JSON.parse(row.record)));
+    return new Board(ownerDid, Board.parseCards(JSON.parse(row.record)));
   },
   async save(board) {
     const data = {
-      userDid: board.userDid,
+      ownerDid: board.ownerDid,
       record: board.toRecordJSON(),
       updatedAt: new Date(),
     };
     await db
       .insert(boardTable)
       .values(data)
-      .onConflictDoUpdate({ target: boardTable.userDid, set: data });
+      .onConflictDoUpdate({ target: boardTable.ownerDid, set: data });
   },
-  async delete(userDid) {
-    await db.delete(boardTable).where(eq(boardTable.userDid, userDid));
+  async delete(ownerDid) {
+    await db.delete(boardTable).where(eq(boardTable.ownerDid, ownerDid));
   },
 });

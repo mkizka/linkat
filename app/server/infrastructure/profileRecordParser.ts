@@ -1,7 +1,7 @@
 import { getBlobCidString } from "@atproto/lex";
 
 import profile from "~/generated/app/bsky/actor/profile";
-import type { Profile } from "~/models/user";
+import type { Profile } from "~/models/owner";
 
 export interface IProfileRecordParser {
   parse: (record: unknown) => Profile | null;

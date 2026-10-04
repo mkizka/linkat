@@ -10,13 +10,13 @@ import { Jetstream } from "@skyware/jetstream";
 import WebSocket from "ws";
 
 import { Board } from "~/models/board";
-import type { AccountStatus } from "~/models/user";
+import type { AccountStatus } from "~/models/owner";
 import type { ICursorRepository } from "~/server/infrastructure/cursorRepository";
 import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
+import type { IOwnerRepository } from "~/server/infrastructure/ownerRepository";
 import type { IProfileRecordParser } from "~/server/infrastructure/profileRecordParser";
-import type { IUserDbRepository } from "~/server/infrastructure/userDbRepository";
 import type { IBoardService } from "~/server/service/boardService/board";
-import type { IUserService } from "~/server/service/userService/user";
+import type { IOwnerService } from "~/server/service/ownerService/owner";
 import { env } from "~/utils/env";
 import { createLogger } from "~/utils/logger";
 import { tryCatch } from "~/utils/tryCatch";
@@ -64,15 +64,15 @@ export interface IJetstreamService {
 export const jetstreamServiceFactory = ({
   cursorRepository,
   boardService,
-  userService,
-  userDbRepository,
+  ownerService,
+  ownerRepository,
   identityResolver,
   profileRecordParser,
 }: {
   cursorRepository: ICursorRepository;
   boardService: IBoardService;
-  userService: IUserService;
-  userDbRepository: IUserDbRepository;
+  ownerService: IOwnerService;
+  ownerRepository: IOwnerRepository;
   identityResolver: IIdentityResolver;
   profileRecordParser: IProfileRecordParser;
 }): IJetstreamService => {
@@ -98,7 +98,7 @@ export const jetstreamServiceFactory = ({
       return;
     }
     const board = new Board(event.did, cards);
-    await userService.syncOwner(event.did);
+    await ownerService.syncOwner(event.did);
     await boardService.saveBoard(board);
     logger.debug({ board }, "ボードを更新しました");
   };
@@ -117,8 +117,8 @@ export const jetstreamServiceFactory = ({
     if (event.commit.rkey !== "self") {
       return;
     }
-    const user = await userDbRepository.findByDid(event.did);
-    if (!user) {
+    const owner = await ownerRepository.findByDid(event.did);
+    if (!owner) {
       return;
     }
     const profile =
@@ -130,22 +130,22 @@ export const jetstreamServiceFactory = ({
       return;
     }
     const identity = await identityResolver.resolve(event.did);
-    const saved = await userDbRepository.save(
-      user.withProfile(profile).withHandle(identity?.handle ?? null),
+    const saved = await ownerRepository.save(
+      owner.withProfile(profile).withHandle(identity?.handle ?? null),
     );
-    logger.info({ user: saved }, "プロフィールを更新しました");
+    logger.info({ owner: saved }, "プロフィールを更新しました");
   };
 
   const handleIdentity = async (event: IdentityEvent) => {
-    const user = await userDbRepository.findByDid(event.did);
-    if (!user) {
+    const owner = await ownerRepository.findByDid(event.did);
+    if (!owner) {
       return;
     }
     const identity = await identityResolver.resolve(event.did, {
       noCache: true,
     });
-    const saved = await userDbRepository.save(
-      user.withHandle(identity?.handle ?? null),
+    const saved = await ownerRepository.save(
+      owner.withHandle(identity?.handle ?? null),
     );
     logger.info(
       { did: saved.did, handle: saved.handle },
@@ -155,7 +155,7 @@ export const jetstreamServiceFactory = ({
 
   const handleAccount = async ({ account }: AccountEvent) => {
     const status = toAccountStatus(account);
-    await userService.updateStatus(account.did, status);
+    await ownerService.updateStatus(account.did, status);
     logger.debug(
       { did: account.did, status },
       "アカウントの状態を受け取りました",
@@ -192,7 +192,7 @@ export const jetstreamServiceFactory = ({
 
   jetstream.onDelete("blue.linkat.board", async (event) => {
     await boardService.deleteBoard(event.did);
-    logger.info({ userDid: event.did }, "ボードを削除しました");
+    logger.info({ ownerDid: event.did }, "ボードを削除しました");
   });
 
   jetstream.onCreate("app.bsky.actor.profile", handleProfileCommit);
