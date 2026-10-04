@@ -19,6 +19,8 @@ const xrpc = async (nsid: string, body: object, accessJwt?: string) => {
 };
 
 test.describe("Jetstream", () => {
+  test.skip(({ size }) => size === "large", "dev-envのPDSを操作するため");
+
   test("アカウントを無効化するとボードが404になる", async ({
     page,
     login,
