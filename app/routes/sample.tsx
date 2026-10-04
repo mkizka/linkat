@@ -19,11 +19,11 @@ export default function Index({ loaderData: { url } }: Route.ComponentProps) {
       <Main>
         <BoardViewer
           url={url}
-          user={{
+          owner={{
             did: "did:plc:z72i7hdynmk6r22z27h6tvur",
             handleOrDid: "bsky.app",
             displayHandle: "@bsky.app",
-            displayName: t("sample.user-name"),
+            displayName: t("sample.owner-name"),
             avatarUrl: null,
           }}
           board={{

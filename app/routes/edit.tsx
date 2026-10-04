@@ -54,7 +54,7 @@ export async function action({ request, context }: Route.ActionArgs) {
     });
     return null;
   }
-  const owner = await di.userService.syncOwner(agent.assertDid);
+  const owner = await di.ownerService.syncOwner(agent.assertDid);
   try {
     await di.boardService.publishBoard(agent, parsedBoard);
   } catch (error) {
@@ -134,7 +134,7 @@ export default function Index({ loaderData }: Route.ComponentProps) {
 
   return (
     <Main>
-      <BoardViewer user={editor} board={board} url={url} editable />
+      <BoardViewer owner={editor} board={board} url={url} editable />
     </Main>
   );
 }

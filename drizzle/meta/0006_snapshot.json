@@ -1,6 +1,6 @@
 {
-  "id": "70b2bf22-7adb-4f35-99d1-7ce67134c1b7",
-  "prevId": "5ec57c4d-632f-4a98-b556-a248ff92b50c",
+  "id": "223e1fb3-506e-45c1-bb50-51bd140237f3",
+  "prevId": "70b2bf22-7adb-4f35-99d1-7ce67134c1b7",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -180,12 +180,18 @@
           "primaryKey": false,
           "notNull": false
         },
+        "active": {
+          "name": "active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
         "status": {
           "name": "status",
           "type": "text",
           "primaryKey": false,
-          "notNull": true,
-          "default": "'active'"
+          "notNull": false
         },
         "createdAt": {
           "name": "createdAt",

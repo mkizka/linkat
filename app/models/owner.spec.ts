@@ -1,9 +1,9 @@
 import type { Did } from "@atproto/did";
 
-import { User } from "./user";
+import { Owner } from "./owner";
 
-const createUser = (props: Partial<ConstructorParameters<typeof User>[0]>) =>
-  new User({
+const createOwner = (props: Partial<ConstructorParameters<typeof Owner>[0]>) =>
+  new Owner({
     did: "did:plc:dummy",
     avatar: null,
     avatarCid: null,
@@ -34,7 +34,7 @@ describe("isOwnedBy", () => {
       viewerDid: Did | null;
       expected: boolean;
     }) => {
-      expect(createUser({ did }).isOwnedBy(viewerDid)).toBe(expected);
+      expect(createOwner({ did }).isOwnedBy(viewerDid)).toBe(expected);
     },
   );
 });
@@ -42,9 +42,9 @@ describe("isOwnedBy", () => {
 describe("toView", () => {
   test("ハンドルがあればURLと表示にハンドルを使う", () => {
     // arrange
-    const user = createUser({ handle: "example.com" });
+    const owner = createOwner({ handle: "example.com" });
     // act
-    const actual = user.toView();
+    const actual = owner.toView();
     // assert
     expect(actual).toMatchObject({
       handleOrDid: "example.com",
@@ -53,9 +53,9 @@ describe("toView", () => {
   });
   test("ハンドルがnullならURLと表示にDIDを使う", () => {
     // arrange
-    const user = createUser({ handle: null });
+    const owner = createOwner({ handle: null });
     // act
-    const actual = user.toView();
+    const actual = owner.toView();
     // assert
     expect(actual).toMatchObject({
       handleOrDid: "did:plc:dummy",
@@ -64,9 +64,9 @@ describe("toView", () => {
   });
   test("アバターのCIDからBlueskyのCDNのURLを返す", () => {
     // arrange
-    const user = createUser({ avatarCid: "bafkreiavatar" });
+    const owner = createOwner({ avatarCid: "bafkreiavatar" });
     // act
-    const actual = user.toView().avatarUrl;
+    const actual = owner.toView().avatarUrl;
     // assert
     expect(actual).toBe(
       "https://cdn.bsky.app/img/avatar/plain/did:plc:dummy/bafkreiavatar@jpeg",
@@ -74,20 +74,20 @@ describe("toView", () => {
   });
   test("アバターのCIDが無ければ移行前のアバターのURLを返す", () => {
     // arrange
-    const user = createUser({
+    const owner = createOwner({
       avatar: "https://example.com/avatar.png",
       avatarCid: null,
     });
     // act
-    const actual = user.toView().avatarUrl;
+    const actual = owner.toView().avatarUrl;
     // assert
     expect(actual).toBe("https://example.com/avatar.png");
   });
   test("アバターが無ければnullを返す", () => {
     // arrange
-    const user = createUser({ avatarCid: null });
+    const owner = createOwner({ avatarCid: null });
     // act
-    const actual = user.toView().avatarUrl;
+    const actual = owner.toView().avatarUrl;
     // assert
     expect(actual).toBeNull();
   });
@@ -101,7 +101,7 @@ describe("isHidden", () => {
   `(
     "active=$active",
     ({ active, expected }: { active: boolean; expected: boolean }) => {
-      expect(createUser({ active }).isHidden()).toBe(expected);
+      expect(createOwner({ active }).isHidden()).toBe(expected);
     },
   );
 });
@@ -109,10 +109,11 @@ describe("isHidden", () => {
 describe("withProfile", () => {
   test("nullを渡すとプロフィールを空にし、ハンドルと状態は残す", () => {
     // arrange
-    const owner = createUser({
+    const owner = createOwner({
       avatarCid: "bafkreidummy",
       description: "説明",
       displayName: "Alice",
+      active: false,
       status: "suspended",
     });
     // act
@@ -124,6 +125,7 @@ describe("withProfile", () => {
       description: null,
       displayName: null,
       handle: "example.com",
+      active: false,
       status: "suspended",
     });
   });

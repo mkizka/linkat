@@ -24,7 +24,7 @@
     "atpassport-link": "What is @passport?"
   },
   "sample": {
-    "user-name": "Sample",
+    "owner-name": "Sample",
     "you-can-write-text-instead-of-url": "You can write text instead of a URL",
     "you-can-write-only-text": "Text-only is also OK",
     "bluesky-url-is-embedded": "Bluesky URLs are embedded automatically"

@@ -16,34 +16,34 @@ const notFound = () => {
 };
 
 export async function loader({ request, params, context }: Route.LoaderArgs) {
-  const user = await di.userService.findUser({
+  const owner = await di.ownerService.findOwner({
     handleOrDid: params.handle,
   });
-  if (!user) {
+  if (!owner) {
     return notFound();
   }
-  if (user.isHidden()) {
-    return { hidden: true as const, status: user.status };
+  if (owner.isHidden()) {
+    return { hidden: true as const, status: owner.status };
   }
-  const board = await di.boardService.findBoard(user.did);
+  const board = await di.boardService.findBoard(owner.did);
   if (!board) {
     return notFound();
   }
-  const view = user.toView();
+  const view = owner.toView();
   const i18next = getInstance(context);
   const title = i18next.t("board.meta-title", {
-    displayName: user.displayName,
+    displayName: owner.displayName,
     handle: view.handleOrDid,
   });
-  const userDid = await di.sessionService.getSessionUserDid(request);
+  const ownerDid = await di.sessionService.getSessionDid(request);
   return {
-    user: view,
+    owner: view,
     board: { cards: board.cards },
-    isMine: user.isOwnedBy(userDid),
+    isMine: owner.isOwnedBy(ownerDid),
     title: `${title} | Linkat`,
     url: `${env.PUBLIC_URL}/${view.handleOrDid}`,
     ogImageUrl: `${env.PUBLIC_URL}/${view.handleOrDid}/og`,
-    atUri: `at://${user.did}/blue.linkat.board/self`,
+    atUri: `at://${owner.did}/blue.linkat.board/self`,
     hidden: false as const,
   };
 }
@@ -79,11 +79,11 @@ export default function Index({ loaderData }: Route.ComponentProps) {
   if (loaderData.hidden) {
     return <HiddenBoard status={loaderData.status} />;
   }
-  const { user, board, url, isMine } = loaderData;
+  const { owner, board, url, isMine } = loaderData;
   return (
     <>
       <Main>
-        <BoardViewer user={user} board={board} url={url} isMine={isMine} />
+        <BoardViewer owner={owner} board={board} url={url} isMine={isMine} />
         <ShareModal url={url} />
       </Main>
       <Footer withNavigation />
