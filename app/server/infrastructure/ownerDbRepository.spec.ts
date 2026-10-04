@@ -29,59 +29,7 @@ describe("ownerDbRepository", () => {
     });
   });
 
-  describe("findByHandle", () => {
-    test("保存されていない場合はnullを返す", async () => {
-      // arrange
-      // act
-      const actual = await ownerDbRepository.findByHandle(
-        "notfound.example.com",
-      );
-      // assert
-      expect(actual).toBeNull();
-    });
-    test("handleを指定して持ち主の写しを取得できる", async () => {
-      // arrange
-      const owner = await OwnerFactory.create({ handle: "example.com" });
-      // act
-      const actual = await ownerDbRepository.findByHandle("example.com");
-      // assert
-      expect(actual).toEqual(owner);
-    });
-  });
-
   describe("save", () => {
-    const ownerToSave = Owner.create(asDid("did:plc:abcdefghijklmnopqrstuvwx"));
-    test("他の持ち主が同じhandleを持っている場合、その持ち主のhandleをnullにする", async () => {
-      // arrange
-      const other = await OwnerFactory.create({ handle: "example.com" });
-      // act
-      const actual = await ownerDbRepository.save(
-        ownerToSave.withHandle("example.com"),
-      );
-      // assert
-      expect(actual.handle).toBe("example.com");
-      const otherActual = await ownerDbRepository.findByDid(asDid(other.did));
-      expect(otherActual?.handle).toBeNull();
-    });
-    test("handleがnullの場合、handleをnullにする", async () => {
-      // arrange
-      await OwnerFactory.create({
-        did: ownerToSave.did,
-        handle: "example.com",
-      });
-      // act
-      const actual = await ownerDbRepository.save(ownerToSave.withHandle(null));
-      // assert
-      expect(actual.handle).toBeNull();
-    });
-    test("handleがnullの写しは複数保存できる", async () => {
-      // arrange
-      await OwnerFactory.create({ handle: null });
-      // act
-      const actual = await ownerDbRepository.save(ownerToSave.withHandle(null));
-      // assert
-      expect(actual.handle).toBeNull();
-    });
     test("新しい持ち主の写しを保存できる", async () => {
       // arrange
       const owner = new Owner({
@@ -146,6 +94,27 @@ describe("ownerDbRepository", () => {
         updatedAt: updated.updatedAt,
       });
     });
+    test("他の持ち主が同じhandleを持っている場合、その持ち主のhandleをnullにする", async () => {
+      // arrange
+      const other = await OwnerFactory.create({ handle: "example.com" });
+      // act
+      await ownerDbRepository.save(
+        new Owner({ ...other, did: "did:plc:abcdefghijklmnopqrstuvwx" }),
+      );
+      // assert
+      const actual = await ownerDbRepository.findByDid(asDid(other.did));
+      expect(actual?.handle).toBeNull();
+    });
+    test("handleがnullの写しは複数保存できる", async () => {
+      // arrange
+      const other = await OwnerFactory.create({ handle: null });
+      // act
+      const actual = await ownerDbRepository.save(
+        new Owner({ ...other, did: "did:plc:abcdefghijklmnopqrstuvwx" }),
+      );
+      // assert
+      expect(actual.handle).toBeNull();
+    });
   });
 
   describe("updateStatus", () => {
@@ -158,7 +127,7 @@ describe("ownerDbRepository", () => {
       const actual = await ownerDbRepository.findByDid(asDid(existing.did));
       expect(actual?.status).toBe("suspended");
     });
-    test("持ち主の写しが無い場合は何もしない", async () => {
+    test("持ち主の写しが保存されていない場合は何もしない", async () => {
       // arrange
       const did = asDid("did:plc:notfound");
       // act

@@ -54,9 +54,9 @@ export async function action({ request, context }: Route.ActionArgs) {
     });
     return null;
   }
-  let owner;
+  const owner = await di.ownerService.syncOwner(agent.assertDid);
   try {
-    owner = await di.boardService.publishBoard(agent, parsedBoard);
+    await di.boardService.publishBoard(agent, parsedBoard);
   } catch (error) {
     if (error instanceof BoardPdsSaveError) {
       logger.error(error, error.message);
@@ -72,7 +72,7 @@ export async function action({ request, context }: Route.ActionArgs) {
         message: i18next.t("edit.save-delayed-warning-message"),
         type: "warning",
       });
-      return redirect(`/${agent.assertDid}`);
+      return redirect(`/${owner.toView().handleOrDid}`);
     }
     throw error;
   }
@@ -85,7 +85,7 @@ export async function loader({ request }: Route.LoaderArgs) {
     throw redirect("/login");
   }
   const [editor, board] = await Promise.all([
-    di.ownerService.findEditor(agent),
+    di.editorService.findView(agent),
     di.boardService.findBoard(agent.assertDid),
   ]);
   return {

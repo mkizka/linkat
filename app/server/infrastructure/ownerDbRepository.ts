@@ -7,7 +7,6 @@ import { ownerTable } from "~/server/infrastructure/schema";
 
 export interface IOwnerDbRepository {
   findByDid: (did: Did) => Promise<Owner | null>;
-  findByHandle: (handle: string) => Promise<Owner | null>;
   save: (owner: Owner) => Promise<Owner>;
   updateStatus: (did: Did, status: AccountStatus) => Promise<void>;
   delete: (did: Did) => Promise<void>;
@@ -23,14 +22,6 @@ export const ownerDbRepositoryFactory = ({
       .select()
       .from(ownerTable)
       .where(eq(ownerTable.did, did))
-      .limit(1);
-    return row ? new Owner(row) : null;
-  },
-  async findByHandle(handle) {
-    const [row] = await db
-      .select()
-      .from(ownerTable)
-      .where(eq(ownerTable.handle, handle))
       .limit(1);
     return row ? new Owner(row) : null;
   },

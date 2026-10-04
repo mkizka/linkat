@@ -1,16 +1,19 @@
 import { asDid } from "@atproto/did";
 import type { CommitDeleteEvent, CommitUpdateEvent } from "@skyware/jetstream";
 import { CommitType, EventType } from "@skyware/jetstream";
+import { http, HttpResponse } from "msw";
 import { Pool } from "pg";
 import { mock, mockReset } from "vitest-mock-extended";
 
+import { server } from "~/mocks/server";
 import { OwnerFactory } from "~/server/factories/owner";
-import { accountPdsRepositoryFactory } from "~/server/infrastructure/accountPdsRepository";
 import { boardRepositoryFactory } from "~/server/infrastructure/boardRepository";
 import { cursorRepositoryFactory } from "~/server/infrastructure/cursorRepository";
 import { db } from "~/server/infrastructure/drizzle";
+import { handleIndexFactory } from "~/server/infrastructure/handleIndex";
 import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
 import { ownerDbRepositoryFactory } from "~/server/infrastructure/ownerDbRepository";
+import { profileFetcherFactory } from "~/server/infrastructure/profileFetcher";
 import { profileRecordParserFactory } from "~/server/infrastructure/profileRecordParser";
 import { boardServiceFactory } from "~/server/service/boardService/board";
 import { ownerServiceFactory } from "~/server/service/ownerService/owner";
@@ -21,8 +24,7 @@ import { jetstreamServiceFactory } from "./jetstream";
 const identityResolver = mock<IIdentityResolver>();
 const ownerDbRepository = ownerDbRepositoryFactory({ db });
 const profileRecordParser = profileRecordParserFactory();
-const accountPdsRepository = accountPdsRepositoryFactory({
-  identityResolver,
+const profileFetcher = profileFetcherFactory({
   profileRecordParser,
 });
 
@@ -31,11 +33,12 @@ const jetstreamService = jetstreamServiceFactory({
   boardService: boardServiceFactory({
     boardRepository: boardRepositoryFactory({ db }),
     ownerDbRepository,
-    accountPdsRepository,
   }),
   ownerService: ownerServiceFactory({
+    handleIndex: handleIndexFactory({ db }),
     ownerDbRepository,
-    accountPdsRepository,
+    profileFetcher,
+    identityResolver,
   }),
   ownerDbRepository,
   identityResolver,
@@ -140,11 +143,9 @@ describe("jetstreamService", () => {
         handle: "old.example.com",
         displayName: "古い名前",
       });
-      identityResolver.resolve.mockResolvedValue({
-        did: asDid(owner.did),
-        pds: "https://pds.example.com",
-        handle: "new.example.com",
-      });
+      identityResolver.resolve.mockResolvedValue(
+        found(owner.did, "new.example.com"),
+      );
       // act
       await jetstreamService.handleProfileCommit(
         profileUpdateEvent(owner.did, profileRecord),
@@ -166,13 +167,15 @@ describe("jetstreamService", () => {
         description: "古い説明",
         avatarCid,
       });
-      identityResolver.resolve.mockResolvedValue(null);
+      identityResolver.resolve.mockResolvedValue(
+        found(owner.did, owner.handle),
+      );
       // act
       await jetstreamService.handleProfileCommit(profileDeleteEvent(owner.did));
       // assert
       const actual = await ownerDbRepository.findByDid(asDid(owner.did));
       expect(actual).toMatchObject({
-        handle: null,
+        handle: owner.handle,
         displayName: null,
         description: null,
         avatarCid: null,
@@ -230,40 +233,43 @@ describe("jetstreamService", () => {
   });
 
   describe("handleCreateOrUpdate", () => {
-    test("持ち主の写しが無くても、写しを作成してボードを保存する", async () => {
+    test("持ち主の写しが無ければ、DIDを解決できなくても写しを作ってボードを保存する", async () => {
       // arrange
       const did = "did:plc:newowner";
       identityResolver.resolve.mockResolvedValue(null);
       // act
       await jetstreamService.handleCreateOrUpdate(dummyEvent(did));
       // assert
-      const { rows: owners } = await pool.query(
-        `SELECT * FROM "Owner" WHERE "did" = $1`,
-        [did],
-      );
-      expect(owners).toHaveLength(1);
-      const { rows: boards } = await pool.query(
+      expect(await ownerDbRepository.findByDid(asDid(did))).toMatchObject({
+        handle: null,
+      });
+      const { rows } = await pool.query(
         `SELECT * FROM "Board" WHERE "ownerDid" = $1`,
         [did],
       );
-      expect(boards).toHaveLength(1);
+      expect(rows).toHaveLength(1);
     });
-    test("ボードの形式が不正なら、写しを作らずにスキップする", async () => {
+    test("持ち主の写しが新しくても、ハンドルを解決し直す", async () => {
       // arrange
-      const did = "did:plc:invalidboard";
-      const event = dummyEvent(did);
-      // act
-      await jetstreamService.handleCreateOrUpdate({
-        ...event,
-        commit: { ...event.commit, record: { $type: "blue.linkat.board" } },
-      });
-      // assert
-      expect(identityResolver.resolve).not.toHaveBeenCalled();
-      const { rows } = await pool.query(
-        `SELECT * FROM "Owner" WHERE "did" = $1`,
-        [did],
+      const owner = await OwnerFactory.create({ handle: "old.example.com" });
+      identityResolver.resolve.mockResolvedValue(
+        found(owner.did, "new.example.com"),
       );
-      expect(rows).toHaveLength(0);
+      server.use(
+        http.get(
+          "https://pds.example.com/xrpc/com.atproto.repo.getRecord",
+          () => HttpResponse.json("", { status: 500 }),
+        ),
+      );
+      // act
+      await jetstreamService.handleCreateOrUpdate(dummyEvent(owner.did));
+      // assert
+      expect(await ownerDbRepository.findByDid(asDid(owner.did))).toMatchObject(
+        {
+          handle: "new.example.com",
+          displayName: owner.displayName,
+        },
+      );
     });
   });
 
@@ -293,7 +299,9 @@ describe("jetstreamService", () => {
         identityEvent(owner.did, "unverified.example.com"),
       );
       // assert
-      expect(identityResolver.resolve).toHaveBeenCalledWith(owner.did);
+      expect(identityResolver.resolve).toHaveBeenCalledWith(owner.did, {
+        noCache: true,
+      });
       const actual = await ownerDbRepository.findByDid(asDid(owner.did));
       expect(actual?.handle).toBe("new.example.com");
       expect(actual?.displayName).toBe("表示名");

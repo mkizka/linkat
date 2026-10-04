@@ -1,11 +1,11 @@
 import { createRegistry } from "@gyaku/di";
 
-import { accountPdsRepositoryFactory } from "~/server/infrastructure/accountPdsRepository";
 import { atpassportClientFactory } from "~/server/infrastructure/atpassportClient";
 import { boardRepositoryFactory } from "~/server/infrastructure/boardRepository";
 import { cookieSessionStorageFactory } from "~/server/infrastructure/cookieSessionStorage";
 import { cursorRepositoryFactory } from "~/server/infrastructure/cursorRepository";
 import { db } from "~/server/infrastructure/drizzle";
+import { handleIndexFactory } from "~/server/infrastructure/handleIndex";
 import { identityResolverFactory } from "~/server/infrastructure/identityResolver";
 import { oauthClientFactory } from "~/server/infrastructure/oauthClient";
 import {
@@ -13,10 +13,12 @@ import {
   stateStoreFactory,
 } from "~/server/infrastructure/oauthStorage";
 import { ownerDbRepositoryFactory } from "~/server/infrastructure/ownerDbRepository";
+import { profileFetcherFactory } from "~/server/infrastructure/profileFetcher";
 import { profileRecordParserFactory } from "~/server/infrastructure/profileRecordParser";
 import { atpassportServiceFactory } from "~/server/service/atpassportService/atpassport";
 import { authServiceFactory } from "~/server/service/authService/auth";
 import { boardServiceFactory } from "~/server/service/boardService/board";
+import { editorServiceFactory } from "~/server/service/editorService/editor";
 import { jetstreamServiceFactory } from "~/server/service/jetstreamService/jetstream";
 import { ownerServiceFactory } from "~/server/service/ownerService/owner";
 import { sessionServiceFactory } from "~/server/service/sessionService/session";
@@ -26,6 +28,7 @@ export const di = await createRegistry()
   .service("boardRepository", ["db"], boardRepositoryFactory)
   .service("cursorRepository", ["db"], cursorRepositoryFactory)
   .service("ownerDbRepository", ["db"], ownerDbRepositoryFactory)
+  .service("handleIndex", ["db"], handleIndexFactory)
   .service("oauthStateStore", ["db"], stateStoreFactory)
   .service("oauthSessionStore", ["db"], sessionStoreFactory)
   .service("identityResolver", identityResolverFactory)
@@ -35,21 +38,22 @@ export const di = await createRegistry()
     ["oauthStateStore", "oauthSessionStore"],
     oauthClientFactory,
   )
-  .service(
-    "accountPdsRepository",
-    ["identityResolver", "profileRecordParser"],
-    accountPdsRepositoryFactory,
-  )
+  .service("profileFetcher", ["profileRecordParser"], profileFetcherFactory)
   .service("atpassportClient", atpassportClientFactory)
   .service("cookieSessionStorage", cookieSessionStorageFactory)
   .service(
     "ownerService",
-    ["ownerDbRepository", "accountPdsRepository"],
+    ["handleIndex", "ownerDbRepository", "profileFetcher", "identityResolver"],
     ownerServiceFactory,
   )
   .service(
+    "editorService",
+    ["ownerDbRepository", "profileFetcher"],
+    editorServiceFactory,
+  )
+  .service(
     "boardService",
-    ["boardRepository", "ownerDbRepository", "accountPdsRepository"],
+    ["boardRepository", "ownerDbRepository"],
     boardServiceFactory,
   )
   .service("atpassportService", ["atpassportClient"], atpassportServiceFactory)
