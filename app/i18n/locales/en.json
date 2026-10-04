@@ -38,7 +38,12 @@
   },
   "board": {
     "meta-title": "{{displayName}}(@{{handle}})'s board",
-    "hidden-message": "This board is unavailable because the account is not active."
+    "hidden-message": {
+      "suspended": "This board is unavailable because the account has been suspended.",
+      "deleted": "This board is unavailable because the account has been deleted.",
+      "deactivated": "This board is unavailable because the account has been deactivated.",
+      "inactive": "This board is unavailable because the account is currently inactive."
+    }
   },
   "board-viewer": {
     "confirm-delete-message": "Are you sure you want to delete?",

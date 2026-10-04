@@ -5,6 +5,7 @@ import { Footer, Main } from "~/components/layout";
 import { BoardViewer } from "~/features/board/board-viewer";
 import { ShareModal } from "~/features/board/share-modal";
 import { getInstance } from "~/i18n/i18n";
+import type { HiddenStatus } from "~/models/user";
 import { di } from "~/server/di";
 import { env } from "~/utils/env";
 import { createMeta } from "~/utils/meta";
@@ -25,7 +26,7 @@ export async function loader({ request, params, context }: Route.LoaderArgs) {
     return notFound();
   }
   if (user.isHidden()) {
-    return { hidden: true as const };
+    return { hidden: true as const, status: user.status };
   }
   const board = await di.boardService.findBoard(user.did);
   if (!board) {
@@ -58,14 +59,16 @@ export const meta: Route.MetaFunction = ({ loaderData }) => {
   return createMeta({ title, url, ogImageUrl, atUri });
 };
 
-function HiddenBoard() {
+function HiddenBoard({ status }: { status: HiddenStatus }) {
   const { t } = useTranslation();
   return (
     <>
       <Main className="utils--center">
         <Card>
           <div className="card-body">
-            <p>{t("board.hidden-message")}</p>
+            <p data-testid="hidden-board__message">
+              {t(`board.hidden-message.${status}`)}
+            </p>
           </div>
         </Card>
       </Main>
@@ -76,7 +79,7 @@ function HiddenBoard() {
 
 export default function Index({ loaderData }: Route.ComponentProps) {
   if (loaderData.hidden) {
-    return <HiddenBoard />;
+    return <HiddenBoard status={loaderData.status} />;
   }
   const { user, board, url, isMine } = loaderData;
   return (

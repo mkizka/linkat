@@ -38,7 +38,12 @@
   },
   "board": {
     "meta-title": "{{displayName}}(@{{handle}})さんのボード",
-    "hidden-message": "このアカウントは現在利用できないため、ボードを表示できません。"
+    "hidden-message": {
+      "suspended": "このアカウントは停止されているため、ボードを表示できません。",
+      "deleted": "このアカウントは削除されたため、ボードを表示できません。",
+      "deactivated": "このアカウントは無効化されているため、ボードを表示できません。",
+      "inactive": "このアカウントは現在利用できないため、ボードを表示できません。"
+    }
   },
   "board-viewer": {
     "confirm-delete-message": "本当に削除しますか？",

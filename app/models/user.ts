@@ -10,6 +10,8 @@ export type Profile = {
   displayName: string | null;
 };
 
+export type HiddenStatus = Exclude<AccountStatus, "active">;
+
 export class User {
   readonly did: Did;
   readonly avatar: string | null;
@@ -58,7 +60,7 @@ export class User {
     });
   }
 
-  isHidden() {
+  isHidden(): this is User & { status: HiddenStatus } {
     return this.status !== "active";
   }
 
