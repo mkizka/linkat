@@ -10,6 +10,7 @@ import type { IUserRepository } from "~/server/infrastructure/userRepository";
 export interface IUserService {
   findUser: (params: { handleOrDid: string }) => Promise<User | null>;
   findEditor: (agent: LinkatAgent) => Promise<UserView>;
+  syncOwner: (did: Did) => Promise<User>;
   updateStatus: (did: Did, status: AccountStatus) => Promise<void>;
 }
 
@@ -41,6 +42,16 @@ export const userServiceFactory = ({
     }
     const profile = await accountPdsRepository.fetchSessionProfile(agent);
     return User.create(did).withProfile(profile).toView();
+  },
+  async syncOwner(did) {
+    const fetched = await accountPdsRepository.findByDid(did);
+    let owner = (await userDbRepository.findByDid(did)) ?? User.create(did);
+    if (fetched?.profile) {
+      owner = owner.withProfile(fetched.profile);
+    }
+    return await userDbRepository.save(
+      owner.withHandle(fetched?.handle ?? null),
+    );
   },
   async updateStatus(did, status) {
     await userRepository.updateStatus(did, status);

@@ -1,6 +1,6 @@
 import { asDid } from "@atproto/did";
 import { http, HttpResponse } from "msw";
-import { mock } from "vitest-mock-extended";
+import { mock, mockReset } from "vitest-mock-extended";
 
 import { LinkatAgent } from "~/libs/agent";
 import { server } from "~/mocks/server";
@@ -39,6 +39,18 @@ const getRecordUrl = "https://pds.example.com/xrpc/com.atproto.repo.getRecord";
 
 const createAgent = (did: string) =>
   new LinkatAgent({ did: asDid(did), service: "https://pds.example.com" });
+
+const mockIdentity = (did: string, handle: string | null) =>
+  identityResolver.resolve.mockResolvedValue({
+    did: asDid(did),
+    pds: "https://pds.example.com",
+    handle,
+  });
+
+beforeEach(() => {
+  mockReset(identityResolver);
+  identityResolver.resolve.mockResolvedValue(null);
+});
 
 describe("userService", () => {
   describe("findUser", () => {
@@ -152,6 +164,62 @@ describe("userService", () => {
         avatarUrl: null,
       });
       expect(await userDbRepository.findByDid(asDid(did))).toBeNull();
+    });
+  });
+
+  describe("syncOwner", () => {
+    test("写しが無ければ、ハンドルを解決しプロフィールを取得して作る", async () => {
+      // arrange
+      const did = asDid("did:plc:owner");
+      mockIdentity(did, "alice.example.com");
+      server.use(
+        http.get(getRecordUrl, () =>
+          HttpResponse.json({
+            uri: "at://did:plc:owner/app.bsky.actor.profile/self",
+            cid: "bafyreidfayvfuwqa7qlnopdjiqrxzs6blmoeu4rujcjtnci5beludirz2a",
+            value: { $type: "app.bsky.actor.profile", displayName: "Alice" },
+          }),
+        ),
+      );
+      // act
+      const actual = await userService.syncOwner(did);
+      // assert
+      expect(actual).toMatchObject({
+        handle: "alice.example.com",
+        displayName: "Alice",
+      });
+      expect(await userDbRepository.findByDid(did)).toEqual(actual);
+    });
+    test("DIDを解決できなければ、ハンドルをnullにして既存のプロフィールを残す", async () => {
+      // arrange
+      const user = await UserFactory.create({
+        handle: "alice.example.com",
+        displayName: "Alice",
+      });
+      // act
+      const actual = await userService.syncOwner(asDid(user.did));
+      // assert
+      expect(actual).toMatchObject({ handle: null, displayName: "Alice" });
+    });
+    test("プロフィールを取得できなければ、既存のプロフィールを残してハンドルは更新する", async () => {
+      // arrange
+      const user = await UserFactory.create({
+        handle: "old.example.com",
+        displayName: "Alice",
+      });
+      mockIdentity(user.did, "alice.example.com");
+      server.use(
+        http.get(getRecordUrl, () =>
+          HttpResponse.json({ error: "InternalServerError" }, { status: 500 }),
+        ),
+      );
+      // act
+      const actual = await userService.syncOwner(asDid(user.did));
+      // assert
+      expect(actual).toMatchObject({
+        handle: "alice.example.com",
+        displayName: "Alice",
+      });
     });
   });
 });
