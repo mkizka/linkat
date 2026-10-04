@@ -3,6 +3,7 @@ import type { Did } from "@atproto/did";
 import type { LinkatAgent } from "~/libs/agent";
 import { Board } from "~/models/board";
 import type { IBoardRepository } from "~/server/infrastructure/boardRepository";
+import type { IUserDbRepository } from "~/server/infrastructure/userDbRepository";
 import { tryCatch } from "~/utils/tryCatch";
 
 export class BoardPdsSaveError extends Error {
@@ -43,9 +44,15 @@ export interface IBoardService {
 
 export const boardServiceFactory = ({
   boardRepository,
+  userDbRepository,
 }: {
   boardRepository: IBoardRepository;
+  userDbRepository: IUserDbRepository;
 }): IBoardService => {
+  const deleteBoard = async (userDid: Did) => {
+    await userDbRepository.delete(userDid);
+    await boardRepository.delete(userDid);
+  };
   return {
     parseBoardFromForm: tryCatch(
       (userDid: Did, rawBoard: string) =>
@@ -69,9 +76,7 @@ export const boardServiceFactory = ({
     async findBoard(userDid) {
       return await boardRepository.find(userDid);
     },
-    async deleteBoard(userDid) {
-      await boardRepository.delete(userDid);
-    },
+    deleteBoard,
     async unpublishBoard(agent, userDid) {
       try {
         await agent.deleteBoard();
@@ -79,7 +84,7 @@ export const boardServiceFactory = ({
         throw new BoardPdsDeleteError(error);
       }
       try {
-        await boardRepository.delete(userDid);
+        await deleteBoard(userDid);
       } catch (error) {
         throw new BoardDbDeleteError(error);
       }

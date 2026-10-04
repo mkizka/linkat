@@ -6,7 +6,6 @@ import type { IHandleIndex } from "~/server/infrastructure/handleIndex";
 import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
 import type { IProfileFetcher } from "~/server/infrastructure/profileFetcher";
 import type { IUserDbRepository } from "~/server/infrastructure/userDbRepository";
-import type { IUserRepository } from "~/server/infrastructure/userRepository";
 
 export interface IUserService {
   findUser: (params: { handleOrDid: string }) => Promise<User | null>;
@@ -16,13 +15,11 @@ export interface IUserService {
 
 export const userServiceFactory = ({
   handleIndex,
-  userRepository,
   userDbRepository,
   profileFetcher,
   identityResolver,
 }: {
   handleIndex: IHandleIndex;
-  userRepository: IUserRepository;
   userDbRepository: IUserDbRepository;
   profileFetcher: IProfileFetcher;
   identityResolver: IIdentityResolver;
@@ -34,7 +31,7 @@ export const userServiceFactory = ({
     const did = isDid(handleOrDid)
       ? handleOrDid
       : await handleIndex.findDid(handleOrDid);
-    return did && (await userRepository.findByDid(did));
+    return did && (await userDbRepository.findByDid(did));
   },
   async syncOwner(did) {
     let owner = (await userDbRepository.findByDid(did)) ?? User.create(did);
@@ -50,6 +47,6 @@ export const userServiceFactory = ({
     return await userDbRepository.save(owner.withHandle(identity.handle));
   },
   async updateAccountState(did, state) {
-    await userRepository.updateAccountState(did, state);
+    await userDbRepository.updateAccountState(did, state);
   },
 });

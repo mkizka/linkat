@@ -16,8 +16,6 @@ const notFound = () => {
 };
 
 export async function loader({ request, params, context }: Route.LoaderArgs) {
-  // この順で処理した場合ボードを持たない(=このサービスのユーザーでない)ユーザーの
-  // データも作られてしまうが、一旦このままにしておく
   const user = await di.userService.findUser({
     handleOrDid: params.handle,
   });

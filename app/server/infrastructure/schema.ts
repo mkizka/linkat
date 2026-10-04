@@ -1,7 +1,6 @@
 import {
   bigint,
   boolean,
-  foreignKey,
   integer,
   pgTable,
   serial,
@@ -36,16 +35,7 @@ export const boardTable = pgTable(
     createdAt: timestamp({ precision: 3 }).notNull().defaultNow(),
     updatedAt: timestamp({ precision: 3 }).notNull(),
   },
-  (table) => [
-    uniqueIndex("Board_userDid_key").on(table.userDid),
-    foreignKey({
-      columns: [table.userDid],
-      foreignColumns: [userTable.did],
-      name: "Board_userDid_fkey",
-    })
-      .onDelete("restrict")
-      .onUpdate("cascade"),
-  ],
+  (table) => [uniqueIndex("Board_userDid_key").on(table.userDid)],
 );
 
 export const authSessionTable = pgTable("AuthSession", {

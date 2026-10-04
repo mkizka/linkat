@@ -26,6 +26,7 @@ export default defineConfig(base, {
       env: {
         ATPROTO_PLC_URL: `http://localhost:${PORTS.plc}`,
         ATPROTO_HANDLE_RESOLVER_URL: `http://localhost:${PORTS.pds}`,
+        JETSTREAM_URL: `ws://localhost:${PORTS.jetstream}/subscribe`,
       },
     },
   ],

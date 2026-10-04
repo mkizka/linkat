@@ -9,6 +9,7 @@ export interface IUserDbRepository {
   findByDid: (did: Did) => Promise<User | null>;
   save: (user: User) => Promise<User>;
   updateAccountState: (did: Did, state: AccountState) => Promise<void>;
+  delete: (did: Did) => Promise<void>;
 }
 
 export const userDbRepositoryFactory = ({
@@ -56,5 +57,8 @@ export const userDbRepositoryFactory = ({
   },
   async updateAccountState(did, state) {
     await db.update(userTable).set(state).where(eq(userTable.did, did));
+  },
+  async delete(did) {
+    await db.delete(userTable).where(eq(userTable.did, did));
   },
 });
