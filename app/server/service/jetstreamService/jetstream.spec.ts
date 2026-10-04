@@ -41,6 +41,8 @@ const jetstreamService = jetstreamServiceFactory({
       userDbRepository,
       accountPdsRepository,
     }),
+    userDbRepository,
+    accountPdsRepository,
   }),
   userDbRepository,
   identityResolver,

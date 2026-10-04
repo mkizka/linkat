@@ -48,7 +48,11 @@ export const di = await createRegistry()
   )
   .service("atpassportClient", atpassportClientFactory)
   .service("cookieSessionStorage", cookieSessionStorageFactory)
-  .service("userService", ["userRepository"], userServiceFactory)
+  .service(
+    "userService",
+    ["userRepository", "userDbRepository", "accountPdsRepository"],
+    userServiceFactory,
+  )
   .service(
     "boardService",
     ["boardRepository", "userDbRepository", "accountPdsRepository"],
@@ -58,7 +62,7 @@ export const di = await createRegistry()
   .service("authService", ["oauthClient"], authServiceFactory)
   .service(
     "sessionService",
-    ["cookieSessionStorage", "oauthClient", "userService"],
+    ["cookieSessionStorage", "oauthClient"],
     sessionServiceFactory,
   )
   .service(

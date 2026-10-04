@@ -11,11 +11,11 @@ import { di } from "~/server/di";
 import type { Route } from "./+types/settings";
 
 export const loader = async ({ request }: Route.LoaderArgs) => {
-  const user = await di.sessionService.getSessionUser(request);
-  if (!user) {
+  const agent = await di.sessionService.getSessionAgent(request);
+  if (!agent) {
     throw redirect("/login");
   }
-  return { user: user.toView() };
+  return { user: await di.userService.findEditor(agent) };
 };
 
 export default function SettingsPage({ loaderData }: Route.ComponentProps) {
