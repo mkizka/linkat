@@ -3,7 +3,7 @@ import fs from "fs";
 import { LRUCache } from "lru-cache";
 import satori from "satori";
 
-import type { Owner, OwnerView } from "~/models/owner";
+import type { OwnerView } from "~/models/owner";
 import { di } from "~/server/di";
 import { createLogger } from "~/utils/logger";
 
@@ -135,23 +135,18 @@ const renderImage = async (owner: OwnerView) => {
   return Uint8Array.from(buffer);
 };
 
-const createImage = async (owner: Owner) => {
-  const image = await renderImage(owner.toView());
+const createImage = async (owner: OwnerView) => {
+  const image = await renderImage(owner);
   cache.set(owner.did, image);
   return image;
 };
 
 export async function loader({ params }: Route.LoaderArgs) {
-  const owner = await di.ownerService.findOwner({
-    handleOrDid: params.handle,
-  });
-  if (
-    !owner ||
-    owner.isHidden() ||
-    !(await di.boardService.findBoard(owner.did))
-  ) {
+  const result = await di.boardService.findBoardView(params.handle);
+  if (result.type !== "ok") {
     throw new Response(null, { status: 404 });
   }
+  const { owner } = result;
   let image = cache.get(owner.did);
   if (!image) {
     try {

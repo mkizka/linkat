@@ -1,5 +1,3 @@
-import type { Did } from "@atproto/did";
-
 import { Owner } from "./owner";
 
 const createOwner = (props: Partial<ConstructorParameters<typeof Owner>[0]>) =>
@@ -16,28 +14,6 @@ const createOwner = (props: Partial<ConstructorParameters<typeof Owner>[0]>) =>
     updatedAt: new Date(),
     ...props,
   });
-
-describe("isOwnedBy", () => {
-  test.each`
-    did                | viewerDid          | expected | description
-    ${"did:plc:dummy"} | ${"did:plc:dummy"} | ${true}  | ${"同じDID"}
-    ${"did:plc:dummy"} | ${"did:plc:other"} | ${false} | ${"異なるDID"}
-    ${"did:plc:dummy"} | ${null}            | ${false} | ${"未ログイン"}
-  `(
-    "$description",
-    ({
-      did,
-      viewerDid,
-      expected,
-    }: {
-      did: Did;
-      viewerDid: Did | null;
-      expected: boolean;
-    }) => {
-      expect(createOwner({ did }).isOwnedBy(viewerDid)).toBe(expected);
-    },
-  );
-});
 
 describe("toView", () => {
   test("ハンドルがあればURLと表示にハンドルを使う", () => {
