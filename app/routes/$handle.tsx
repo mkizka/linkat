@@ -16,32 +16,27 @@ const notFound = () => {
 };
 
 export async function loader({ request, params, context }: Route.LoaderArgs) {
-  const did = await di.ownerService.findDid(params.handle);
-  if (!did) {
+  const result = await di.boardService.findBoardView(params.handle);
+  if (result.type === "not-found") {
     return notFound();
   }
-  const owner = await di.ownerService.findOwner(did);
-  if (owner.isHidden()) {
-    return { hidden: true as const, status: owner.status };
+  if (result.type === "hidden") {
+    return { hidden: true as const, status: result.status };
   }
-  const board = await di.boardService.findBoard(owner.did);
-  if (!board) {
-    return notFound();
-  }
-  const view = owner.toView();
+  const { owner, board } = result;
   const i18next = getInstance(context);
   const title = i18next.t("board.meta-title", {
     displayName: owner.displayName,
-    handle: view.handleOrDid,
+    handle: owner.handleOrDid,
   });
-  const ownerDid = await di.sessionService.getSessionDid(request);
+  const viewerDid = await di.sessionService.getSessionDid(request);
   return {
-    owner: view,
+    owner,
     board: { cards: board.cards },
-    isMine: owner.isOwnedBy(ownerDid),
+    isMine: owner.did === viewerDid,
     title: `${title} | Linkat`,
-    url: `${env.PUBLIC_URL}/${view.handleOrDid}`,
-    ogImageUrl: `${env.PUBLIC_URL}/${view.handleOrDid}/og`,
+    url: `${env.PUBLIC_URL}/${owner.handleOrDid}`,
+    ogImageUrl: `${env.PUBLIC_URL}/${owner.handleOrDid}/og`,
     atUri: `at://${owner.did}/blue.linkat.board/self`,
     hidden: false as const,
   };
