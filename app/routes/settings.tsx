@@ -15,9 +15,7 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
   if (!ownerDid) {
     throw redirect("/login");
   }
-  const owner = await di.ownerService.findOwner(ownerDid, {
-    fetchProfile: true,
-  });
+  const owner = await di.ownerService.findOwner(ownerDid);
   return { editor: owner.toView() };
 };
 
