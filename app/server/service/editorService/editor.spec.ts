@@ -1,11 +1,12 @@
 import { asDid } from "@atproto/did";
 import { http, HttpResponse } from "msw";
+import { mock, mockReset } from "vitest-mock-extended";
 
-import { LinkatAgent } from "~/libs/agent";
 import { server } from "~/mocks/server";
 import { Owner } from "~/models/owner";
 import { OwnerFactory } from "~/server/factories/owner";
 import { db } from "~/server/infrastructure/drizzle";
+import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
 import { ownerRepositoryFactory } from "~/server/infrastructure/ownerRepository";
 import { profileFetcherFactory } from "~/server/infrastructure/profileFetcher";
 import { profileRecordParserFactory } from "~/server/infrastructure/profileRecordParser";
@@ -13,11 +14,20 @@ import { profileRecordParserFactory } from "~/server/infrastructure/profileRecor
 import { editorServiceFactory } from "./editor";
 
 const ownerRepository = ownerRepositoryFactory({ db });
+const identityResolver = mock<IIdentityResolver>();
 const editorService = editorServiceFactory({
   ownerRepository,
   profileFetcher: profileFetcherFactory({
     profileRecordParser: profileRecordParserFactory(),
   }),
+  identityResolver,
+});
+
+beforeEach(() => {
+  mockReset(identityResolver);
+  identityResolver.resolve.mockImplementation((did) =>
+    Promise.resolve({ did, handle: null, pds: "https://pds.example.com" }),
+  );
 });
 
 const AVATAR_CID =
@@ -25,20 +35,17 @@ const AVATAR_CID =
 
 const getRecordUrl = "https://pds.example.com/xrpc/com.atproto.repo.getRecord";
 
-const createAgent = (did: string) =>
-  new LinkatAgent({ did: asDid(did), service: "https://pds.example.com" });
-
 describe("editorService", () => {
   describe("findView", () => {
     test("持ち主の写しがあれば、それを返す", async () => {
       // arrange
       const owner = await OwnerFactory.create();
       // act
-      const actual = await editorService.findView(createAgent(owner.did));
+      const actual = await editorService.findView(asDid(owner.did));
       // assert
       expect(actual).toEqual(new Owner(owner).toView());
     });
-    test("写しが無ければ、DIDとセッションのPDSから取得したプロフィールを返し、保存しない", async () => {
+    test("写しが無ければ、DIDとPDSから取得したプロフィールを返し、保存しない", async () => {
       // arrange
       const did = "did:plc:editor";
       let requestedRepo: string | null = null;
@@ -62,7 +69,7 @@ describe("editorService", () => {
         }),
       );
       // act
-      const actual = await editorService.findView(createAgent(did));
+      const actual = await editorService.findView(asDid(did));
       // assert
       expect(actual).toEqual({
         did,
@@ -83,7 +90,7 @@ describe("editorService", () => {
         ),
       );
       // act
-      const actual = await editorService.findView(createAgent(did));
+      const actual = await editorService.findView(asDid(did));
       // assert
       expect(actual).toEqual({
         did,

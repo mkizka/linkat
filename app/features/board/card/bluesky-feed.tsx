@@ -1,3 +1,4 @@
+import { Client } from "@atproto/lex";
 import { asAtUriString } from "@atproto/syntax";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -5,7 +6,6 @@ import { useTranslation } from "react-i18next";
 import getFeedGenerator, {
   type $OutputBody,
 } from "~/generated/app/bsky/feed/getFeedGenerator";
-import { LinkatAgent } from "~/libs/agent";
 
 type Props = {
   feedUri: string;
@@ -18,7 +18,7 @@ export function BlueskyFeed({ feedUri, url }: Props) {
   const [showError, setShowError] = useState(false);
 
   useEffect(() => {
-    const agent = LinkatAgent.credential();
+    const agent = new Client("https://public.api.bsky.app");
     agent
       .call(getFeedGenerator, { feed: asAtUriString(feedUri) })
       .then((response) => {

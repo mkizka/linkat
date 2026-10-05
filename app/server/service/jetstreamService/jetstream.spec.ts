@@ -7,6 +7,7 @@ import { mock, mockReset } from "vitest-mock-extended";
 
 import { server } from "~/mocks/server";
 import { OwnerFactory } from "~/server/factories/owner";
+import type { IBoardPdsRepository } from "~/server/infrastructure/boardPdsRepository";
 import { boardRepositoryFactory } from "~/server/infrastructure/boardRepository";
 import { cursorRepositoryFactory } from "~/server/infrastructure/cursorRepository";
 import { db } from "~/server/infrastructure/drizzle";
@@ -39,6 +40,7 @@ const jetstreamService = jetstreamServiceFactory({
   cursorRepository: cursorRepositoryFactory({ db }),
   boardEventService: boardEventServiceFactory({
     boardRepository: boardRepositoryFactory({ db }),
+    boardPdsRepository: mock<IBoardPdsRepository>(),
     ownerRepository,
     ownerService,
   }),

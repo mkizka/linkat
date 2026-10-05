@@ -15,11 +15,8 @@ const logger = createLogger("delete");
 
 export async function action({ request, context }: Route.ActionArgs) {
   const i18next = getInstance(context);
-  const [ownerDid, agent] = await Promise.all([
-    di.sessionService.getSessionDid(request),
-    di.sessionService.getSessionAgent(request),
-  ]);
-  if (!ownerDid || !agent) {
+  const ownerDid = await di.sessionService.getSessionDid(request);
+  if (!ownerDid) {
     setToast(context, {
       message: i18next.t("delete.invalid-session-error-message"),
       type: "error",
@@ -31,7 +28,7 @@ export async function action({ request, context }: Route.ActionArgs) {
     });
   }
   try {
-    await di.boardEventService.unpublishBoard(agent, ownerDid);
+    await di.boardEventService.unpublishBoard(ownerDid);
   } catch (error) {
     if (error instanceof BoardPdsDeleteError) {
       logger.error(error, error.message);

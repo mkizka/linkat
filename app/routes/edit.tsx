@@ -21,8 +21,8 @@ const logger = createLogger("edit");
 
 export async function action({ request, context }: Route.ActionArgs) {
   const i18next = getInstance(context);
-  const agent = await di.sessionService.getSessionAgent(request);
-  if (!agent) {
+  const ownerDid = await di.sessionService.getSessionDid(request);
+  if (!ownerDid) {
     setToast(context, {
       message: i18next.t("edit.invalid-session-error-message"),
       type: "error",
@@ -43,7 +43,7 @@ export async function action({ request, context }: Route.ActionArgs) {
     return null;
   }
   const parsedBoard = await di.boardService.parseBoardFromForm(
-    agent.assertDid,
+    ownerDid,
     rawBoard,
   );
   if (parsedBoard instanceof Error) {
@@ -56,7 +56,7 @@ export async function action({ request, context }: Route.ActionArgs) {
   }
   let owner;
   try {
-    owner = await di.boardEventService.publishBoard(agent, parsedBoard);
+    owner = await di.boardEventService.publishBoard(parsedBoard);
   } catch (error) {
     if (error instanceof BoardPdsSaveError) {
       logger.error(error, error.message);
@@ -72,7 +72,7 @@ export async function action({ request, context }: Route.ActionArgs) {
         message: i18next.t("edit.save-delayed-warning-message"),
         type: "warning",
       });
-      return redirect(`/${agent.assertDid}`);
+      return redirect(`/${ownerDid}`);
     }
     throw error;
   }
@@ -80,13 +80,13 @@ export async function action({ request, context }: Route.ActionArgs) {
 }
 
 export async function loader({ request }: Route.LoaderArgs) {
-  const agent = await di.sessionService.getSessionAgent(request);
-  if (!agent) {
+  const ownerDid = await di.sessionService.getSessionDid(request);
+  if (!ownerDid) {
     throw redirect("/login");
   }
   const [editor, board] = await Promise.all([
-    di.editorService.findView(agent),
-    di.boardService.findBoard(agent.assertDid),
+    di.editorService.findView(ownerDid),
+    di.boardService.findBoard(ownerDid),
   ]);
   return {
     editor,
