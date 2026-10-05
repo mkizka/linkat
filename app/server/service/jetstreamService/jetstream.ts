@@ -63,17 +63,16 @@ export const jetstreamServiceFactory = ({
       | CommitCreateEvent<"blue.linkat.board">
       | CommitUpdateEvent<"blue.linkat.board">,
   ) => {
-    const cards = await tryCatch((input: unknown) => Board.parseCards(input))(
-      event.commit.record,
-    );
-    if (cards instanceof Error) {
+    const board = await tryCatch(() =>
+      Board.fromRecord(event.did, event.commit.record),
+    )();
+    if (board instanceof Error) {
       logger.warn(
         { record: event.commit.record },
         "ボードのパースに失敗しました",
       );
       return;
     }
-    const board = new Board(event.did, cards);
     await boardEventService.saveBoard(board);
     logger.debug({ board }, "ボードを更新しました");
   };

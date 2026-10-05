@@ -34,12 +34,12 @@ export class Board {
     this.cards = cards;
   }
 
-  static parseCards(input: unknown): ValidCard[] {
+  static fromRecord(ownerDid: string, input: unknown): Board {
     const result = boardSchema.safeParse(input);
     if (!result.success) {
       throw new BoardParseError(result.error);
     }
-    return result.data.cards;
+    return new Board(ownerDid, result.data.cards);
   }
 
   toRecordJSON(): string {
