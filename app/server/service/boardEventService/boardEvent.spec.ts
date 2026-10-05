@@ -1,15 +1,17 @@
 import { asDid } from "@atproto/did";
+import { buildAgent } from "@atproto/lex";
 import { http, HttpResponse } from "msw";
 import { mock, mockReset } from "vitest-mock-extended";
 
-import { LinkatAgent } from "~/libs/agent";
 import { server } from "~/mocks/server";
 import { Board } from "~/models/board";
 import { Owner } from "~/models/owner";
 import { BoardFactory } from "~/server/factories/board";
 import { OwnerFactory } from "~/server/factories/owner";
+import { boardPdsRepositoryFactory } from "~/server/infrastructure/boardPdsRepository";
 import { boardRepositoryFactory } from "~/server/infrastructure/boardRepository";
 import { db } from "~/server/infrastructure/drizzle";
+import type { IOAuthClient } from "~/server/infrastructure/oauthClient";
 import { ownerRepositoryFactory } from "~/server/infrastructure/ownerRepository";
 import type { IOwnerService } from "~/server/service/ownerService/owner";
 
@@ -24,14 +26,20 @@ import {
 const boardRepository = boardRepositoryFactory({ db });
 const ownerRepository = ownerRepositoryFactory({ db });
 const ownerService = mock<IOwnerService>();
+const oauthClient = mock<IOAuthClient>();
 const boardEventService = boardEventServiceFactory({
   boardRepository,
+  boardPdsRepository: boardPdsRepositoryFactory({ oauthClient }),
   ownerRepository,
   ownerService,
 });
 
 beforeEach(() => {
   mockReset(ownerService);
+  mockReset(oauthClient);
+  oauthClient.restore.mockImplementation((did) =>
+    Promise.resolve(buildAgent({ did, service: "https://pds.example.com" })),
+  );
 });
 
 const dummyCards = [
@@ -49,8 +57,6 @@ describe("boardEventService", () => {
     };
     const putRecordUrl =
       "https://pds.example.com/xrpc/com.atproto.repo.putRecord";
-    const createAgent = (did: string) =>
-      new LinkatAgent({ did: asDid(did), service: "https://pds.example.com" });
 
     test("PDSに保存してからDBに保存する", async () => {
       // arrange
@@ -69,10 +75,7 @@ describe("boardEventService", () => {
       const synced = Owner.create(asDid(owner.did));
       ownerService.syncOwner.mockResolvedValue(synced);
       // act
-      const actual = await boardEventService.publishBoard(
-        createAgent(owner.did),
-        board,
-      );
+      const actual = await boardEventService.publishBoard(board);
       // assert
       expect(actual).toBe(synced);
       expect(putRecordBody).toMatchObject({
@@ -93,7 +96,6 @@ describe("boardEventService", () => {
       );
       // act
       const actual = boardEventService.publishBoard(
-        createAgent(owner.did),
         new Board(owner.did, dummyCards),
       );
       // assert
@@ -115,7 +117,6 @@ describe("boardEventService", () => {
       vi.spyOn(boardRepository, "save").mockRejectedValueOnce(new Error());
       // act
       const actual = boardEventService.publishBoard(
-        createAgent(owner.did),
         new Board(owner.did, dummyCards),
       );
       // assert
@@ -152,8 +153,6 @@ describe("boardEventService", () => {
   describe("unpublishBoard", () => {
     const deleteRecordUrl =
       "https://pds.example.com/xrpc/com.atproto.repo.deleteRecord";
-    const createAgent = (did: string) =>
-      new LinkatAgent({ did: asDid(did), service: "https://pds.example.com" });
 
     test("PDSから削除してからDBから削除する", async () => {
       // arrange
@@ -166,10 +165,7 @@ describe("boardEventService", () => {
         }),
       );
       // act
-      await boardEventService.unpublishBoard(
-        createAgent(board.ownerDid),
-        asDid(board.ownerDid),
-      );
+      await boardEventService.unpublishBoard(asDid(board.ownerDid));
       // assert
       expect(deleteRecordBody).toMatchObject({
         repo: board.ownerDid,
@@ -188,10 +184,7 @@ describe("boardEventService", () => {
         ),
       );
       // act
-      const actual = boardEventService.unpublishBoard(
-        createAgent(board.ownerDid),
-        asDid(board.ownerDid),
-      );
+      const actual = boardEventService.unpublishBoard(asDid(board.ownerDid));
       // assert
       await expect(actual).rejects.toThrow(BoardPdsDeleteError);
       expect(await boardRepository.find(asDid(board.ownerDid))).not.toBeNull();
@@ -205,10 +198,7 @@ describe("boardEventService", () => {
       server.use(http.post(deleteRecordUrl, () => HttpResponse.json({})));
       vi.spyOn(boardRepository, "delete").mockRejectedValueOnce(new Error());
       // act
-      const actual = boardEventService.unpublishBoard(
-        createAgent(board.ownerDid),
-        asDid(board.ownerDid),
-      );
+      const actual = boardEventService.unpublishBoard(asDid(board.ownerDid));
       // assert
       await expect(actual).rejects.toThrow(BoardDbDeleteError);
     });

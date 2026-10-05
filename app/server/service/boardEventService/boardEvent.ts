@@ -1,8 +1,8 @@
 import type { Did } from "@atproto/did";
 
-import type { LinkatAgent } from "~/libs/agent";
 import type { Board } from "~/models/board";
 import type { Owner } from "~/models/owner";
+import type { IBoardPdsRepository } from "~/server/infrastructure/boardPdsRepository";
 import type { IBoardRepository } from "~/server/infrastructure/boardRepository";
 import type { IOwnerRepository } from "~/server/infrastructure/ownerRepository";
 import type { IOwnerService } from "~/server/service/ownerService/owner";
@@ -33,17 +33,19 @@ export class BoardDbDeleteError extends Error {
 
 export interface IBoardEventService {
   saveBoard: (board: Board) => Promise<Owner>;
-  publishBoard: (agent: LinkatAgent, board: Board) => Promise<Owner>;
+  publishBoard: (board: Board) => Promise<Owner>;
   deleteBoard: (ownerDid: Did) => Promise<void>;
-  unpublishBoard: (agent: LinkatAgent, ownerDid: Did) => Promise<void>;
+  unpublishBoard: (ownerDid: Did) => Promise<void>;
 }
 
 export const boardEventServiceFactory = ({
   boardRepository,
+  boardPdsRepository,
   ownerRepository,
   ownerService,
 }: {
   boardRepository: IBoardRepository;
+  boardPdsRepository: IBoardPdsRepository;
   ownerRepository: IOwnerRepository;
   ownerService: IOwnerService;
 }): IBoardEventService => {
@@ -58,9 +60,9 @@ export const boardEventServiceFactory = ({
   };
   return {
     saveBoard,
-    async publishBoard(agent, board) {
+    async publishBoard(board) {
       try {
-        await agent.updateBoard(board);
+        await boardPdsRepository.save(board);
       } catch (error) {
         throw new BoardPdsSaveError(error);
       }
@@ -71,9 +73,9 @@ export const boardEventServiceFactory = ({
       }
     },
     deleteBoard,
-    async unpublishBoard(agent, ownerDid) {
+    async unpublishBoard(ownerDid) {
       try {
-        await agent.deleteBoard();
+        await boardPdsRepository.delete(ownerDid);
       } catch (error) {
         throw new BoardPdsDeleteError(error);
       }

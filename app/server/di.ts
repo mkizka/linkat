@@ -1,6 +1,7 @@
 import { createRegistry } from "@gyaku/di";
 
 import { atpassportClientFactory } from "~/server/infrastructure/atpassportClient";
+import { boardPdsRepositoryFactory } from "~/server/infrastructure/boardPdsRepository";
 import { boardRepositoryFactory } from "~/server/infrastructure/boardRepository";
 import { cookieSessionStorageFactory } from "~/server/infrastructure/cookieSessionStorage";
 import { cursorRepositoryFactory } from "~/server/infrastructure/cursorRepository";
@@ -39,6 +40,7 @@ export const di = await createRegistry()
     ["oauthStateStore", "oauthSessionStore"],
     oauthClientFactory,
   )
+  .service("boardPdsRepository", ["oauthClient"], boardPdsRepositoryFactory)
   .service("profileFetcher", ["profileRecordParser"], profileFetcherFactory)
   .service("atpassportClient", atpassportClientFactory)
   .service("cookieSessionStorage", cookieSessionStorageFactory)
@@ -49,13 +51,18 @@ export const di = await createRegistry()
   )
   .service(
     "editorService",
-    ["ownerRepository", "profileFetcher"],
+    ["ownerRepository", "profileFetcher", "identityResolver"],
     editorServiceFactory,
   )
   .service("boardService", ["boardRepository"], boardServiceFactory)
   .service(
     "boardEventService",
-    ["boardRepository", "ownerRepository", "ownerService"],
+    [
+      "boardRepository",
+      "boardPdsRepository",
+      "ownerRepository",
+      "ownerService",
+    ],
     boardEventServiceFactory,
   )
   .service("atpassportService", ["atpassportClient"], atpassportServiceFactory)

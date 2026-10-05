@@ -1,7 +1,7 @@
+import { Client } from "@atproto/lex";
 import { ensureValidHandle } from "@atproto/syntax";
 
 import resolveHandle from "~/generated/com/atproto/identity/resolveHandle";
-import { LinkatAgent } from "~/libs/agent";
 
 // https://bsky.app/profile/example.com
 export const isBlueskyProfileUrl = (url: URL) => {
@@ -63,7 +63,7 @@ export const resolveHandleIfNeeded = async (original: string) => {
   }
   try {
     ensureValidHandle(handle);
-    const publicAgent = LinkatAgent.credential();
+    const publicAgent = new Client("https://public.api.bsky.app");
     const response = await publicAgent.call(resolveHandle, { handle });
     const resolvedUrl = new URL(url.origin);
     resolvedUrl.pathname = "/" + [profile, response.did, ...rest].join("/");

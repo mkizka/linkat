@@ -1,3 +1,4 @@
+import { Client } from "@atproto/lex";
 import { AtUri } from "@atproto/syntax";
 import { LRUCache } from "lru-cache";
 import markdownit from "markdown-it";
@@ -7,7 +8,6 @@ import { BackButton } from "~/components/back-button";
 import { Card } from "~/components/card";
 import { Footer, Main } from "~/components/layout";
 import { getLocale } from "~/i18n/i18n";
-import { LinkatAgent } from "~/libs/agent";
 import { externalLinkAttributes } from "~/libs/markdown";
 import { env } from "~/utils/env";
 
@@ -53,7 +53,7 @@ export const loader = async ({ context }: Route.LoaderArgs) => {
       about: cachedAbout,
     };
   }
-  const agent = LinkatAgent.credential(env.ABOUT_WHTWND_PDS_URL);
+  const agent = new Client(env.ABOUT_WHTWND_PDS_URL);
   const response = await agent.getRecord(atUri.collectionSafe, atUri.rkey, {
     repo: atUri.host,
   });

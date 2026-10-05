@@ -1,6 +1,5 @@
 import { type Did, isDid } from "@atproto/did";
 
-import { LinkatAgent } from "~/libs/agent";
 import { type AccountState, Owner, type Profile } from "~/models/owner";
 import type { IHandleIndex } from "~/server/infrastructure/handleIndex";
 import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
@@ -45,8 +44,7 @@ export const ownerServiceFactory = ({
     if (!identity) {
       return await ownerRepository.save(owner.withHandle(null));
     }
-    const agent = LinkatAgent.credential(identity.pds);
-    const profile = await profileFetcher.fetchProfile(agent, did);
+    const profile = await profileFetcher.fetchProfile(identity.pds, did);
     if (profile) {
       owner = owner.withProfile(profile);
     }
