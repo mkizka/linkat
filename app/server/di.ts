@@ -71,8 +71,6 @@ export const di = await createRegistry()
       "cursorRepository",
       "boardEventService",
       "ownerService",
-      "ownerRepository",
-      "identityResolver",
       "profileRecordParser",
     ],
     jetstreamServiceFactory,
