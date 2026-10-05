@@ -16,12 +16,11 @@ const notFound = () => {
 };
 
 export async function loader({ request, params, context }: Route.LoaderArgs) {
-  const owner = await di.ownerService.findOwner({
-    handleOrDid: params.handle,
-  });
-  if (!owner) {
+  const did = await di.ownerService.findDid(params.handle);
+  if (!did) {
     return notFound();
   }
+  const owner = await di.ownerService.findOwner(did);
   if (owner.isHidden()) {
     return { hidden: true as const, status: owner.status };
   }

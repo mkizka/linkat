@@ -15,7 +15,10 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
   if (!ownerDid) {
     throw redirect("/login");
   }
-  return { editor: await di.editorService.findView(ownerDid) };
+  const owner = await di.ownerService.findOwner(ownerDid, {
+    fetchProfile: true,
+  });
+  return { editor: owner.toView() };
 };
 
 export default function SettingsPage({ loaderData }: Route.ComponentProps) {

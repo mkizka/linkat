@@ -142,14 +142,12 @@ const createImage = async (owner: Owner) => {
 };
 
 export async function loader({ params }: Route.LoaderArgs) {
-  const owner = await di.ownerService.findOwner({
-    handleOrDid: params.handle,
-  });
-  if (
-    !owner ||
-    owner.isHidden() ||
-    !(await di.boardService.findBoard(owner.did))
-  ) {
+  const did = await di.ownerService.findDid(params.handle);
+  if (!did) {
+    throw new Response(null, { status: 404 });
+  }
+  const owner = await di.ownerService.findOwner(did);
+  if (owner.isHidden() || !(await di.boardService.findBoard(owner.did))) {
     throw new Response(null, { status: 404 });
   }
   let image = cache.get(owner.did);

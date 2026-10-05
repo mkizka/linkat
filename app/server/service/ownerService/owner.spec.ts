@@ -42,22 +42,56 @@ beforeEach(() => {
 });
 
 describe("ownerService", () => {
+  describe("findDid", () => {
+    test("DIDならそのまま返す", async () => {
+      // arrange
+      const did = asDid("did:plc:notowner0000000000000000");
+      // act
+      const actual = await ownerService.findDid(did);
+      // assert
+      expect(actual).toBe(did);
+    });
+    test("handleを指定するとDBの写しからDIDを引く", async () => {
+      // arrange
+      const owner = await OwnerFactory.create({ handle: "example.com" });
+      // act
+      const actual = await ownerService.findDid("example.com");
+      // assert
+      expect(actual).toBe(owner.did);
+    });
+    test("写しに無いhandleはハンドルを解決せずにnullを返す", async () => {
+      // arrange
+      // act
+      const actual = await ownerService.findDid("example.com");
+      // assert
+      expect(actual).toBeNull();
+      expect(identityResolver.resolve).not.toHaveBeenCalled();
+    });
+    test("入力が明らかにドメインでなければnullを返す", async () => {
+      // arrange
+      // act
+      const actual = await ownerService.findDid("invalid");
+      // assert
+      expect(actual).toBeNull();
+    });
+    test("入力がDIDとして不正であればnullを返す", async () => {
+      // arrange
+      // act
+      const actual = await ownerService.findDid("did:invalid");
+      // assert
+      expect(actual).toBeNull();
+    });
+  });
+
   describe("findOwner", () => {
+    const avatarCid =
+      "bafkreigh2akiscaildcqabsyg3dfr6chu3fgpregiymsck7e7aqa4s52zy";
+
     test("持ち主を取得できる", async () => {
       // arrange
       const owner = await OwnerFactory.create();
       // act
-      const actual = await ownerService.findOwner({ handleOrDid: owner.did });
-      // assert
-      expect(actual).toEqual(owner);
-    });
-    test("handleを指定するとDBの写しからDIDを引いて取得する", async () => {
-      // arrange
-      const owner = await OwnerFactory.create({ handle: "example.com" });
-      // act
-      const actual = await ownerService.findOwner({
-        handleOrDid: "example.com",
-      });
+      const actual = await ownerService.findOwner(asDid(owner.did));
       // assert
       expect(actual).toEqual(owner);
     });
@@ -67,7 +101,9 @@ describe("ownerService", () => {
         updatedAt: new Date("2000-01-01T00:00:00Z"),
       });
       // act
-      const actual = await ownerService.findOwner({ handleOrDid: owner.did });
+      const actual = await ownerService.findOwner(asDid(owner.did), {
+        fetchProfile: true,
+      });
       // assert
       expect(actual).toEqual(owner);
       expect(identityResolver.resolve).not.toHaveBeenCalled();
@@ -76,39 +112,63 @@ describe("ownerService", () => {
       // arrange
       const did = asDid("did:plc:notowner0000000000000000");
       // act
-      const actual = await ownerService.findOwner({ handleOrDid: did });
+      const actual = await ownerService.findOwner(did);
       // assert
-      expect(actual?.toView()).toEqual(Owner.create(did).toView());
+      expect(actual.toView()).toEqual(Owner.create(did).toView());
       expect(identityResolver.resolve).not.toHaveBeenCalled();
       expect(await ownerRepository.findByDid(did)).toBeNull();
     });
-    test("写しに無いhandleはハンドルを解決せずにnullを返す", async () => {
+    test("fetchProfileを指定すると、写しが無ければPDSから取得したプロフィールを返し、写しを作らない", async () => {
       // arrange
+      const did = asDid("did:plc:notowner0000000000000000");
+      mockIdentity(did, null);
+      let requestedRepo: string | null = null;
+      server.use(
+        http.get(getRecordUrl, ({ request }) => {
+          requestedRepo = new URL(request.url).searchParams.get("repo");
+          return HttpResponse.json({
+            uri: `at://${did}/app.bsky.actor.profile/self`,
+            cid: "bafyreidfayvfuwqa7qlnopdjiqrxzs6blmoeu4rujcjtnci5beludirz2a",
+            value: {
+              $type: "app.bsky.actor.profile",
+              displayName: "Alice",
+              avatar: {
+                $type: "blob",
+                ref: { $link: avatarCid },
+                mimeType: "image/jpeg",
+                size: 1000,
+              },
+            },
+          });
+        }),
+      );
       // act
-      const actual = await ownerService.findOwner({
-        handleOrDid: "example.com",
-      });
+      const actual = await ownerService.findOwner(did, { fetchProfile: true });
       // assert
-      expect(actual).toBeNull();
-      expect(identityResolver.resolve).not.toHaveBeenCalled();
+      expect(actual.toView()).toEqual({
+        did,
+        handleOrDid: did,
+        displayHandle: `@${did}`,
+        displayName: "Alice",
+        avatarUrl: `https://cdn.bsky.app/img/avatar/plain/${did}/${avatarCid}@jpeg`,
+      });
+      expect(requestedRepo).toBe(did);
+      expect(await ownerRepository.findByDid(did)).toBeNull();
     });
-    test("入力が明らかにドメインでなければnullを返す", async () => {
+    test("fetchProfileを指定しても、プロフィールの取得に失敗したらDIDだけの持ち主を返す", async () => {
       // arrange
+      const did = asDid("did:plc:notowner0000000000000000");
+      mockIdentity(did, null);
+      server.use(
+        http.get(getRecordUrl, () =>
+          HttpResponse.json({ error: "InternalServerError" }, { status: 500 }),
+        ),
+      );
       // act
-      const actual = await ownerService.findOwner({
-        handleOrDid: "invalid",
-      });
+      const actual = await ownerService.findOwner(did, { fetchProfile: true });
       // assert
-      expect(actual).toBeNull();
-    });
-    test("入力がDIDとして不正であればnullを返す", async () => {
-      // arrange
-      // act
-      const actual = await ownerService.findOwner({
-        handleOrDid: "did:invalid",
-      });
-      // assert
-      expect(actual).toBeNull();
+      expect(actual.toView()).toEqual(Owner.create(did).toView());
+      expect(await ownerRepository.findByDid(did)).toBeNull();
     });
   });
 

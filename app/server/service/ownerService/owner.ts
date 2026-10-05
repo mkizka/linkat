@@ -7,7 +7,8 @@ import type { IOwnerRepository } from "~/server/infrastructure/ownerRepository";
 import type { IProfileFetcher } from "~/server/infrastructure/profileFetcher";
 
 export interface IOwnerService {
-  findOwner: (params: { handleOrDid: string }) => Promise<Owner | null>;
+  findDid: (handleOrDid: string) => Promise<Did | null>;
+  findOwner: (did: Did, options?: { fetchProfile?: boolean }) => Promise<Owner>;
   syncOwner: (did: Did) => Promise<Owner>;
   updateProfile: (did: Did, profile: Profile | null) => Promise<Owner | null>;
   refreshHandle: (did: Did) => Promise<Owner | null>;
@@ -25,18 +26,27 @@ export const ownerServiceFactory = ({
   profileFetcher: IProfileFetcher;
   identityResolver: IIdentityResolver;
 }): IOwnerService => ({
-  async findOwner({ handleOrDid }) {
+  async findDid(handleOrDid) {
     if (isDid(handleOrDid)) {
-      return (
-        (await ownerRepository.findByDid(handleOrDid)) ??
-        Owner.create(handleOrDid)
-      );
+      return handleOrDid;
     }
     if (!handleOrDid.includes(".")) {
       return null;
     }
-    const did = await handleIndex.findDid(handleOrDid);
-    return did && (await ownerRepository.findByDid(did));
+    return await handleIndex.findDid(handleOrDid);
+  },
+  async findOwner(did, options) {
+    const owner = await ownerRepository.findByDid(did);
+    if (owner) {
+      return owner;
+    }
+    if (!options?.fetchProfile) {
+      return Owner.create(did);
+    }
+    const identity = await identityResolver.resolve(did);
+    const profile =
+      identity && (await profileFetcher.fetchProfile(identity.pds, did));
+    return Owner.create(did).withProfile(profile);
   },
   async syncOwner(did) {
     let owner = (await ownerRepository.findByDid(did)) ?? Owner.create(did);
