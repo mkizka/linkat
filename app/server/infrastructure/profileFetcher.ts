@@ -1,7 +1,7 @@
 import type { Did } from "@atproto/did";
+import { Client } from "@atproto/lex";
 
 import profile from "~/generated/app/bsky/actor/profile";
-import type { LinkatAgent } from "~/libs/agent";
 import type { Profile } from "~/models/owner";
 import type { IProfileRecordParser } from "~/server/infrastructure/profileRecordParser";
 import { createLogger } from "~/utils/logger";
@@ -10,11 +10,11 @@ import { tryCatch } from "~/utils/tryCatch";
 const logger = createLogger("profileFetcher");
 
 export interface IProfileFetcher {
-  fetchProfile: (agent: LinkatAgent, did: Did) => Promise<Profile | null>;
+  fetchProfile: (pds: string, did: Did) => Promise<Profile | null>;
 }
 
-const fetchProfileRecord = async (agent: LinkatAgent, did: Did) => {
-  const { value } = await agent.get(profile, { repo: did });
+const fetchProfileRecord = async (pds: string, did: Did) => {
+  const { value } = await new Client(pds).get(profile, { repo: did });
   return value;
 };
 
@@ -23,9 +23,9 @@ export const profileFetcherFactory = ({
 }: {
   profileRecordParser: IProfileRecordParser;
 }): IProfileFetcher => ({
-  async fetchProfile(agent, did) {
+  async fetchProfile(pds, did) {
     logger.info({ did }, "プロフィールを取得します");
-    const fetched = await tryCatch(fetchProfileRecord)(agent, did);
+    const fetched = await tryCatch(fetchProfileRecord)(pds, did);
     if (fetched instanceof Error) {
       logger.warn(fetched, "プロフィールの取得に失敗しました");
       return null;

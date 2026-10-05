@@ -1,10 +1,10 @@
 import type { Did } from "@atproto/did";
 import { JoseKey } from "@atproto/jwk-jose";
+import type { Agent } from "@atproto/lex";
 import type {
   NodeSavedSessionStore,
   NodeSavedStateStore,
   OAuthClientMetadataInput,
-  OAuthSession,
 } from "@atproto/oauth-client-node";
 import {
   atprotoLoopbackClientMetadata,
@@ -53,7 +53,7 @@ export class OAuthSessionInvalidError extends Error {
 export interface IOAuthClient {
   authorize: (handle: string) => Promise<URL>;
   callback: (params: URLSearchParams) => Promise<Did>;
-  restore: (did: Did) => Promise<OAuthSession>;
+  restore: (did: Did) => Promise<Agent>;
   revoke: (did: Did) => Promise<void>;
   clientMetadata: NodeOAuthClient["clientMetadata"];
   jwks: NodeOAuthClient["jwks"];
