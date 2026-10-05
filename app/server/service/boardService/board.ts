@@ -1,10 +1,9 @@
 import type { Did } from "@atproto/did";
 
-import { Board } from "~/models/board";
+import type { Board } from "~/models/board";
 import type { OwnerView } from "~/models/owner";
 import type { IBoardRepository } from "~/server/infrastructure/boardRepository";
 import type { IOwnerService } from "~/server/service/ownerService/owner";
-import { tryCatch } from "~/utils/tryCatch";
 
 export type BoardView =
   | { type: "not-found" }
@@ -12,10 +11,6 @@ export type BoardView =
   | { type: "ok"; owner: OwnerView; board: Board };
 
 export interface IBoardService {
-  parseBoardFromForm: (
-    ownerDid: Did,
-    rawBoard: string,
-  ) => Promise<Board | Error>;
   findBoard: (ownerDid: Did) => Promise<Board | null>;
   findBoardView: (handleOrDid: string) => Promise<BoardView>;
 }
@@ -27,10 +22,6 @@ export const boardServiceFactory = ({
   boardRepository: IBoardRepository;
   ownerService: IOwnerService;
 }): IBoardService => ({
-  parseBoardFromForm: tryCatch(
-    (ownerDid: Did, rawBoard: string) =>
-      new Board(ownerDid, Board.parseCards(JSON.parse(rawBoard))),
-  ),
   async findBoard(ownerDid) {
     return await boardRepository.find(ownerDid);
   },

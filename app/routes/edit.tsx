@@ -7,6 +7,7 @@ import { Main } from "~/components/layout";
 import { BoardViewer } from "~/features/board/board-viewer";
 import { useUmami } from "~/hooks/useUmami";
 import { getInstance } from "~/i18n/i18n";
+import { Board } from "~/models/board";
 import { di } from "~/server/di";
 import {
   BoardDbSaveError,
@@ -14,6 +15,7 @@ import {
 } from "~/server/service/boardEventService/boardEvent";
 import { env } from "~/utils/env";
 import { createLogger } from "~/utils/logger";
+import { tryCatch } from "~/utils/tryCatch";
 
 import type { Route } from "./+types/edit";
 
@@ -42,10 +44,9 @@ export async function action({ request, context }: Route.ActionArgs) {
     });
     return null;
   }
-  const parsedBoard = await di.boardService.parseBoardFromForm(
-    ownerDid,
-    rawBoard,
-  );
+  const parsedBoard = await tryCatch(() =>
+    Board.fromRecord(ownerDid, JSON.parse(rawBoard)),
+  )();
   if (parsedBoard instanceof Error) {
     logger.warn({ error: parsedBoard }, "boardの形式が不正でした");
     setToast(context, {
