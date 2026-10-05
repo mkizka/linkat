@@ -65,10 +65,6 @@ export class Owner {
     return !this.active;
   }
 
-  isOwnedBy(viewerDid: Did | null) {
-    return this.did === viewerDid;
-  }
-
   withHandle(handle: string | null) {
     return new Owner({
       did: this.did,

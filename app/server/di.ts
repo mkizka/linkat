@@ -52,7 +52,11 @@ export const di = await createRegistry()
     ["ownerRepository", "profileFetcher"],
     editorServiceFactory,
   )
-  .service("boardService", ["boardRepository"], boardServiceFactory)
+  .service(
+    "boardService",
+    ["boardRepository", "ownerService"],
+    boardServiceFactory,
+  )
   .service(
     "boardEventService",
     ["boardRepository", "ownerRepository", "ownerService"],
