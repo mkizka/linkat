@@ -24,7 +24,7 @@ export const boardRepositoryFactory = ({
     if (!row) {
       return null;
     }
-    return new Board(ownerDid, Board.parseCards(JSON.parse(row.record)));
+    return Board.fromRecord(ownerDid, JSON.parse(row.record));
   },
   async save(board) {
     const data = {

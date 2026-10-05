@@ -1,6 +1,6 @@
 import { asDid } from "@atproto/did";
 
-import { Board, BoardParseError } from "~/models/board";
+import { Board } from "~/models/board";
 import { BoardFactory, cardsFromFactory } from "~/server/factories/board";
 import { OwnerFactory } from "~/server/factories/owner";
 import { boardRepositoryFactory } from "~/server/infrastructure/boardRepository";
@@ -11,13 +11,6 @@ import { boardServiceFactory } from "./board";
 const boardService = boardServiceFactory({
   boardRepository: boardRepositoryFactory({ db }),
 });
-
-const dummyCards = [
-  {
-    url: "https://example.com",
-    text: "board.spec.tsのカード",
-  },
-];
 
 describe("boardService", () => {
   describe("findBoard", () => {
@@ -36,40 +29,6 @@ describe("boardService", () => {
       const actual = await boardService.findBoard(asDid(owner.did));
       // assert
       expect(actual).toBeNull();
-    });
-  });
-
-  describe("parseBoardFromForm", () => {
-    test("正しい形式のJSONならBoardを返す", async () => {
-      // arrange
-      const ownerDid = asDid("did:plc:dummy");
-      const rawBoard = JSON.stringify({ cards: dummyCards });
-      // act
-      const actual = await boardService.parseBoardFromForm(ownerDid, rawBoard);
-      // assert
-      expect(actual).toEqual(new Board(ownerDid, dummyCards));
-    });
-    test("JSONとして不正な文字列ならErrorを返す", async () => {
-      // arrange
-      const ownerDid = asDid("did:plc:dummy");
-      // act
-      const actual = await boardService.parseBoardFromForm(
-        ownerDid,
-        "{invalid-json",
-      );
-      // assert
-      expect(actual).toBeInstanceOf(SyntaxError);
-    });
-    test("cardsを含まない形式ならBoardParseErrorを返す", async () => {
-      // arrange
-      const ownerDid = asDid("did:plc:dummy");
-      // act
-      const actual = await boardService.parseBoardFromForm(
-        ownerDid,
-        JSON.stringify({}),
-      );
-      // assert
-      expect(actual).toBeInstanceOf(BoardParseError);
     });
   });
 });
