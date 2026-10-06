@@ -57,6 +57,13 @@
       "when": 1791127646636,
       "tag": "0007_backfill_avatar_cid",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1791127776230,
+      "tag": "0008_drop_avatar",
+      "breakpoints": true
     }
   ]
 }
