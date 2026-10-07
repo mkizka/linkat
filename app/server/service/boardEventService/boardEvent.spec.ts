@@ -5,7 +5,6 @@ import { mock, mockReset } from "vitest-mock-extended";
 
 import { server } from "~/mocks/server";
 import { Board } from "~/models/board";
-import { Owner } from "~/models/owner";
 import { BoardFactory } from "~/server/factories/board";
 import { OwnerFactory } from "~/server/factories/owner";
 import { boardPdsRepositoryFactory } from "~/server/infrastructure/boardPdsRepository";
@@ -58,7 +57,7 @@ describe("boardEventService", () => {
     const putRecordUrl =
       "https://pds.example.com/xrpc/com.atproto.repo.putRecord";
 
-    test("PDSに保存してからDBに保存する", async () => {
+    test("PDSに保存してからボードの写しを保存し、持ち主の写しは書かない", async () => {
       // arrange
       const owner = await OwnerFactory.create();
       const board = new Board(owner.did, dummyCards);
@@ -72,12 +71,10 @@ describe("boardEventService", () => {
           });
         }),
       );
-      const synced = Owner.create(asDid(owner.did));
-      ownerService.syncOwner.mockResolvedValue(synced);
       // act
-      const actual = await boardEventService.publishBoard(board);
+      await boardEventService.publishBoard(board);
       // assert
-      expect(actual).toBe(synced);
+      expect(ownerService.syncOwner).not.toHaveBeenCalled();
       expect(putRecordBody).toMatchObject({
         repo: owner.did,
         collection: "blue.linkat.board",
@@ -100,7 +97,6 @@ describe("boardEventService", () => {
       );
       // assert
       await expect(actual).rejects.toThrow(BoardPdsSaveError);
-      expect(ownerService.syncOwner).not.toHaveBeenCalled();
       expect(await boardRepository.find(asDid(owner.did))).toBeNull();
     });
     test("DBへの保存に失敗したらBoardDbSaveErrorを投げる", async () => {

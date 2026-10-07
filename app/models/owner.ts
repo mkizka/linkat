@@ -60,20 +60,6 @@ export class Owner {
     return !this.active;
   }
 
-  withHandle(handle: string | null) {
-    return new Owner({
-      did: this.did,
-      avatarCid: this.avatarCid,
-      description: this.description,
-      displayName: this.displayName,
-      handle,
-      active: this.active,
-      status: this.status,
-      createdAt: this.createdAt,
-      updatedAt: new Date(),
-    });
-  }
-
   withProfile(profile: Profile | null) {
     return new Owner({
       did: this.did,

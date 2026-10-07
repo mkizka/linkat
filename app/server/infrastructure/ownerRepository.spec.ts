@@ -1,6 +1,5 @@
 import { asDid } from "@atproto/did";
 
-import { Owner } from "~/models/owner";
 import { OwnerFactory } from "~/server/factories/owner";
 import { db } from "~/server/infrastructure/drizzle";
 
@@ -27,91 +26,181 @@ describe("ownerRepository", () => {
     });
   });
 
-  describe("save", () => {
-    test("新しい持ち主を保存できる", async () => {
+  describe("upsert", () => {
+    const did = asDid("did:plc:abcdefghijklmnopqrstuvwx");
+    const profile = {
+      avatarCid: "bafkreiavatar",
+      description: "description",
+      displayName: "display name",
+    };
+
+    test("新しい持ち主を作れる", async () => {
       // arrange
-      const owner = new Owner({
-        did: "did:plc:abcdefghijklmnopqrstuvwx",
-        avatarCid: "bafkreiavatar",
-        description: "description",
-        displayName: "display name",
+      // act
+      const actual = await ownerRepository.upsert(did, {
+        handle: "example.com",
+        profile,
+      });
+      // assert
+      expect(actual).toEqual({
+        did,
+        ...profile,
         handle: "example.com",
         active: true,
         status: null,
-        createdAt: new Date("2024-01-01T00:00:00.000Z"),
-        updatedAt: new Date("2024-01-02T00:00:00.000Z"),
-      });
-      // act
-      await ownerRepository.save(owner);
-      // assert
-      const actual = await ownerRepository.findByDid(owner.did);
-      expect(actual).toEqual({
-        did: owner.did,
-        avatarCid: owner.avatarCid,
-        description: owner.description,
-        displayName: owner.displayName,
-        handle: owner.handle,
-        active: true,
-        status: null,
         createdAt: expect.any(Date),
-        updatedAt: owner.updatedAt,
+        updatedAt: expect.any(Date),
       });
+      expect(await ownerRepository.findByDid(did)).toEqual(actual);
     });
-    test("既存の持ち主を上書きでき、状態は変えない", async () => {
+    test("既存の持ち主のプロフィールとハンドルを上書きし、状態は変えない", async () => {
       // arrange
-      const existing = await OwnerFactory.create({
-        did: "did:plc:abcdefghijklmnopqrstuvwx",
+      await OwnerFactory.create({
+        did,
         handle: "old.example.com",
         active: false,
         status: "deactivated",
       });
-      const updated = new Owner({
-        did: existing.did,
-        avatarCid: "bafkreinewavatar",
-        description: "new description",
-        displayName: "new display name",
-        handle: "new.example.com",
-        active: true,
-        status: null,
-        createdAt: existing.createdAt,
-        updatedAt: new Date("2024-02-01T00:00:00.000Z"),
-      });
       // act
-      await ownerRepository.save(updated);
+      const actual = await ownerRepository.upsert(did, {
+        handle: "new.example.com",
+        profile,
+      });
       // assert
-      const actual = await ownerRepository.findByDid(asDid(existing.did));
-      expect(actual).toEqual({
-        did: existing.did,
-        avatarCid: updated.avatarCid,
-        description: updated.description,
-        displayName: updated.displayName,
-        handle: updated.handle,
+      expect(actual).toMatchObject({
+        ...profile,
+        handle: "new.example.com",
         active: false,
         status: "deactivated",
-        createdAt: existing.createdAt,
-        updatedAt: updated.updatedAt,
+      });
+    });
+    test("profileがnullなら、既存のプロフィールを残す", async () => {
+      // arrange
+      await OwnerFactory.create({ did, displayName: "Alice" });
+      // act
+      const actual = await ownerRepository.upsert(did, {
+        handle: "example.com",
+        profile: null,
+      });
+      // assert
+      expect(actual).toMatchObject({
+        displayName: "Alice",
+        handle: "example.com",
       });
     });
     test("他の持ち主が同じhandleを持っている場合、その持ち主のhandleをnullにする", async () => {
       // arrange
       const other = await OwnerFactory.create({ handle: "example.com" });
       // act
-      await ownerRepository.save(
-        new Owner({ ...other, did: "did:plc:abcdefghijklmnopqrstuvwx" }),
-      );
+      await ownerRepository.upsert(did, { handle: "example.com", profile });
       // assert
       const actual = await ownerRepository.findByDid(asDid(other.did));
       expect(actual?.handle).toBeNull();
     });
     test("handleがnullの持ち主は複数保存できる", async () => {
       // arrange
-      const other = await OwnerFactory.create({ handle: null });
+      await OwnerFactory.create({ handle: null });
       // act
-      const actual = await ownerRepository.save(
-        new Owner({ ...other, did: "did:plc:abcdefghijklmnopqrstuvwx" }),
-      );
+      const actual = await ownerRepository.upsert(did, {
+        handle: null,
+        profile,
+      });
       // assert
       expect(actual.handle).toBeNull();
+    });
+  });
+
+  describe("updateProfile", () => {
+    test("既存の持ち主のプロフィールとハンドルを更新し、状態は変えない", async () => {
+      // arrange
+      const existing = await OwnerFactory.create({
+        handle: "old.example.com",
+        active: false,
+        status: "deactivated",
+      });
+      // act
+      const actual = await ownerRepository.updateProfile(asDid(existing.did), {
+        handle: "new.example.com",
+        profile: {
+          avatarCid: "bafkreinewavatar",
+          description: "new description",
+          displayName: "new display name",
+        },
+      });
+      // assert
+      expect(actual).toMatchObject({
+        avatarCid: "bafkreinewavatar",
+        description: "new description",
+        displayName: "new display name",
+        handle: "new.example.com",
+        active: false,
+        status: "deactivated",
+      });
+    });
+    test("profileがnullなら、プロフィールを空にする", async () => {
+      // arrange
+      const existing = await OwnerFactory.create({ displayName: "Alice" });
+      // act
+      const actual = await ownerRepository.updateProfile(asDid(existing.did), {
+        handle: null,
+        profile: null,
+      });
+      // assert
+      expect(actual).toMatchObject({
+        avatarCid: null,
+        description: null,
+        displayName: null,
+      });
+    });
+    test("持ち主が保存されていない場合は何もせずnullを返す", async () => {
+      // arrange
+      const did = asDid("did:plc:notfound");
+      // act
+      const actual = await ownerRepository.updateProfile(did, {
+        handle: "example.com",
+        profile: null,
+      });
+      // assert
+      expect(actual).toBeNull();
+      expect(await ownerRepository.findByDid(did)).toBeNull();
+    });
+  });
+
+  describe("updateHandle", () => {
+    test("既存の持ち主のハンドルだけを更新する", async () => {
+      // arrange
+      const existing = await OwnerFactory.create({
+        handle: "old.example.com",
+        displayName: "Alice",
+      });
+      // act
+      const actual = await ownerRepository.updateHandle(
+        asDid(existing.did),
+        "new.example.com",
+      );
+      // assert
+      expect(actual).toMatchObject({
+        handle: "new.example.com",
+        displayName: "Alice",
+      });
+    });
+    test("他の持ち主が同じhandleを持っている場合、その持ち主のhandleをnullにする", async () => {
+      // arrange
+      const other = await OwnerFactory.create({ handle: "example.com" });
+      const existing = await OwnerFactory.create({ handle: null });
+      // act
+      await ownerRepository.updateHandle(asDid(existing.did), "example.com");
+      // assert
+      const actual = await ownerRepository.findByDid(asDid(other.did));
+      expect(actual?.handle).toBeNull();
+    });
+    test("持ち主が保存されていない場合は何もせずnullを返す", async () => {
+      // arrange
+      const did = asDid("did:plc:notfound");
+      // act
+      const actual = await ownerRepository.updateHandle(did, "example.com");
+      // assert
+      expect(actual).toBeNull();
     });
   });
 
