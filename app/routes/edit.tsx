@@ -23,8 +23,8 @@ const logger = createLogger("edit");
 
 export async function action({ request, context }: Route.ActionArgs) {
   const i18next = getInstance(context);
-  const ownerDid = await di.sessionService.getSessionDid(request);
-  if (!ownerDid) {
+  const editorDid = await di.sessionService.getSessionDid(request);
+  if (!editorDid) {
     setToast(context, {
       message: i18next.t("edit.invalid-session-error-message"),
       type: "error",
@@ -45,7 +45,7 @@ export async function action({ request, context }: Route.ActionArgs) {
     return null;
   }
   const parsedBoard = await tryCatch(() =>
-    Board.fromRecord(ownerDid, JSON.parse(rawBoard)),
+    Board.fromRecord(editorDid, JSON.parse(rawBoard)),
   )();
   if (parsedBoard instanceof Error) {
     logger.warn({ error: parsedBoard }, "boardの形式が不正でした");
@@ -73,7 +73,7 @@ export async function action({ request, context }: Route.ActionArgs) {
         message: i18next.t("edit.save-delayed-warning-message"),
         type: "warning",
       });
-      return redirect(`/${ownerDid}`);
+      return redirect(`/${editorDid}`);
     }
     throw error;
   }
@@ -81,13 +81,13 @@ export async function action({ request, context }: Route.ActionArgs) {
 }
 
 export async function loader({ request }: Route.LoaderArgs) {
-  const ownerDid = await di.sessionService.getSessionDid(request);
-  if (!ownerDid) {
+  const editorDid = await di.sessionService.getSessionDid(request);
+  if (!editorDid) {
     throw redirect("/login");
   }
   const [editor, board] = await Promise.all([
-    di.editorService.findView(ownerDid),
-    di.boardService.findBoard(ownerDid),
+    di.editorService.findView(editorDid),
+    di.boardService.findBoard(editorDid),
   ]);
   return {
     editor,
