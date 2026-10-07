@@ -16,8 +16,8 @@ import { boardServiceFactory } from "./board";
 
 const boardService = boardServiceFactory({
   boardRepository: boardRepositoryFactory({ db }),
+  handleIndex: handleIndexFactory({ db }),
   ownerService: ownerServiceFactory({
-    handleIndex: handleIndexFactory({ db }),
     ownerRepository: ownerRepositoryFactory({ db }),
     profileFetcher: mock<IProfileFetcher>(),
     identityResolver: mock<IIdentityResolver>(),

@@ -20,7 +20,6 @@ import { atpassportServiceFactory } from "~/server/service/atpassportService/atp
 import { authServiceFactory } from "~/server/service/authService/auth";
 import { boardEventServiceFactory } from "~/server/service/boardEventService/boardEvent";
 import { boardServiceFactory } from "~/server/service/boardService/board";
-import { editorServiceFactory } from "~/server/service/editorService/editor";
 import { jetstreamServiceFactory } from "~/server/service/jetstreamService/jetstream";
 import { ownerServiceFactory } from "~/server/service/ownerService/owner";
 import { sessionServiceFactory } from "~/server/service/sessionService/session";
@@ -46,17 +45,12 @@ export const di = await createRegistry()
   .service("cookieSessionStorage", cookieSessionStorageFactory)
   .service(
     "ownerService",
-    ["handleIndex", "ownerRepository", "profileFetcher", "identityResolver"],
+    ["ownerRepository", "profileFetcher", "identityResolver"],
     ownerServiceFactory,
   )
   .service(
-    "editorService",
-    ["ownerRepository", "profileFetcher", "identityResolver"],
-    editorServiceFactory,
-  )
-  .service(
     "boardService",
-    ["boardRepository", "ownerService"],
+    ["boardRepository", "handleIndex", "ownerService"],
     boardServiceFactory,
   )
   .service(
