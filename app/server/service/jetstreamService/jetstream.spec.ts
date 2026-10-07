@@ -11,7 +11,6 @@ import type { IBoardPdsRepository } from "~/server/infrastructure/boardPdsReposi
 import { boardRepositoryFactory } from "~/server/infrastructure/boardRepository";
 import { cursorRepositoryFactory } from "~/server/infrastructure/cursorRepository";
 import { db } from "~/server/infrastructure/drizzle";
-import { handleIndexFactory } from "~/server/infrastructure/handleIndex";
 import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
 import { ownerRepositoryFactory } from "~/server/infrastructure/ownerRepository";
 import { profileFetcherFactory } from "~/server/infrastructure/profileFetcher";
@@ -30,7 +29,6 @@ const profileFetcher = profileFetcherFactory({
 });
 
 const ownerService = ownerServiceFactory({
-  handleIndex: handleIndexFactory({ db }),
   ownerRepository,
   profileFetcher,
   identityResolver,

@@ -98,13 +98,14 @@ export async function loader({ request }: Route.LoaderArgs) {
     throw redirect("/login");
   }
   const [editor, board] = await Promise.all([
-    di.editorService.findView(editorDid),
+    di.ownerService.findOwner(editorDid),
     di.boardService.findBoard(editorDid),
   ]);
+  const editorView = editor.toView();
   return {
-    editor,
+    editor: editorView,
     board: board && { cards: board.cards },
-    url: `${env.PUBLIC_URL}/${editor.handleOrDid}`,
+    url: `${env.PUBLIC_URL}/${editorView.handleOrDid}`,
   };
 }
 

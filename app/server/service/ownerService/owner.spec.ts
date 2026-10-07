@@ -6,7 +6,6 @@ import { server } from "~/mocks/server";
 import { Owner } from "~/models/owner";
 import { OwnerFactory } from "~/server/factories/owner";
 import { db } from "~/server/infrastructure/drizzle";
-import { handleIndexFactory } from "~/server/infrastructure/handleIndex";
 import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
 import { ownerRepositoryFactory } from "~/server/infrastructure/ownerRepository";
 import { profileFetcherFactory } from "~/server/infrastructure/profileFetcher";
@@ -21,7 +20,6 @@ const profileFetcher = profileFetcherFactory({
 });
 
 const ownerService = ownerServiceFactory({
-  handleIndex: handleIndexFactory({ db }),
   ownerRepository,
   profileFetcher,
   identityResolver,
@@ -47,17 +45,7 @@ describe("ownerService", () => {
       // arrange
       const owner = await OwnerFactory.create();
       // act
-      const actual = await ownerService.findOwner({ handleOrDid: owner.did });
-      // assert
-      expect(actual).toEqual(owner);
-    });
-    test("handleを指定するとDBの写しからDIDを引いて取得する", async () => {
-      // arrange
-      const owner = await OwnerFactory.create({ handle: "example.com" });
-      // act
-      const actual = await ownerService.findOwner({
-        handleOrDid: "example.com",
-      });
+      const actual = await ownerService.findOwner(asDid(owner.did));
       // assert
       expect(actual).toEqual(owner);
     });
@@ -67,7 +55,7 @@ describe("ownerService", () => {
         updatedAt: new Date("2000-01-01T00:00:00Z"),
       });
       // act
-      const actual = await ownerService.findOwner({ handleOrDid: owner.did });
+      const actual = await ownerService.findOwner(asDid(owner.did));
       // assert
       expect(actual).toEqual(owner);
       expect(identityResolver.resolve).not.toHaveBeenCalled();
@@ -76,39 +64,11 @@ describe("ownerService", () => {
       // arrange
       const did = asDid("did:plc:notowner0000000000000000");
       // act
-      const actual = await ownerService.findOwner({ handleOrDid: did });
+      const actual = await ownerService.findOwner(did);
       // assert
-      expect(actual?.toView()).toEqual(Owner.create(did).toView());
+      expect(actual.toView()).toEqual(Owner.create(did).toView());
       expect(identityResolver.resolve).not.toHaveBeenCalled();
       expect(await ownerRepository.findByDid(did)).toBeNull();
-    });
-    test("写しに無いhandleはハンドルを解決せずにnullを返す", async () => {
-      // arrange
-      // act
-      const actual = await ownerService.findOwner({
-        handleOrDid: "example.com",
-      });
-      // assert
-      expect(actual).toBeNull();
-      expect(identityResolver.resolve).not.toHaveBeenCalled();
-    });
-    test("入力が明らかにドメインでなければnullを返す", async () => {
-      // arrange
-      // act
-      const actual = await ownerService.findOwner({
-        handleOrDid: "invalid",
-      });
-      // assert
-      expect(actual).toBeNull();
-    });
-    test("入力がDIDとして不正であればnullを返す", async () => {
-      // arrange
-      // act
-      const actual = await ownerService.findOwner({
-        handleOrDid: "did:invalid",
-      });
-      // assert
-      expect(actual).toBeNull();
     });
   });
 
