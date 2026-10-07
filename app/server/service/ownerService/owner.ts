@@ -39,36 +39,30 @@ export const ownerServiceFactory = ({
     return did && (await ownerRepository.findByDid(did));
   },
   async syncOwner(did) {
-    let owner = (await ownerRepository.findByDid(did)) ?? Owner.create(did);
     const identity = await identityResolver.resolve(did);
-    if (!identity) {
-      return await ownerRepository.save(owner.withHandle(null));
-    }
-    const profile = await profileFetcher.fetchProfile(identity.pds, did);
-    if (profile) {
-      owner = owner.withProfile(profile);
-    }
-    return await ownerRepository.save(owner.withHandle(identity.handle));
+    const profile =
+      identity && (await profileFetcher.fetchProfile(identity.pds, did));
+    return await ownerRepository.upsert(did, {
+      handle: identity?.handle ?? null,
+      profile,
+    });
   },
   async updateProfile(did, profile) {
-    const owner = await ownerRepository.findByDid(did);
-    if (!owner) {
+    if (!(await ownerRepository.findByDid(did))) {
       return null;
     }
     const identity = await identityResolver.resolve(did);
-    return await ownerRepository.save(
-      owner.withProfile(profile).withHandle(identity?.handle ?? null),
-    );
+    return await ownerRepository.updateProfile(did, {
+      handle: identity?.handle ?? null,
+      profile,
+    });
   },
   async refreshHandle(did) {
-    const owner = await ownerRepository.findByDid(did);
-    if (!owner) {
+    if (!(await ownerRepository.findByDid(did))) {
       return null;
     }
     const identity = await identityResolver.resolve(did, { noCache: true });
-    return await ownerRepository.save(
-      owner.withHandle(identity?.handle ?? null),
-    );
+    return await ownerRepository.updateHandle(did, identity?.handle ?? null);
   },
   async updateAccountState(did, state) {
     await ownerRepository.updateAccountState(did, state);
