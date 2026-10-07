@@ -32,6 +32,13 @@ test.describe("Jetstream", () => {
       await page.waitForURL((url) => url.pathname !== "/edit");
     });
 
+    await test.step("Jetstreamで持ち主の写しが作られるのを待つ", async () => {
+      await expect(async () => {
+        const response = await page.request.get(`/${account.handle}`);
+        expect(response.status()).toBe(200);
+      }).toPass();
+    });
+
     await test.step("PDSでアカウントを無効化", async () => {
       const session = await xrpc("com.atproto.server.createSession", {
         identifier: account.handle,
