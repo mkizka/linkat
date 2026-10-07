@@ -5,7 +5,6 @@ import { mock, mockReset } from "vitest-mock-extended";
 
 import { server } from "~/mocks/server";
 import { Board } from "~/models/board";
-import { Owner } from "~/models/owner";
 import { BoardFactory } from "~/server/factories/board";
 import { OwnerFactory } from "~/server/factories/owner";
 import { boardPdsRepositoryFactory } from "~/server/infrastructure/boardPdsRepository";
@@ -58,7 +57,7 @@ describe("boardEventService", () => {
     const putRecordUrl =
       "https://pds.example.com/xrpc/com.atproto.repo.putRecord";
 
-    test("PDSに保存してからDBに保存する", async () => {
+    test("PDSに保存してからボードの写しだけを保存する", async () => {
       // arrange
       const owner = await OwnerFactory.create();
       const board = new Board(owner.did, dummyCards);
@@ -72,12 +71,10 @@ describe("boardEventService", () => {
           });
         }),
       );
-      const synced = Owner.create(asDid(owner.did));
-      ownerService.syncOwner.mockResolvedValue(synced);
       // act
-      const actual = await boardEventService.publishBoard(board);
+      await boardEventService.publishBoard(board);
       // assert
-      expect(actual).toBe(synced);
+      expect(ownerService.syncOwner).not.toHaveBeenCalled();
       expect(putRecordBody).toMatchObject({
         repo: owner.did,
         collection: "blue.linkat.board",
@@ -100,7 +97,6 @@ describe("boardEventService", () => {
       );
       // assert
       await expect(actual).rejects.toThrow(BoardPdsSaveError);
-      expect(ownerService.syncOwner).not.toHaveBeenCalled();
       expect(await boardRepository.find(asDid(owner.did))).toBeNull();
     });
     test("DBへの保存に失敗したらBoardDbSaveErrorを投げる", async () => {
@@ -121,6 +117,48 @@ describe("boardEventService", () => {
       );
       // assert
       await expect(actual).rejects.toThrow(BoardDbSaveError);
+    });
+  });
+
+  describe("syncEditor", () => {
+    const getRecordUrl =
+      "https://pds.example.com/xrpc/com.atproto.repo.getRecord";
+
+    test("PDSにボードがあれば持ち主とボードの写しを書く", async () => {
+      // arrange
+      const did = asDid("did:plc:synceditor");
+      server.use(
+        http.get(getRecordUrl, () =>
+          HttpResponse.json({
+            uri: `at://${did}/blue.linkat.board/self`,
+            value: { $type: "blue.linkat.board", cards: dummyCards },
+          }),
+        ),
+      );
+      // act
+      await boardEventService.syncEditor(did);
+      // assert
+      expect(ownerService.syncOwner).toHaveBeenCalledWith(did);
+      expect(await boardRepository.find(did)).toEqual(
+        new Board(did, dummyCards),
+      );
+    });
+    test("PDSにボードが無ければボードの写しを作らない", async () => {
+      // arrange
+      const did = asDid("did:plc:synceditornoboard");
+      server.use(
+        http.get(getRecordUrl, () =>
+          HttpResponse.json(
+            { error: "RecordNotFound", message: "Could not locate record" },
+            { status: 400 },
+          ),
+        ),
+      );
+      // act
+      await boardEventService.syncEditor(did);
+      // assert
+      expect(ownerService.syncOwner).toHaveBeenCalledWith(did);
+      expect(await boardRepository.find(did)).toBeNull();
     });
   });
 

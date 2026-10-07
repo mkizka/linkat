@@ -34,7 +34,10 @@
     "invalid-form-error-message": "The form is invalid",
     "save-board-error-message": "Failed to save the board",
     "save-delayed-warning-message": "The changes are taking a while to appear. Please wait a moment and reload.",
-    "confirm-leave-message": "Unsaved changes will be lost. Are you sure?"
+    "confirm-leave-message": "Unsaved changes will be lost. Are you sure?",
+    "sync-loading-message": "Loading your data from Bluesky",
+    "sync-error-message": "Failed to load your data from Bluesky",
+    "sync-retry-button": "Retry"
   },
   "board": {
     "meta-title": "{{displayName}}(@{{handle}})'s board",

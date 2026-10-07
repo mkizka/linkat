@@ -1,7 +1,6 @@
 import type { Did } from "@atproto/did";
 
 import type { Board } from "~/models/board";
-import type { Owner } from "~/models/owner";
 import type { IBoardPdsRepository } from "~/server/infrastructure/boardPdsRepository";
 import type { IBoardRepository } from "~/server/infrastructure/boardRepository";
 import type { IOwnerRepository } from "~/server/infrastructure/ownerRepository";
@@ -32,8 +31,9 @@ export class BoardDbDeleteError extends Error {
 }
 
 export interface IBoardEventService {
-  saveBoard: (board: Board) => Promise<Owner>;
-  publishBoard: (board: Board) => Promise<Owner>;
+  saveBoard: (board: Board) => Promise<void>;
+  publishBoard: (board: Board) => Promise<void>;
+  syncEditor: (editorDid: Did) => Promise<void>;
   deleteBoard: (ownerDid: Did) => Promise<void>;
   unpublishBoard: (ownerDid: Did) => Promise<void>;
 }
@@ -49,17 +49,15 @@ export const boardEventServiceFactory = ({
   ownerRepository: IOwnerRepository;
   ownerService: IOwnerService;
 }): IBoardEventService => {
-  const saveBoard = async (board: Board) => {
-    const owner = await ownerService.syncOwner(board.ownerDid);
-    await boardRepository.save(board);
-    return owner;
-  };
   const deleteBoard = async (ownerDid: Did) => {
     await ownerRepository.delete(ownerDid);
     await boardRepository.delete(ownerDid);
   };
   return {
-    saveBoard,
+    async saveBoard(board) {
+      await ownerService.syncOwner(board.ownerDid);
+      await boardRepository.save(board);
+    },
     async publishBoard(board) {
       try {
         await boardPdsRepository.save(board);
@@ -67,9 +65,16 @@ export const boardEventServiceFactory = ({
         throw new BoardPdsSaveError(error);
       }
       try {
-        return await saveBoard(board);
+        await boardRepository.save(board);
       } catch (error) {
         throw new BoardDbSaveError(error);
+      }
+    },
+    async syncEditor(editorDid) {
+      await ownerService.syncOwner(editorDid);
+      const board = await boardPdsRepository.find(editorDid);
+      if (board) {
+        await boardRepository.save(board);
       }
     },
     deleteBoard,
