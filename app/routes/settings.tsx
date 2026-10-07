@@ -11,11 +11,11 @@ import { di } from "~/server/di";
 import type { Route } from "./+types/settings";
 
 export const loader = async ({ request }: Route.LoaderArgs) => {
-  const ownerDid = await di.sessionService.getSessionDid(request);
-  if (!ownerDid) {
+  const editorDid = await di.sessionService.getSessionDid(request);
+  if (!editorDid) {
     throw redirect("/login");
   }
-  const owner = await di.ownerService.findOwner(ownerDid);
+  const owner = await di.ownerService.findOwner(editorDid);
   return { editor: owner.toView() };
 };
 
