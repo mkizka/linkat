@@ -29,14 +29,7 @@ test.describe("Jetstream", () => {
     await test.step("ボードを保存", async () => {
       await login();
       await page.getByTestId("board-viewer__submit").click();
-      await page.waitForURL((url) => url.pathname !== "/edit");
-    });
-
-    await test.step("Jetstreamで持ち主の写しが作られるのを待つ", async () => {
-      await expect(async () => {
-        const response = await page.request.get(`/${account.handle}`);
-        expect(response.status()).toBe(200);
-      }).toPass();
+      await page.waitForURL((url) => url.pathname === `/${account.handle}`);
     });
 
     await test.step("PDSでアカウントを無効化", async () => {

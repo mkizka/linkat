@@ -55,8 +55,9 @@ export async function action({ request, context }: Route.ActionArgs) {
     });
     return null;
   }
+  let owner;
   try {
-    await di.boardEventService.publishBoard(parsedBoard);
+    owner = await di.boardEventService.publishBoard(parsedBoard);
   } catch (error) {
     if (error instanceof BoardPdsSaveError) {
       logger.error(error, error.message);
@@ -76,8 +77,7 @@ export async function action({ request, context }: Route.ActionArgs) {
     }
     throw error;
   }
-  const owner = await di.ownerService.findOwner({ handleOrDid: ownerDid });
-  return redirect(`/${owner?.toView().handleOrDid ?? ownerDid}?success`);
+  return redirect(`/${owner.toView().handleOrDid}?success`);
 }
 
 export async function loader({ request }: Route.LoaderArgs) {
