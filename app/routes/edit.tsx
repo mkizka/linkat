@@ -83,12 +83,12 @@ export async function action({ request, context }: Route.ActionArgs) {
         message: i18next.t("edit.save-delayed-warning-message"),
         type: "warning",
       });
-      const editor = await di.editorService.findView(editorDid);
+      const editor = (await di.ownerService.findOwner(editorDid)).toView();
       return redirect(`/${editor.handleOrDid}`);
     }
     throw error;
   }
-  const editor = await di.editorService.findView(editorDid);
+  const editor = (await di.ownerService.findOwner(editorDid)).toView();
   return redirect(`/${editor.handleOrDid}?success`);
 }
 
