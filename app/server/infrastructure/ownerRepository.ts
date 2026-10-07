@@ -1,16 +1,42 @@
 import type { Did } from "@atproto/did";
 import { and, eq, ne } from "drizzle-orm";
 
-import { type AccountState, Owner } from "~/models/owner";
+import { type AccountState, Owner, type Profile } from "~/models/owner";
 import type { Db } from "~/server/infrastructure/drizzle";
 import { ownerTable } from "~/server/infrastructure/schema";
 
+type Tx = Parameters<Parameters<Db["transaction"]>[0]>[0];
+
 export interface IOwnerRepository {
   findByDid: (did: Did) => Promise<Owner | null>;
-  save: (owner: Owner) => Promise<Owner>;
+  upsert: (
+    did: Did,
+    params: { handle: string | null; profile: Profile | null },
+  ) => Promise<Owner>;
+  updateProfile: (
+    did: Did,
+    params: { handle: string | null; profile: Profile | null },
+  ) => Promise<Owner | null>;
+  updateHandle: (did: Did, handle: string | null) => Promise<Owner | null>;
   updateAccountState: (did: Did, state: AccountState) => Promise<void>;
   delete: (did: Did) => Promise<void>;
 }
+
+const profileColumns = (profile: Profile | null) => ({
+  avatarCid: profile?.avatarCid ?? null,
+  description: profile?.description ?? null,
+  displayName: profile?.displayName ?? null,
+});
+
+const releaseHandle = async (tx: Tx, did: Did, handle: string | null) => {
+  if (!handle) {
+    return;
+  }
+  await tx
+    .update(ownerTable)
+    .set({ handle: null })
+    .where(and(eq(ownerTable.handle, handle), ne(ownerTable.did, did)));
+};
 
 export const ownerRepositoryFactory = ({
   db,
@@ -25,36 +51,45 @@ export const ownerRepositoryFactory = ({
       .limit(1);
     return row ? new Owner(row) : null;
   },
-  async save(owner) {
-    const data = {
-      did: owner.did,
-      avatarCid: owner.avatarCid,
-      description: owner.description,
-      displayName: owner.displayName,
-      handle: owner.handle,
-      updatedAt: owner.updatedAt,
+  async upsert(did, { handle, profile }) {
+    const columns = {
+      handle,
+      ...(profile && profileColumns(profile)),
+      updatedAt: new Date(),
     };
     return await db.transaction(async (tx) => {
-      if (owner.handle) {
-        await tx
-          .update(ownerTable)
-          .set({ handle: null })
-          .where(
-            and(
-              eq(ownerTable.handle, owner.handle),
-              ne(ownerTable.did, owner.did),
-            ),
-          );
-      }
+      await releaseHandle(tx, did, handle);
       const [row] = await tx
         .insert(ownerTable)
-        .values(data)
-        .onConflictDoUpdate({ target: ownerTable.did, set: data })
+        .values({ did, ...columns })
+        .onConflictDoUpdate({ target: ownerTable.did, set: columns })
         .returning();
       if (!row) {
         throw new Error("持ち主の保存に失敗しました");
       }
       return new Owner(row);
+    });
+  },
+  async updateProfile(did, { handle, profile }) {
+    return await db.transaction(async (tx) => {
+      await releaseHandle(tx, did, handle);
+      const [row] = await tx
+        .update(ownerTable)
+        .set({ handle, ...profileColumns(profile), updatedAt: new Date() })
+        .where(eq(ownerTable.did, did))
+        .returning();
+      return row ? new Owner(row) : null;
+    });
+  },
+  async updateHandle(did, handle) {
+    return await db.transaction(async (tx) => {
+      await releaseHandle(tx, did, handle);
+      const [row] = await tx
+        .update(ownerTable)
+        .set({ handle, updatedAt: new Date() })
+        .where(eq(ownerTable.did, did))
+        .returning();
+      return row ? new Owner(row) : null;
     });
   },
   async updateAccountState(did, state) {
