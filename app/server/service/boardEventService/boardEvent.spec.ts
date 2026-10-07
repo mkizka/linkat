@@ -136,8 +136,9 @@ describe("boardEventService", () => {
         ),
       );
       // act
-      await boardEventService.syncEditor(did);
+      const actual = await boardEventService.syncEditor(did);
       // assert
+      expect(actual).toEqual({ boardImported: true });
       expect(ownerService.syncOwner).toHaveBeenCalledWith(did);
       expect(await boardRepository.find(did)).toEqual(
         new Board(did, dummyCards),
@@ -155,8 +156,9 @@ describe("boardEventService", () => {
         ),
       );
       // act
-      await boardEventService.syncEditor(did);
+      const actual = await boardEventService.syncEditor(did);
       // assert
+      expect(actual).toEqual({ boardImported: false });
       expect(ownerService.syncOwner).toHaveBeenCalledWith(did);
       expect(await boardRepository.find(did)).toBeNull();
     });

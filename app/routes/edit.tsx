@@ -1,3 +1,7 @@
+import {
+  ArrowPathIcon,
+  ExclamationCircleIcon,
+} from "@heroicons/react/24/outline";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -104,19 +108,9 @@ export async function loader({ request }: Route.LoaderArgs) {
   };
 }
 
-export default function Index({ loaderData }: Route.ComponentProps) {
-  const { editor, board, url } = loaderData;
+function Editor({ editor, board, url }: Route.ComponentProps["loaderData"]) {
   const { t } = useTranslation();
   const umami = useUmami();
-  const sync = useFetcher<typeof syncAction>();
-  const submitSync = () =>
-    sync.submit(null, { method: "post", action: "/sync" });
-
-  useEffect(() => {
-    if (!board && sync.state === "idle" && !sync.data) {
-      void submitSync();
-    }
-  });
 
   // 更新ボタンを押したりしたときに確認ダイアログを出す
   useBeforeUnload((event) => {
@@ -150,25 +144,38 @@ export default function Index({ loaderData }: Route.ComponentProps) {
     }
   }, [t, blocker, umami]);
 
-  if (!board && (sync.state !== "idle" || !sync.data)) {
-    return (
-      <Main>
-        <div className="flex flex-col items-center gap-4 py-16">
-          <div className="loading loading-spinner w-14" />
-          <p>{t("edit.sync-loading-message")}</p>
-        </div>
-      </Main>
-    );
+  return (
+    <Main>
+      <BoardViewer owner={editor} board={board} url={url} editable />
+    </Main>
+  );
+}
+
+export default function Index({ loaderData }: Route.ComponentProps) {
+  const { t } = useTranslation();
+  const sync = useFetcher<typeof syncAction>();
+  const submitSync = () =>
+    sync.submit(null, { method: "post", action: "/sync" });
+
+  useEffect(() => {
+    if (!loaderData.board && sync.state === "idle" && !sync.data) {
+      void submitSync();
+    }
+  });
+
+  if (loaderData.board || (sync.state === "idle" && sync.data?.ok)) {
+    return <Editor {...loaderData} />;
   }
 
-  if (!board && !sync.data?.ok) {
+  if (sync.state !== "idle" || !sync.data) {
     return (
       <Main>
-        <div className="flex flex-col items-center gap-4 py-16">
-          <p>{t("edit.sync-error-message")}</p>
-          <Button className="btn-primary" onClick={() => void submitSync()}>
-            {t("edit.sync-retry-button")}
-          </Button>
+        <div
+          className="flex flex-col items-center gap-4 py-16 text-center"
+          role="status"
+        >
+          <div className="loading loading-spinner w-12" />
+          <p>{t("edit.sync-loading-message")}</p>
         </div>
       </Main>
     );
@@ -176,7 +183,22 @@ export default function Index({ loaderData }: Route.ComponentProps) {
 
   return (
     <Main>
-      <BoardViewer owner={editor} board={board} url={url} editable />
+      <div
+        className="flex flex-col items-center gap-4 py-16 text-center"
+        role="alert"
+      >
+        <ExclamationCircleIcon className="size-12 text-error" />
+        <div>
+          <p>{t("edit.sync-error-message")}</p>
+          <p className="text-sm opacity-70">
+            {t("edit.sync-error-description")}
+          </p>
+        </div>
+        <Button className="btn-primary" onClick={() => void submitSync()}>
+          <ArrowPathIcon className="size-5" />
+          {t("edit.sync-retry-button")}
+        </Button>
+      </div>
     </Main>
   );
 }

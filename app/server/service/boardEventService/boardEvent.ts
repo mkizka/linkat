@@ -33,7 +33,7 @@ export class BoardDbDeleteError extends Error {
 export interface IBoardEventService {
   saveBoard: (board: Board) => Promise<void>;
   publishBoard: (board: Board) => Promise<void>;
-  syncEditor: (editorDid: Did) => Promise<void>;
+  syncEditor: (editorDid: Did) => Promise<{ boardImported: boolean }>;
   deleteBoard: (ownerDid: Did) => Promise<void>;
   unpublishBoard: (ownerDid: Did) => Promise<void>;
 }
@@ -76,6 +76,7 @@ export const boardEventServiceFactory = ({
       if (board) {
         await boardRepository.save(board);
       }
+      return { boardImported: !!board };
     },
     deleteBoard,
     async unpublishBoard(ownerDid) {
