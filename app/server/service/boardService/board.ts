@@ -1,8 +1,9 @@
-import type { Did } from "@atproto/did";
+import { type Did, isDid } from "@atproto/did";
 
 import type { Board } from "~/models/board";
 import type { OwnerView } from "~/models/owner";
 import type { IBoardRepository } from "~/server/infrastructure/boardRepository";
+import type { IHandleIndex } from "~/server/infrastructure/handleIndex";
 import type { IOwnerService } from "~/server/service/ownerService/owner";
 
 export type BoardView =
@@ -17,16 +18,20 @@ export interface IBoardService {
 
 export const boardServiceFactory = ({
   boardRepository,
+  handleIndex,
   ownerService,
 }: {
   boardRepository: IBoardRepository;
+  handleIndex: IHandleIndex;
   ownerService: IOwnerService;
 }): IBoardService => ({
   async findBoard(ownerDid) {
     return await boardRepository.find(ownerDid);
   },
   async findBoardView(handleOrDid) {
-    const did = await ownerService.findDid(handleOrDid);
+    const did = isDid(handleOrDid)
+      ? handleOrDid
+      : await handleIndex.findDid(handleOrDid);
     if (!did) {
       return { type: "not-found" };
     }

@@ -45,12 +45,12 @@ export const di = await createRegistry()
   .service("cookieSessionStorage", cookieSessionStorageFactory)
   .service(
     "ownerService",
-    ["handleIndex", "ownerRepository", "profileFetcher", "identityResolver"],
+    ["ownerRepository", "profileFetcher", "identityResolver"],
     ownerServiceFactory,
   )
   .service(
     "boardService",
-    ["boardRepository", "ownerService"],
+    ["boardRepository", "handleIndex", "ownerService"],
     boardServiceFactory,
   )
   .service(

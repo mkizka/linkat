@@ -6,7 +6,6 @@ import { server } from "~/mocks/server";
 import { Owner } from "~/models/owner";
 import { OwnerFactory } from "~/server/factories/owner";
 import { db } from "~/server/infrastructure/drizzle";
-import { handleIndexFactory } from "~/server/infrastructure/handleIndex";
 import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
 import { ownerRepositoryFactory } from "~/server/infrastructure/ownerRepository";
 import { profileFetcherFactory } from "~/server/infrastructure/profileFetcher";
@@ -21,7 +20,6 @@ const profileFetcher = profileFetcherFactory({
 });
 
 const ownerService = ownerServiceFactory({
-  handleIndex: handleIndexFactory({ db }),
   ownerRepository,
   profileFetcher,
   identityResolver,
@@ -42,47 +40,6 @@ beforeEach(() => {
 });
 
 describe("ownerService", () => {
-  describe("findDid", () => {
-    test("DIDならそのまま返す", async () => {
-      // arrange
-      const did = asDid("did:plc:notowner0000000000000000");
-      // act
-      const actual = await ownerService.findDid(did);
-      // assert
-      expect(actual).toBe(did);
-    });
-    test("handleを指定するとDBの写しからDIDを引く", async () => {
-      // arrange
-      const owner = await OwnerFactory.create({ handle: "example.com" });
-      // act
-      const actual = await ownerService.findDid("example.com");
-      // assert
-      expect(actual).toBe(owner.did);
-    });
-    test("写しに無いhandleはハンドルを解決せずにnullを返す", async () => {
-      // arrange
-      // act
-      const actual = await ownerService.findDid("example.com");
-      // assert
-      expect(actual).toBeNull();
-      expect(identityResolver.resolve).not.toHaveBeenCalled();
-    });
-    test("入力が明らかにドメインでなければnullを返す", async () => {
-      // arrange
-      // act
-      const actual = await ownerService.findDid("invalid");
-      // assert
-      expect(actual).toBeNull();
-    });
-    test("入力がDIDとして不正であればnullを返す", async () => {
-      // arrange
-      // act
-      const actual = await ownerService.findDid("did:invalid");
-      // assert
-      expect(actual).toBeNull();
-    });
-  });
-
   describe("findOwner", () => {
     test("持ち主を取得できる", async () => {
       // arrange
