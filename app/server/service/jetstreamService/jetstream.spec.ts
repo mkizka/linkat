@@ -160,7 +160,6 @@ describe("jetstreamService", () => {
         displayName: "新しい名前",
         description: "新しい説明",
         avatarCid,
-        avatar: null,
       });
     });
     test("プロフィールのレコードが削除された場合、プロフィールを空にする", async () => {

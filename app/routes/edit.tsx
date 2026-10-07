@@ -86,7 +86,7 @@ export async function loader({ request }: Route.LoaderArgs) {
     throw redirect("/login");
   }
   const [owner, board] = await Promise.all([
-    di.ownerService.findOwner(ownerDid, { fetchProfile: true }),
+    di.ownerService.findOwner(ownerDid),
     di.boardService.findBoard(ownerDid),
   ]);
   const editor = owner.toView();

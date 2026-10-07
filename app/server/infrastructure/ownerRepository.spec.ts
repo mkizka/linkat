@@ -32,7 +32,6 @@ describe("ownerRepository", () => {
       // arrange
       const owner = new Owner({
         did: "did:plc:abcdefghijklmnopqrstuvwx",
-        avatar: null,
         avatarCid: "bafkreiavatar",
         description: "description",
         displayName: "display name",
@@ -48,7 +47,6 @@ describe("ownerRepository", () => {
       const actual = await ownerRepository.findByDid(owner.did);
       expect(actual).toEqual({
         did: owner.did,
-        avatar: owner.avatar,
         avatarCid: owner.avatarCid,
         description: owner.description,
         displayName: owner.displayName,
@@ -64,13 +62,11 @@ describe("ownerRepository", () => {
       const existing = await OwnerFactory.create({
         did: "did:plc:abcdefghijklmnopqrstuvwx",
         handle: "old.example.com",
-        avatar: "https://example.com/old-avatar.png",
         active: false,
         status: "deactivated",
       });
       const updated = new Owner({
         did: existing.did,
-        avatar: null,
         avatarCid: "bafkreinewavatar",
         description: "new description",
         displayName: "new display name",
@@ -86,7 +82,6 @@ describe("ownerRepository", () => {
       const actual = await ownerRepository.findByDid(asDid(existing.did));
       expect(actual).toEqual({
         did: existing.did,
-        avatar: updated.avatar,
         avatarCid: updated.avatarCid,
         description: updated.description,
         displayName: updated.displayName,

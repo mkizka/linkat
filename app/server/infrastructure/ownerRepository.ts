@@ -28,7 +28,6 @@ export const ownerRepositoryFactory = ({
   async save(owner) {
     const data = {
       did: owner.did,
-      avatar: owner.avatar,
       avatarCid: owner.avatarCid,
       description: owner.description,
       displayName: owner.displayName,
