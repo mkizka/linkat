@@ -9,6 +9,9 @@ const isServer = typeof window === "undefined";
 const logger = pino({
   enabled: !isTest,
   level: isServer ? env.LOG_LEVEL : "debug",
+  formatters: {
+    level: (label) => ({ level: label }),
+  },
 });
 
 export const createLogger = (name: string) => {
