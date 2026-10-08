@@ -3,11 +3,15 @@ import pinoHttp from "pino-http";
 
 import { env } from "~/utils/env";
 
-export interface ILogger {
+export interface IChildLogger {
   debug: (message: string, obj?: object) => void;
   info: (message: string, obj?: object) => void;
   warn: (message: string, obj?: object) => void;
   error: (message: string, obj?: object) => void;
+}
+
+export interface ILogger {
+  child: (name: string) => IChildLogger;
 }
 
 const rootLogger = pino({
@@ -17,10 +21,15 @@ const rootLogger = pino({
 });
 
 export const loggerFactory = (): ILogger => ({
-  debug: (message, obj) => rootLogger.debug(obj, message),
-  info: (message, obj) => rootLogger.info(obj, message),
-  warn: (message, obj) => rootLogger.warn(obj, message),
-  error: (message, obj) => rootLogger.error(obj, message),
+  child: (name) => {
+    const logger = rootLogger.child({ name });
+    return {
+      debug: (message, obj) => logger.debug(obj, message),
+      info: (message, obj) => logger.info(obj, message),
+      warn: (message, obj) => logger.warn(obj, message),
+      error: (message, obj) => logger.error(obj, message),
+    };
+  },
 });
 
 export const httpLogger = pinoHttp({

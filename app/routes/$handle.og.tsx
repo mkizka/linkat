@@ -149,7 +149,9 @@ export async function loader({ params }: Route.LoaderArgs) {
     try {
       image = await createImage(owner);
     } catch (error) {
-      di.logger.warn("OGP画像の生成に失敗しました", { error });
+      di.logger
+        .child("$handle.og")
+        .warn("OGP画像の生成に失敗しました", { error });
       throw new Response(null, { status: 404 });
     }
   }

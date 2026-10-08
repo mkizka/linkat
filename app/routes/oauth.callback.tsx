@@ -13,7 +13,9 @@ export async function loader({ request }: Route.LoaderArgs) {
       },
     });
   } catch (error) {
-    di.logger.error("OAuthコールバックに失敗しました", { error });
+    di.logger
+      .child("oauth.callback")
+      .error("OAuthコールバックに失敗しました", { error });
     return redirect("/login");
   }
 }

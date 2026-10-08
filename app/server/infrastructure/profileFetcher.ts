@@ -22,14 +22,17 @@ export const profileFetcherFactory = ({
 }: {
   profileRecordParser: IProfileRecordParser;
   logger: ILogger;
-}): IProfileFetcher => ({
-  async fetchProfile(pds, did) {
-    logger.info("プロフィールを取得します", { did });
-    const fetched = await tryCatch(fetchProfileRecord)(pds, did);
-    if (fetched instanceof Error) {
-      logger.warn("プロフィールの取得に失敗しました", { error: fetched });
-      return null;
-    }
-    return profileRecordParser.parse(fetched);
-  },
-});
+}): IProfileFetcher => {
+  const log = logger.child("profileFetcher");
+  return {
+    async fetchProfile(pds, did) {
+      log.info("プロフィールを取得します", { did });
+      const fetched = await tryCatch(fetchProfileRecord)(pds, did);
+      if (fetched instanceof Error) {
+        log.warn("プロフィールの取得に失敗しました", { error: fetched });
+        return null;
+      }
+      return profileRecordParser.parse(fetched);
+    },
+  };
+};

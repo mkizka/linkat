@@ -18,6 +18,8 @@ import { di } from "~/server/di";
 
 import { getInstance } from "./i18n/i18n";
 
+const logger = di.logger.child("entry.server");
+
 export const streamTimeout = 5_000;
 
 async function handleRequest(
@@ -70,7 +72,7 @@ async function handleRequest(
           // errors encountered during initial shell rendering since they'll
           // reject and get logged in handleDocumentRequest.
           if (shellRendered) {
-            di.logger.error("renderToPipeableStreamでエラーが発生しました", {
+            logger.error("renderToPipeableStreamでエラーが発生しました", {
               error,
             });
           }
@@ -99,7 +101,7 @@ export function handleError(
     return;
   }
   Sentry.captureException(error);
-  di.logger.error("サーバーエラーが発生しました", { error });
+  logger.error("サーバーエラーが発生しました", { error });
 }
 
 export const instrumentations = [Sentry.createSentryServerInstrumentation()];

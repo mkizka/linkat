@@ -24,7 +24,7 @@ export async function action({ request, context }: Route.ActionArgs) {
     const url = await di.authService.authorize(handle);
     return redirect(url.toString());
   } catch (error) {
-    di.logger.error("OAuthログインに失敗しました", { error });
+    di.logger.child("login").error("OAuthログインに失敗しました", { error });
     if (error instanceof OAuthResolverError) {
       setToast(context, {
         message: i18next.t("login.oauth-resolve-error-message"),

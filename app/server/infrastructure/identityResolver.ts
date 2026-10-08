@@ -20,6 +20,7 @@ export const identityResolverFactory = ({
 }: {
   logger: ILogger;
 }): IIdentityResolver => {
+  const log = logger.child("identityResolver");
   const resolver = createIdentityResolver({
     plcDirectoryUrl: env.ATPROTO_PLC_URL,
     handleResolver:
@@ -36,7 +37,7 @@ export const identityResolverFactory = ({
           pds: extractPdsUrl(didDoc).origin,
         };
       } catch (error) {
-        logger.warn("DIDまたはhandleの解決に失敗しました", { error });
+        log.warn("DIDまたはhandleの解決に失敗しました", { error });
         return null;
       }
     },

@@ -18,6 +18,8 @@ const viteDevServer =
         }),
       );
 
+const logger = di.logger.child("server");
+
 const app = express();
 // RailwayのエッジでTLS終端されるため、X-Forwarded-Protoを信頼しないとreq.protocolが常にhttpになり、
 // react-routerのCSRFチェック(Origin: httpsとrequest.url: httpの不一致)でログインが400になる
@@ -61,10 +63,10 @@ const build = viteDevServer
 app.use(createRequestHandler({ build }));
 
 app.listen(env.PORT, "0.0.0.0", () => {
-  di.logger.info(`App listening on ${env.PUBLIC_URL}`);
+  logger.info(`App listening on ${env.PUBLIC_URL}`);
   if (!env.DISABLE_JETSTREAM) {
     di.jetstreamService.startJetstream().catch((error: unknown) => {
-      di.logger.error("Jetstreamの起動に失敗しました", { error });
+      logger.error("Jetstreamの起動に失敗しました", { error });
     });
   }
 });

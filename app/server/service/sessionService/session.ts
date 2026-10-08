@@ -22,6 +22,7 @@ export const sessionServiceFactory = ({
   oauthClient: IOAuthClient;
   logger: ILogger;
 }): ISessionService => {
+  const log = logger.child("sessionService");
   const getCookieDid = (request: Request) =>
     cookieSessionStorage.getDid(request.headers.get("Cookie"));
 
@@ -47,7 +48,7 @@ export const sessionServiceFactory = ({
       const ownerDid = await getCookieDid(request);
       if (ownerDid) {
         await oauthClient.revoke(ownerDid).catch((error: unknown) => {
-          logger.error("OAuthセッションの失効に失敗しました", { error });
+          log.error("OAuthセッションの失効に失敗しました", { error });
         });
       }
       return cookieSessionStorage.destroy(request.headers.get("Cookie"));
