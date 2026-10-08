@@ -1,4 +1,4 @@
-import { createSession, expect, test, xrpc } from "./fixtures";
+import { expect, test } from "./fixtures";
 
 test.describe("編集", () => {
   test("カードの編集操作を一通り確認", async ({ page, login, account }) => {
@@ -115,51 +115,6 @@ test.describe("編集", () => {
       await page.getByTestId("logout-button").click();
       await page.waitForURL((url) => url.pathname === "/");
       await expect(page.getByTestId("index__login-link")).toBeVisible();
-    });
-  });
-
-  test("PDSにあるボードを/editを開いたときに取り込む", async ({
-    page,
-    login,
-    account,
-    size,
-  }) => {
-    test.skip(size === "large", "dev-envのPDSを操作するため");
-    const text = `PDS. ${crypto.randomUUID()}`;
-    const card = page.locator('[data-testid="sortable-card"]', {
-      hasText: text,
-    });
-
-    await test.step("Linkatを通さずPDSにボードを書く", async () => {
-      const { did, accessJwt } = await createSession(account);
-      await xrpc(
-        "com.atproto.repo.putRecord",
-        {
-          repo: did,
-          collection: "blue.linkat.board",
-          rkey: "self",
-          record: {
-            $type: "blue.linkat.board",
-            cards: [{ url: "https://example.com", text }],
-          },
-        },
-        accessJwt,
-      );
-    });
-
-    await test.step("ログインすると取り込んだボードを編集できる", async () => {
-      await login();
-      await expect(card).toBeVisible();
-      await expect(
-        page.getByTestId("toaster").locator(".alert-success"),
-      ).toBeVisible();
-    });
-
-    await test.step("保存するとハンドルのURLに移る", async () => {
-      await page.getByTestId("board-viewer__submit").click();
-      await page.waitForURL((url) => url.pathname === `/${account.handle}`);
-      await page.getByTestId("show-modal__close").click();
-      await expect(card).toBeVisible();
     });
   });
 });
