@@ -31,11 +31,11 @@ export class BoardDbDeleteError extends Error {
 }
 
 export interface IBoardEventService {
-  saveBoard: (board: Board) => Promise<void>;
-  publishBoard: (board: Board) => Promise<void>;
-  syncEditor: (editorDid: Did) => Promise<{ boardImported: boolean }>;
-  deleteBoard: (ownerDid: Did) => Promise<void>;
-  unpublishBoard: (ownerDid: Did) => Promise<void>;
+  handleBoardCommit: (board: Board) => Promise<void>;
+  handleBoardDeleteCommit: (ownerDid: Did) => Promise<void>;
+  handleEditorSave: (board: Board) => Promise<void>;
+  handleEditorSync: (editorDid: Did) => Promise<{ boardImported: boolean }>;
+  handleEditorDelete: (ownerDid: Did) => Promise<void>;
 }
 
 export const boardEventServiceFactory = ({
@@ -54,11 +54,11 @@ export const boardEventServiceFactory = ({
     await boardRepository.delete(ownerDid);
   };
   return {
-    async saveBoard(board) {
+    async handleBoardCommit(board) {
       await ownerService.syncOwner(board.ownerDid);
       await boardRepository.save(board);
     },
-    async publishBoard(board) {
+    async handleEditorSave(board) {
       try {
         await boardPdsRepository.save(board);
       } catch (error) {
@@ -70,7 +70,7 @@ export const boardEventServiceFactory = ({
         throw new BoardDbSaveError(error);
       }
     },
-    async syncEditor(editorDid) {
+    async handleEditorSync(editorDid) {
       await ownerService.syncOwner(editorDid);
       const board = await boardPdsRepository.find(editorDid);
       if (board) {
@@ -78,8 +78,8 @@ export const boardEventServiceFactory = ({
       }
       return { boardImported: !!board };
     },
-    deleteBoard,
-    async unpublishBoard(ownerDid) {
+    handleBoardDeleteCommit: deleteBoard,
+    async handleEditorDelete(ownerDid) {
       try {
         await boardPdsRepository.delete(ownerDid);
       } catch (error) {

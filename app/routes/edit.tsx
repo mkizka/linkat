@@ -64,7 +64,7 @@ export async function action({ request, context }: Route.ActionArgs) {
     return null;
   }
   try {
-    await di.boardEventService.publishBoard(parsedBoard);
+    await di.boardEventService.handleEditorSave(parsedBoard);
   } catch (error) {
     if (error instanceof BoardPdsSaveError) {
       logger.error(error, error.message);

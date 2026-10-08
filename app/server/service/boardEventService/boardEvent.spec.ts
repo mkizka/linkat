@@ -49,7 +49,7 @@ const dummyCards = [
 ];
 
 describe("boardEventService", () => {
-  describe("publishBoard", () => {
+  describe("handleEditorSave", () => {
     const dummyBoardRecord = {
       uri: "at://did:plc:fuphupq2ha3kk45osfummw42/blue.linkat.board/self",
       cid: "bafyreiflxe3gz7tg4jje5w4wypqjvz5d4zntrols22gwp7btg2nh2t7wxm",
@@ -72,7 +72,7 @@ describe("boardEventService", () => {
         }),
       );
       // act
-      await boardEventService.publishBoard(board);
+      await boardEventService.handleEditorSave(board);
       // assert
       expect(ownerService.syncOwner).not.toHaveBeenCalled();
       expect(putRecordBody).toMatchObject({
@@ -92,7 +92,7 @@ describe("boardEventService", () => {
         ),
       );
       // act
-      const actual = boardEventService.publishBoard(
+      const actual = boardEventService.handleEditorSave(
         new Board(owner.did, dummyCards),
       );
       // assert
@@ -112,7 +112,7 @@ describe("boardEventService", () => {
       );
       vi.spyOn(boardRepository, "save").mockRejectedValueOnce(new Error());
       // act
-      const actual = boardEventService.publishBoard(
+      const actual = boardEventService.handleEditorSave(
         new Board(owner.did, dummyCards),
       );
       // assert
@@ -120,7 +120,7 @@ describe("boardEventService", () => {
     });
   });
 
-  describe("syncEditor", () => {
+  describe("handleEditorSync", () => {
     const getRecordUrl =
       "https://pds.example.com/xrpc/com.atproto.repo.getRecord";
 
@@ -136,7 +136,7 @@ describe("boardEventService", () => {
         ),
       );
       // act
-      const actual = await boardEventService.syncEditor(did);
+      const actual = await boardEventService.handleEditorSync(did);
       // assert
       expect(actual).toEqual({ boardImported: true });
       expect(ownerService.syncOwner).toHaveBeenCalledWith(did);
@@ -156,7 +156,7 @@ describe("boardEventService", () => {
         ),
       );
       // act
-      const actual = await boardEventService.syncEditor(did);
+      const actual = await boardEventService.handleEditorSync(did);
       // assert
       expect(actual).toEqual({ boardImported: false });
       expect(ownerService.syncOwner).toHaveBeenCalledWith(did);
@@ -164,13 +164,13 @@ describe("boardEventService", () => {
     });
   });
 
-  describe("deleteBoard", () => {
+  describe("handleBoardDeleteCommit", () => {
     test("ボードと持ち主の写しを削除する", async () => {
       // arrange
       const board = await BoardFactory.create();
       const other = await BoardFactory.create();
       // act
-      await boardEventService.deleteBoard(asDid(board.ownerDid));
+      await boardEventService.handleBoardDeleteCommit(asDid(board.ownerDid));
       // assert
       expect(await boardRepository.find(asDid(board.ownerDid))).toBeNull();
       expect(await ownerRepository.findByDid(asDid(board.ownerDid))).toBeNull();
@@ -184,13 +184,13 @@ describe("boardEventService", () => {
       const did = "did:plc:nocopy";
       await BoardFactory.create({ ownerDid: did });
       // act
-      await boardEventService.deleteBoard(asDid(did));
+      await boardEventService.handleBoardDeleteCommit(asDid(did));
       // assert
       expect(await boardRepository.find(asDid(did))).toBeNull();
     });
   });
 
-  describe("unpublishBoard", () => {
+  describe("handleEditorDelete", () => {
     const deleteRecordUrl =
       "https://pds.example.com/xrpc/com.atproto.repo.deleteRecord";
 
@@ -205,7 +205,7 @@ describe("boardEventService", () => {
         }),
       );
       // act
-      await boardEventService.unpublishBoard(asDid(board.ownerDid));
+      await boardEventService.handleEditorDelete(asDid(board.ownerDid));
       // assert
       expect(deleteRecordBody).toMatchObject({
         repo: board.ownerDid,
@@ -224,7 +224,9 @@ describe("boardEventService", () => {
         ),
       );
       // act
-      const actual = boardEventService.unpublishBoard(asDid(board.ownerDid));
+      const actual = boardEventService.handleEditorDelete(
+        asDid(board.ownerDid),
+      );
       // assert
       await expect(actual).rejects.toThrow(BoardPdsDeleteError);
       expect(await boardRepository.find(asDid(board.ownerDid))).not.toBeNull();
@@ -238,7 +240,9 @@ describe("boardEventService", () => {
       server.use(http.post(deleteRecordUrl, () => HttpResponse.json({})));
       vi.spyOn(boardRepository, "delete").mockRejectedValueOnce(new Error());
       // act
-      const actual = boardEventService.unpublishBoard(asDid(board.ownerDid));
+      const actual = boardEventService.handleEditorDelete(
+        asDid(board.ownerDid),
+      );
       // assert
       await expect(actual).rejects.toThrow(BoardDbDeleteError);
     });

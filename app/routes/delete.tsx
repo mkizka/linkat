@@ -28,7 +28,7 @@ export async function action({ request, context }: Route.ActionArgs) {
     });
   }
   try {
-    await di.boardEventService.unpublishBoard(editorDid);
+    await di.boardEventService.handleEditorDelete(editorDid);
   } catch (error) {
     if (error instanceof BoardPdsDeleteError) {
       logger.error(error, error.message);
