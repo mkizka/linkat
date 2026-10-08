@@ -73,7 +73,7 @@ export const jetstreamServiceFactory = ({
       );
       return;
     }
-    await boardEventService.saveBoard(board);
+    await boardEventService.handleBoardCommit(board);
     logger.debug({ board }, "ボードを更新しました");
   };
 
@@ -153,7 +153,7 @@ export const jetstreamServiceFactory = ({
   jetstream.onUpdate("blue.linkat.board", handleCreateOrUpdate);
 
   jetstream.onDelete("blue.linkat.board", async (event) => {
-    await boardEventService.deleteBoard(event.did);
+    await boardEventService.handleBoardDeleteCommit(event.did);
     logger.info({ ownerDid: event.did }, "ボードを削除しました");
   });
 

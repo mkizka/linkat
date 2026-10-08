@@ -34,7 +34,12 @@
     "invalid-form-error-message": "フォームが無効です",
     "save-board-error-message": "ボードの保存に失敗しました",
     "save-delayed-warning-message": "変更の反映に時間がかかっています。少し待ってリロードしてみてください",
-    "confirm-leave-message": "保存していない変更は失われます。よろしいですか？"
+    "confirm-leave-message": "保存していない変更は失われます。よろしいですか？",
+    "sync-loading-message": "PDSからデータを読み込んでいます",
+    "sync-error-message": "PDSからデータを読み込めませんでした",
+    "sync-retry-button": "再試行",
+    "sync-error-description": "少し待ってから再試行してください",
+    "sync-success-message": "PDSに保存されていたボードを読み込みました"
   },
   "board": {
     "meta-title": "{{displayName}}(@{{handle}})さんのボード",

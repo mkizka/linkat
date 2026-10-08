@@ -1,10 +1,17 @@
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { redirect, useBeforeUnload, useBlocker } from "react-router";
+import {
+  redirect,
+  useBeforeUnload,
+  useBlocker,
+  useFetcher,
+} from "react-router";
 import { setToast } from "remix-toast/middleware";
 
 import { Main } from "~/components/layout";
 import { BoardViewer } from "~/features/board/board-viewer";
+import { SyncError } from "~/features/edit/sync-error";
+import { SyncLoading } from "~/features/edit/sync-loading";
 import { useUmami } from "~/hooks/useUmami";
 import { getInstance } from "~/i18n/i18n";
 import { Board } from "~/models/board";
@@ -18,6 +25,7 @@ import { createLogger } from "~/utils/logger";
 import { tryCatch } from "~/utils/tryCatch";
 
 import type { Route } from "./+types/edit";
+import type { action as syncAction } from "./sync";
 
 const logger = createLogger("edit");
 
@@ -55,9 +63,8 @@ export async function action({ request, context }: Route.ActionArgs) {
     });
     return null;
   }
-  let owner;
   try {
-    owner = await di.boardEventService.publishBoard(parsedBoard);
+    await di.boardEventService.handleEditorSave(parsedBoard);
   } catch (error) {
     if (error instanceof BoardPdsSaveError) {
       logger.error(error, error.message);
@@ -73,11 +80,13 @@ export async function action({ request, context }: Route.ActionArgs) {
         message: i18next.t("edit.save-delayed-warning-message"),
         type: "warning",
       });
-      return redirect(`/${editorDid}`);
+      const editor = (await di.ownerService.findOwner(editorDid)).toView();
+      return redirect(`/${editor.handleOrDid}`);
     }
     throw error;
   }
-  return redirect(`/${owner.toView().handleOrDid}?success`);
+  const editor = (await di.ownerService.findOwner(editorDid)).toView();
+  return redirect(`/${editor.handleOrDid}?success`);
 }
 
 export async function loader({ request }: Route.LoaderArgs) {
@@ -97,8 +106,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   };
 }
 
-export default function Index({ loaderData }: Route.ComponentProps) {
-  const { editor, board, url } = loaderData;
+function Editor({ editor, board, url }: Route.ComponentProps["loaderData"]) {
   const { t } = useTranslation();
   const umami = useUmami();
 
@@ -134,9 +142,34 @@ export default function Index({ loaderData }: Route.ComponentProps) {
     }
   }, [t, blocker, umami]);
 
+  return <BoardViewer owner={editor} board={board} url={url} editable />;
+}
+
+export default function Index({ loaderData }: Route.ComponentProps) {
+  const sync = useFetcher<typeof syncAction>();
+  const submitSync = () =>
+    sync.submit(null, { method: "post", action: "/sync" });
+
+  useEffect(() => {
+    if (!loaderData.board && sync.state === "idle" && !sync.data) {
+      void submitSync();
+    }
+  });
+
+  if (loaderData.board || (sync.state === "idle" && sync.data?.ok)) {
+    return (
+      <Main>
+        <Editor {...loaderData} />
+      </Main>
+    );
+  }
   return (
-    <Main>
-      <BoardViewer owner={editor} board={board} url={url} editable />
+    <Main className="utils--center">
+      {sync.state !== "idle" || !sync.data ? (
+        <SyncLoading />
+      ) : (
+        <SyncError onRetry={() => void submitSync()} />
+      )}
     </Main>
   );
 }

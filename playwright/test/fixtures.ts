@@ -1,4 +1,5 @@
 import { type Page, test as base } from "@playwright/test";
+import { z } from "zod";
 
 import { PORTS } from "../server/constants";
 
@@ -36,6 +37,31 @@ const createAccount = async (): Promise<Account> => {
     throw new Error(`アカウントの作成に失敗しました: ${await response.text()}`);
   }
   return { handle, password };
+};
+
+export const xrpc = async (nsid: string, body: object, accessJwt?: string) => {
+  const response = await fetch(`http://localhost:${PORTS.pds}/xrpc/${nsid}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...(accessJwt && { Authorization: `Bearer ${accessJwt}` }),
+    },
+    body: JSON.stringify(body),
+  });
+  if (!response.ok) {
+    throw new Error(`${nsid}に失敗しました: ${await response.text()}`);
+  }
+  return response;
+};
+
+export const createSession = async ({ handle, password }: Account) => {
+  const response = await xrpc("com.atproto.server.createSession", {
+    identifier: handle,
+    password,
+  });
+  return z
+    .object({ did: z.string(), accessJwt: z.string() })
+    .parse(await response.json());
 };
 
 const getLargeTestAccount = (): Account => {

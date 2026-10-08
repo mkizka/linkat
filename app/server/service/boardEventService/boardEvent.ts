@@ -1,7 +1,6 @@
 import type { Did } from "@atproto/did";
 
 import type { Board } from "~/models/board";
-import type { Owner } from "~/models/owner";
 import type { IBoardPdsRepository } from "~/server/infrastructure/boardPdsRepository";
 import type { IBoardRepository } from "~/server/infrastructure/boardRepository";
 import type { IOwnerRepository } from "~/server/infrastructure/ownerRepository";
@@ -32,10 +31,11 @@ export class BoardDbDeleteError extends Error {
 }
 
 export interface IBoardEventService {
-  saveBoard: (board: Board) => Promise<Owner>;
-  publishBoard: (board: Board) => Promise<Owner>;
-  deleteBoard: (ownerDid: Did) => Promise<void>;
-  unpublishBoard: (ownerDid: Did) => Promise<void>;
+  handleBoardCommit: (board: Board) => Promise<void>;
+  handleBoardDeleteCommit: (ownerDid: Did) => Promise<void>;
+  handleEditorSave: (board: Board) => Promise<void>;
+  handleEditorSync: (editorDid: Did) => Promise<{ boardImported: boolean }>;
+  handleEditorDelete: (ownerDid: Did) => Promise<void>;
 }
 
 export const boardEventServiceFactory = ({
@@ -49,31 +49,37 @@ export const boardEventServiceFactory = ({
   ownerRepository: IOwnerRepository;
   ownerService: IOwnerService;
 }): IBoardEventService => {
-  const saveBoard = async (board: Board) => {
-    const owner = await ownerService.syncOwner(board.ownerDid);
-    await boardRepository.save(board);
-    return owner;
-  };
   const deleteBoard = async (ownerDid: Did) => {
     await ownerRepository.delete(ownerDid);
     await boardRepository.delete(ownerDid);
   };
   return {
-    saveBoard,
-    async publishBoard(board) {
+    async handleBoardCommit(board) {
+      await ownerService.syncOwner(board.ownerDid);
+      await boardRepository.save(board);
+    },
+    async handleEditorSave(board) {
       try {
         await boardPdsRepository.save(board);
       } catch (error) {
         throw new BoardPdsSaveError(error);
       }
       try {
-        return await saveBoard(board);
+        await boardRepository.save(board);
       } catch (error) {
         throw new BoardDbSaveError(error);
       }
     },
-    deleteBoard,
-    async unpublishBoard(ownerDid) {
+    async handleEditorSync(editorDid) {
+      await ownerService.syncOwner(editorDid);
+      const board = await boardPdsRepository.find(editorDid);
+      if (board) {
+        await boardRepository.save(board);
+      }
+      return { boardImported: !!board };
+    },
+    handleBoardDeleteCommit: deleteBoard,
+    async handleEditorDelete(ownerDid) {
       try {
         await boardPdsRepository.delete(ownerDid);
       } catch (error) {

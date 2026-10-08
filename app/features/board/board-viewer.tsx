@@ -5,9 +5,9 @@ import { Form, useNavigation } from "react-router";
 
 import { Button } from "~/components/button";
 import type { ValidCard } from "~/models/card";
+import type { OwnerView } from "~/models/owner";
 import { resolveHandleIfNeeded } from "~/utils/url";
 
-import type { ProfileCardProps } from "./card/profile-card";
 import { ProfileCard } from "./card/profile-card";
 import { SortableCardList } from "./card/sortable-card-list";
 import { CardFormModal, cardModal } from "./form/card-form-modal";
@@ -15,7 +15,7 @@ import type { CardFormPayload } from "./form/card-form-provider";
 import { CardFormProvider } from "./form/card-form-provider";
 
 type Props = {
-  owner: ProfileCardProps["owner"];
+  owner: OwnerView;
   // loaderDataはシリアライズされるためプレーンなデータ構造で受け取る
   board: { cards: ValidCard[] } | null;
   url: string;

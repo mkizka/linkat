@@ -30,7 +30,7 @@ function AvatarPlaceholder() {
   );
 }
 
-export type ProfileCardProps = {
+type ProfileCardProps = {
   owner: OwnerView;
   url: string;
   showEditButton?: boolean;
