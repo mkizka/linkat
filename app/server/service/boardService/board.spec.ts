@@ -91,6 +91,17 @@ describe("boardService", () => {
       // assert
       expect(actual).toEqual({ type: "hidden", status: "takendown" });
     });
+    test("持ち主が非表示ならボードの写しが無くてもhiddenとstatusを返す", async () => {
+      // arrange
+      const owner = await OwnerFactory.create({
+        active: false,
+        status: "deactivated",
+      });
+      // act
+      const actual = await boardService.findBoardView(owner.did);
+      // assert
+      expect(actual).toEqual({ type: "hidden", status: "deactivated" });
+    });
     test("ボードの写しが無ければnot-foundを返す", async () => {
       // arrange
       const owner = await OwnerFactory.create();
