@@ -1,4 +1,4 @@
-import { type ReactNode, useEffect } from "react";
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import {
   redirect,
@@ -156,13 +156,20 @@ export default function Index({ loaderData }: Route.ComponentProps) {
     }
   });
 
-  let content: ReactNode;
   if (loaderData.board || (sync.state === "idle" && sync.data?.ok)) {
-    content = <Editor {...loaderData} />;
-  } else if (sync.state !== "idle" || !sync.data) {
-    content = <SyncLoading />;
-  } else {
-    content = <SyncError onRetry={() => void submitSync()} />;
+    return (
+      <Main>
+        <Editor {...loaderData} />
+      </Main>
+    );
   }
-  return <Main>{content}</Main>;
+  return (
+    <Main className="utils--center">
+      {sync.state !== "idle" || !sync.data ? (
+        <SyncLoading />
+      ) : (
+        <SyncError onRetry={() => void submitSync()} />
+      )}
+    </Main>
+  );
 }

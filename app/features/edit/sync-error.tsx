@@ -9,10 +9,7 @@ import { Button } from "~/components/button";
 export function SyncError({ onRetry }: { onRetry: () => void }) {
   const { t } = useTranslation();
   return (
-    <div
-      className="flex flex-col items-center gap-4 py-16 text-center"
-      role="alert"
-    >
+    <div className="flex flex-col items-center gap-4 text-center" role="alert">
       <ExclamationCircleIcon className="size-12 text-error" />
       <div>
         <p>{t("edit.sync-error-message")}</p>
