@@ -1,21 +1,9 @@
-import {
-  ArrowPathIcon,
-  ExclamationCircleIcon,
-} from "@heroicons/react/24/outline";
 import { useEffect } from "react";
-import { useTranslation } from "react-i18next";
-import {
-  redirect,
-  useBeforeUnload,
-  useBlocker,
-  useFetcher,
-} from "react-router";
+import { redirect, useFetcher } from "react-router";
 import { setToast } from "remix-toast/middleware";
 
-import { Button } from "~/components/button";
-import { Main } from "~/components/layout";
-import { BoardViewer } from "~/features/board/board-viewer";
-import { useUmami } from "~/hooks/useUmami";
+import { Editor } from "~/features/edit/editor";
+import { SyncError, SyncLoading } from "~/features/edit/sync-status";
 import { getInstance } from "~/i18n/i18n";
 import { Board } from "~/models/board";
 import { di } from "~/server/di";
@@ -109,51 +97,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   };
 }
 
-function Editor({ editor, board, url }: Route.ComponentProps["loaderData"]) {
-  const { t } = useTranslation();
-  const umami = useUmami();
-
-  // 更新ボタンを押したりしたときに確認ダイアログを出す
-  useBeforeUnload((event) => {
-    umami.track("unload-edit");
-    event.preventDefault();
-  });
-
-  // 戻るボタンを押したりしたときに確認ダイアログを出す
-  const blocker = useBlocker(
-    ({ currentLocation, nextLocation, historyAction }) =>
-      // 保存ボタンを押したときの移動以外のとき
-      (currentLocation.pathname !== nextLocation.pathname &&
-        nextLocation.pathname !== `/${editor.handleOrDid}`) ||
-      // /alice.testから/editに移動して戻るとき
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
-      historyAction === "POP",
-  );
-
-  useEffect(() => {
-    if (blocker.state !== "blocked") return;
-    if (confirm(t("edit.confirm-leave-message"))) {
-      umami.track("leave-edit", {
-        action: "confirm",
-      });
-      blocker.proceed();
-    } else {
-      umami.track("leave-edit", {
-        action: "cancel",
-      });
-      blocker.reset();
-    }
-  }, [t, blocker, umami]);
-
-  return (
-    <Main>
-      <BoardViewer owner={editor} board={board} url={url} editable />
-    </Main>
-  );
-}
-
 export default function Index({ loaderData }: Route.ComponentProps) {
-  const { t } = useTranslation();
   const sync = useFetcher<typeof syncAction>();
   const submitSync = () =>
     sync.submit(null, { method: "post", action: "/sync" });
@@ -167,39 +111,8 @@ export default function Index({ loaderData }: Route.ComponentProps) {
   if (loaderData.board || (sync.state === "idle" && sync.data?.ok)) {
     return <Editor {...loaderData} />;
   }
-
   if (sync.state !== "idle" || !sync.data) {
-    return (
-      <Main>
-        <div
-          className="flex flex-col items-center gap-4 py-16 text-center"
-          role="status"
-        >
-          <div className="loading loading-spinner w-12" />
-          <p>{t("edit.sync-loading-message")}</p>
-        </div>
-      </Main>
-    );
+    return <SyncLoading />;
   }
-
-  return (
-    <Main>
-      <div
-        className="flex flex-col items-center gap-4 py-16 text-center"
-        role="alert"
-      >
-        <ExclamationCircleIcon className="size-12 text-error" />
-        <div>
-          <p>{t("edit.sync-error-message")}</p>
-          <p className="text-sm opacity-70">
-            {t("edit.sync-error-description")}
-          </p>
-        </div>
-        <Button className="btn-primary" onClick={() => void submitSync()}>
-          <ArrowPathIcon className="size-5" />
-          {t("edit.sync-retry-button")}
-        </Button>
-      </div>
-    </Main>
-  );
+  return <SyncError onRetry={() => void submitSync()} />;
 }
