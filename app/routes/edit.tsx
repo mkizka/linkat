@@ -10,7 +10,8 @@ import { setToast } from "remix-toast/middleware";
 
 import { Main } from "~/components/layout";
 import { BoardViewer } from "~/features/board/board-viewer";
-import { SyncError, SyncLoading } from "~/features/edit/sync-status";
+import { SyncError } from "~/features/edit/sync-error";
+import { SyncLoading } from "~/features/edit/sync-loading";
 import { useUmami } from "~/hooks/useUmami";
 import { getInstance } from "~/i18n/i18n";
 import { Board } from "~/models/board";
