@@ -1,13 +1,16 @@
-import { type ComponentProps, useEffect } from "react";
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useBeforeUnload, useBlocker } from "react-router";
 
 import { Main } from "~/components/layout";
-import { BoardViewer } from "~/features/board/board-viewer";
+import { type BoardData, BoardViewer } from "~/features/board/board-viewer";
 import { useUmami } from "~/hooks/useUmami";
+import type { OwnerView } from "~/models/owner";
 
-type Props = Pick<ComponentProps<typeof BoardViewer>, "board" | "url"> & {
-  editor: ComponentProps<typeof BoardViewer>["owner"];
+type Props = {
+  editor: OwnerView;
+  board: BoardData | null;
+  url: string;
 };
 
 export function Editor({ editor, board, url }: Props) {
