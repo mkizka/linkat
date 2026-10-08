@@ -21,15 +21,13 @@ import {
   BoardPdsSaveError,
 } from "~/server/service/boardEventService/boardEvent";
 import { env } from "~/utils/env";
-import { createLogger } from "~/utils/logger";
 import { tryCatch } from "~/utils/tryCatch";
 
 import type { Route } from "./+types/edit";
 import type { action as syncAction } from "./sync";
 
-const logger = createLogger("edit");
-
 export async function action({ request, context }: Route.ActionArgs) {
+  const logger = di.logger.child("edit");
   const i18next = getInstance(context);
   const editorDid = await di.sessionService.getSessionDid(request);
   if (!editorDid) {
@@ -56,7 +54,7 @@ export async function action({ request, context }: Route.ActionArgs) {
     Board.fromRecord(editorDid, JSON.parse(rawBoard)),
   )();
   if (parsedBoard instanceof Error) {
-    logger.warn({ error: parsedBoard }, "boardの形式が不正でした");
+    logger.warn("boardの形式が不正でした", { error: parsedBoard });
     setToast(context, {
       message: i18next.t("edit.invalid-form-error-message"),
       type: "error",
@@ -67,7 +65,7 @@ export async function action({ request, context }: Route.ActionArgs) {
     await di.boardEventService.handleEditorSave(parsedBoard);
   } catch (error) {
     if (error instanceof BoardPdsSaveError) {
-      logger.error(error, error.message);
+      logger.error(error.message, { error });
       setToast(context, {
         message: i18next.t("edit.save-board-error-message"),
         type: "error",
@@ -75,7 +73,7 @@ export async function action({ request, context }: Route.ActionArgs) {
       return null;
     }
     if (error instanceof BoardDbSaveError) {
-      logger.error(error, error.message);
+      logger.error(error.message, { error });
       setToast(context, {
         message: i18next.t("edit.save-delayed-warning-message"),
         type: "warning",

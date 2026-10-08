@@ -7,6 +7,7 @@ import { Owner } from "~/models/owner";
 import { OwnerFactory } from "~/server/factories/owner";
 import { db } from "~/server/infrastructure/drizzle";
 import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
+import { loggerFactory } from "~/server/infrastructure/logger";
 import { ownerRepositoryFactory } from "~/server/infrastructure/ownerRepository";
 import { profileFetcherFactory } from "~/server/infrastructure/profileFetcher";
 import { profileRecordParserFactory } from "~/server/infrastructure/profileRecordParser";
@@ -14,9 +15,11 @@ import { profileRecordParserFactory } from "~/server/infrastructure/profileRecor
 import { ownerServiceFactory } from "./owner";
 
 const identityResolver = mock<IIdentityResolver>();
+const logger = loggerFactory();
 const ownerRepository = ownerRepositoryFactory({ db });
 const profileFetcher = profileFetcherFactory({
   profileRecordParser: profileRecordParserFactory(),
+  logger,
 });
 
 const ownerService = ownerServiceFactory({

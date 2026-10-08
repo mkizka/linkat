@@ -11,14 +11,12 @@ import WebSocket from "ws";
 
 import { Board } from "~/models/board";
 import type { ICursorRepository } from "~/server/infrastructure/cursorRepository";
+import type { ILogger } from "~/server/infrastructure/logger";
 import type { IProfileRecordParser } from "~/server/infrastructure/profileRecordParser";
 import type { IBoardEventService } from "~/server/service/boardEventService/boardEvent";
 import type { IOwnerService } from "~/server/service/ownerService/owner";
 import { env } from "~/utils/env";
-import { createLogger } from "~/utils/logger";
 import { tryCatch } from "~/utils/tryCatch";
-
-const logger = createLogger("jetstream");
 
 const CURSOR_SAVE_INTERVAL_MS = 30_000;
 
@@ -46,12 +44,15 @@ export const jetstreamServiceFactory = ({
   boardEventService,
   ownerService,
   profileRecordParser,
+  logger,
 }: {
   cursorRepository: ICursorRepository;
   boardEventService: IBoardEventService;
   ownerService: IOwnerService;
   profileRecordParser: IProfileRecordParser;
+  logger: ILogger;
 }): IJetstreamService => {
+  const log = logger.child("jetstream");
   const jetstream = new Jetstream({
     ws: WebSocket,
     endpoint: env.JETSTREAM_URL,
@@ -67,14 +68,13 @@ export const jetstreamServiceFactory = ({
       Board.fromRecord(event.did, event.commit.record),
     )();
     if (board instanceof Error) {
-      logger.warn(
-        { record: event.commit.record },
-        "ボードのパースに失敗しました",
-      );
+      log.warn("ボードのパースに失敗しました", {
+        record: event.commit.record,
+      });
       return;
     }
     await boardEventService.handleBoardCommit(board);
-    logger.debug({ board }, "ボードを更新しました");
+    log.debug("ボードを更新しました", { board });
   };
 
   const parseProfile = async (json: unknown) => {
@@ -96,55 +96,55 @@ export const jetstreamServiceFactory = ({
         ? null
         : await parseProfile(event.commit.record);
     if (event.commit.operation !== "delete" && !profile) {
-      logger.warn({ event }, "プロフィールのパースに失敗しました");
+      log.warn("プロフィールのパースに失敗しました", { event });
       return;
     }
     const saved = await ownerService.updateProfile(event.did, profile);
     if (saved) {
-      logger.debug({ owner: saved }, "プロフィールを更新しました");
+      log.debug("プロフィールを更新しました", { owner: saved });
     }
   };
 
   const handleIdentity = async (event: IdentityEvent) => {
     const saved = await ownerService.refreshHandle(event.did);
     if (saved) {
-      logger.info(
-        { did: saved.did, handle: saved.handle },
-        "ハンドルを更新しました",
-      );
+      log.info("ハンドルを更新しました", {
+        did: saved.did,
+        handle: saved.handle,
+      });
     }
   };
 
   const handleAccount = async ({ account }: AccountEvent) => {
     const state = { active: account.active, status: account.status ?? null };
     await ownerService.updateAccountState(account.did, state);
-    logger.debug(
-      { did: account.did, ...state },
-      "アカウントの状態を受け取りました",
-    );
+    log.debug("アカウントの状態を受け取りました", {
+      did: account.did,
+      ...state,
+    });
   };
 
   jetstream.on("open", () => {
-    logger.info(`Jetstream subscription started to ${env.JETSTREAM_URL}`);
+    log.info(`Jetstream subscription started to ${env.JETSTREAM_URL}`);
   });
 
   jetstream.on("close", () => {
-    logger.info(`Jetstream subscription closed`);
+    log.info(`Jetstream subscription closed`);
   });
 
   jetstream.on("error", (error) => {
-    logger.error(error, "Jetstreamでエラーが発生しました");
+    log.error("Jetstreamでエラーが発生しました", { error });
   });
 
   jetstream.on("identity", (event) => {
     handleIdentity(event).catch((error: unknown) => {
-      logger.error(error, "ハンドルの更新に失敗しました");
+      log.error("ハンドルの更新に失敗しました", { error });
     });
   });
 
   jetstream.on("account", (event) => {
     handleAccount(event).catch((error: unknown) => {
-      logger.error(error, "アカウントの状態の更新に失敗しました");
+      log.error("アカウントの状態の更新に失敗しました", { error });
     });
   });
 
@@ -154,7 +154,7 @@ export const jetstreamServiceFactory = ({
 
   jetstream.onDelete("blue.linkat.board", async (event) => {
     await boardEventService.handleBoardDeleteCommit(event.did);
-    logger.info({ ownerDid: event.did }, "ボードを削除しました");
+    log.info("ボードを削除しました", { ownerDid: event.did });
   });
 
   jetstream.onCreate("app.bsky.actor.profile", handleProfileCommit);
@@ -177,7 +177,7 @@ export const jetstreamServiceFactory = ({
       setInterval(() => {
         if (jetstream.cursor !== undefined) {
           cursorRepository.save(jetstream.cursor).catch((error: unknown) => {
-            logger.error(error, "cursorの保存に失敗しました");
+            log.error("cursorの保存に失敗しました", { error });
           });
         }
       }, CURSOR_SAVE_INTERVAL_MS).unref();
