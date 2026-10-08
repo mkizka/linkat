@@ -6,7 +6,7 @@ import { Main, RootLayout } from "~/components/layout";
 import { LoginForm } from "~/features/login/login-form";
 import { getInstance } from "~/i18n/i18n";
 import { di } from "~/server/di";
-import { createLogger } from "~/utils/logger";
+import { createLogger } from "~/server/infrastructure/logger";
 
 import type { Route } from "./+types/login";
 
@@ -27,7 +27,7 @@ export async function action({ request, context }: Route.ActionArgs) {
     const url = await di.authService.authorize(handle);
     return redirect(url.toString());
   } catch (error) {
-    logger.error(error, "OAuthログインに失敗しました");
+    logger.error("OAuthログインに失敗しました", { error });
     if (error instanceof OAuthResolverError) {
       setToast(context, {
         message: i18next.t("login.oauth-resolve-error-message"),

@@ -57,7 +57,7 @@ export const env = (() => {
       emptyStringAsUndefined: true,
     });
   } catch (e) {
-    // logger.tsなどを通してブラウザでも使用するファイルにimportされた時は
+    // ブラウザでも使用するファイルにimportされた時は
     // バリデーションが通らないので、ブラウザ環境では無視する
     if (typeof window !== "undefined") {
       // eslint-disable-next-line @typescript-eslint/consistent-type-assertions

@@ -1,12 +1,11 @@
 import { createRequestHandler } from "@react-router/express";
 import express from "express";
-import pinoHttp from "pino-http";
 import type { ServerBuild } from "react-router";
 
 import { di } from "~/server/di.js";
+import { createLogger, httpLogger } from "~/server/infrastructure/logger.js";
 
 import { env } from "./utils/env.js";
-import { createLogger } from "./utils/logger.js";
 
 // OAuthログインを行うためにmedium/largeテスト実行時のprocess.env.NODE_ENVはdevelopmentになっている
 // 代わりにprocess.env.PLAYWRIGHTが設定されているので、その場合はviteを使わない
@@ -24,24 +23,7 @@ const app = express();
 // react-routerのCSRFチェック(Origin: httpsとrequest.url: httpの不一致)でログインが400になる
 app.set("trust proxy", true);
 
-app.use(
-  pinoHttp({
-    logger: createLogger("http"),
-    customSuccessMessage: (req, res, responseTime) => {
-      return `${req.method} ${res.statusCode} ${req.url} ${responseTime}ms`;
-    },
-    customErrorMessage: (req, res) => {
-      return `${req.method} ${res.statusCode} ${req.url}`;
-    },
-    ...(env.NODE_ENV === "development" && {
-      serializers: {
-        req: () => undefined,
-        res: () => undefined,
-        responseTime: () => undefined,
-      },
-    }),
-  }),
-);
+app.use(httpLogger);
 
 if (viteDevServer) {
   app.use(viteDevServer.middlewares);
@@ -84,7 +66,7 @@ app.listen(env.PORT, "0.0.0.0", () => {
   logger.info(`App listening on ${env.PUBLIC_URL}`);
   if (!env.DISABLE_JETSTREAM) {
     di.jetstreamService.startJetstream().catch((error: unknown) => {
-      logger.error(error, "Jetstreamの起動に失敗しました");
+      logger.error("Jetstreamの起動に失敗しました", { error });
     });
   }
 });

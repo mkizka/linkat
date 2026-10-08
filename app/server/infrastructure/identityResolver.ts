@@ -5,8 +5,8 @@ import {
   HANDLE_INVALID,
 } from "@atproto-labs/identity-resolver";
 
+import { createLogger } from "~/server/infrastructure/logger";
 import { env, isProduction } from "~/utils/env";
-import { createLogger } from "~/utils/logger";
 
 const logger = createLogger("identityResolver");
 
@@ -34,7 +34,7 @@ export const identityResolverFactory = (): IIdentityResolver => {
           pds: extractPdsUrl(didDoc).origin,
         };
       } catch (error) {
-        logger.warn(error, "DIDまたはhandleの解決に失敗しました");
+        logger.warn("DIDまたはhandleの解決に失敗しました", { error });
         return null;
       }
     },

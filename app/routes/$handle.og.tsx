@@ -5,7 +5,7 @@ import satori from "satori";
 
 import type { OwnerView } from "~/models/owner";
 import { di } from "~/server/di";
-import { createLogger } from "~/utils/logger";
+import { createLogger } from "~/server/infrastructure/logger";
 
 import type { Route } from "./+types/$handle.og";
 
@@ -152,7 +152,7 @@ export async function loader({ params }: Route.LoaderArgs) {
     try {
       image = await createImage(owner);
     } catch (error) {
-      logger.warn(error, "OGP画像の生成に失敗しました");
+      logger.warn("OGP画像の生成に失敗しました", { error });
       throw new Response(null, { status: 404 });
     }
   }

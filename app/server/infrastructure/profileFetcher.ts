@@ -3,8 +3,8 @@ import { Client } from "@atproto/lex";
 
 import profile from "~/generated/app/bsky/actor/profile";
 import type { Profile } from "~/models/owner";
+import { createLogger } from "~/server/infrastructure/logger";
 import type { IProfileRecordParser } from "~/server/infrastructure/profileRecordParser";
-import { createLogger } from "~/utils/logger";
 import { tryCatch } from "~/utils/tryCatch";
 
 const logger = createLogger("profileFetcher");
@@ -24,10 +24,10 @@ export const profileFetcherFactory = ({
   profileRecordParser: IProfileRecordParser;
 }): IProfileFetcher => ({
   async fetchProfile(pds, did) {
-    logger.info({ did }, "プロフィールを取得します");
+    logger.info("プロフィールを取得します", { did });
     const fetched = await tryCatch(fetchProfileRecord)(pds, did);
     if (fetched instanceof Error) {
-      logger.warn(fetched, "プロフィールの取得に失敗しました");
+      logger.warn("プロフィールの取得に失敗しました", { error: fetched });
       return null;
     }
     return profileRecordParser.parse(fetched);
