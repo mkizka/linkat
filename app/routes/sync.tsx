@@ -3,11 +3,8 @@ import { setToast } from "remix-toast/middleware";
 
 import { getInstance } from "~/i18n/i18n";
 import { di } from "~/server/di";
-import { createLogger } from "~/server/infrastructure/logger";
 
 import type { Route } from "./+types/sync";
-
-const logger = createLogger("sync");
 
 export async function action({ request, context }: Route.ActionArgs) {
   const editorDid = await di.sessionService.getSessionDid(request);
@@ -18,7 +15,7 @@ export async function action({ request, context }: Route.ActionArgs) {
   try {
     result = await di.boardEventService.handleEditorSync(editorDid);
   } catch (error) {
-    logger.error("同期に失敗しました", { error });
+    di.logger.error("同期に失敗しました", { error });
     return data({ ok: false }, { status: 500 });
   }
   if (result.boardImported) {

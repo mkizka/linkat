@@ -1,13 +1,11 @@
 import type { Did } from "@atproto/did";
 
 import type { ICookieSessionStorage } from "~/server/infrastructure/cookieSessionStorage";
-import { createLogger } from "~/server/infrastructure/logger";
+import type { ILogger } from "~/server/infrastructure/logger";
 import {
   type IOAuthClient,
   OAuthSessionInvalidError,
 } from "~/server/infrastructure/oauthClient";
-
-const logger = createLogger("sessionService");
 
 export interface ISessionService {
   getSessionDid: (request: Request) => Promise<Did | null>;
@@ -18,9 +16,11 @@ export interface ISessionService {
 export const sessionServiceFactory = ({
   cookieSessionStorage,
   oauthClient,
+  logger,
 }: {
   cookieSessionStorage: ICookieSessionStorage;
   oauthClient: IOAuthClient;
+  logger: ILogger;
 }): ISessionService => {
   const getCookieDid = (request: Request) =>
     cookieSessionStorage.getDid(request.headers.get("Cookie"));

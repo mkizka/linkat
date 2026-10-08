@@ -5,10 +5,8 @@ import {
   HANDLE_INVALID,
 } from "@atproto-labs/identity-resolver";
 
-import { createLogger } from "~/server/infrastructure/logger";
+import type { ILogger } from "~/server/infrastructure/logger";
 import { env, isProduction } from "~/utils/env";
-
-const logger = createLogger("identityResolver");
 
 export interface IIdentityResolver {
   resolve: (
@@ -17,7 +15,11 @@ export interface IIdentityResolver {
   ) => Promise<{ did: Did; handle: string | null; pds: string } | null>;
 }
 
-export const identityResolverFactory = (): IIdentityResolver => {
+export const identityResolverFactory = ({
+  logger,
+}: {
+  logger: ILogger;
+}): IIdentityResolver => {
   const resolver = createIdentityResolver({
     plcDirectoryUrl: env.ATPROTO_PLC_URL,
     handleResolver:

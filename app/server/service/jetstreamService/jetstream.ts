@@ -11,14 +11,12 @@ import WebSocket from "ws";
 
 import { Board } from "~/models/board";
 import type { ICursorRepository } from "~/server/infrastructure/cursorRepository";
-import { createLogger } from "~/server/infrastructure/logger";
+import type { ILogger } from "~/server/infrastructure/logger";
 import type { IProfileRecordParser } from "~/server/infrastructure/profileRecordParser";
 import type { IBoardEventService } from "~/server/service/boardEventService/boardEvent";
 import type { IOwnerService } from "~/server/service/ownerService/owner";
 import { env } from "~/utils/env";
 import { tryCatch } from "~/utils/tryCatch";
-
-const logger = createLogger("jetstream");
 
 const CURSOR_SAVE_INTERVAL_MS = 30_000;
 
@@ -46,11 +44,13 @@ export const jetstreamServiceFactory = ({
   boardEventService,
   ownerService,
   profileRecordParser,
+  logger,
 }: {
   cursorRepository: ICursorRepository;
   boardEventService: IBoardEventService;
   ownerService: IOwnerService;
   profileRecordParser: IProfileRecordParser;
+  logger: ILogger;
 }): IJetstreamService => {
   const jetstream = new Jetstream({
     ws: WebSocket,

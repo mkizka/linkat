@@ -3,11 +3,9 @@ import { Client } from "@atproto/lex";
 
 import profile from "~/generated/app/bsky/actor/profile";
 import type { Profile } from "~/models/owner";
-import { createLogger } from "~/server/infrastructure/logger";
+import type { ILogger } from "~/server/infrastructure/logger";
 import type { IProfileRecordParser } from "~/server/infrastructure/profileRecordParser";
 import { tryCatch } from "~/utils/tryCatch";
-
-const logger = createLogger("profileFetcher");
 
 export interface IProfileFetcher {
   fetchProfile: (pds: string, did: Did) => Promise<Profile | null>;
@@ -20,8 +18,10 @@ const fetchProfileRecord = async (pds: string, did: Did) => {
 
 export const profileFetcherFactory = ({
   profileRecordParser,
+  logger,
 }: {
   profileRecordParser: IProfileRecordParser;
+  logger: ILogger;
 }): IProfileFetcher => ({
   async fetchProfile(pds, did) {
     logger.info("プロフィールを取得します", { did });

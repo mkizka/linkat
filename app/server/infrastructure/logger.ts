@@ -3,9 +3,12 @@ import pinoHttp from "pino-http";
 
 import { env } from "~/utils/env";
 
-type LogFn = (message: string, obj?: object) => void;
-
-export type Logger = Record<"debug" | "info" | "warn" | "error", LogFn>;
+export interface ILogger {
+  debug: (message: string, obj?: object) => void;
+  info: (message: string, obj?: object) => void;
+  warn: (message: string, obj?: object) => void;
+  error: (message: string, obj?: object) => void;
+}
 
 const rootLogger = pino({
   enabled: env.NODE_ENV !== "test",
@@ -13,15 +16,12 @@ const rootLogger = pino({
   errorKey: "error",
 });
 
-export const createLogger = (name: string): Logger => {
-  const logger = rootLogger.child({ name });
-  return {
-    debug: (message, obj) => logger.debug(obj, message),
-    info: (message, obj) => logger.info(obj, message),
-    warn: (message, obj) => logger.warn(obj, message),
-    error: (message, obj) => logger.error(obj, message),
-  };
-};
+export const loggerFactory = (): ILogger => ({
+  debug: (message, obj) => rootLogger.debug(obj, message),
+  info: (message, obj) => rootLogger.info(obj, message),
+  warn: (message, obj) => rootLogger.warn(obj, message),
+  error: (message, obj) => rootLogger.error(obj, message),
+});
 
 export const httpLogger = pinoHttp({
   logger: rootLogger.child({ name: "http" }),

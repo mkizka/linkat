@@ -3,15 +3,12 @@ import { setToast } from "remix-toast/middleware";
 
 import { getInstance } from "~/i18n/i18n";
 import { di } from "~/server/di";
-import { createLogger } from "~/server/infrastructure/logger";
 import {
   BoardDbDeleteError,
   BoardPdsDeleteError,
 } from "~/server/service/boardEventService/boardEvent";
 
 import type { Route } from "./+types/delete";
-
-const logger = createLogger("delete");
 
 export async function action({ request, context }: Route.ActionArgs) {
   const i18next = getInstance(context);
@@ -31,7 +28,7 @@ export async function action({ request, context }: Route.ActionArgs) {
     await di.boardEventService.handleEditorDelete(editorDid);
   } catch (error) {
     if (error instanceof BoardPdsDeleteError) {
-      logger.error(error.message, { error });
+      di.logger.error(error.message, { error });
       setToast(context, {
         message: i18next.t("delete.delete-board-error-message"),
         type: "error",
@@ -39,7 +36,7 @@ export async function action({ request, context }: Route.ActionArgs) {
       return redirect("/settings");
     }
     if (error instanceof BoardDbDeleteError) {
-      logger.error(error.message, { error });
+      di.logger.error(error.message, { error });
       setToast(context, {
         message: i18next.t("delete.delete-delayed-warning-message"),
         type: "warning",

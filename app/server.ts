@@ -3,7 +3,7 @@ import express from "express";
 import type { ServerBuild } from "react-router";
 
 import { di } from "~/server/di.js";
-import { createLogger, httpLogger } from "~/server/infrastructure/logger.js";
+import { httpLogger } from "~/server/infrastructure/logger.js";
 
 import { env } from "./utils/env.js";
 
@@ -60,13 +60,11 @@ const build = viteDevServer
 
 app.use(createRequestHandler({ build }));
 
-const logger = createLogger("server");
-
 app.listen(env.PORT, "0.0.0.0", () => {
-  logger.info(`App listening on ${env.PUBLIC_URL}`);
+  di.logger.info(`App listening on ${env.PUBLIC_URL}`);
   if (!env.DISABLE_JETSTREAM) {
     di.jetstreamService.startJetstream().catch((error: unknown) => {
-      logger.error("Jetstreamの起動に失敗しました", { error });
+      di.logger.error("Jetstreamの起動に失敗しました", { error });
     });
   }
 });

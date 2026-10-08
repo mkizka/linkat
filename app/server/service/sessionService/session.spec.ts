@@ -2,8 +2,8 @@ import { asDid } from "@atproto/did";
 import type { OAuthSession } from "@atproto/oauth-client-node";
 import { mock } from "vitest-mock-extended";
 
-import { mockedLogger } from "~/mocks/logger";
 import type { ICookieSessionStorage } from "~/server/infrastructure/cookieSessionStorage";
+import type { ILogger } from "~/server/infrastructure/logger";
 import {
   type IOAuthClient,
   OAuthSessionInvalidError,
@@ -13,10 +13,12 @@ import { sessionServiceFactory } from "./session";
 
 const cookieSessionStorage = mock<ICookieSessionStorage>();
 const oauthClient = mock<IOAuthClient>();
+const logger = mock<ILogger>();
 
 const sessionService = sessionServiceFactory({
   cookieSessionStorage,
   oauthClient,
+  logger,
 });
 
 const did = asDid("did:plc:test");
@@ -90,7 +92,7 @@ describe("sessionService", () => {
       // act
       const actual = await sessionService.destroySession(request);
       // assert
-      expect(mockedLogger.error).toHaveBeenCalled();
+      expect(logger.error).toHaveBeenCalled();
       expect(actual).toBe("destroyed");
     });
   });
