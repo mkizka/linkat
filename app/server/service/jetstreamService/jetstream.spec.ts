@@ -181,14 +181,45 @@ describe("jetstreamService", () => {
         avatarCid: null,
       });
     });
+    test("アバターがレキシコンの制約を満たさなくても、プロフィールを更新する", async () => {
+      // arrange
+      const owner = await OwnerFactory.create({ displayName: "古い名前" });
+      identityResolver.resolve.mockResolvedValue(
+        found(owner.did, owner.handle),
+      );
+      // act
+      await jetstreamService.handleProfileCommit(
+        profileUpdateEvent(owner.did, {
+          ...profileRecord,
+          avatar: {
+            $type: "blob",
+            ref: { $link: avatarCid },
+            mimeType: "image/webp",
+            size: 2_000_000,
+          },
+        }),
+      );
+      // assert
+      const actual = await ownerRepository.findByDid(asDid(owner.did));
+      expect(actual).toMatchObject({
+        displayName: "新しい名前",
+        description: "新しい説明",
+        avatarCid,
+      });
+    });
     test("レコードが不正な場合、既存の値を残す", async () => {
       // arrange
       const owner = await OwnerFactory.create({ displayName: "古い名前" });
       // act
       await jetstreamService.handleProfileCommit(
         profileUpdateEvent(owner.did, {
-          $type: "app.bsky.actor.profile",
-          displayName: "あ".repeat(65),
+          ...profileRecord,
+          avatar: {
+            $type: "blob",
+            ref: { $link: "invalid" },
+            mimeType: "image/jpeg",
+            size: 1000,
+          },
         }),
       );
       // assert

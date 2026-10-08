@@ -1,15 +1,20 @@
-import { getBlobCidString } from "@atproto/lex";
+import { getBlobCidString, l } from "@atproto/lex";
 
-import profile from "~/generated/app/bsky/actor/profile";
 import type { Profile } from "~/models/owner";
 
 export interface IProfileRecordParser {
   parse: (record: unknown) => Profile | null;
 }
 
+const profileSchema = l.object({
+  displayName: l.optional(l.string()),
+  description: l.optional(l.string()),
+  avatar: l.optional(l.blob()),
+});
+
 export const profileRecordParserFactory = (): IProfileRecordParser => ({
   parse(record) {
-    const result = profile.safeParse(record);
+    const result = profileSchema.safeParse(record);
     if (!result.success) {
       return null;
     }

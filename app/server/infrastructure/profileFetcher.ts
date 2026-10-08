@@ -1,7 +1,6 @@
 import type { Did } from "@atproto/did";
 import { Client } from "@atproto/lex";
 
-import profile from "~/generated/app/bsky/actor/profile";
 import type { Profile } from "~/models/owner";
 import type { IProfileRecordParser } from "~/server/infrastructure/profileRecordParser";
 import { createLogger } from "~/utils/logger";
@@ -14,8 +13,12 @@ export interface IProfileFetcher {
 }
 
 const fetchProfileRecord = async (pds: string, did: Did) => {
-  const { value } = await new Client(pds).get(profile, { repo: did });
-  return value;
+  const response = await new Client(pds).getRecord(
+    "app.bsky.actor.profile",
+    "self",
+    { repo: did },
+  );
+  return response.body.value;
 };
 
 export const profileFetcherFactory = ({

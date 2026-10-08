@@ -95,6 +95,41 @@ describe("ownerService", () => {
       });
       expect(await ownerRepository.findByDid(did)).toEqual(actual);
     });
+    test("アバターがレキシコンの制約を満たさなくても、プロフィールを取得して作る", async () => {
+      // arrange
+      const did = asDid("did:plc:owner");
+      mockIdentity(did, "alice.example.com");
+      server.use(
+        http.get(getRecordUrl, () =>
+          HttpResponse.json({
+            uri: "at://did:plc:owner/app.bsky.actor.profile/self",
+            cid: "bafyreidfayvfuwqa7qlnopdjiqrxzs6blmoeu4rujcjtnci5beludirz2a",
+            value: {
+              $type: "app.bsky.actor.profile",
+              displayName: "Alice",
+              avatar: {
+                $type: "blob",
+                ref: {
+                  $link:
+                    "bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku",
+                },
+                mimeType: "image/webp",
+                size: 2_000_000,
+              },
+            },
+          }),
+        ),
+      );
+      // act
+      const actual = await ownerService.syncOwner(did);
+      // assert
+      expect(actual).toMatchObject({
+        handle: "alice.example.com",
+        displayName: "Alice",
+        avatarCid:
+          "bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku",
+      });
+    });
     test("DIDを解決できなければ、ハンドルをnullにして既存のプロフィールを残す", async () => {
       // arrange
       const owner = await OwnerFactory.create({
