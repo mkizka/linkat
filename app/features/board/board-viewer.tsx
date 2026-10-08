@@ -14,12 +14,10 @@ import { CardFormModal, cardModal } from "./form/card-form-modal";
 import type { CardFormPayload } from "./form/card-form-provider";
 import { CardFormProvider } from "./form/card-form-provider";
 
-// loaderDataはシリアライズされるためプレーンなデータ構造で受け取る
-export type BoardData = { cards: ValidCard[] };
-
 type Props = {
   owner: OwnerView;
-  board: BoardData | null;
+  // loaderDataはシリアライズされるためプレーンなデータ構造で受け取る
+  board: { cards: ValidCard[] } | null;
   url: string;
   editable?: boolean;
   isMine?: boolean;
