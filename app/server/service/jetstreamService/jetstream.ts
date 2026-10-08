@@ -101,7 +101,7 @@ export const jetstreamServiceFactory = ({
     }
     const saved = await ownerService.updateProfile(event.did, profile);
     if (saved) {
-      logger.info({ owner: saved }, "プロフィールを更新しました");
+      logger.debug({ owner: saved }, "プロフィールを更新しました");
     }
   };
 
