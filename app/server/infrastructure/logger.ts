@@ -18,6 +18,9 @@ const rootLogger = pino({
   enabled: env.NODE_ENV !== "test",
   level: env.LOG_LEVEL,
   errorKey: "error",
+  formatters: {
+    level: (label) => ({ level: label }),
+  },
 });
 
 export const loggerFactory = (): ILogger => ({

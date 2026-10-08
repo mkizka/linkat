@@ -68,3 +68,45 @@ jobs:
           fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  storybook:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - run: |
+          npm i -g corepack@latest
+          corepack enable pnpm
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+      - run: pnpm i
+      - run: pnpm exec storybook build
+      - name: Upload Storybook
+        if: github.ref == 'refs/heads/main' || github.actor == 'mkizka'
+        run: |
+          STORYBOOK_S3_PATH="storybook/${{ github.ref == 'refs/heads/main' && 'main' || github.sha }}"
+          aws s3 cp storybook-static "s3://$STORYBOOK_S3_PATH" --recursive
+          echo "STORYBOOK_URL=${{ vars.S3_BASE_URL }}/$STORYBOOK_S3_PATH/index.html" >> $GITHUB_ENV
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_ENDPOINT_URL: ${{ secrets.AWS_ENDPOINT_URL }}
+          AWS_DEFAULT_REGION: auto
+      - name: Comment on PR
+        if: github.ref != 'refs/heads/main' && github.actor == 'mkizka'
+        run: |
+          MARKER="<!-- storybook -->"
+          BODY="$MARKER
+          ## Storybook
+          📚 [View Storybook]($STORYBOOK_URL)"
+          COMMENT_ID=$(gh api "repos/${{ github.repository }}/issues/${{ github.event.number }}/comments" \
+            --paginate --jq "[.[] | select(.body | startswith(\"$MARKER\"))][-1].id // empty")
+          if [ -n "$COMMENT_ID" ]; then
+            gh api -X PATCH "repos/${{ github.repository }}/issues/comments/$COMMENT_ID" -f body="$BODY"
+          else
+            gh pr comment ${{ github.event.number }} --body "$BODY"
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
