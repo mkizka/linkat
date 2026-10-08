@@ -13,7 +13,7 @@ const sentryConfig: SentryReactRouterBuildOptions = {
 export default defineConfig((configEnv) => ({
   base: process.env.VITE_CONFIG_BASE ?? "/",
   plugins: [
-    reactRouter(),
+    !process.env.STORYBOOK && reactRouter(),
     !process.env.VITEST &&
       !!process.env.SENTRY_AUTH_TOKEN &&
       sentryReactRouter(sentryConfig, configEnv),

@@ -12,7 +12,7 @@ import errorImage from "./error-image.jpg";
 
 const logger = createLogger("error-boundary");
 
-function ErrorPage(props: { title: string; text: string }) {
+export function ErrorPage(props: { title: string; text: string }) {
   const { t } = useTranslation();
   return (
     <RootLayout>
