@@ -11,6 +11,7 @@ import {
 import type { Route } from "./+types/delete";
 
 export async function action({ request, context }: Route.ActionArgs) {
+  const logger = di.logger.child("delete");
   const i18next = getInstance(context);
   const editorDid = await di.sessionService.getSessionDid(request);
   if (!editorDid) {
@@ -28,7 +29,7 @@ export async function action({ request, context }: Route.ActionArgs) {
     await di.boardEventService.handleEditorDelete(editorDid);
   } catch (error) {
     if (error instanceof BoardPdsDeleteError) {
-      di.logger.child("delete").error(error.message, { error });
+      logger.error(error.message, { error });
       setToast(context, {
         message: i18next.t("delete.delete-board-error-message"),
         type: "error",
@@ -36,7 +37,7 @@ export async function action({ request, context }: Route.ActionArgs) {
       return redirect("/settings");
     }
     if (error instanceof BoardDbDeleteError) {
-      di.logger.child("delete").error(error.message, { error });
+      logger.error(error.message, { error });
       setToast(context, {
         message: i18next.t("delete.delete-delayed-warning-message"),
         type: "warning",

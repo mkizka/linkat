@@ -10,6 +10,7 @@ import { di } from "~/server/di";
 import type { Route } from "./+types/login";
 
 export async function action({ request, context }: Route.ActionArgs) {
+  const logger = di.logger.child("login");
   const i18next = getInstance(context);
   const form = await request.formData();
   const handle = form.get("handle");
@@ -24,7 +25,7 @@ export async function action({ request, context }: Route.ActionArgs) {
     const url = await di.authService.authorize(handle);
     return redirect(url.toString());
   } catch (error) {
-    di.logger.child("login").error("OAuthログインに失敗しました", { error });
+    logger.error("OAuthログインに失敗しました", { error });
     if (error instanceof OAuthResolverError) {
       setToast(context, {
         message: i18next.t("login.oauth-resolve-error-message"),

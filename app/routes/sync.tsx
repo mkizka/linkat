@@ -7,6 +7,7 @@ import { di } from "~/server/di";
 import type { Route } from "./+types/sync";
 
 export async function action({ request, context }: Route.ActionArgs) {
+  const logger = di.logger.child("sync");
   const editorDid = await di.sessionService.getSessionDid(request);
   if (!editorDid) {
     throw redirect("/login");
@@ -15,7 +16,7 @@ export async function action({ request, context }: Route.ActionArgs) {
   try {
     result = await di.boardEventService.handleEditorSync(editorDid);
   } catch (error) {
-    di.logger.child("sync").error("同期に失敗しました", { error });
+    logger.error("同期に失敗しました", { error });
     return data({ ok: false }, { status: 500 });
   }
   if (result.boardImported) {
