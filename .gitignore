@@ -15,3 +15,6 @@ playwright-report/
 
 # react-router
 .react-router/
+
+# storybook
+storybook-static/
