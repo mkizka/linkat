@@ -4,6 +4,7 @@ import { Footer, Header, Main, RootLayout } from "./layout";
 
 const meta = {
   component: RootLayout,
+  parameters: { layout: "fullscreen" },
   args: {
     children: <Main className="py-20">コンテンツ</Main>,
   },

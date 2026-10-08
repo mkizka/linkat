@@ -4,9 +4,7 @@ import { LRUCache } from "lru-cache";
 import markdownit from "markdown-it";
 import { z } from "zod";
 
-import { BackButton } from "~/components/back-button";
-import { Card } from "~/components/card";
-import { Footer, Main } from "~/components/layout";
+import { AboutPage } from "~/features/about/about-page";
 import { getLocale } from "~/i18n/i18n";
 import { externalLinkAttributes } from "~/libs/markdown";
 import { env } from "~/utils/env";
@@ -82,22 +80,6 @@ export const meta: Route.MetaFunction = ({ loaderData }) => {
   ];
 };
 
-export default function AboutPage({ loaderData }: Route.ComponentProps) {
-  const { about } = loaderData;
-  return (
-    <>
-      <Main>
-        <Card className="my-4">
-          <div className="card-body">
-            <BackButton />
-            <article className="prose">
-              <h1 className="text-3xl">{about.title}</h1>
-              <div dangerouslySetInnerHTML={{ __html: about.content }} />
-            </article>
-          </div>
-        </Card>
-      </Main>
-      <Footer />
-    </>
-  );
+export default function Index({ loaderData }: Route.ComponentProps) {
+  return <AboutPage about={loaderData.about} />;
 }
