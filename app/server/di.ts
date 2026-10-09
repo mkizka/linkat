@@ -12,6 +12,7 @@ import { boardRepositoryFactory } from "~/server/infrastructure/board/boardRepos
 import { db } from "~/server/infrastructure/db/drizzle";
 import { cursorRepositoryFactory } from "~/server/infrastructure/jetstream/cursorRepository";
 import { loggerFactory } from "~/server/infrastructure/logger/logger";
+import { metricsFactory } from "~/server/infrastructure/metrics/metrics";
 import { handleIndexFactory } from "~/server/infrastructure/owner/handleIndex";
 import { identityResolverFactory } from "~/server/infrastructure/owner/identityResolver";
 import { ownerRepositoryFactory } from "~/server/infrastructure/owner/ownerRepository";
@@ -28,6 +29,7 @@ import { ownerServiceFactory } from "~/server/service/owner/owner";
 export const di = await createRegistry()
   .value("db", db)
   .service("logger", loggerFactory)
+  .service("metrics", metricsFactory)
   .service("boardRepository", ["db"], boardRepositoryFactory)
   .service("cursorRepository", ["db"], cursorRepositoryFactory)
   .service("ownerRepository", ["db"], ownerRepositoryFactory)
@@ -84,6 +86,7 @@ export const di = await createRegistry()
       "ownerService",
       "profileRecordParser",
       "logger",
+      "metrics",
     ],
     jetstreamServiceFactory,
   )

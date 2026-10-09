@@ -12,6 +12,7 @@ import WebSocket from "ws";
 import { Board } from "~/models/board";
 import type { ICursorRepository } from "~/server/infrastructure/jetstream/cursorRepository";
 import type { ILogger } from "~/server/infrastructure/logger/logger";
+import type { IMetrics } from "~/server/infrastructure/metrics/metrics";
 import type { IProfileRecordParser } from "~/server/infrastructure/owner/profileRecordParser";
 import type { IBoardEventService } from "~/server/service/board/boardEvent";
 import type { IOwnerService } from "~/server/service/owner/owner";
@@ -19,6 +20,8 @@ import { env } from "~/utils/env";
 import { tryCatch } from "~/utils/tryCatch";
 
 const CURSOR_SAVE_INTERVAL_MS = 30_000;
+
+const LAG_REPORT_INTERVAL_MS = 10_000;
 
 const jsonToLex = tryCatch((json: unknown) => lexParse(JSON.stringify(json)));
 
@@ -45,12 +48,14 @@ export const jetstreamServiceFactory = ({
   ownerService,
   profileRecordParser,
   logger,
+  metrics,
 }: {
   cursorRepository: ICursorRepository;
   boardEventService: IBoardEventService;
   ownerService: IOwnerService;
   profileRecordParser: IProfileRecordParser;
   logger: ILogger;
+  metrics: IMetrics;
 }): IJetstreamService => {
   const log = logger.child("jetstream");
   const jetstream = new Jetstream({
@@ -148,20 +153,44 @@ export const jetstreamServiceFactory = ({
     });
   });
 
-  jetstream.onCreate("blue.linkat.board", handleCreateOrUpdate);
-
-  jetstream.onUpdate("blue.linkat.board", handleCreateOrUpdate);
-
-  jetstream.onDelete("blue.linkat.board", async (event) => {
+  const handleBoardDelete = async (
+    event: CommitDeleteEvent<"blue.linkat.board">,
+  ) => {
     await boardEventService.handleBoardDeleteCommit(event.did);
     log.info("ボードを削除しました", { ownerDid: event.did });
+  };
+
+  const logBoardError = (error: unknown) => {
+    log.error("ボードの更新に失敗しました", { error });
+  };
+
+  const logProfileError = (error: unknown) => {
+    log.error("プロフィールの更新に失敗しました", { error });
+  };
+
+  jetstream.onCreate("blue.linkat.board", (event) => {
+    handleCreateOrUpdate(event).catch(logBoardError);
   });
 
-  jetstream.onCreate("app.bsky.actor.profile", handleProfileCommit);
+  jetstream.onUpdate("blue.linkat.board", (event) => {
+    handleCreateOrUpdate(event).catch(logBoardError);
+  });
 
-  jetstream.onUpdate("app.bsky.actor.profile", handleProfileCommit);
+  jetstream.onDelete("blue.linkat.board", (event) => {
+    handleBoardDelete(event).catch(logBoardError);
+  });
 
-  jetstream.onDelete("app.bsky.actor.profile", handleProfileCommit);
+  jetstream.onCreate("app.bsky.actor.profile", (event) => {
+    handleProfileCommit(event).catch(logProfileError);
+  });
+
+  jetstream.onUpdate("app.bsky.actor.profile", (event) => {
+    handleProfileCommit(event).catch(logProfileError);
+  });
+
+  jetstream.onDelete("app.bsky.actor.profile", (event) => {
+    handleProfileCommit(event).catch(logProfileError);
+  });
 
   return {
     handleCreateOrUpdate,
@@ -181,6 +210,15 @@ export const jetstreamServiceFactory = ({
           });
         }
       }, CURSOR_SAVE_INTERVAL_MS).unref();
+      setInterval(() => {
+        if (jetstream.cursor !== undefined) {
+          metrics.gauge(
+            "jetstream.lag",
+            Date.now() * 1000 - jetstream.cursor,
+            "microsecond",
+          );
+        }
+      }, LAG_REPORT_INTERVAL_MS).unref();
     },
   };
 };
