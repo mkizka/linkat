@@ -1,5 +1,5 @@
-import { db } from "~/server/infrastructure/drizzle";
-import { ownerTable } from "~/server/infrastructure/schema";
+import { db } from "~/server/infrastructure/db/drizzle";
+import { ownerTable } from "~/server/infrastructure/db/schema";
 
 let seq = 0;
 

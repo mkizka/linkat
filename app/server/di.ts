@@ -1,30 +1,30 @@
 import { createRegistry } from "@gyaku/di";
 
-import { atpassportClientFactory } from "~/server/infrastructure/atpassportClient";
-import { boardPdsRepositoryFactory } from "~/server/infrastructure/boardPdsRepository";
-import { boardRepositoryFactory } from "~/server/infrastructure/boardRepository";
-import { cookieSessionStorageFactory } from "~/server/infrastructure/cookieSessionStorage";
-import { cursorRepositoryFactory } from "~/server/infrastructure/cursorRepository";
-import { db } from "~/server/infrastructure/drizzle";
-import { handleIndexFactory } from "~/server/infrastructure/handleIndex";
-import { identityResolverFactory } from "~/server/infrastructure/identityResolver";
-import { loggerFactory } from "~/server/infrastructure/logger";
-import { metricsFactory } from "~/server/infrastructure/metrics";
-import { oauthClientFactory } from "~/server/infrastructure/oauthClient";
+import { atpassportClientFactory } from "~/server/infrastructure/auth/atpassportClient";
+import { cookieSessionStorageFactory } from "~/server/infrastructure/auth/cookieSessionStorage";
+import { oauthClientFactory } from "~/server/infrastructure/auth/oauthClient";
 import {
   sessionStoreFactory,
   stateStoreFactory,
-} from "~/server/infrastructure/oauthStorage";
-import { ownerRepositoryFactory } from "~/server/infrastructure/ownerRepository";
-import { profileFetcherFactory } from "~/server/infrastructure/profileFetcher";
-import { profileRecordParserFactory } from "~/server/infrastructure/profileRecordParser";
-import { atpassportServiceFactory } from "~/server/service/atpassportService/atpassport";
-import { authServiceFactory } from "~/server/service/authService/auth";
-import { boardEventServiceFactory } from "~/server/service/boardEventService/boardEvent";
-import { boardServiceFactory } from "~/server/service/boardService/board";
-import { jetstreamServiceFactory } from "~/server/service/jetstreamService/jetstream";
-import { ownerServiceFactory } from "~/server/service/ownerService/owner";
-import { sessionServiceFactory } from "~/server/service/sessionService/session";
+} from "~/server/infrastructure/auth/oauthStorage";
+import { boardPdsRepositoryFactory } from "~/server/infrastructure/board/boardPdsRepository";
+import { boardRepositoryFactory } from "~/server/infrastructure/board/boardRepository";
+import { db } from "~/server/infrastructure/db/drizzle";
+import { cursorRepositoryFactory } from "~/server/infrastructure/jetstream/cursorRepository";
+import { loggerFactory } from "~/server/infrastructure/logger/logger";
+import { metricsFactory } from "~/server/infrastructure/metrics/metrics";
+import { handleIndexFactory } from "~/server/infrastructure/owner/handleIndex";
+import { identityResolverFactory } from "~/server/infrastructure/owner/identityResolver";
+import { ownerRepositoryFactory } from "~/server/infrastructure/owner/ownerRepository";
+import { profileFetcherFactory } from "~/server/infrastructure/owner/profileFetcher";
+import { profileRecordParserFactory } from "~/server/infrastructure/owner/profileRecordParser";
+import { atpassportServiceFactory } from "~/server/service/auth/atpassport";
+import { authServiceFactory } from "~/server/service/auth/auth";
+import { sessionServiceFactory } from "~/server/service/auth/session";
+import { boardServiceFactory } from "~/server/service/board/board";
+import { boardEventServiceFactory } from "~/server/service/board/boardEvent";
+import { jetstreamServiceFactory } from "~/server/service/jetstream/jetstream";
+import { ownerServiceFactory } from "~/server/service/owner/owner";
 
 export const di = await createRegistry()
   .value("db", db)
