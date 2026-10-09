@@ -6,7 +6,7 @@ import { di } from "~/server/di";
 import {
   BoardDbDeleteError,
   BoardPdsDeleteError,
-} from "~/server/service/boardEventService/boardEvent";
+} from "~/server/service/board/boardEvent";
 
 import type { Route } from "./+types/delete";
 
