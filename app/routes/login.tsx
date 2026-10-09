@@ -2,9 +2,8 @@ import { OAuthResolverError } from "@atproto/oauth-client-node";
 import { redirect } from "react-router";
 import { setToast } from "remix-toast/middleware";
 
-import { Main, RootLayout } from "~/components/layout";
-import { LoginForm } from "~/features/login/login-form";
 import { getInstance } from "~/i18n/i18n";
+import { LoginPage } from "~/pages/login-page";
 import { di } from "~/server/di";
 
 import type { Route } from "./+types/login";
@@ -49,12 +48,4 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
   return null;
 };
 
-export default function LoginPage() {
-  return (
-    <RootLayout>
-      <Main className="utils--center">
-        <LoginForm />
-      </Main>
-    </RootLayout>
-  );
-}
+export default LoginPage;

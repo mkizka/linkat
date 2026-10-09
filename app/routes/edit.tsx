@@ -1,20 +1,10 @@
 import { useEffect } from "react";
-import { useTranslation } from "react-i18next";
-import {
-  redirect,
-  useBeforeUnload,
-  useBlocker,
-  useFetcher,
-} from "react-router";
+import { redirect, useFetcher } from "react-router";
 import { setToast } from "remix-toast/middleware";
 
-import { Main } from "~/components/layout";
-import { BoardViewer } from "~/features/board/board-viewer";
-import { SyncError } from "~/features/edit/sync-error";
-import { SyncLoading } from "~/features/edit/sync-loading";
-import { useUmami } from "~/hooks/useUmami";
 import { getInstance } from "~/i18n/i18n";
 import { Board } from "~/models/board";
+import { EditPage } from "~/pages/edit-page";
 import { di } from "~/server/di";
 import {
   BoardDbSaveError,
@@ -104,45 +94,6 @@ export async function loader({ request }: Route.LoaderArgs) {
   };
 }
 
-function Editor({ editor, board, url }: Route.ComponentProps["loaderData"]) {
-  const { t } = useTranslation();
-  const umami = useUmami();
-
-  // 更新ボタンを押したりしたときに確認ダイアログを出す
-  useBeforeUnload((event) => {
-    umami.track("unload-edit");
-    event.preventDefault();
-  });
-
-  // 戻るボタンを押したりしたときに確認ダイアログを出す
-  const blocker = useBlocker(
-    ({ currentLocation, nextLocation, historyAction }) =>
-      // 保存ボタンを押したときの移動以外のとき
-      (currentLocation.pathname !== nextLocation.pathname &&
-        nextLocation.pathname !== `/${editor.handleOrDid}`) ||
-      // /alice.testから/editに移動して戻るとき
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
-      historyAction === "POP",
-  );
-
-  useEffect(() => {
-    if (blocker.state !== "blocked") return;
-    if (confirm(t("edit.confirm-leave-message"))) {
-      umami.track("leave-edit", {
-        action: "confirm",
-      });
-      blocker.proceed();
-    } else {
-      umami.track("leave-edit", {
-        action: "cancel",
-      });
-      blocker.reset();
-    }
-  }, [t, blocker, umami]);
-
-  return <BoardViewer owner={editor} board={board} url={url} editable />;
-}
-
 export default function Index({ loaderData }: Route.ComponentProps) {
   const sync = useFetcher<typeof syncAction>();
   const submitSync = () =>
@@ -154,20 +105,18 @@ export default function Index({ loaderData }: Route.ComponentProps) {
     }
   });
 
-  if (loaderData.board || (sync.state === "idle" && sync.data?.ok)) {
-    return (
-      <Main>
-        <Editor {...loaderData} />
-      </Main>
-    );
-  }
+  const syncState =
+    loaderData.board || (sync.state === "idle" && sync.data?.ok)
+      ? "ready"
+      : sync.state !== "idle" || !sync.data
+        ? "loading"
+        : "error";
+
   return (
-    <Main className="utils--center">
-      {sync.state !== "idle" || !sync.data ? (
-        <SyncLoading />
-      ) : (
-        <SyncError onRetry={() => void submitSync()} />
-      )}
-    </Main>
+    <EditPage
+      {...loaderData}
+      syncState={syncState}
+      onRetrySync={() => void submitSync()}
+    />
   );
 }

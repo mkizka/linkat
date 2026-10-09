@@ -16,9 +16,14 @@ const preview: Preview = {
       const Stub = createRoutesStub([
         { path: "*", Component: Story, action: () => null },
       ]);
+      const stub = <Stub initialEntries={[parameters.path ?? "/"]} />;
       return (
         <UmamiProvider>
-          <Stub initialEntries={[parameters.path ?? "/"]} />
+          {parameters.layout === "fullscreen" ? (
+            <div className="flex min-h-svh flex-col bg-base-300">{stub}</div>
+          ) : (
+            stub
+          )}
         </UmamiProvider>
       );
     },

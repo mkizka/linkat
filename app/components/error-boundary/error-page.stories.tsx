@@ -4,6 +4,7 @@ import { ErrorPage } from ".";
 
 const meta = {
   component: ErrorPage,
+  parameters: { layout: "fullscreen" },
 } satisfies Meta<typeof ErrorPage>;
 
 export default meta;

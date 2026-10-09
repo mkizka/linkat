@@ -1,10 +1,5 @@
-import { useTranslation } from "react-i18next";
-
-import { Card } from "~/components/card";
-import { Footer, Main } from "~/components/layout";
-import { BoardViewer } from "~/features/board/board-viewer";
-import { ShareModal } from "~/features/board/share-modal";
 import { getInstance } from "~/i18n/i18n";
+import { BoardPage, HiddenBoardPage } from "~/pages/board-page";
 import { di } from "~/server/di";
 import { env } from "~/utils/env";
 import { createMeta } from "~/utils/meta";
@@ -50,37 +45,10 @@ export const meta: Route.MetaFunction = ({ loaderData }) => {
   return createMeta({ title, url, ogImageUrl, atUri });
 };
 
-function HiddenBoard({ status }: { status: string | null }) {
-  const { t } = useTranslation();
-  return (
-    <>
-      <Main className="utils--center">
-        <Card>
-          <div className="card-body">
-            <p data-testid="hidden-board__message">
-              {t("board.hidden-message")}
-              {status && `: ${status}`}
-            </p>
-          </div>
-        </Card>
-      </Main>
-      <Footer withNavigation />
-    </>
-  );
-}
-
 export default function Index({ loaderData }: Route.ComponentProps) {
   if (loaderData.hidden) {
-    return <HiddenBoard status={loaderData.status} />;
+    return <HiddenBoardPage status={loaderData.status} />;
   }
   const { owner, board, url, isMine } = loaderData;
-  return (
-    <>
-      <Main>
-        <BoardViewer owner={owner} board={board} url={url} isMine={isMine} />
-        <ShareModal url={url} />
-      </Main>
-      <Footer withNavigation />
-    </>
-  );
+  return <BoardPage owner={owner} board={board} url={url} isMine={isMine} />;
 }
