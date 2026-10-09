@@ -4,9 +4,9 @@ import { LRUCache } from "lru-cache";
 import markdownit from "markdown-it";
 import { z } from "zod";
 
-import { AboutPage } from "~/features/about/about-page";
 import { getLocale } from "~/i18n/i18n";
 import { externalLinkAttributes } from "~/libs/markdown";
+import { AboutPage } from "~/pages/about-page";
 import { env } from "~/utils/env";
 
 import type { Route } from "./+types/about";

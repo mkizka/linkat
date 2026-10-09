@@ -1,4 +1,4 @@
-import { SamplePage } from "~/features/sample/sample-page";
+import { SamplePage } from "~/pages/sample-page";
 import { env } from "~/utils/env";
 
 import type { Route } from "./+types/sample";

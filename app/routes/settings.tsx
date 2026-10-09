@@ -1,6 +1,6 @@
 import { redirect } from "react-router";
 
-import { SettingsPage } from "~/features/settings/settings-page";
+import { SettingsPage } from "~/pages/settings-page";
 import { di } from "~/server/di";
 
 import type { Route } from "./+types/settings";

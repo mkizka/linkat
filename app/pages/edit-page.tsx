@@ -4,12 +4,11 @@ import { useBeforeUnload, useBlocker } from "react-router";
 
 import { Main } from "~/components/layout";
 import { BoardViewer } from "~/features/board/board-viewer";
+import { SyncError } from "~/features/edit/sync-error";
+import { SyncLoading } from "~/features/edit/sync-loading";
 import { useUmami } from "~/hooks/useUmami";
 import type { ValidCard } from "~/models/card";
 import type { OwnerView } from "~/models/owner";
-
-import { SyncError } from "./sync-error";
-import { SyncLoading } from "./sync-loading";
 
 type EditorProps = {
   editor: OwnerView;

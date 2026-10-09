@@ -1,5 +1,5 @@
-import { TopPage } from "~/features/top/top-page";
 import { getInstance } from "~/i18n/i18n";
+import { TopPage } from "~/pages/top-page";
 import { di } from "~/server/di";
 import { env } from "~/utils/env";
 import { createMeta } from "~/utils/meta";

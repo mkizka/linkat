@@ -1,6 +1,5 @@
 import { Main, RootLayout } from "~/components/layout";
-
-import { LoginForm } from "./login-form";
+import { LoginForm } from "~/features/login/login-form";
 
 export function LoginPage() {
   return (

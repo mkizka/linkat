@@ -1,5 +1,5 @@
-import { BoardPage, HiddenBoardPage } from "~/features/board/board-page";
 import { getInstance } from "~/i18n/i18n";
+import { BoardPage, HiddenBoardPage } from "~/pages/board-page";
 import { di } from "~/server/di";
 import { env } from "~/utils/env";
 import { createMeta } from "~/utils/meta";

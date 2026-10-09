@@ -2,9 +2,9 @@ import { useEffect } from "react";
 import { redirect, useFetcher } from "react-router";
 import { setToast } from "remix-toast/middleware";
 
-import { EditPage } from "~/features/edit/edit-page";
 import { getInstance } from "~/i18n/i18n";
 import { Board } from "~/models/board";
+import { EditPage } from "~/pages/edit-page";
 import { di } from "~/server/di";
 import {
   BoardDbSaveError,

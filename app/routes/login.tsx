@@ -2,8 +2,8 @@ import { OAuthResolverError } from "@atproto/oauth-client-node";
 import { redirect } from "react-router";
 import { setToast } from "remix-toast/middleware";
 
-import { LoginPage } from "~/features/login/login-page";
 import { getInstance } from "~/i18n/i18n";
+import { LoginPage } from "~/pages/login-page";
 import { di } from "~/server/di";
 
 import type { Route } from "./+types/login";

@@ -3,10 +3,9 @@ import { useTranslation } from "react-i18next";
 import { BackButton } from "~/components/back-button";
 import { Card } from "~/components/card";
 import { Footer, Main } from "~/components/layout";
+import { DeleteBoardButton } from "~/features/settings/delete-button";
+import { LogoutButton } from "~/features/settings/logout-button";
 import type { OwnerView } from "~/models/owner";
-
-import { DeleteBoardButton } from "./delete-button";
-import { LogoutButton } from "./logout-button";
 
 type Props = {
   editor: OwnerView;

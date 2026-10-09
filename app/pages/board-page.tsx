@@ -2,11 +2,10 @@ import { useTranslation } from "react-i18next";
 
 import { Card } from "~/components/card";
 import { Footer, Main } from "~/components/layout";
+import { BoardViewer } from "~/features/board/board-viewer";
+import { ShareModal } from "~/features/board/share-modal";
 import type { ValidCard } from "~/models/card";
 import type { OwnerView } from "~/models/owner";
-
-import { BoardViewer } from "./board-viewer";
-import { ShareModal } from "./share-modal";
 
 type Props = {
   owner: OwnerView;
