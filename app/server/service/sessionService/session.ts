@@ -1,13 +1,11 @@
 import type { Did } from "@atproto/did";
 
 import type { ICookieSessionStorage } from "~/server/infrastructure/cookieSessionStorage";
+import type { ILogger } from "~/server/infrastructure/logger";
 import {
   type IOAuthClient,
   OAuthSessionInvalidError,
 } from "~/server/infrastructure/oauthClient";
-import { createLogger } from "~/utils/logger";
-
-const logger = createLogger("sessionService");
 
 export interface ISessionService {
   getSessionDid: (request: Request) => Promise<Did | null>;
@@ -18,10 +16,13 @@ export interface ISessionService {
 export const sessionServiceFactory = ({
   cookieSessionStorage,
   oauthClient,
+  logger,
 }: {
   cookieSessionStorage: ICookieSessionStorage;
   oauthClient: IOAuthClient;
+  logger: ILogger;
 }): ISessionService => {
+  const log = logger.child("sessionService");
   const getCookieDid = (request: Request) =>
     cookieSessionStorage.getDid(request.headers.get("Cookie"));
 
@@ -47,7 +48,7 @@ export const sessionServiceFactory = ({
       const ownerDid = await getCookieDid(request);
       if (ownerDid) {
         await oauthClient.revoke(ownerDid).catch((error: unknown) => {
-          logger.error(error, "OAuthセッションの失効に失敗しました");
+          log.error("OAuthセッションの失効に失敗しました", { error });
         });
       }
       return cookieSessionStorage.destroy(request.headers.get("Cookie"));

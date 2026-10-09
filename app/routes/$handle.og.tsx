@@ -5,11 +5,8 @@ import satori from "satori";
 
 import type { OwnerView } from "~/models/owner";
 import { di } from "~/server/di";
-import { createLogger } from "~/utils/logger";
 
 import type { Route } from "./+types/$handle.og";
-
-const logger = createLogger("$handle.og");
 
 const cache = new LRUCache<string, Uint8Array<ArrayBuffer>>({
   max: 100,
@@ -142,6 +139,7 @@ const createImage = async (owner: OwnerView) => {
 };
 
 export async function loader({ params }: Route.LoaderArgs) {
+  const logger = di.logger.child("$handle.og");
   const result = await di.boardService.findBoardView(params.handle);
   if (result.type !== "ok") {
     throw new Response(null, { status: 404 });
@@ -152,7 +150,7 @@ export async function loader({ params }: Route.LoaderArgs) {
     try {
       image = await createImage(owner);
     } catch (error) {
-      logger.warn(error, "OGP画像の生成に失敗しました");
+      logger.warn("OGP画像の生成に失敗しました", { error });
       throw new Response(null, { status: 404 });
     }
   }

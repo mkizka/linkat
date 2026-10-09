@@ -14,12 +14,13 @@ import type {
 } from "react-router";
 import { isRouteErrorResponse, ServerRouter } from "react-router";
 
+import { di } from "~/server/di";
+
 import { getInstance } from "./i18n/i18n";
-import { createLogger } from "./utils/logger";
+
+const logger = di.logger.child("entry.server");
 
 export const streamTimeout = 5_000;
-
-const logger = createLogger("entry.server");
 
 async function handleRequest(
   request: Request,
@@ -71,12 +72,9 @@ async function handleRequest(
           // errors encountered during initial shell rendering since they'll
           // reject and get logged in handleDocumentRequest.
           if (shellRendered) {
-            logger.error(
-              {
-                error,
-              },
-              "renderToPipeableStreamでエラーが発生しました",
-            );
+            logger.error("renderToPipeableStreamでエラーが発生しました", {
+              error,
+            });
           }
         },
       },
@@ -103,7 +101,7 @@ export function handleError(
     return;
   }
   Sentry.captureException(error);
-  logger.error(error, "サーバーエラーが発生しました");
+  logger.error("サーバーエラーが発生しました", { error });
 }
 
 export const instrumentations = [Sentry.createSentryServerInstrumentation()];

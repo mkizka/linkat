@@ -8,6 +8,7 @@ import { cursorRepositoryFactory } from "~/server/infrastructure/cursorRepositor
 import { db } from "~/server/infrastructure/drizzle";
 import { handleIndexFactory } from "~/server/infrastructure/handleIndex";
 import { identityResolverFactory } from "~/server/infrastructure/identityResolver";
+import { loggerFactory } from "~/server/infrastructure/logger";
 import { oauthClientFactory } from "~/server/infrastructure/oauthClient";
 import {
   sessionStoreFactory,
@@ -26,13 +27,14 @@ import { sessionServiceFactory } from "~/server/service/sessionService/session";
 
 export const di = await createRegistry()
   .value("db", db)
+  .service("logger", loggerFactory)
   .service("boardRepository", ["db"], boardRepositoryFactory)
   .service("cursorRepository", ["db"], cursorRepositoryFactory)
   .service("ownerRepository", ["db"], ownerRepositoryFactory)
   .service("handleIndex", ["db"], handleIndexFactory)
   .service("oauthStateStore", ["db"], stateStoreFactory)
   .service("oauthSessionStore", ["db"], sessionStoreFactory)
-  .service("identityResolver", identityResolverFactory)
+  .service("identityResolver", ["logger"], identityResolverFactory)
   .service("profileRecordParser", profileRecordParserFactory)
   .service(
     "oauthClient",
@@ -40,7 +42,11 @@ export const di = await createRegistry()
     oauthClientFactory,
   )
   .service("boardPdsRepository", ["oauthClient"], boardPdsRepositoryFactory)
-  .service("profileFetcher", ["profileRecordParser"], profileFetcherFactory)
+  .service(
+    "profileFetcher",
+    ["profileRecordParser", "logger"],
+    profileFetcherFactory,
+  )
   .service("atpassportClient", atpassportClientFactory)
   .service("cookieSessionStorage", cookieSessionStorageFactory)
   .service(
@@ -67,7 +73,7 @@ export const di = await createRegistry()
   .service("authService", ["oauthClient"], authServiceFactory)
   .service(
     "sessionService",
-    ["cookieSessionStorage", "oauthClient"],
+    ["cookieSessionStorage", "oauthClient", "logger"],
     sessionServiceFactory,
   )
   .service(
@@ -77,6 +83,7 @@ export const di = await createRegistry()
       "boardEventService",
       "ownerService",
       "profileRecordParser",
+      "logger",
     ],
     jetstreamServiceFactory,
   )
