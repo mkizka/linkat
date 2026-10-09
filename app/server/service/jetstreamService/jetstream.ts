@@ -12,6 +12,7 @@ import WebSocket from "ws";
 import { Board } from "~/models/board";
 import type { ICursorRepository } from "~/server/infrastructure/cursorRepository";
 import type { ILogger } from "~/server/infrastructure/logger";
+import type { IMetrics } from "~/server/infrastructure/metrics";
 import type { IProfileRecordParser } from "~/server/infrastructure/profileRecordParser";
 import type { IBoardEventService } from "~/server/service/boardEventService/boardEvent";
 import type { IOwnerService } from "~/server/service/ownerService/owner";
@@ -45,12 +46,14 @@ export const jetstreamServiceFactory = ({
   ownerService,
   profileRecordParser,
   logger,
+  metrics,
 }: {
   cursorRepository: ICursorRepository;
   boardEventService: IBoardEventService;
   ownerService: IOwnerService;
   profileRecordParser: IProfileRecordParser;
   logger: ILogger;
+  metrics: IMetrics;
 }): IJetstreamService => {
   const log = logger.child("jetstream");
   const jetstream = new Jetstream({
@@ -200,11 +203,11 @@ export const jetstreamServiceFactory = ({
       jetstream.start();
       setInterval(() => {
         if (jetstream.cursor !== undefined) {
-          log.info("Jetstreamの遅延を記録しました", {
-            lagSeconds: Math.round(
-              (Date.now() * 1000 - jetstream.cursor) / 1_000_000,
-            ),
-          });
+          metrics.gauge(
+            "jetstream.lag",
+            (Date.now() * 1000 - jetstream.cursor) / 1_000_000,
+            "second",
+          );
           cursorRepository.save(jetstream.cursor).catch((error: unknown) => {
             log.error("cursorの保存に失敗しました", { error });
           });

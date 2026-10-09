@@ -13,6 +13,7 @@ import { cursorRepositoryFactory } from "~/server/infrastructure/cursorRepositor
 import { db } from "~/server/infrastructure/drizzle";
 import type { IIdentityResolver } from "~/server/infrastructure/identityResolver";
 import { loggerFactory } from "~/server/infrastructure/logger";
+import type { IMetrics } from "~/server/infrastructure/metrics";
 import { ownerRepositoryFactory } from "~/server/infrastructure/ownerRepository";
 import { profileFetcherFactory } from "~/server/infrastructure/profileFetcher";
 import { profileRecordParserFactory } from "~/server/infrastructure/profileRecordParser";
@@ -48,6 +49,7 @@ const jetstreamService = jetstreamServiceFactory({
   ownerService,
   profileRecordParser,
   logger,
+  metrics: mock<IMetrics>(),
 });
 
 const pool = new Pool({ connectionString: env.DATABASE_URL });
