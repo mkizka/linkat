@@ -2,7 +2,7 @@
   "name": "linkat",
   "type": "module",
   "private": true,
-  "packageManager": "pnpm@12.10.0",
+  "packageManager": "pnpm@12.10.1",
   "scripts": {
     "_eslint": "eslint --cache --cache-location ./node_modules/.cache/eslint",
     "all": "run-s typecheck format test",
@@ -71,7 +71,7 @@
     "remix-i18next": "8.0.0",
     "remix-toast": "4.0.0",
     "remix-utils": "10.0.0",
-    "satori": "0.35.0",
+    "satori": "0.35.1",
     "tailwind-merge": "3.7.0",
     "ws": "8.22.0",
     "zod": "4.6.5"
