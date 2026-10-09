@@ -11,6 +11,8 @@ build({
   format: "esm",
   outdir: "./dist",
   sourcemap: true,
+  // sentryEsbuildPluginはDebug ID注入のためにエントリポイントを`export default OriginalModule.default`を含む
+  // プロキシモジュールで包むが、app/server.tsにはdefault exportが無いためesbuildが警告を出す
   logOverride: { "import-is-undefined": "silent" },
   external: [
     "lightningcss", // なぜか必要
