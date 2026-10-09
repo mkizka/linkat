@@ -148,20 +148,44 @@ export const jetstreamServiceFactory = ({
     });
   });
 
-  jetstream.onCreate("blue.linkat.board", handleCreateOrUpdate);
-
-  jetstream.onUpdate("blue.linkat.board", handleCreateOrUpdate);
-
-  jetstream.onDelete("blue.linkat.board", async (event) => {
+  const handleBoardDelete = async (
+    event: CommitDeleteEvent<"blue.linkat.board">,
+  ) => {
     await boardEventService.handleBoardDeleteCommit(event.did);
     log.info("ボードを削除しました", { ownerDid: event.did });
+  };
+
+  const logBoardError = (error: unknown) => {
+    log.error("ボードの更新に失敗しました", { error });
+  };
+
+  const logProfileError = (error: unknown) => {
+    log.error("プロフィールの更新に失敗しました", { error });
+  };
+
+  jetstream.onCreate("blue.linkat.board", (event) => {
+    handleCreateOrUpdate(event).catch(logBoardError);
   });
 
-  jetstream.onCreate("app.bsky.actor.profile", handleProfileCommit);
+  jetstream.onUpdate("blue.linkat.board", (event) => {
+    handleCreateOrUpdate(event).catch(logBoardError);
+  });
 
-  jetstream.onUpdate("app.bsky.actor.profile", handleProfileCommit);
+  jetstream.onDelete("blue.linkat.board", (event) => {
+    handleBoardDelete(event).catch(logBoardError);
+  });
 
-  jetstream.onDelete("app.bsky.actor.profile", handleProfileCommit);
+  jetstream.onCreate("app.bsky.actor.profile", (event) => {
+    handleProfileCommit(event).catch(logProfileError);
+  });
+
+  jetstream.onUpdate("app.bsky.actor.profile", (event) => {
+    handleProfileCommit(event).catch(logProfileError);
+  });
+
+  jetstream.onDelete("app.bsky.actor.profile", (event) => {
+    handleProfileCommit(event).catch(logProfileError);
+  });
 
   return {
     handleCreateOrUpdate,
@@ -176,6 +200,11 @@ export const jetstreamServiceFactory = ({
       jetstream.start();
       setInterval(() => {
         if (jetstream.cursor !== undefined) {
+          log.info("Jetstreamの遅延を記録しました", {
+            lagSeconds: Math.round(
+              (Date.now() * 1000 - jetstream.cursor) / 1_000_000,
+            ),
+          });
           cursorRepository.save(jetstream.cursor).catch((error: unknown) => {
             log.error("cursorの保存に失敗しました", { error });
           });
