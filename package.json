@@ -116,7 +116,6 @@
     "vitest": "5.0.3",
     "vitest-mock-extended": "5.1.1"
   },
-  "sideEffects": false,
   "lint-staged": {
     "*.{js,mjs,ts,tsx}": "eslint --cache --cache-location ./node_modules/.cache/eslint --fix",
     "*": "prettier --ignore-unknown --write"
