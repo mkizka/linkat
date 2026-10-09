@@ -82,6 +82,7 @@
     "@mkizka/eslint-plugin-aaa": "1.0.2",
     "@playwright/test": "1.63.0",
     "@react-router/dev": "8.4.0",
+    "@sentry/bundler-plugins": "11.1.0",
     "@storybook/react-vite": "10.6.1",
     "@tailwindcss/typography": "0.5.20",
     "@testcontainers/postgresql": "12.2.0",
