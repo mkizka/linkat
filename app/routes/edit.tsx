@@ -9,7 +9,7 @@ import { di } from "~/server/di";
 import {
   BoardDbSaveError,
   BoardPdsSaveError,
-} from "~/server/service/boardEventService/boardEvent";
+} from "~/server/service/board/boardEvent";
 import { env } from "~/utils/env";
 import { tryCatch } from "~/utils/tryCatch";
 

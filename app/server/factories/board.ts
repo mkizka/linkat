@@ -1,5 +1,5 @@
-import { db } from "~/server/infrastructure/drizzle";
-import { boardTable } from "~/server/infrastructure/schema";
+import { db } from "~/server/infrastructure/db/drizzle";
+import { boardTable } from "~/server/infrastructure/db/schema";
 
 import { OwnerFactory } from "./owner";
 

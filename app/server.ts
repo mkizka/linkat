@@ -3,7 +3,7 @@ import express from "express";
 import type { ServerBuild } from "react-router";
 
 import { di } from "~/server/di.js";
-import { httpLogger } from "~/server/infrastructure/logger.js";
+import { httpLogger } from "~/server/infrastructure/logger/logger.js";
 
 import { env } from "./utils/env.js";
 
