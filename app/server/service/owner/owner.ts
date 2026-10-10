@@ -1,12 +1,17 @@
 import type { Did } from "@atproto/did";
 
-import { type AccountState, Owner, type Profile } from "~/models/owner";
+import {
+  type AccountState,
+  Owner,
+  type OwnerView,
+  type Profile,
+} from "~/models/owner";
 import type { IIdentityResolver } from "~/server/infrastructure/owner/identityResolver";
 import type { IOwnerRepository } from "~/server/infrastructure/owner/ownerRepository";
 import type { IProfileFetcher } from "~/server/infrastructure/owner/profileFetcher";
 
 export interface IOwnerService {
-  findOwner: (did: Did) => Promise<Owner>;
+  findOwnerView: (did: Did) => Promise<OwnerView>;
   syncOwner: (did: Did) => Promise<Owner>;
   updateProfile: (did: Did, profile: Profile | null) => Promise<Owner | null>;
   refreshHandle: (did: Did) => Promise<Owner | null>;
@@ -22,8 +27,12 @@ export const ownerServiceFactory = ({
   profileFetcher: IProfileFetcher;
   identityResolver: IIdentityResolver;
 }): IOwnerService => ({
-  async findOwner(did) {
-    return (await ownerRepository.findByDid(did)) ?? Owner.create(did);
+  async findOwnerView(did) {
+    const owner = await ownerRepository.findByDid(did);
+    if (!owner) {
+      return Owner.viewFromDid(did);
+    }
+    return owner.toView();
   },
   async syncOwner(did) {
     const identity = await identityResolver.resolve(did);

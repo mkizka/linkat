@@ -1,3 +1,5 @@
+import { asDid } from "@atproto/did";
+
 import { Owner } from "./owner";
 
 const createOwner = (props: Partial<ConstructorParameters<typeof Owner>[0]>) =>
@@ -70,26 +72,19 @@ describe("isHidden", () => {
   );
 });
 
-describe("withProfile", () => {
-  test("nullを渡すとプロフィールを空にし、ハンドルと状態は残す", () => {
+describe("viewFromDid", () => {
+  test("URLと表示にDIDを使い、表示名とアバターはnullにする", () => {
     // arrange
-    const owner = createOwner({
-      avatarCid: "bafkreidummy",
-      description: "説明",
-      displayName: "Alice",
-      active: false,
-      status: "suspended",
-    });
+    const did = asDid("did:plc:dummy");
     // act
-    const actual = owner.withProfile(null);
+    const actual = Owner.viewFromDid(did);
     // assert
-    expect(actual).toMatchObject({
-      avatarCid: null,
-      description: null,
+    expect(actual).toEqual({
+      did: "did:plc:dummy",
+      handleOrDid: "did:plc:dummy",
+      displayHandle: "@did:plc:dummy",
       displayName: null,
-      handle: "example.com",
-      active: false,
-      status: "suspended",
+      avatarUrl: null,
     });
   });
 });

@@ -41,37 +41,18 @@ export class Owner {
     this.updatedAt = props.updatedAt;
   }
 
-  static create(did: Did) {
-    const now = new Date();
-    return new Owner({
+  static viewFromDid(did: Did): OwnerView {
+    return {
       did,
-      avatarCid: null,
-      description: null,
+      handleOrDid: did,
+      displayHandle: `@${did}`,
       displayName: null,
-      handle: null,
-      active: true,
-      status: null,
-      createdAt: now,
-      updatedAt: now,
-    });
+      avatarUrl: null,
+    };
   }
 
   isHidden() {
     return !this.active;
-  }
-
-  withProfile(profile: Profile | null) {
-    return new Owner({
-      did: this.did,
-      avatarCid: profile?.avatarCid ?? null,
-      description: profile?.description ?? null,
-      displayName: profile?.displayName ?? null,
-      handle: this.handle,
-      active: this.active,
-      status: this.status,
-      createdAt: this.createdAt,
-      updatedAt: new Date(),
-    });
   }
 
   toView() {

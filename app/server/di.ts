@@ -59,7 +59,7 @@ export const di = await createRegistry()
   )
   .service(
     "boardService",
-    ["boardRepository", "handleIndex", "ownerService"],
+    ["boardRepository", "handleIndex", "ownerRepository"],
     boardServiceFactory,
   )
   .service(

@@ -1,5 +1,4 @@
 import { asDid } from "@atproto/did";
-import { mock } from "vitest-mock-extended";
 
 import { Board } from "~/models/board";
 import { BoardFactory, cardsFromFactory } from "~/server/factories/board";
@@ -7,21 +6,14 @@ import { OwnerFactory } from "~/server/factories/owner";
 import { boardRepositoryFactory } from "~/server/infrastructure/board/boardRepository";
 import { db } from "~/server/infrastructure/db/drizzle";
 import { handleIndexFactory } from "~/server/infrastructure/owner/handleIndex";
-import type { IIdentityResolver } from "~/server/infrastructure/owner/identityResolver";
 import { ownerRepositoryFactory } from "~/server/infrastructure/owner/ownerRepository";
-import type { IProfileFetcher } from "~/server/infrastructure/owner/profileFetcher";
-import { ownerServiceFactory } from "~/server/service/owner/owner";
 
 import { boardServiceFactory } from "./board";
 
 const boardService = boardServiceFactory({
   boardRepository: boardRepositoryFactory({ db }),
   handleIndex: handleIndexFactory({ db }),
-  ownerService: ownerServiceFactory({
-    ownerRepository: ownerRepositoryFactory({ db }),
-    profileFetcher: mock<IProfileFetcher>(),
-    identityResolver: mock<IIdentityResolver>(),
-  }),
+  ownerRepository: ownerRepositoryFactory({ db }),
 });
 
 describe("boardService", () => {

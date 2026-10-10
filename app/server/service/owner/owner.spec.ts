@@ -43,33 +43,25 @@ beforeEach(() => {
 });
 
 describe("ownerService", () => {
-  describe("findOwner", () => {
-    test("持ち主を取得できる", async () => {
-      // arrange
-      const owner = await OwnerFactory.create();
-      // act
-      const actual = await ownerService.findOwner(asDid(owner.did));
-      // assert
-      expect(actual).toEqual(owner);
-    });
-    test("写しが古くても、ハンドルを解決せずに写しをそのまま返す", async () => {
+  describe("findOwnerView", () => {
+    test("写しが古くても、ハンドルを解決せずに写しの表示用データを返す", async () => {
       // arrange
       const owner = await OwnerFactory.create({
         updatedAt: new Date("2000-01-01T00:00:00Z"),
       });
       // act
-      const actual = await ownerService.findOwner(asDid(owner.did));
+      const actual = await ownerService.findOwnerView(asDid(owner.did));
       // assert
-      expect(actual).toEqual(owner);
+      expect(actual).toEqual(new Owner(owner).toView());
       expect(identityResolver.resolve).not.toHaveBeenCalled();
     });
-    test("写しに無いDIDはDIDだけの持ち主を返し、写しを作らない", async () => {
+    test("写しに無いDIDはDIDだけの表示用データを返し、写しを作らない", async () => {
       // arrange
       const did = asDid("did:plc:notowner0000000000000000");
       // act
-      const actual = await ownerService.findOwner(did);
+      const actual = await ownerService.findOwnerView(did);
       // assert
-      expect(actual.toView()).toEqual(Owner.create(did).toView());
+      expect(actual).toEqual(Owner.viewFromDid(did));
       expect(identityResolver.resolve).not.toHaveBeenCalled();
       expect(await ownerRepository.findByDid(did)).toBeNull();
     });
