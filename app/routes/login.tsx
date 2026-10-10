@@ -22,16 +22,18 @@ export async function action({ request, context }: Route.ActionArgs) {
   }
   try {
     const url = await di.authService.authorize(handle);
+    logger.info("ログインを開始しました", { method: "handle" });
     return redirect(url.toString());
   } catch (error) {
-    logger.error("OAuthログインに失敗しました", { error });
     if (error instanceof OAuthResolverError) {
+      logger.warn("ハンドルを解決できずOAuthログインに失敗しました", { error });
       setToast(context, {
         message: i18next.t("login.oauth-resolve-error-message"),
         type: "error",
       });
       return null;
     }
+    logger.error("OAuthログインに失敗しました", { error });
     setToast(context, {
       message: i18next.t("login.default-error-message"),
       type: "error",

@@ -11,7 +11,7 @@ import { env, isProduction } from "~/utils/env";
 export interface IIdentityResolver {
   resolve: (
     did: Did,
-    options?: { noCache?: boolean },
+    options?: { fresh?: boolean },
   ) => Promise<{ did: Did; handle: string | null; pds: string } | null>;
 }
 
@@ -30,7 +30,9 @@ export const identityResolverFactory = ({
   return {
     async resolve(did, options) {
       try {
-        const { didDoc, handle } = await resolver.resolve(did, options);
+        const { didDoc, handle } = await resolver.resolve(did, {
+          noCache: options?.fresh,
+        });
         return {
           did,
           handle: handle === HANDLE_INVALID ? null : handle,

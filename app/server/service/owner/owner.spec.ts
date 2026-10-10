@@ -121,6 +121,28 @@ describe("ownerService", () => {
         displayName: "Alice",
       });
     });
+    test("プロフィールのレコードが無ければ、プロフィールを空にする", async () => {
+      // arrange
+      const owner = await OwnerFactory.create({ displayName: "Alice" });
+      mockIdentity(owner.did, "alice.example.com");
+      server.use(
+        http.get(getRecordUrl, () =>
+          HttpResponse.json(
+            { error: "RecordNotFound", message: "Could not locate record" },
+            { status: 400 },
+          ),
+        ),
+      );
+      // act
+      const actual = await ownerService.syncOwner(asDid(owner.did));
+      // assert
+      expect(actual).toMatchObject({
+        handle: "alice.example.com",
+        displayName: null,
+        description: null,
+        avatarCid: null,
+      });
+    });
   });
 
   describe("updateProfile", () => {
@@ -206,7 +228,7 @@ describe("ownerService", () => {
       const actual = await ownerService.refreshHandle(asDid(owner.did));
       // assert
       expect(identityResolver.resolve).toHaveBeenCalledWith(owner.did, {
-        noCache: true,
+        fresh: true,
       });
       expect(actual).toMatchObject({
         handle: "new.example.com",

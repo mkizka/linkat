@@ -36,10 +36,15 @@ export const ownerServiceFactory = ({
   },
   async syncOwner(did) {
     const identity = await identityResolver.resolve(did);
-    const profile =
-      identity && (await profileFetcher.fetchProfile(identity.pds, did));
+    if (!identity) {
+      return await ownerRepository.upsert(did, { handle: null });
+    }
+    const profile = await profileFetcher.fetchProfile(identity.pds, did);
+    if (profile instanceof Error) {
+      return await ownerRepository.upsert(did, { handle: identity.handle });
+    }
     return await ownerRepository.upsert(did, {
-      handle: identity?.handle ?? null,
+      handle: identity.handle,
       profile,
     });
   },
@@ -57,7 +62,7 @@ export const ownerServiceFactory = ({
     if (!(await ownerRepository.findByDid(did))) {
       return null;
     }
-    const identity = await identityResolver.resolve(did, { noCache: true });
+    const identity = await identityResolver.resolve(did, { fresh: true });
     return await ownerRepository.updateHandle(did, identity?.handle ?? null);
   },
   async updateAccountState(did, state) {
