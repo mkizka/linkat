@@ -22,6 +22,7 @@ export async function action({ request, context }: Route.ActionArgs) {
   }
   try {
     const url = await di.authService.authorize(handle);
+    logger.info("ログインを開始しました", { method: "handle" });
     return redirect(url.toString());
   } catch (error) {
     logger.error("OAuthログインに失敗しました", { error });

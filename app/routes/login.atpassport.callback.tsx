@@ -15,6 +15,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   }
   try {
     const authorizeUrl = await di.authService.authorize(handle);
+    logger.info("ログインを開始しました", { method: "atpassport" });
     return redirect(authorizeUrl.toString());
   } catch (error) {
     logger.error("ATPassport経由のOAuthログインに失敗しました", { error });
