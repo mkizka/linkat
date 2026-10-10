@@ -12,7 +12,6 @@ import type { IOwnerRepository } from "~/server/infrastructure/owner/ownerReposi
 import type { IProfileFetcher } from "~/server/infrastructure/owner/profileFetcher";
 
 export interface IOwnerService {
-  findOwner: (did: Did) => Promise<Owner | null>;
   findOwnerView: (did: Did) => Promise<OwnerView>;
   syncOwner: (did: Did) => Promise<Owner>;
   updateProfile: (did: Did, profile: Profile | null) => Promise<Owner | null>;
@@ -29,13 +28,12 @@ export const ownerServiceFactory = ({
   profileFetcher: IProfileFetcher;
   identityResolver: IIdentityResolver;
 }): IOwnerService => ({
-  async findOwner(did) {
-    return await ownerRepository.findByDid(did);
-  },
   async findOwnerView(did) {
-    return (
-      (await ownerRepository.findByDid(did))?.toView() ?? ownerViewFromDid(did)
-    );
+    const owner = await ownerRepository.findByDid(did);
+    if (!owner) {
+      return ownerViewFromDid(did);
+    }
+    return owner.toView();
   },
   async syncOwner(did) {
     const identity = await identityResolver.resolve(did);
