@@ -129,10 +129,9 @@ export const ingesterClientFactory = ({
       }, CURSOR_SAVE_INTERVAL_MS).unref();
       setInterval(() => {
         if (jetstream.cursor !== undefined) {
-          metrics.gauge(
-            "jetstream.lag",
-            Date.now() * 1000 - jetstream.cursor,
-            "microsecond",
+          metrics.setGauge(
+            "jetstream_lag_seconds",
+            (Date.now() * 1000 - jetstream.cursor) / 1_000_000,
           );
         }
       }, LAG_REPORT_INTERVAL_MS).unref();
