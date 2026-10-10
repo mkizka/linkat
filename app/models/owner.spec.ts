@@ -1,6 +1,6 @@
 import { asDid } from "@atproto/did";
 
-import { Owner, ownerViewFromDid } from "./owner";
+import { Owner } from "./owner";
 
 const createOwner = (props: Partial<ConstructorParameters<typeof Owner>[0]>) =>
   new Owner({
@@ -72,12 +72,12 @@ describe("isHidden", () => {
   );
 });
 
-describe("ownerViewFromDid", () => {
+describe("viewFromDid", () => {
   test("URLと表示にDIDを使い、表示名とアバターはnullにする", () => {
     // arrange
     const did = asDid("did:plc:dummy");
     // act
-    const actual = ownerViewFromDid(did);
+    const actual = Owner.viewFromDid(did);
     // assert
     expect(actual).toEqual({
       did: "did:plc:dummy",

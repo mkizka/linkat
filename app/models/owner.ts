@@ -41,6 +41,16 @@ export class Owner {
     this.updatedAt = props.updatedAt;
   }
 
+  static viewFromDid(did: Did): OwnerView {
+    return {
+      did,
+      handleOrDid: did,
+      displayHandle: `@${did}`,
+      displayName: null,
+      avatarUrl: null,
+    };
+  }
+
   isHidden() {
     return !this.active;
   }
@@ -59,11 +69,3 @@ export class Owner {
 }
 
 export type OwnerView = ReturnType<Owner["toView"]>;
-
-export const ownerViewFromDid = (did: Did): OwnerView => ({
-  did,
-  handleOrDid: did,
-  displayHandle: `@${did}`,
-  displayName: null,
-  avatarUrl: null,
-});

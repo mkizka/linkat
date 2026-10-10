@@ -3,7 +3,7 @@ import { http, HttpResponse } from "msw";
 import { mock, mockReset } from "vitest-mock-extended";
 
 import { server } from "~/mocks/server";
-import { Owner, ownerViewFromDid } from "~/models/owner";
+import { Owner } from "~/models/owner";
 import { OwnerFactory } from "~/server/factories/owner";
 import { db } from "~/server/infrastructure/db/drizzle";
 import { loggerFactory } from "~/server/infrastructure/logger/logger";
@@ -61,7 +61,7 @@ describe("ownerService", () => {
       // act
       const actual = await ownerService.findOwnerView(did);
       // assert
-      expect(actual).toEqual(ownerViewFromDid(did));
+      expect(actual).toEqual(Owner.viewFromDid(did));
       expect(identityResolver.resolve).not.toHaveBeenCalled();
       expect(await ownerRepository.findByDid(did)).toBeNull();
     });

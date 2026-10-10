@@ -1,7 +1,7 @@
 import { type Did, isDid } from "@atproto/did";
 
 import type { Board } from "~/models/board";
-import { type OwnerView, ownerViewFromDid } from "~/models/owner";
+import { Owner, type OwnerView } from "~/models/owner";
 import type { IBoardRepository } from "~/server/infrastructure/board/boardRepository";
 import type { IHandleIndex } from "~/server/infrastructure/owner/handleIndex";
 import type { IOwnerRepository } from "~/server/infrastructure/owner/ownerRepository";
@@ -45,7 +45,7 @@ export const boardServiceFactory = ({
     }
     return {
       type: "ok",
-      owner: owner?.toView() ?? ownerViewFromDid(did),
+      owner: owner?.toView() ?? Owner.viewFromDid(did),
       board,
     };
   },

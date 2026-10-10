@@ -2,9 +2,8 @@ import type { Did } from "@atproto/did";
 
 import {
   type AccountState,
-  type Owner,
+  Owner,
   type OwnerView,
-  ownerViewFromDid,
   type Profile,
 } from "~/models/owner";
 import type { IIdentityResolver } from "~/server/infrastructure/owner/identityResolver";
@@ -31,7 +30,7 @@ export const ownerServiceFactory = ({
   async findOwnerView(did) {
     const owner = await ownerRepository.findByDid(did);
     if (!owner) {
-      return ownerViewFromDid(did);
+      return Owner.viewFromDid(did);
     }
     return owner.toView();
   },
