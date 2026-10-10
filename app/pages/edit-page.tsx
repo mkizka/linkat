@@ -8,7 +8,7 @@ import { SyncError } from "~/features/edit/sync-error";
 import { SyncLoading } from "~/features/edit/sync-loading";
 import { useUmami } from "~/hooks/useUmami";
 import type { ValidCard } from "~/models/card";
-import type { OwnerView } from "~/models/owner";
+import type { OwnerView } from "~/server/service/owner/ownerView";
 
 type EditorProps = {
   editor: OwnerView;

@@ -26,6 +26,7 @@ import { boardServiceFactory } from "~/server/service/board/board";
 import { boardEventServiceFactory } from "~/server/service/board/boardEvent";
 import { ingesterServiceFactory } from "~/server/service/ingester/ingester";
 import { ownerServiceFactory } from "~/server/service/owner/owner";
+import { ownerViewServiceFactory } from "~/server/service/owner/ownerView";
 
 export const di = await createRegistry()
   .value("db", db)
@@ -52,14 +53,20 @@ export const di = await createRegistry()
   )
   .service("atpassportClient", atpassportClientFactory)
   .service("cookieSessionStorage", cookieSessionStorageFactory)
+  .service("ownerViewService", ownerViewServiceFactory)
   .service(
     "ownerService",
-    ["ownerRepository", "profileFetcher", "identityResolver"],
+    [
+      "ownerRepository",
+      "profileFetcher",
+      "identityResolver",
+      "ownerViewService",
+    ],
     ownerServiceFactory,
   )
   .service(
     "boardService",
-    ["boardRepository", "handleIndex", "ownerRepository"],
+    ["boardRepository", "handleIndex", "ownerRepository", "ownerViewService"],
     boardServiceFactory,
   )
   .service(

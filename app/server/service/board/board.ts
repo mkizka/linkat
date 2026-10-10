@@ -1,10 +1,13 @@
 import { type Did, isDid } from "@atproto/did";
 
 import type { Board } from "~/models/board";
-import { Owner, type OwnerView } from "~/models/owner";
 import type { IBoardRepository } from "~/server/infrastructure/board/boardRepository";
 import type { IHandleIndex } from "~/server/infrastructure/owner/handleIndex";
 import type { IOwnerRepository } from "~/server/infrastructure/owner/ownerRepository";
+import type {
+  IOwnerViewService,
+  OwnerView,
+} from "~/server/service/owner/ownerView";
 
 export type BoardView =
   | { type: "not-found" }
@@ -20,10 +23,12 @@ export const boardServiceFactory = ({
   boardRepository,
   handleIndex,
   ownerRepository,
+  ownerViewService,
 }: {
   boardRepository: IBoardRepository;
   handleIndex: IHandleIndex;
   ownerRepository: IOwnerRepository;
+  ownerViewService: IOwnerViewService;
 }): IBoardService => ({
   async findBoard(ownerDid) {
     return await boardRepository.find(ownerDid);
@@ -45,7 +50,7 @@ export const boardServiceFactory = ({
     }
     return {
       type: "ok",
-      owner: owner?.toView() ?? Owner.viewFromDid(did),
+      owner: ownerViewService.toOwnerView(did, owner),
       board,
     };
   },

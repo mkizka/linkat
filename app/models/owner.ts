@@ -41,31 +41,7 @@ export class Owner {
     this.updatedAt = props.updatedAt;
   }
 
-  static viewFromDid(did: Did): OwnerView {
-    return {
-      did,
-      handleOrDid: did,
-      displayHandle: `@${did}`,
-      displayName: null,
-      avatarUrl: null,
-    };
-  }
-
   isHidden() {
     return !this.active;
   }
-
-  toView() {
-    return {
-      did: this.did,
-      handleOrDid: this.handle ?? this.did,
-      displayHandle: `@${this.handle ?? this.did}`,
-      displayName: this.displayName,
-      avatarUrl: this.avatarCid
-        ? `https://cdn.bsky.app/img/avatar/plain/${this.did}/${this.avatarCid}@jpeg`
-        : null,
-    };
-  }
 }
-
-export type OwnerView = ReturnType<Owner["toView"]>;

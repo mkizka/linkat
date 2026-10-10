@@ -16,6 +16,7 @@ import { profileFetcherFactory } from "~/server/infrastructure/owner/profileFetc
 import { profileRecordParserFactory } from "~/server/infrastructure/owner/profileRecordParser";
 import { boardEventServiceFactory } from "~/server/service/board/boardEvent";
 import { ownerServiceFactory } from "~/server/service/owner/owner";
+import { ownerViewServiceFactory } from "~/server/service/owner/ownerView";
 import { env } from "~/utils/env";
 
 import { ingesterServiceFactory } from "./ingester";
@@ -33,6 +34,7 @@ const ownerService = ownerServiceFactory({
   ownerRepository,
   profileFetcher,
   identityResolver,
+  ownerViewService: ownerViewServiceFactory(),
 });
 
 const ingesterService = ingesterServiceFactory({

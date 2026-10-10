@@ -5,7 +5,7 @@ import { Card } from "~/components/card";
 import { Footer, Main } from "~/components/layout";
 import { DeleteBoardButton } from "~/features/settings/delete-button";
 import { LogoutButton } from "~/features/settings/logout-button";
-import type { OwnerView } from "~/models/owner";
+import type { OwnerView } from "~/server/service/owner/ownerView";
 
 type Props = {
   editor: OwnerView;

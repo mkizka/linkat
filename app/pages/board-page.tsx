@@ -5,7 +5,7 @@ import { Footer, Main } from "~/components/layout";
 import { BoardViewer } from "~/features/board/board-viewer";
 import { ShareModal } from "~/features/board/share-modal";
 import type { ValidCard } from "~/models/card";
-import type { OwnerView } from "~/models/owner";
+import type { OwnerView } from "~/server/service/owner/ownerView";
 
 type Props = {
   owner: OwnerView;
