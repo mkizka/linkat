@@ -25,7 +25,7 @@ export async function action({ request, context }: Route.ActionArgs) {
     return redirect(url.toString());
   } catch (error) {
     if (error instanceof OAuthResolverError) {
-      logger.warn("OAuthログインに失敗しました", { error });
+      logger.warn("ハンドルを解決できずOAuthログインに失敗しました", { error });
       setToast(context, {
         message: i18next.t("login.oauth-resolve-error-message"),
         type: "error",
