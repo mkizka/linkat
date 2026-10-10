@@ -11,6 +11,7 @@ import { boardPdsRepositoryFactory } from "~/server/infrastructure/board/boardPd
 import { boardRepositoryFactory } from "~/server/infrastructure/board/boardRepository";
 import { db } from "~/server/infrastructure/db/drizzle";
 import { cursorRepositoryFactory } from "~/server/infrastructure/jetstream/cursorRepository";
+import { jetstreamClientFactory } from "~/server/infrastructure/jetstream/jetstreamClient";
 import { loggerFactory } from "~/server/infrastructure/logger/logger";
 import { metricsFactory } from "~/server/infrastructure/metrics/metrics";
 import { handleIndexFactory } from "~/server/infrastructure/owner/handleIndex";
@@ -80,14 +81,12 @@ export const di = await createRegistry()
   )
   .service(
     "jetstreamService",
-    [
-      "cursorRepository",
-      "boardEventService",
-      "ownerService",
-      "profileRecordParser",
-      "logger",
-      "metrics",
-    ],
+    ["boardEventService", "ownerService", "profileRecordParser", "logger"],
     jetstreamServiceFactory,
+  )
+  .service(
+    "jetstreamClient",
+    ["cursorRepository", "logger", "metrics"],
+    jetstreamClientFactory,
   )
   .resolve();

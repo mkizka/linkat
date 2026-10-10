@@ -6,13 +6,12 @@ import { Pool } from "pg";
 import { mock, mockReset } from "vitest-mock-extended";
 
 import { server } from "~/mocks/server";
+import { BoardFactory } from "~/server/factories/board";
 import { OwnerFactory } from "~/server/factories/owner";
 import type { IBoardPdsRepository } from "~/server/infrastructure/board/boardPdsRepository";
 import { boardRepositoryFactory } from "~/server/infrastructure/board/boardRepository";
 import { db } from "~/server/infrastructure/db/drizzle";
-import { cursorRepositoryFactory } from "~/server/infrastructure/jetstream/cursorRepository";
 import { loggerFactory } from "~/server/infrastructure/logger/logger";
-import type { IMetrics } from "~/server/infrastructure/metrics/metrics";
 import type { IIdentityResolver } from "~/server/infrastructure/owner/identityResolver";
 import { ownerRepositoryFactory } from "~/server/infrastructure/owner/ownerRepository";
 import { profileFetcherFactory } from "~/server/infrastructure/owner/profileFetcher";
@@ -39,7 +38,6 @@ const ownerService = ownerServiceFactory({
 });
 
 const jetstreamService = jetstreamServiceFactory({
-  cursorRepository: cursorRepositoryFactory({ db }),
   boardEventService: boardEventServiceFactory({
     boardRepository: boardRepositoryFactory({ db }),
     boardPdsRepository: mock<IBoardPdsRepository>(),
@@ -49,7 +47,6 @@ const jetstreamService = jetstreamServiceFactory({
   ownerService,
   profileRecordParser,
   logger,
-  metrics: mock<IMetrics>(),
 });
 
 const pool = new Pool({ connectionString: env.DATABASE_URL });
@@ -251,6 +248,31 @@ describe("jetstreamService", () => {
         handle: "new.example.com",
         displayName: owner.displayName,
       });
+    });
+  });
+
+  describe("handleBoardDelete", () => {
+    test("ボードを削除する", async () => {
+      // arrange
+      const board = await BoardFactory.create();
+      // act
+      await jetstreamService.handleBoardDelete({
+        did: asDid(board.ownerDid),
+        time_us: Date.now() * 1000,
+        kind: EventType.Commit,
+        commit: {
+          operation: CommitType.Delete,
+          rev: "abc",
+          collection: "blue.linkat.board",
+          rkey: "self",
+        },
+      });
+      // assert
+      const { rows } = await pool.query(
+        `SELECT * FROM "Board" WHERE "ownerDid" = $1`,
+        [board.ownerDid],
+      );
+      expect(rows).toHaveLength(0);
     });
   });
 

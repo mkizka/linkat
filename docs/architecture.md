@@ -11,6 +11,8 @@
 
 サービスとインフラは`{層}/{関心}/ファイル`の形で置く。
 
+Jetstreamへの接続とカーソルの保存は`app/server/infrastructure/jetstream`が行い、受け取ったイベントを`app/server/service/jetstream`に渡す。
+
 依存の組み立ては`app/server/di.ts`で行う。
 
 ## 方針
