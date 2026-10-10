@@ -24,14 +24,15 @@ export async function action({ request, context }: Route.ActionArgs) {
     const url = await di.authService.authorize(handle);
     return redirect(url.toString());
   } catch (error) {
-    logger.error("OAuthログインに失敗しました", { error });
     if (error instanceof OAuthResolverError) {
+      logger.warn("OAuthログインに失敗しました", { error });
       setToast(context, {
         message: i18next.t("login.oauth-resolve-error-message"),
         type: "error",
       });
       return null;
     }
+    logger.error("OAuthログインに失敗しました", { error });
     setToast(context, {
       message: i18next.t("login.default-error-message"),
       type: "error",
