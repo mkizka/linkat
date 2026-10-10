@@ -1,5 +1,5 @@
 import type { Did } from "@atproto/did";
-import { Client } from "@atproto/lex";
+import { Client, XrpcResponseError } from "@atproto/lex";
 
 import profile from "~/generated/app/bsky/actor/profile";
 import type { Profile } from "~/models/owner";
@@ -8,7 +8,7 @@ import type { IProfileRecordParser } from "~/server/infrastructure/owner/profile
 import { tryCatch } from "~/utils/tryCatch";
 
 export interface IProfileFetcher {
-  fetchProfile: (pds: string, did: Did) => Promise<Profile | null>;
+  fetchProfile: (pds: string, did: Did) => Promise<Profile | null | Error>;
 }
 
 const fetchProfileRecord = async (pds: string, did: Did) => {
@@ -28,11 +28,20 @@ export const profileFetcherFactory = ({
     async fetchProfile(pds, did) {
       log.info("プロフィールを取得します", { did });
       const fetched = await tryCatch(fetchProfileRecord)(pds, did);
-      if (fetched instanceof Error) {
-        log.warn("プロフィールの取得に失敗しました", { error: fetched });
+      if (
+        fetched instanceof XrpcResponseError &&
+        fetched.error === "RecordNotFound"
+      ) {
         return null;
       }
-      return profileRecordParser.parse(fetched);
+      if (fetched instanceof Error) {
+        log.warn("プロフィールの取得に失敗しました", { error: fetched });
+        return fetched;
+      }
+      return (
+        profileRecordParser.parse(fetched) ??
+        new Error("プロフィールのパースに失敗しました")
+      );
     },
   };
 };
