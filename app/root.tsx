@@ -18,12 +18,37 @@ import type { Route } from "./+types/root";
 import { Toaster } from "./features/toast/toaster";
 import { UmamiProvider } from "./hooks/useUmami";
 import { getLocale, i18nextMiddleware, localeCookie } from "./i18n/i18n";
+import { di } from "./server/di";
 import { env } from "./utils/env";
 
 export { ErrorBoundary } from "~/components/error-boundary";
 export { HydrateFallback } from "~/components/hydate-fallback";
 
-export const middleware = [i18nextMiddleware, toastMiddleware()];
+const metricsMiddleware: Route.MiddlewareFunction = async (
+  { request, pattern },
+  next,
+) => {
+  const start = performance.now();
+  const response = await next();
+  const labels = {
+    method: request.method,
+    route: pattern,
+    status: String(response.status),
+  };
+  di.metrics.incrementCounter("http_requests_total", labels);
+  di.metrics.observeHistogram(
+    "http_request_duration_seconds",
+    (performance.now() - start) / 1000,
+    labels,
+  );
+  return response;
+};
+
+export const middleware = [
+  metricsMiddleware,
+  i18nextMiddleware,
+  toastMiddleware(),
+];
 
 export async function loader({ context }: LoaderFunctionArgs) {
   const locale = getLocale(context);
