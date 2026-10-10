@@ -10,7 +10,8 @@ import {
 import { boardPdsRepositoryFactory } from "~/server/infrastructure/board/boardPdsRepository";
 import { boardRepositoryFactory } from "~/server/infrastructure/board/boardRepository";
 import { db } from "~/server/infrastructure/db/drizzle";
-import { cursorRepositoryFactory } from "~/server/infrastructure/jetstream/cursorRepository";
+import { cursorRepositoryFactory } from "~/server/infrastructure/ingester/cursorRepository";
+import { ingesterClientFactory } from "~/server/infrastructure/ingester/ingesterClient";
 import { loggerFactory } from "~/server/infrastructure/logger/logger";
 import { metricsFactory } from "~/server/infrastructure/metrics/metrics";
 import { handleIndexFactory } from "~/server/infrastructure/owner/handleIndex";
@@ -23,7 +24,7 @@ import { authServiceFactory } from "~/server/service/auth/auth";
 import { sessionServiceFactory } from "~/server/service/auth/session";
 import { boardServiceFactory } from "~/server/service/board/board";
 import { boardEventServiceFactory } from "~/server/service/board/boardEvent";
-import { jetstreamServiceFactory } from "~/server/service/jetstream/jetstream";
+import { ingesterServiceFactory } from "~/server/service/ingester/ingester";
 import { ownerServiceFactory } from "~/server/service/owner/owner";
 
 export const di = await createRegistry()
@@ -79,15 +80,13 @@ export const di = await createRegistry()
     sessionServiceFactory,
   )
   .service(
-    "jetstreamService",
-    [
-      "cursorRepository",
-      "boardEventService",
-      "ownerService",
-      "profileRecordParser",
-      "logger",
-      "metrics",
-    ],
-    jetstreamServiceFactory,
+    "ingesterService",
+    ["boardEventService", "ownerService", "profileRecordParser", "logger"],
+    ingesterServiceFactory,
+  )
+  .service(
+    "ingesterClient",
+    ["ingesterService", "cursorRepository", "logger", "metrics"],
+    ingesterClientFactory,
   )
   .resolve();
