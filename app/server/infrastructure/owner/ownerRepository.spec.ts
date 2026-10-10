@@ -87,6 +87,21 @@ describe("ownerRepository", () => {
         handle: "example.com",
       });
     });
+    test("profileがnullなら、プロフィールを空にする", async () => {
+      // arrange
+      await OwnerFactory.create({ did, displayName: "Alice" });
+      // act
+      const actual = await ownerRepository.upsert(did, {
+        handle: "example.com",
+        profile: null,
+      });
+      // assert
+      expect(actual).toMatchObject({
+        avatarCid: null,
+        description: null,
+        displayName: null,
+      });
+    });
     test("他の持ち主が同じhandleを持っている場合、その持ち主のhandleをnullにする", async () => {
       // arrange
       const other = await OwnerFactory.create({ handle: "example.com" });

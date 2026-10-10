@@ -11,7 +11,7 @@ export interface IOwnerRepository {
   findByDid: (did: Did) => Promise<Owner | null>;
   upsert: (
     did: Did,
-    params: { handle: string | null; profile?: Profile },
+    params: { handle: string | null; profile?: Profile | null },
   ) => Promise<Owner>;
   updateProfile: (
     did: Did,
@@ -54,7 +54,7 @@ export const ownerRepositoryFactory = ({
   async upsert(did, { handle, profile }) {
     const columns = {
       handle,
-      ...(profile && profileColumns(profile)),
+      ...(profile !== undefined && profileColumns(profile)),
       updatedAt: new Date(),
     };
     return await db.transaction(async (tx) => {

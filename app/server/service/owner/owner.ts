@@ -27,11 +27,13 @@ export const ownerServiceFactory = ({
   },
   async syncOwner(did) {
     const identity = await identityResolver.resolve(did);
-    const profile =
-      identity && (await profileFetcher.fetchProfile(identity.pds, did));
+    if (!identity) {
+      return await ownerRepository.upsert(did, { handle: null });
+    }
+    const profile = await profileFetcher.fetchProfile(identity.pds, did);
     return await ownerRepository.upsert(did, {
-      handle: identity?.handle ?? null,
-      profile: profile ?? undefined,
+      handle: identity.handle,
+      ...(!(profile instanceof Error) && { profile }),
     });
   },
   async updateProfile(did, profile) {
