@@ -48,7 +48,7 @@ export const ownerServiceFactory = ({
     if (!(await ownerRepository.findByDid(did))) {
       return null;
     }
-    const identity = await identityResolver.resolve(did, { noCache: true });
+    const identity = await identityResolver.resolve(did, { fresh: true });
     return await ownerRepository.updateHandle(did, identity?.handle ?? null);
   },
   async updateAccountState(did, state) {

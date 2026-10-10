@@ -214,7 +214,7 @@ describe("ownerService", () => {
       const actual = await ownerService.refreshHandle(asDid(owner.did));
       // assert
       expect(identityResolver.resolve).toHaveBeenCalledWith(owner.did, {
-        noCache: true,
+        fresh: true,
       });
       expect(actual).toMatchObject({
         handle: "new.example.com",
