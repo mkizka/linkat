@@ -46,5 +46,6 @@ export async function action({ request, context }: Route.ActionArgs) {
     }
     throw error;
   }
+  logger.info("ボードを削除しました", { ownerDid: editorDid });
   return redirect("/");
 }

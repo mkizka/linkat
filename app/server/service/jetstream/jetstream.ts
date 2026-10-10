@@ -79,7 +79,10 @@ export const jetstreamServiceFactory = ({
       return;
     }
     await boardEventService.handleBoardCommit(board);
-    log.debug("ボードを更新しました", { board });
+    log.info("ボードを更新しました", {
+      ownerDid: board.ownerDid,
+      cardCount: board.cards.length,
+    });
   };
 
   const parseProfile = async (json: unknown) => {

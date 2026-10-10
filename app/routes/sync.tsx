@@ -19,6 +19,10 @@ export async function action({ request, context }: Route.ActionArgs) {
     logger.error("同期に失敗しました", { error });
     return data({ ok: false }, { status: 500 });
   }
+  logger.info("同期に成功しました", {
+    ownerDid: editorDid,
+    boardImported: result.boardImported,
+  });
   if (result.boardImported) {
     setToast(context, {
       message: getInstance(context).t("edit.sync-success-message"),
