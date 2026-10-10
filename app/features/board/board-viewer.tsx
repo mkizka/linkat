@@ -5,7 +5,7 @@ import { Form, useNavigation } from "react-router";
 
 import { Button } from "~/components/button";
 import type { ValidCard } from "~/models/card";
-import type { OwnerView } from "~/models/owner";
+import type { OwnerView } from "~/server/service/owner/ownerView";
 import { resolveHandleIfNeeded } from "~/utils/url";
 
 import { ProfileCard } from "./card/profile-card";

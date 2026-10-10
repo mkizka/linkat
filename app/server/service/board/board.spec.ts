@@ -7,6 +7,7 @@ import { boardRepositoryFactory } from "~/server/infrastructure/board/boardRepos
 import { db } from "~/server/infrastructure/db/drizzle";
 import { handleIndexFactory } from "~/server/infrastructure/owner/handleIndex";
 import { ownerRepositoryFactory } from "~/server/infrastructure/owner/ownerRepository";
+import { ownerViewServiceFactory } from "~/server/service/owner/ownerView";
 
 import { boardServiceFactory } from "./board";
 
@@ -14,6 +15,7 @@ const boardService = boardServiceFactory({
   boardRepository: boardRepositoryFactory({ db }),
   handleIndex: handleIndexFactory({ db }),
   ownerRepository: ownerRepositoryFactory({ db }),
+  ownerViewService: ownerViewServiceFactory(),
 });
 
 describe("boardService", () => {

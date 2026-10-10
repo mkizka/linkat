@@ -8,7 +8,7 @@ import { Button } from "~/components/button";
 import { Card } from "~/components/card";
 import { BlueskyIcon } from "~/components/icons/bluesky";
 import { useUmami } from "~/hooks/useUmami";
-import type { OwnerView } from "~/models/owner";
+import type { OwnerView } from "~/server/service/owner/ownerView";
 
 function Avatar({ avatar }: { avatar: string }) {
   return (

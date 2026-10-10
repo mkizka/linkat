@@ -3,8 +3,8 @@ import fs from "fs";
 import { LRUCache } from "lru-cache";
 import satori from "satori";
 
-import type { OwnerView } from "~/models/owner";
 import { di } from "~/server/di";
+import type { OwnerView } from "~/server/service/owner/ownerView";
 
 import type { Route } from "./+types/$handle.og";
 

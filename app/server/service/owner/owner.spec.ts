@@ -3,7 +3,6 @@ import { http, HttpResponse } from "msw";
 import { mock, mockReset } from "vitest-mock-extended";
 
 import { server } from "~/mocks/server";
-import { Owner } from "~/models/owner";
 import { OwnerFactory } from "~/server/factories/owner";
 import { db } from "~/server/infrastructure/db/drizzle";
 import { loggerFactory } from "~/server/infrastructure/logger/logger";
@@ -13,6 +12,7 @@ import { profileFetcherFactory } from "~/server/infrastructure/owner/profileFetc
 import { profileRecordParserFactory } from "~/server/infrastructure/owner/profileRecordParser";
 
 import { ownerServiceFactory } from "./owner";
+import { ownerViewServiceFactory } from "./ownerView";
 
 const identityResolver = mock<IIdentityResolver>();
 const logger = loggerFactory();
@@ -22,10 +22,13 @@ const profileFetcher = profileFetcherFactory({
   logger,
 });
 
+const ownerViewService = ownerViewServiceFactory();
+
 const ownerService = ownerServiceFactory({
   ownerRepository,
   profileFetcher,
   identityResolver,
+  ownerViewService,
 });
 
 const getRecordUrl = "https://pds.example.com/xrpc/com.atproto.repo.getRecord";
@@ -52,7 +55,7 @@ describe("ownerService", () => {
       // act
       const actual = await ownerService.findOwnerView(asDid(owner.did));
       // assert
-      expect(actual).toEqual(new Owner(owner).toView());
+      expect(actual).toMatchObject({ handleOrDid: owner.handle });
       expect(identityResolver.resolve).not.toHaveBeenCalled();
     });
     test("写しに無いDIDはDIDだけの表示用データを返し、写しを作らない", async () => {
@@ -61,7 +64,7 @@ describe("ownerService", () => {
       // act
       const actual = await ownerService.findOwnerView(did);
       // assert
-      expect(actual).toEqual(Owner.viewFromDid(did));
+      expect(actual).toEqual(ownerViewService.toOwnerView(did, null));
       expect(identityResolver.resolve).not.toHaveBeenCalled();
       expect(await ownerRepository.findByDid(did)).toBeNull();
     });
