@@ -86,7 +86,7 @@ export const di = await createRegistry()
   )
   .service(
     "ingesterClient",
-    ["cursorRepository", "logger", "metrics"],
+    ["ingesterService", "cursorRepository", "logger", "metrics"],
     ingesterClientFactory,
   )
   .resolve();

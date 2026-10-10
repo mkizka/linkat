@@ -26,93 +26,95 @@ export interface IIngesterHandler {
 }
 
 export interface IIngesterClient {
-  start: (handler: IIngesterHandler) => Promise<void>;
+  start: () => Promise<void>;
 }
 
 export const ingesterClientFactory = ({
+  ingesterService,
   cursorRepository,
   logger,
   metrics,
 }: {
+  ingesterService: IIngesterHandler;
   cursorRepository: ICursorRepository;
   logger: ILogger;
   metrics: IMetrics;
 }): IIngesterClient => {
   const log = logger.child("jetstream");
 
+  const jetstream = new Jetstream({
+    ws: WebSocket,
+    endpoint: env.JETSTREAM_URL,
+    wantedCollections: ["blue.linkat.board", "app.bsky.actor.profile"],
+  });
+
+  const logError = (message: string) => (error: unknown) => {
+    log.error(message, { error });
+  };
+  const logBoardError = logError("ボードの更新に失敗しました");
+  const logProfileError = logError("プロフィールの更新に失敗しました");
+
+  jetstream.on("open", () => {
+    log.info(`Jetstream subscription started to ${env.JETSTREAM_URL}`);
+  });
+  jetstream.on("close", () => {
+    log.info(`Jetstream subscription closed`);
+  });
+  jetstream.on("error", (error) => {
+    log.error("Jetstreamでエラーが発生しました", { error });
+  });
+  jetstream.on("identity", ({ did }) => {
+    ingesterService
+      .handleIdentity({ did })
+      .catch(logError("ハンドルの更新に失敗しました"));
+  });
+  jetstream.on("account", ({ did, account }) => {
+    ingesterService
+      .handleAccount({
+        did,
+        state: { active: account.active, status: account.status ?? null },
+      })
+      .catch(logError("アカウントの状態の更新に失敗しました"));
+  });
+  jetstream.onCreate("blue.linkat.board", ({ did, commit }) => {
+    ingesterService
+      .handleBoardCommit({ did, record: commit.record })
+      .catch(logBoardError);
+  });
+  jetstream.onUpdate("blue.linkat.board", ({ did, commit }) => {
+    ingesterService
+      .handleBoardCommit({ did, record: commit.record })
+      .catch(logBoardError);
+  });
+  jetstream.onDelete("blue.linkat.board", ({ did }) => {
+    ingesterService.handleBoardDelete({ did }).catch(logBoardError);
+  });
+  jetstream.onCreate("app.bsky.actor.profile", ({ did, commit }) => {
+    ingesterService
+      .handleProfileCommit({
+        did,
+        rkey: commit.rkey,
+        record: commit.record,
+      })
+      .catch(logProfileError);
+  });
+  jetstream.onUpdate("app.bsky.actor.profile", ({ did, commit }) => {
+    ingesterService
+      .handleProfileCommit({
+        did,
+        rkey: commit.rkey,
+        record: commit.record,
+      })
+      .catch(logProfileError);
+  });
+  jetstream.onDelete("app.bsky.actor.profile", ({ did, commit }) => {
+    ingesterService
+      .handleProfileDelete({ did, rkey: commit.rkey })
+      .catch(logProfileError);
+  });
+
   return {
-    async start(handler) {
-      const jetstream = new Jetstream({
-        ws: WebSocket,
-        endpoint: env.JETSTREAM_URL,
-        wantedCollections: ["blue.linkat.board", "app.bsky.actor.profile"],
-      });
-
-      const logError = (message: string) => (error: unknown) => {
-        log.error(message, { error });
-      };
-      const logBoardError = logError("ボードの更新に失敗しました");
-      const logProfileError = logError("プロフィールの更新に失敗しました");
-
-      jetstream.on("open", () => {
-        log.info(`Jetstream subscription started to ${env.JETSTREAM_URL}`);
-      });
-      jetstream.on("close", () => {
-        log.info(`Jetstream subscription closed`);
-      });
-      jetstream.on("error", (error) => {
-        log.error("Jetstreamでエラーが発生しました", { error });
-      });
-      jetstream.on("identity", ({ did }) => {
-        handler
-          .handleIdentity({ did })
-          .catch(logError("ハンドルの更新に失敗しました"));
-      });
-      jetstream.on("account", ({ did, account }) => {
-        handler
-          .handleAccount({
-            did,
-            state: { active: account.active, status: account.status ?? null },
-          })
-          .catch(logError("アカウントの状態の更新に失敗しました"));
-      });
-      jetstream.onCreate("blue.linkat.board", ({ did, commit }) => {
-        handler
-          .handleBoardCommit({ did, record: commit.record })
-          .catch(logBoardError);
-      });
-      jetstream.onUpdate("blue.linkat.board", ({ did, commit }) => {
-        handler
-          .handleBoardCommit({ did, record: commit.record })
-          .catch(logBoardError);
-      });
-      jetstream.onDelete("blue.linkat.board", ({ did }) => {
-        handler.handleBoardDelete({ did }).catch(logBoardError);
-      });
-      jetstream.onCreate("app.bsky.actor.profile", ({ did, commit }) => {
-        handler
-          .handleProfileCommit({
-            did,
-            rkey: commit.rkey,
-            record: commit.record,
-          })
-          .catch(logProfileError);
-      });
-      jetstream.onUpdate("app.bsky.actor.profile", ({ did, commit }) => {
-        handler
-          .handleProfileCommit({
-            did,
-            rkey: commit.rkey,
-            record: commit.record,
-          })
-          .catch(logProfileError);
-      });
-      jetstream.onDelete("app.bsky.actor.profile", ({ did, commit }) => {
-        handler
-          .handleProfileDelete({ did, rkey: commit.rkey })
-          .catch(logProfileError);
-      });
-
+    async start() {
       const savedCursor = await cursorRepository.load();
       if (savedCursor !== undefined) {
         jetstream.cursor = savedCursor;
