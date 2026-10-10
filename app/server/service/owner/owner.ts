@@ -31,9 +31,12 @@ export const ownerServiceFactory = ({
       return await ownerRepository.upsert(did, { handle: null });
     }
     const profile = await profileFetcher.fetchProfile(identity.pds, did);
+    if (profile instanceof Error) {
+      return await ownerRepository.upsert(did, { handle: identity.handle });
+    }
     return await ownerRepository.upsert(did, {
       handle: identity.handle,
-      ...(!(profile instanceof Error) && { profile }),
+      profile,
     });
   },
   async updateProfile(did, profile) {
