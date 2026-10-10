@@ -1,6 +1,5 @@
 import { redirect } from "react-router";
 
-import { ownerViewFromDid } from "~/models/owner";
 import { SettingsPage } from "~/pages/settings-page";
 import { di } from "~/server/di";
 
@@ -11,8 +10,8 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
   if (!editorDid) {
     throw redirect("/login");
   }
-  const editor = await di.ownerService.findOwner(editorDid);
-  return { editor: editor?.toView() ?? ownerViewFromDid(editorDid) };
+  const editor = await di.ownerService.findOwnerView(editorDid);
+  return { editor };
 };
 
 export default function Index({ loaderData }: Route.ComponentProps) {

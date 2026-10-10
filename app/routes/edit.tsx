@@ -1,11 +1,9 @@
-import type { Did } from "@atproto/did";
 import { useEffect } from "react";
 import { redirect, useFetcher } from "react-router";
 import { setToast } from "remix-toast/middleware";
 
 import { getInstance } from "~/i18n/i18n";
 import { Board } from "~/models/board";
-import { ownerViewFromDid } from "~/models/owner";
 import { EditPage } from "~/pages/edit-page";
 import { di } from "~/server/di";
 import {
@@ -17,9 +15,6 @@ import { tryCatch } from "~/utils/tryCatch";
 
 import type { Route } from "./+types/edit";
 import type { action as syncAction } from "./sync";
-
-const findEditorView = async (did: Did) =>
-  (await di.ownerService.findOwner(did))?.toView() ?? ownerViewFromDid(did);
 
 export async function action({ request, context }: Route.ActionArgs) {
   const logger = di.logger.child("edit");
@@ -73,12 +68,12 @@ export async function action({ request, context }: Route.ActionArgs) {
         message: i18next.t("edit.save-delayed-warning-message"),
         type: "warning",
       });
-      const editor = await findEditorView(editorDid);
+      const editor = await di.ownerService.findOwnerView(editorDid);
       return redirect(`/${editor.handleOrDid}`);
     }
     throw error;
   }
-  const editor = await findEditorView(editorDid);
+  const editor = await di.ownerService.findOwnerView(editorDid);
   return redirect(`/${editor.handleOrDid}?success`);
 }
 
@@ -88,7 +83,7 @@ export async function loader({ request }: Route.LoaderArgs) {
     throw redirect("/login");
   }
   const [editorView, board] = await Promise.all([
-    findEditorView(editorDid),
+    di.ownerService.findOwnerView(editorDid),
     di.boardService.findBoard(editorDid),
   ]);
   return {

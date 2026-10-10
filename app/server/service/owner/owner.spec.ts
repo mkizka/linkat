@@ -3,6 +3,7 @@ import { http, HttpResponse } from "msw";
 import { mock, mockReset } from "vitest-mock-extended";
 
 import { server } from "~/mocks/server";
+import { Owner, ownerViewFromDid } from "~/models/owner";
 import { OwnerFactory } from "~/server/factories/owner";
 import { db } from "~/server/infrastructure/db/drizzle";
 import { loggerFactory } from "~/server/infrastructure/logger/logger";
@@ -69,6 +70,27 @@ describe("ownerService", () => {
       const actual = await ownerService.findOwner(did);
       // assert
       expect(actual).toBeNull();
+      expect(identityResolver.resolve).not.toHaveBeenCalled();
+      expect(await ownerRepository.findByDid(did)).toBeNull();
+    });
+  });
+
+  describe("findOwnerView", () => {
+    test("写しがあれば写しの表示用データを返す", async () => {
+      // arrange
+      const owner = await OwnerFactory.create();
+      // act
+      const actual = await ownerService.findOwnerView(asDid(owner.did));
+      // assert
+      expect(actual).toEqual(new Owner(owner).toView());
+    });
+    test("写しに無いDIDはDIDだけの表示用データを返し、写しを作らない", async () => {
+      // arrange
+      const did = asDid("did:plc:notowner0000000000000000");
+      // act
+      const actual = await ownerService.findOwnerView(did);
+      // assert
+      expect(actual).toEqual(ownerViewFromDid(did));
       expect(identityResolver.resolve).not.toHaveBeenCalled();
       expect(await ownerRepository.findByDid(did)).toBeNull();
     });
