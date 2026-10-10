@@ -31,7 +31,7 @@ export const ownerServiceFactory = ({
       identity && (await profileFetcher.fetchProfile(identity.pds, did));
     return await ownerRepository.upsert(did, {
       handle: identity?.handle ?? null,
-      profile,
+      profile: profile ?? undefined,
     });
   },
   async updateProfile(did, profile) {

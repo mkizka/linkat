@@ -11,7 +11,7 @@ export interface IOwnerRepository {
   findByDid: (did: Did) => Promise<Owner | null>;
   upsert: (
     did: Did,
-    params: { handle: string | null; profile: Profile | null },
+    params: { handle: string | null; profile?: Profile },
   ) => Promise<Owner>;
   updateProfile: (
     did: Did,

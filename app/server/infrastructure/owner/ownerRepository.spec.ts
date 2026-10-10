@@ -74,13 +74,12 @@ describe("ownerRepository", () => {
         status: "deactivated",
       });
     });
-    test("profileがnullなら、既存のプロフィールを残す", async () => {
+    test("profileが無ければ、既存のプロフィールを残す", async () => {
       // arrange
       await OwnerFactory.create({ did, displayName: "Alice" });
       // act
       const actual = await ownerRepository.upsert(did, {
         handle: "example.com",
-        profile: null,
       });
       // assert
       expect(actual).toMatchObject({
