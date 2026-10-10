@@ -73,6 +73,10 @@ export async function action({ request, context }: Route.ActionArgs) {
     }
     throw error;
   }
+  logger.info("ボードを保存しました", {
+    ownerDid: editorDid,
+    cardCount: parsedBoard.cards.length,
+  });
   const editor = (await di.ownerService.findOwner(editorDid)).toView();
   return redirect(`/${editor.handleOrDid}?success`);
 }
