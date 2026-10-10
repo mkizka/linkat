@@ -1,14 +1,9 @@
-import type {
-  AccountEvent,
-  CommitCreateEvent,
-  CommitDeleteEvent,
-  CommitUpdateEvent,
-  IdentityEvent,
-} from "@skyware/jetstream";
+import type { Did } from "@atproto/did";
 import { Jetstream } from "@skyware/jetstream";
 import WebSocket from "ws";
 
-import type { ICursorRepository } from "~/server/infrastructure/jetstream/cursorRepository";
+import type { AccountState } from "~/models/owner";
+import type { ICursorRepository } from "~/server/infrastructure/ingester/cursorRepository";
 import type { ILogger } from "~/server/infrastructure/logger/logger";
 import type { IMetrics } from "~/server/infrastructure/metrics/metrics";
 import { env } from "~/utils/env";
@@ -17,30 +12,24 @@ const CURSOR_SAVE_INTERVAL_MS = 30_000;
 
 const LAG_REPORT_INTERVAL_MS = 10_000;
 
-export interface IJetstreamHandler {
-  handleCreateOrUpdate: (
-    event:
-      | CommitCreateEvent<"blue.linkat.board">
-      | CommitUpdateEvent<"blue.linkat.board">,
-  ) => Promise<void>;
-  handleBoardDelete: (
-    event: CommitDeleteEvent<"blue.linkat.board">,
-  ) => Promise<void>;
-  handleProfileCommit: (
-    event:
-      | CommitCreateEvent<"app.bsky.actor.profile">
-      | CommitUpdateEvent<"app.bsky.actor.profile">
-      | CommitDeleteEvent<"app.bsky.actor.profile">,
-  ) => Promise<void>;
-  handleIdentity: (event: IdentityEvent) => Promise<void>;
-  handleAccount: (event: AccountEvent) => Promise<void>;
+export interface IIngesterHandler {
+  handleBoardCommit: (event: { did: Did; record: unknown }) => Promise<void>;
+  handleBoardDelete: (event: { did: Did }) => Promise<void>;
+  handleProfileCommit: (event: {
+    did: Did;
+    rkey: string;
+    record: unknown;
+  }) => Promise<void>;
+  handleProfileDelete: (event: { did: Did; rkey: string }) => Promise<void>;
+  handleIdentity: (event: { did: Did }) => Promise<void>;
+  handleAccount: (event: { did: Did; state: AccountState }) => Promise<void>;
 }
 
-export interface IJetstreamClient {
-  start: (handler: IJetstreamHandler) => Promise<void>;
+export interface IIngesterClient {
+  start: (handler: IIngesterHandler) => Promise<void>;
 }
 
-export const jetstreamClientFactory = ({
+export const ingesterClientFactory = ({
   cursorRepository,
   logger,
   metrics,
@@ -48,7 +37,7 @@ export const jetstreamClientFactory = ({
   cursorRepository: ICursorRepository;
   logger: ILogger;
   metrics: IMetrics;
-}): IJetstreamClient => {
+}): IIngesterClient => {
   const log = logger.child("jetstream");
 
   return {
@@ -74,33 +63,54 @@ export const jetstreamClientFactory = ({
       jetstream.on("error", (error) => {
         log.error("Jetstreamでエラーが発生しました", { error });
       });
-      jetstream.on("identity", (event) => {
+      jetstream.on("identity", ({ did }) => {
         handler
-          .handleIdentity(event)
+          .handleIdentity({ did })
           .catch(logError("ハンドルの更新に失敗しました"));
       });
-      jetstream.on("account", (event) => {
+      jetstream.on("account", ({ did, account }) => {
         handler
-          .handleAccount(event)
+          .handleAccount({
+            did,
+            state: { active: account.active, status: account.status ?? null },
+          })
           .catch(logError("アカウントの状態の更新に失敗しました"));
       });
-      jetstream.onCreate("blue.linkat.board", (event) => {
-        handler.handleCreateOrUpdate(event).catch(logBoardError);
+      jetstream.onCreate("blue.linkat.board", ({ did, commit }) => {
+        handler
+          .handleBoardCommit({ did, record: commit.record })
+          .catch(logBoardError);
       });
-      jetstream.onUpdate("blue.linkat.board", (event) => {
-        handler.handleCreateOrUpdate(event).catch(logBoardError);
+      jetstream.onUpdate("blue.linkat.board", ({ did, commit }) => {
+        handler
+          .handleBoardCommit({ did, record: commit.record })
+          .catch(logBoardError);
       });
-      jetstream.onDelete("blue.linkat.board", (event) => {
-        handler.handleBoardDelete(event).catch(logBoardError);
+      jetstream.onDelete("blue.linkat.board", ({ did }) => {
+        handler.handleBoardDelete({ did }).catch(logBoardError);
       });
-      jetstream.onCreate("app.bsky.actor.profile", (event) => {
-        handler.handleProfileCommit(event).catch(logProfileError);
+      jetstream.onCreate("app.bsky.actor.profile", ({ did, commit }) => {
+        handler
+          .handleProfileCommit({
+            did,
+            rkey: commit.rkey,
+            record: commit.record,
+          })
+          .catch(logProfileError);
       });
-      jetstream.onUpdate("app.bsky.actor.profile", (event) => {
-        handler.handleProfileCommit(event).catch(logProfileError);
+      jetstream.onUpdate("app.bsky.actor.profile", ({ did, commit }) => {
+        handler
+          .handleProfileCommit({
+            did,
+            rkey: commit.rkey,
+            record: commit.record,
+          })
+          .catch(logProfileError);
       });
-      jetstream.onDelete("app.bsky.actor.profile", (event) => {
-        handler.handleProfileCommit(event).catch(logProfileError);
+      jetstream.onDelete("app.bsky.actor.profile", ({ did, commit }) => {
+        handler
+          .handleProfileDelete({ did, rkey: commit.rkey })
+          .catch(logProfileError);
       });
 
       const savedCursor = await cursorRepository.load();

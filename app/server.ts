@@ -65,8 +65,8 @@ app.use(createRequestHandler({ build }));
 app.listen(env.PORT, "0.0.0.0", () => {
   logger.info(`App listening on ${env.PUBLIC_URL}`);
   if (!env.DISABLE_JETSTREAM) {
-    di.jetstreamClient.start(di.jetstreamService).catch((error: unknown) => {
-      logger.error("Jetstreamの起動に失敗しました", { error });
+    di.ingesterClient.start(di.ingesterService).catch((error: unknown) => {
+      logger.error("Ingesterの起動に失敗しました", { error });
     });
   }
 });
