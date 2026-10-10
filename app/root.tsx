@@ -30,17 +30,16 @@ const metricsMiddleware: Route.MiddlewareFunction = async (
 ) => {
   const start = performance.now();
   const response = await next();
-  const attributes = {
+  const labels = {
     method: request.method,
     route: pattern,
-    status: response.status,
+    status: String(response.status),
   };
-  di.metrics.count("http.requests", 1, attributes);
-  di.metrics.distribution(
-    "http.duration",
-    performance.now() - start,
-    "millisecond",
-    attributes,
+  di.metrics.incrementCounter("http_requests_total", labels);
+  di.metrics.observeHistogram(
+    "http_request_duration_seconds",
+    (performance.now() - start) / 1000,
+    labels,
   );
   return response;
 };

@@ -1,22 +1,17 @@
 import * as Sentry from "@sentry/react-router";
 
-type Attributes = Record<string, string | number>;
+type Labels = Record<string, string>;
 
 export interface IMetrics {
-  gauge: (name: string, value: number, unit: string) => void;
-  count: (name: string, value: number, attributes: Attributes) => void;
-  distribution: (
-    name: string,
-    value: number,
-    unit: string,
-    attributes: Attributes,
-  ) => void;
+  incrementCounter: (name: string, labels: Labels) => void;
+  setGauge: (name: string, value: number) => void;
+  observeHistogram: (name: string, value: number, labels: Labels) => void;
 }
 
 export const metricsFactory = (): IMetrics => ({
-  gauge: (name, value, unit) => Sentry.metrics.gauge(name, value, { unit }),
-  count: (name, value, attributes) =>
-    Sentry.metrics.count(name, value, { attributes }),
-  distribution: (name, value, unit, attributes) =>
-    Sentry.metrics.distribution(name, value, { unit, attributes }),
+  incrementCounter: (name, labels) =>
+    Sentry.metrics.count(name, 1, { attributes: labels }),
+  setGauge: (name, value) => Sentry.metrics.gauge(name, value),
+  observeHistogram: (name, value, labels) =>
+    Sentry.metrics.distribution(name, value, { attributes: labels }),
 });
