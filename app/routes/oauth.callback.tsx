@@ -10,7 +10,8 @@ const logger = createLogger("oauth.callback");
 export async function loader({ request }: Route.LoaderArgs) {
   try {
     const did = await di.authService.handleCallback(request.url);
-    return redirect("/edit", {
+    const board = await di.boardService.findOrFetchBoard(did);
+    return redirect(board ? "/" : "/edit", {
       headers: {
         "Set-Cookie": await di.sessionService.createSession(request, did),
       },
