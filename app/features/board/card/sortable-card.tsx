@@ -92,10 +92,10 @@ function EditableCard({ card, parsed, isDragging }: EditableCardProps) {
   if (parsed.type === "embed") {
     return (
       <div className={cn("relative", dragging)}>
-        <div className="pointer-events-none">
+        <div className="pointer-events-none opacity-40">
           <CardContent parsed={parsed} />
         </div>
-        <div className="absolute inset-0 flex items-center justify-between rounded-xl bg-base-100/60 px-2">
+        <div className="absolute inset-0 flex items-center justify-between px-2">
           {handle}
           {editButton}
         </div>
