@@ -9,11 +9,31 @@ import { cn } from "~/utils/cn";
 
 import { BlueskyEmbed } from "./bluesky-embed";
 import { BlueskyFeed } from "./bluesky-feed";
+import type { ParsedLinkCard, ParsedTextCard } from "./parser";
 import { parseCard } from "./parser";
 
 type CardContentProps = {
   parsed: ReturnType<typeof parseCard>;
 };
+
+function TextCardContent({
+  parsed,
+}: {
+  parsed: ParsedLinkCard | ParsedTextCard;
+}) {
+  return (
+    <>
+      {parsed.emoji ? (
+        <div className="flex size-6 shrink-0 items-center justify-center text-xl">
+          {parsed.emoji}
+        </div>
+      ) : (
+        parsed.type === "link" && <parsed.icon className="size-6 shrink-0" />
+      )}
+      <p className="flex-1 truncate">{parsed.text}</p>
+    </>
+  );
+}
 
 function CardContent({ parsed }: CardContentProps) {
   if (parsed.type === "feed") {
@@ -24,14 +44,7 @@ function CardContent({ parsed }: CardContentProps) {
   }
   return (
     <div className="card-body flex-row items-center gap-2">
-      {parsed.emoji ? (
-        <div className="flex size-6 shrink-0 items-center justify-center text-xl">
-          {parsed.emoji}
-        </div>
-      ) : (
-        parsed.type === "link" && <parsed.icon className="size-6 shrink-0" />
-      )}
-      <p className="flex-1 truncate">{parsed.text}</p>
+      <TextCardContent parsed={parsed} />
     </div>
   );
 }
@@ -53,29 +66,41 @@ function EditableCard({ card, parsed, isDragging }: EditableCardProps) {
     cardModal.open();
   };
 
+  const isRich = parsed.type === "feed" || parsed.type === "embed";
+
   return (
     <Card
-      className={cn("flex-row items-center px-2", {
+      className={cn({
         "animate-in zoom-in-100 scale-[103%]": isDragging,
       })}
     >
       <div
-        className="flex size-10 shrink-0 cursor-grab items-center justify-center text-base-content/50 select-none"
-        data-movable-handle
+        className={cn("flex flex-row items-center gap-2 px-2", {
+          "card-body py-4": !isRich,
+        })}
       >
-        ⋮⋮
+        <div
+          className="flex size-10 shrink-0 cursor-grab items-center justify-center text-base-content/50 select-none"
+          data-movable-handle
+        >
+          ⋮⋮
+        </div>
+        {isRich ? (
+          <div className="pointer-events-none min-w-0 flex-1">
+            <CardContent parsed={parsed} />
+          </div>
+        ) : (
+          <TextCardContent parsed={parsed} />
+        )}
+        <button
+          type="button"
+          className="btn btn-square btn-ghost"
+          data-testid="sortable-card__edit"
+          onClick={handleOpen}
+        >
+          <PencilSquareIcon className="size-6" />
+        </button>
       </div>
-      <div className="pointer-events-none min-w-0 flex-1">
-        <CardContent parsed={parsed} />
-      </div>
-      <button
-        type="button"
-        className="btn btn-square btn-ghost"
-        data-testid="sortable-card__edit"
-        onClick={handleOpen}
-      >
-        <PencilSquareIcon className="size-6" />
-      </button>
     </Card>
   );
 }
