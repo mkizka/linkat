@@ -27,6 +27,15 @@ app.set("trust proxy", true);
 
 app.use(httpLogger);
 
+app.use((req, res, next) => {
+  if (["GET", "HEAD", "POST"].includes(req.method)) {
+    next();
+    return;
+  }
+  res.set("Allow", "GET, HEAD, POST, OPTIONS");
+  res.sendStatus(req.method === "OPTIONS" ? 204 : 405);
+});
+
 if (viteDevServer) {
   app.use(viteDevServer.middlewares);
 } else {
