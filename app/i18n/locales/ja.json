@@ -52,12 +52,16 @@
     "board-share-text": "{{displayName}}さんのボード #linkat {{url}}"
   },
   "board-page": {
-    "edit-button": "編集",
+    "edit-button": "編集"
+  },
+  "board-menu": {
     "menu": "メニュー",
     "share": "共有",
     "following": "フォロー中",
     "settings": "設定",
-    "top": "トップへ",
+    "top": "トップへ"
+  },
+  "board-footer": {
     "create-link": "Linkatで自分のリンク集を作る"
   },
   "card-form": {
