@@ -1,4 +1,5 @@
 import type { Did } from "@atproto/did";
+import * as Sentry from "@sentry/react-router";
 import { Jetstream } from "@skyware/jetstream";
 import WebSocket from "ws";
 
@@ -54,6 +55,12 @@ export const ingesterClientFactory = ({
   const logBoardError = logError("ボードの更新に失敗しました");
   const logProfileError = logError("プロフィールの更新に失敗しました");
 
+  const handle =
+    <E>(task: (event: E) => Promise<void>, onError: (error: unknown) => void) =>
+    (event: E) => {
+      void Sentry.startNewTrace(() => task(event).catch(onError));
+    };
+
   jetstream.on("open", () => {
     log.info(`Jetstream subscription started to ${env.JETSTREAM_URL}`);
   });
@@ -63,55 +70,79 @@ export const ingesterClientFactory = ({
   jetstream.on("error", (error) => {
     log.error("Jetstreamでエラーが発生しました", { error });
   });
-  jetstream.on("identity", ({ did }) => {
-    ingesterService
-      .handleIdentity({ did })
-      .catch(logError("ハンドルの更新に失敗しました"));
-  });
-  jetstream.on("account", ({ did, account }) => {
-    ingesterService
-      .handleAccount({
-        did,
-        state: { active: account.active, status: account.status ?? null },
-      })
-      .catch(logError("アカウントの状態の更新に失敗しました"));
-  });
-  jetstream.onCreate("blue.linkat.board", ({ did, commit }) => {
-    ingesterService
-      .handleBoardCommit({ did, record: commit.record })
-      .catch(logBoardError);
-  });
-  jetstream.onUpdate("blue.linkat.board", ({ did, commit }) => {
-    ingesterService
-      .handleBoardCommit({ did, record: commit.record })
-      .catch(logBoardError);
-  });
-  jetstream.onDelete("blue.linkat.board", ({ did }) => {
-    ingesterService.handleBoardDelete({ did }).catch(logBoardError);
-  });
-  jetstream.onCreate("app.bsky.actor.profile", ({ did, commit }) => {
-    ingesterService
-      .handleProfileCommit({
-        did,
-        rkey: commit.rkey,
-        record: commit.record,
-      })
-      .catch(logProfileError);
-  });
-  jetstream.onUpdate("app.bsky.actor.profile", ({ did, commit }) => {
-    ingesterService
-      .handleProfileCommit({
-        did,
-        rkey: commit.rkey,
-        record: commit.record,
-      })
-      .catch(logProfileError);
-  });
-  jetstream.onDelete("app.bsky.actor.profile", ({ did, commit }) => {
-    ingesterService
-      .handleProfileDelete({ did, rkey: commit.rkey })
-      .catch(logProfileError);
-  });
+  jetstream.on(
+    "identity",
+    handle(
+      ({ did }) => ingesterService.handleIdentity({ did }),
+      logError("ハンドルの更新に失敗しました"),
+    ),
+  );
+  jetstream.on(
+    "account",
+    handle(
+      ({ did, account }) =>
+        ingesterService.handleAccount({
+          did,
+          state: { active: account.active, status: account.status ?? null },
+        }),
+      logError("アカウントの状態の更新に失敗しました"),
+    ),
+  );
+  jetstream.onCreate(
+    "blue.linkat.board",
+    handle(
+      ({ did, commit }) =>
+        ingesterService.handleBoardCommit({ did, record: commit.record }),
+      logBoardError,
+    ),
+  );
+  jetstream.onUpdate(
+    "blue.linkat.board",
+    handle(
+      ({ did, commit }) =>
+        ingesterService.handleBoardCommit({ did, record: commit.record }),
+      logBoardError,
+    ),
+  );
+  jetstream.onDelete(
+    "blue.linkat.board",
+    handle(
+      ({ did }) => ingesterService.handleBoardDelete({ did }),
+      logBoardError,
+    ),
+  );
+  jetstream.onCreate(
+    "app.bsky.actor.profile",
+    handle(
+      ({ did, commit }) =>
+        ingesterService.handleProfileCommit({
+          did,
+          rkey: commit.rkey,
+          record: commit.record,
+        }),
+      logProfileError,
+    ),
+  );
+  jetstream.onUpdate(
+    "app.bsky.actor.profile",
+    handle(
+      ({ did, commit }) =>
+        ingesterService.handleProfileCommit({
+          did,
+          rkey: commit.rkey,
+          record: commit.record,
+        }),
+      logProfileError,
+    ),
+  );
+  jetstream.onDelete(
+    "app.bsky.actor.profile",
+    handle(
+      ({ did, commit }) =>
+        ingesterService.handleProfileDelete({ did, rkey: commit.rkey }),
+      logProfileError,
+    ),
+  );
 
   return {
     async start() {
