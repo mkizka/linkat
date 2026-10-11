@@ -13,7 +13,7 @@ export default [
   },
   {
     files: ["**/*.spec.ts"],
-    ignores: ["e2e/**/*.spec.ts"],
+    ignores: ["playwright/**/*.spec.ts"],
     ...arrangeActAssert,
   },
 ];

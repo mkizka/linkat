@@ -2,16 +2,14 @@ import { UserIcon } from "@heroicons/react/24/solid";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 
-import type { User } from "~/models/user";
+import type { OwnerView } from "~/server/service/owner/ownerView";
 
-type BoardOwner = Pick<User, "avatar" | "displayName" | "handle">;
-
-export function UserAvatar({ user }: { user: BoardOwner }) {
+export function OwnerAvatar({ owner }: { owner: OwnerView }) {
   return (
     <div className="avatar avatar-placeholder">
       <div className="w-9 rounded-full bg-neutral text-neutral-content">
-        {user.avatar ? (
-          <img src={user.avatar} alt="" />
+        {owner.avatarUrl ? (
+          <img src={owner.avatarUrl} alt="" />
         ) : (
           <UserIcon className="w-6" />
         )}
@@ -20,9 +18,9 @@ export function UserAvatar({ user }: { user: BoardOwner }) {
   );
 }
 
-export function RecentBoards({ users }: { users: BoardOwner[] }) {
+export function RecentBoards({ owners }: { owners: OwnerView[] }) {
   const { t } = useTranslation();
-  if (users.length === 0) {
+  if (owners.length === 0) {
     return null;
   }
   return (
@@ -31,15 +29,15 @@ export function RecentBoards({ users }: { users: BoardOwner[] }) {
         {t("recent-boards.title")}
       </h2>
       <div className="flex justify-center gap-1.5">
-        {users.map((user) => (
+        {owners.map((owner) => (
           <Link
-            key={user.handle}
-            to={`/${user.handle}`}
-            title={user.displayName ?? user.handle}
-            aria-label={user.displayName ?? user.handle}
+            key={owner.did}
+            to={`/${owner.handleOrDid}`}
+            title={owner.displayName ?? owner.displayHandle}
+            aria-label={owner.displayName ?? owner.displayHandle}
             data-umami-event="click-recent-board"
           >
-            <UserAvatar user={user} />
+            <OwnerAvatar owner={owner} />
           </Link>
         ))}
       </div>

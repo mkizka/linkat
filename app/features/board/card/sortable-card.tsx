@@ -56,7 +56,7 @@ function CardBody({ parsed, isDragging }: CardBodyProps) {
   );
 }
 
-export type SortableCardProps = {
+type SortableCardProps = {
   card: ValidCard & { id: string };
   isDragging?: boolean;
   sortable?: boolean;

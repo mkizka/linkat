@@ -1,13 +1,16 @@
 import { useTranslation } from "react-i18next";
 
 import type { ValidCard } from "~/models/card";
+import type { OwnerView } from "~/server/service/owner/ownerView";
 
 export const useSampleBoard = () => {
   const { t } = useTranslation();
-  const user = {
-    avatar: null,
-    displayName: t("sample.user-name"),
-    handle: "bsky.app",
+  const owner: OwnerView = {
+    did: "did:plc:z72i7hdynmk6r22z27h6tvur",
+    handleOrDid: "bsky.app",
+    displayHandle: "@bsky.app",
+    displayName: t("sample.owner-name"),
+    avatarUrl: null,
   };
   const cards: ValidCard[] = [
     {
@@ -27,5 +30,5 @@ export const useSampleBoard = () => {
       url: "https://bsky.app/profile/did:plc:z72i7hdynmk6r22z27h6tvur/post/3l47prg3wgy23",
     },
   ];
-  return { user, cards };
+  return { owner, cards };
 };
