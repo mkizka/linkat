@@ -55,12 +55,11 @@ export const ingesterClientFactory = ({
   const logBoardError = logError("ボードの更新に失敗しました");
   const logProfileError = logError("プロフィールの更新に失敗しました");
 
-  const handle = (
-    task: () => Promise<void>,
-    onError: (error: unknown) => void,
-  ) => {
-    void Sentry.startNewTrace(() => task().catch(onError));
-  };
+  const handle =
+    <E>(task: (event: E) => Promise<void>, onError: (error: unknown) => void) =>
+    (event: E) => {
+      void Sentry.startNewTrace(() => task(event).catch(onError));
+    };
 
   jetstream.on("open", () => {
     log.info(`Jetstream subscription started to ${env.JETSTREAM_URL}`);
@@ -71,65 +70,79 @@ export const ingesterClientFactory = ({
   jetstream.on("error", (error) => {
     log.error("Jetstreamでエラーが発生しました", { error });
   });
-  jetstream.on("identity", ({ did }) => {
+  jetstream.on(
+    "identity",
     handle(
-      () => ingesterService.handleIdentity({ did }),
+      ({ did }) => ingesterService.handleIdentity({ did }),
       logError("ハンドルの更新に失敗しました"),
-    );
-  });
-  jetstream.on("account", ({ did, account }) => {
+    ),
+  );
+  jetstream.on(
+    "account",
     handle(
-      () =>
+      ({ did, account }) =>
         ingesterService.handleAccount({
           did,
           state: { active: account.active, status: account.status ?? null },
         }),
       logError("アカウントの状態の更新に失敗しました"),
-    );
-  });
-  jetstream.onCreate("blue.linkat.board", ({ did, commit }) => {
+    ),
+  );
+  jetstream.onCreate(
+    "blue.linkat.board",
     handle(
-      () => ingesterService.handleBoardCommit({ did, record: commit.record }),
+      ({ did, commit }) =>
+        ingesterService.handleBoardCommit({ did, record: commit.record }),
       logBoardError,
-    );
-  });
-  jetstream.onUpdate("blue.linkat.board", ({ did, commit }) => {
+    ),
+  );
+  jetstream.onUpdate(
+    "blue.linkat.board",
     handle(
-      () => ingesterService.handleBoardCommit({ did, record: commit.record }),
+      ({ did, commit }) =>
+        ingesterService.handleBoardCommit({ did, record: commit.record }),
       logBoardError,
-    );
-  });
-  jetstream.onDelete("blue.linkat.board", ({ did }) => {
-    handle(() => ingesterService.handleBoardDelete({ did }), logBoardError);
-  });
-  jetstream.onCreate("app.bsky.actor.profile", ({ did, commit }) => {
+    ),
+  );
+  jetstream.onDelete(
+    "blue.linkat.board",
     handle(
-      () =>
+      ({ did }) => ingesterService.handleBoardDelete({ did }),
+      logBoardError,
+    ),
+  );
+  jetstream.onCreate(
+    "app.bsky.actor.profile",
+    handle(
+      ({ did, commit }) =>
         ingesterService.handleProfileCommit({
           did,
           rkey: commit.rkey,
           record: commit.record,
         }),
       logProfileError,
-    );
-  });
-  jetstream.onUpdate("app.bsky.actor.profile", ({ did, commit }) => {
+    ),
+  );
+  jetstream.onUpdate(
+    "app.bsky.actor.profile",
     handle(
-      () =>
+      ({ did, commit }) =>
         ingesterService.handleProfileCommit({
           did,
           rkey: commit.rkey,
           record: commit.record,
         }),
       logProfileError,
-    );
-  });
-  jetstream.onDelete("app.bsky.actor.profile", ({ did, commit }) => {
+    ),
+  );
+  jetstream.onDelete(
+    "app.bsky.actor.profile",
     handle(
-      () => ingesterService.handleProfileDelete({ did, rkey: commit.rkey }),
+      ({ did, commit }) =>
+        ingesterService.handleProfileDelete({ did, rkey: commit.rkey }),
       logProfileError,
-    );
-  });
+    ),
+  );
 
   return {
     async start() {
