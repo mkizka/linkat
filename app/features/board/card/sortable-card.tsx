@@ -102,9 +102,9 @@ function EditableCard({ card, parsed, isDragging }: EditableCardProps) {
           </div>
         </>
       ) : parsed.type === "feed" ? (
-        <div className="flex flex-row items-center px-2">
+        <div className="card-body flex-row items-center gap-2 px-2 py-4">
           {handle}
-          <div className="pointer-events-none min-w-0 flex-1">
+          <div className="pointer-events-none min-w-0 flex-1 [&_.card-body]:p-0">
             <CardContent parsed={parsed} />
           </div>
           {editButton}
