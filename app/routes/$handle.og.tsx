@@ -3,13 +3,10 @@ import fs from "fs";
 import { LRUCache } from "lru-cache";
 import satori from "satori";
 
-import type { User } from "~/models/user";
 import { di } from "~/server/di";
-import { createLogger } from "~/utils/logger";
+import type { OwnerView } from "~/server/service/owner/ownerView";
 
 import type { Route } from "./+types/$handle.og";
-
-const logger = createLogger("$handle.og");
 
 const cache = new LRUCache<string, Uint8Array<ArrayBuffer>>({
   max: 100,
@@ -18,9 +15,7 @@ const cache = new LRUCache<string, Uint8Array<ArrayBuffer>>({
 
 const fontData = fs.readFileSync("./fonts/Murecho-Bold.ttf");
 
-const renderImage = async (user: User) => {
-  // satoriが対応していないwebp等を避けるため、CDNにjpegでの配信を要求する
-  const avatar = user.avatar ? `${user.avatar}@jpeg` : null;
+const renderImage = async (owner: OwnerView) => {
   //
   // カード内の割合
   // 100px(padding) + 200px(avatar) + 50px(mariginLeft) + 650px(handle/displayName) + 100px(padding) = 1100px
@@ -57,9 +52,9 @@ const renderImage = async (user: User) => {
             alignItems: "center",
           }}
         >
-          {avatar ? (
+          {owner.avatarUrl ? (
             <img
-              src={avatar}
+              src={owner.avatarUrl}
               style={{
                 width: "200px",
                 height: "200px",
@@ -91,7 +86,7 @@ const renderImage = async (user: User) => {
                 overflow: "hidden",
               }}
             >
-              {user.displayName}
+              {owner.displayName}
             </p>
             <p
               style={{
@@ -103,7 +98,7 @@ const renderImage = async (user: User) => {
                 marginTop: "-1rem",
               }}
             >
-              @{user.handle}
+              {owner.displayHandle}
             </p>
           </div>
         </div>
@@ -137,25 +132,25 @@ const renderImage = async (user: User) => {
   return Uint8Array.from(buffer);
 };
 
-const createImage = async (user: User) => {
-  const image = await renderImage(user);
-  cache.set(user.did, image);
+const createImage = async (owner: OwnerView) => {
+  const image = await renderImage(owner);
+  cache.set(owner.did, image);
   return image;
 };
 
 export async function loader({ params }: Route.LoaderArgs) {
-  const user = await di.userService.findOrFetchUser({
-    handleOrDid: params.handle,
-  });
-  if (!user) {
+  const logger = di.logger.child("$handle.og");
+  const result = await di.boardService.findBoardView(params.handle);
+  if (result.type !== "ok") {
     throw new Response(null, { status: 404 });
   }
-  let image = cache.get(user.did);
+  const { owner } = result;
+  let image = cache.get(owner.did);
   if (!image) {
     try {
-      image = await createImage(user);
+      image = await createImage(owner);
     } catch (error) {
-      logger.warn(error, "OGP画像の生成に失敗しました");
+      logger.warn("OGP画像の生成に失敗しました", { error });
       throw new Response(null, { status: 404 });
     }
   }

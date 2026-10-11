@@ -10,5 +10,6 @@ interface Window {
   };
   ENV: {
     SENTRY_DSN?: string;
+    SENTRY_ENVIRONMENT: string;
   };
 }
