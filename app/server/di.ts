@@ -1,55 +1,99 @@
 import { createRegistry } from "@gyaku/di";
 
-import { atpassportClientFactory } from "~/server/infrastructure/atpassportClient";
-import { boardRepositoryFactory } from "~/server/infrastructure/boardRepository";
-import { cookieSessionStorageFactory } from "~/server/infrastructure/cookieSessionStorage";
-import { cursorRepositoryFactory } from "~/server/infrastructure/cursorRepository";
-import { db } from "~/server/infrastructure/drizzle";
-import { oauthClientFactory } from "~/server/infrastructure/oauthClient";
+import { atpassportClientFactory } from "~/server/infrastructure/auth/atpassportClient";
+import { cookieSessionStorageFactory } from "~/server/infrastructure/auth/cookieSessionStorage";
+import { oauthClientFactory } from "~/server/infrastructure/auth/oauthClient";
 import {
   sessionStoreFactory,
   stateStoreFactory,
-} from "~/server/infrastructure/oauthStorage";
-import { userRepositoryFactory } from "~/server/infrastructure/userRepository";
-import { atpassportServiceFactory } from "~/server/service/atpassportService/atpassport";
-import { authServiceFactory } from "~/server/service/authService/auth";
-import { boardServiceFactory } from "~/server/service/boardService/board";
-import { didServiceFactory } from "~/server/service/didService/did";
-import { jetstreamServiceFactory } from "~/server/service/jetstreamService/jetstream";
-import { sessionServiceFactory } from "~/server/service/sessionService/session";
-import { userServiceFactory } from "~/server/service/userService/user";
+} from "~/server/infrastructure/auth/oauthStorage";
+import { boardPdsRepositoryFactory } from "~/server/infrastructure/board/boardPdsRepository";
+import { boardRepositoryFactory } from "~/server/infrastructure/board/boardRepository";
+import { db } from "~/server/infrastructure/db/drizzle";
+import { cursorRepositoryFactory } from "~/server/infrastructure/ingester/cursorRepository";
+import { ingesterClientFactory } from "~/server/infrastructure/ingester/ingesterClient";
+import { loggerFactory } from "~/server/infrastructure/logger/logger";
+import { metricsFactory } from "~/server/infrastructure/metrics/metrics";
+import { handleIndexFactory } from "~/server/infrastructure/owner/handleIndex";
+import { identityResolverFactory } from "~/server/infrastructure/owner/identityResolver";
+import { ownerRepositoryFactory } from "~/server/infrastructure/owner/ownerRepository";
+import { profileFetcherFactory } from "~/server/infrastructure/owner/profileFetcher";
+import { profileRecordParserFactory } from "~/server/infrastructure/owner/profileRecordParser";
+import { atpassportServiceFactory } from "~/server/service/auth/atpassport";
+import { authServiceFactory } from "~/server/service/auth/auth";
+import { sessionServiceFactory } from "~/server/service/auth/session";
+import { boardServiceFactory } from "~/server/service/board/board";
+import { boardEventServiceFactory } from "~/server/service/board/boardEvent";
+import { ingesterServiceFactory } from "~/server/service/ingester/ingester";
+import { ownerServiceFactory } from "~/server/service/owner/owner";
+import { ownerViewServiceFactory } from "~/server/service/owner/ownerView";
 
 export const di = await createRegistry()
   .value("db", db)
+  .service("logger", loggerFactory)
+  .service("metrics", metricsFactory)
   .service("boardRepository", ["db"], boardRepositoryFactory)
   .service("cursorRepository", ["db"], cursorRepositoryFactory)
-  .service("userRepository", ["db"], userRepositoryFactory)
+  .service("ownerRepository", ["db"], ownerRepositoryFactory)
+  .service("handleIndex", ["db"], handleIndexFactory)
   .service("oauthStateStore", ["db"], stateStoreFactory)
   .service("oauthSessionStore", ["db"], sessionStoreFactory)
+  .service("identityResolver", ["logger"], identityResolverFactory)
+  .service("profileRecordParser", profileRecordParserFactory)
   .service(
     "oauthClient",
     ["oauthStateStore", "oauthSessionStore"],
     oauthClientFactory,
   )
+  .service("boardPdsRepository", ["oauthClient"], boardPdsRepositoryFactory)
+  .service(
+    "profileFetcher",
+    ["profileRecordParser", "logger"],
+    profileFetcherFactory,
+  )
   .service("atpassportClient", atpassportClientFactory)
   .service("cookieSessionStorage", cookieSessionStorageFactory)
-  .service("didService", didServiceFactory)
-  .service("userService", ["userRepository"], userServiceFactory)
+  .service("ownerViewService", ownerViewServiceFactory)
+  .service(
+    "ownerService",
+    [
+      "ownerRepository",
+      "profileFetcher",
+      "identityResolver",
+      "ownerViewService",
+    ],
+    ownerServiceFactory,
+  )
   .service(
     "boardService",
-    ["boardRepository", "didService"],
+    ["boardRepository", "handleIndex", "ownerRepository", "ownerViewService"],
     boardServiceFactory,
+  )
+  .service(
+    "boardEventService",
+    [
+      "boardRepository",
+      "boardPdsRepository",
+      "ownerRepository",
+      "ownerService",
+    ],
+    boardEventServiceFactory,
   )
   .service("atpassportService", ["atpassportClient"], atpassportServiceFactory)
   .service("authService", ["oauthClient"], authServiceFactory)
   .service(
     "sessionService",
-    ["cookieSessionStorage", "oauthClient", "userService"],
+    ["cookieSessionStorage", "oauthClient", "logger"],
     sessionServiceFactory,
   )
   .service(
-    "jetstreamService",
-    ["cursorRepository", "boardService", "userService"],
-    jetstreamServiceFactory,
+    "ingesterService",
+    ["boardEventService", "ownerService", "profileRecordParser", "logger"],
+    ingesterServiceFactory,
+  )
+  .service(
+    "ingesterClient",
+    ["ingesterService", "cursorRepository", "logger", "metrics"],
+    ingesterClientFactory,
   )
   .resolve();

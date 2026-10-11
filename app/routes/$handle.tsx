@@ -1,7 +1,5 @@
-import { Footer, Main } from "~/components/layout";
-import { BoardViewer } from "~/features/board/board-viewer";
-import { ShareModal } from "~/features/board/share-modal";
 import { getInstance } from "~/i18n/i18n";
+import { BoardPage, HiddenBoardPage } from "~/pages/board-page";
 import { di } from "~/server/di";
 import { env } from "~/utils/env";
 import { createMeta } from "~/utils/meta";
@@ -13,49 +11,44 @@ const notFound = () => {
 };
 
 export async function loader({ request, params, context }: Route.LoaderArgs) {
-  // この順で処理した場合ボードを持たない(=このサービスのユーザーでない)ユーザーの
-  // データも作られてしまうが、一旦このままにしておく
-  const user = await di.userService.findOrFetchUser({
-    handleOrDid: params.handle,
-  });
-  if (!user) {
+  const result = await di.boardService.findBoardView(params.handle);
+  if (result.type === "not-found") {
     return notFound();
   }
-  const board = await di.boardService.findOrFetchBoard(user.did);
-  if (!board) {
-    return notFound();
+  if (result.type === "hidden") {
+    return { hidden: true as const, status: result.status };
   }
+  const { owner, board } = result;
   const i18next = getInstance(context);
   const title = i18next.t("board.meta-title", {
-    displayName: user.displayName,
-    handle: user.handle,
+    displayName: owner.displayName,
+    handle: owner.handleOrDid,
   });
-  const userDid = await di.sessionService.getSessionUserDid(request);
+  const viewerDid = await di.sessionService.getSessionDid(request);
   return {
-    user,
+    owner,
     board: { cards: board.cards },
-    isMine: user.isOwnedBy(userDid),
+    isMine: owner.did === viewerDid,
     title: `${title} | Linkat`,
-    url: `${env.PUBLIC_URL}/${user.handle}`,
-    ogImageUrl: `${env.PUBLIC_URL}/${user.handle}/og`,
-    atUri: `at://${user.did}/blue.linkat.board/self`,
+    url: `${env.PUBLIC_URL}/${owner.handleOrDid}`,
+    ogImageUrl: `${env.PUBLIC_URL}/${owner.handleOrDid}/og`,
+    atUri: `at://${owner.did}/blue.linkat.board/self`,
+    hidden: false as const,
   };
 }
 
 export const meta: Route.MetaFunction = ({ loaderData }) => {
+  if (loaderData.hidden) {
+    return [{ title: "Linkat" }];
+  }
   const { title, url, ogImageUrl, atUri } = loaderData;
   return createMeta({ title, url, ogImageUrl, atUri });
 };
 
 export default function Index({ loaderData }: Route.ComponentProps) {
-  const { user, board, url, isMine } = loaderData;
-  return (
-    <>
-      <Main>
-        <BoardViewer user={user} board={board} url={url} isMine={isMine} />
-        <ShareModal url={url} />
-      </Main>
-      <Footer withNavigation />
-    </>
-  );
+  if (loaderData.hidden) {
+    return <HiddenBoardPage status={loaderData.status} />;
+  }
+  const { owner, board, url, isMine } = loaderData;
+  return <BoardPage owner={owner} board={board} url={url} isMine={isMine} />;
 }
