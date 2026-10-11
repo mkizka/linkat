@@ -16,7 +16,6 @@ export function BoardMenu({ isLogin, onShare }: Props) {
   const close = () => ref.current?.close();
   const links = isLogin
     ? [
-        { to: "/following", label: t("board-menu.following") },
         { to: "/settings", label: t("board-menu.settings") },
         { to: "/", label: t("board-menu.top") },
       ]
