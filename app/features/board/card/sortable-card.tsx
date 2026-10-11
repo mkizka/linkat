@@ -1,5 +1,5 @@
 import { useFormMetadata } from "@conform-to/react";
-import { PencilSquareIcon } from "@heroicons/react/24/outline";
+import { Bars2Icon, PencilSquareIcon } from "@heroicons/react/24/outline";
 
 import { Card } from "~/components/card";
 import { cardModal } from "~/features/board/form/card-form-modal";
@@ -68,10 +68,10 @@ function EditableCard({ card, parsed, isDragging }: EditableCardProps) {
 
   const handle = (
     <div
-      className="flex size-10 shrink-0 cursor-grab items-center justify-center text-base-content/50 select-none"
+      className="flex size-10 shrink-0 cursor-grab items-center justify-center text-base-content/60"
       data-movable-handle
     >
-      ⋮⋮
+      <Bars2Icon className="size-6" />
     </div>
   );
   const editButton = (
