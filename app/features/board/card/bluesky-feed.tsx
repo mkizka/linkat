@@ -1,6 +1,6 @@
 import { Client } from "@atproto/lex";
 import { asAtUriString } from "@atproto/syntax";
-import { useEffect, useState } from "react";
+import { createContext, use, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import getFeedGenerator from "~/generated/app/bsky/feed/getFeedGenerator";
@@ -11,6 +11,21 @@ type Feed = {
   description?: string;
   creatorHandle: string;
 };
+
+const fetchFeed = async (feedUri: string): Promise<Feed> => {
+  const agent = new Client("https://public.api.bsky.app");
+  const { view } = await agent.call(getFeedGenerator, {
+    feed: asAtUriString(feedUri),
+  });
+  return {
+    avatar: view.avatar,
+    displayName: view.displayName,
+    description: view.description,
+    creatorHandle: view.creator.handle,
+  };
+};
+
+export const FeedFetcherContext = createContext(fetchFeed);
 
 type BlueskyFeedViewProps = {
   feed: Feed | null;
@@ -70,25 +85,17 @@ type Props = {
 export function BlueskyFeed({ feedUri, url }: Props) {
   const [feed, setFeed] = useState<Feed | null>(null);
   const [showError, setShowError] = useState(false);
+  const fetchFeed = use(FeedFetcherContext);
 
   useEffect(() => {
-    const agent = new Client("https://public.api.bsky.app");
-    agent
-      .call(getFeedGenerator, { feed: asAtUriString(feedUri) })
-      .then(({ view }) => {
-        setFeed({
-          avatar: view.avatar,
-          displayName: view.displayName,
-          description: view.description,
-          creatorHandle: view.creator.handle,
-        });
-      })
+    fetchFeed(feedUri)
+      .then(setFeed)
       .catch((error: unknown) => {
         // eslint-disable-next-line no-console
         console.error(error);
         setShowError(true);
       });
-  }, [feedUri]);
+  }, [fetchFeed, feedUri]);
 
   return <BlueskyFeedView feed={feed} error={showError} url={url} />;
 }

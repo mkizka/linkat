@@ -8,14 +8,10 @@ import {
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 
-import { Card } from "~/components/card";
 import { Main, RootLayout } from "~/components/layout";
-import { BlueskyFeedView } from "~/features/board/card/bluesky-feed";
-import { parseCard } from "~/features/board/card/parser";
-import { ProfileCard } from "~/features/board/card/profile-card";
-import { CardContent } from "~/features/board/card/sortable-card";
+import { BoardViewer } from "~/features/board/board-viewer";
+import { FeedFetcherContext } from "~/features/board/card/bluesky-feed";
 import { RecentBoards } from "~/features/top/recent-boards";
-import type { ValidCard } from "~/models/card";
 import type { OwnerView } from "~/server/service/owner/ownerView";
 import { cn } from "~/utils/cn";
 
@@ -28,32 +24,25 @@ function SampleBoardPreview({ url }: { url: string }) {
     displayName: t("_index.sample-owner-name"),
     avatarUrl: null,
   };
-  const cards: ValidCard[] = [
+  const cards = [
     { url: "https://example.com" },
     { text: t("_index.sample-text") },
-    { url: "https://bsky.app/profile/mkizka.net/post/3mxm6rvnfns25" },
+    {
+      url: "https://bsky.app/profile/did:plc:4gow62pk3vqpuwiwaslcwisa/post/3mxm6rvnfns25",
+    },
+    { url: "https://bsky.app/profile/example.com/feed/sample" },
   ];
+  const fetchMockFeed = () =>
+    Promise.resolve({
+      displayName: t("_index.sample-feed-name"),
+      description: t("_index.sample-feed-description"),
+      creatorHandle: "example.com",
+    });
   return (
     <div className="relative -rotate-2 px-4 [zoom:0.8]">
-      <div className="flex flex-col gap-2">
-        <ProfileCard owner={owner} url={url} />
-        {cards.map((card) => (
-          <Card key={card.url ?? card.text}>
-            <CardContent parsed={parseCard(card)} />
-          </Card>
-        ))}
-        <Card>
-          <BlueskyFeedView
-            feed={{
-              displayName: t("_index.sample-feed-name"),
-              description: t("_index.sample-feed-description"),
-              creatorHandle: "example.com",
-            }}
-            error={false}
-            url="https://bsky.app/profile/example.com/feed/sample"
-          />
-        </Card>
-      </div>
+      <FeedFetcherContext value={fetchMockFeed}>
+        <BoardViewer url={url} owner={owner} board={{ cards }} />
+      </FeedFetcherContext>
       <Link
         to="/sample"
         className="absolute inset-0"
