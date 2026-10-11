@@ -1,4 +1,3 @@
-import * as Sentry from "@sentry/react-router";
 import { pino } from "pino";
 import pinoHttp from "pino-http";
 
@@ -36,11 +35,8 @@ export const loggerFactory = (): ILogger => ({
   },
 });
 
-const httpBaseLogger = rootLogger.child({ name: "http" });
-Sentry.pinoIntegration.untrackLogger(httpBaseLogger);
-
 export const httpLogger = pinoHttp({
-  logger: httpBaseLogger,
+  logger: rootLogger.child({ name: "http" }),
   customSuccessMessage: (req, res, responseTime) => {
     return `${req.method} ${res.statusCode} ${req.url} ${responseTime}ms`;
   },

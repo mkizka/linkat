@@ -4,4 +4,5 @@ Sentry.init({
   dsn: process.env.SENTRY_DSN,
   environment: process.env.SENTRY_ENVIRONMENT || "production",
   integrations: [Sentry.pinoIntegration(), Sentry.openTelemetryIntegration()],
+  beforeSendLog: (log) => (log.attributes?.name === "http" ? null : log),
 });
