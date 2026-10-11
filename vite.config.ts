@@ -1,6 +1,6 @@
 import { reactRouter } from "@react-router/dev/vite";
-import type { SentryReactRouterBuildOptions } from "@sentry/react-router";
-import { sentryReactRouter } from "@sentry/react-router";
+import type { SentryReactRouterBuildOptions } from "@sentry/react-router/vite";
+import { sentryReactRouter } from "@sentry/react-router/vite";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "vite";
 
@@ -8,14 +8,17 @@ const sentryConfig: SentryReactRouterBuildOptions = {
   org: process.env.SENTRY_ORG,
   project: process.env.SENTRY_PROJECT,
   authToken: process.env.SENTRY_AUTH_TOKEN,
+  release: { name: process.env.RAILWAY_GIT_COMMIT_SHA },
 };
 
 export default defineConfig((configEnv) => ({
   base: process.env.VITE_CONFIG_BASE ?? "/",
   plugins: [
     tailwindcss(),
-    reactRouter(),
-    !process.env.VITEST && sentryReactRouter(sentryConfig, configEnv),
+    !process.env.STORYBOOK && reactRouter(),
+    !process.env.VITEST &&
+      !!process.env.SENTRY_AUTH_TOKEN &&
+      sentryReactRouter(sentryConfig, configEnv),
   ],
   resolve: {
     tsconfigPaths: true,

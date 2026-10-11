@@ -10,7 +10,7 @@ type Props = {
 
 export function BoardMenu({ isLogin, onShare }: Props) {
   const ref = useRef<HTMLDialogElement>(null);
-  const touchStartY = useRef(0);
+  const touchStartYRef = useRef(0);
   const { t } = useTranslation();
 
   const close = () => ref.current?.close();
@@ -37,11 +37,11 @@ export function BoardMenu({ isLogin, onShare }: Props) {
         <div
           className="modal-box mx-auto max-w-screen-sm px-4 pt-3"
           onTouchStart={(e) => {
-            touchStartY.current = e.touches[0]?.clientY ?? 0;
+            touchStartYRef.current = e.touches[0]?.clientY ?? 0;
           }}
           onTouchEnd={(e) => {
             if (
-              (e.changedTouches[0]?.clientY ?? 0) - touchStartY.current >
+              (e.changedTouches[0]?.clientY ?? 0) - touchStartYRef.current >
               50
             ) {
               close();

@@ -5,9 +5,9 @@ import { Form, useNavigation } from "react-router";
 
 import { Button } from "~/components/button";
 import type { ValidCard } from "~/models/card";
+import type { OwnerView } from "~/server/service/owner/ownerView";
 import { resolveHandleIfNeeded } from "~/utils/url";
 
-import type { ProfileCardProps } from "./card/profile-card";
 import { ProfileCard } from "./card/profile-card";
 import { SortableCardList } from "./card/sortable-card-list";
 import { CardFormModal, cardModal } from "./form/card-form-modal";
@@ -15,7 +15,7 @@ import type { CardFormPayload } from "./form/card-form-provider";
 import { CardFormProvider } from "./form/card-form-provider";
 
 type Props = {
-  user: ProfileCardProps["user"];
+  owner: OwnerView;
   // loaderDataはシリアライズされるためプレーンなデータ構造で受け取る
   board: { cards: ValidCard[] } | null;
   editable?: boolean;
@@ -28,7 +28,7 @@ const withId = (card: ValidCard) => ({
   id: crypto.randomUUID() as string,
 });
 
-export function BoardViewer({ user, board, editable, profileActions }: Props) {
+export function BoardViewer({ owner, board, editable, profileActions }: Props) {
   const [cards, setCards] = useState((board?.cards ?? []).map(withId));
   const { t } = useTranslation();
   const navigation = useNavigation();
@@ -72,7 +72,7 @@ export function BoardViewer({ user, board, editable, profileActions }: Props) {
       onDelete={handleDeleteCardForm}
     >
       <div className="flex flex-col gap-2 py-4">
-        <ProfileCard user={user} actions={profileActions} />
+        <ProfileCard owner={owner} actions={profileActions} />
         <SortableCardList
           cards={cards}
           setCards={setCards}

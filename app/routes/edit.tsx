@@ -1,108 +1,125 @@
 import { useEffect } from "react";
-import { useTranslation } from "react-i18next";
-import { redirect, useBeforeUnload, useBlocker } from "react-router";
+import { data, redirect, useFetcher } from "react-router";
+import { setToast } from "remix-toast/middleware";
 
-import { Main } from "~/components/layout";
-import { BoardViewer } from "~/features/board/board-viewer";
-import { RouteToaster } from "~/features/toast/route";
-import { useUmami } from "~/hooks/useUmami";
 import { getInstance } from "~/i18n/i18n";
+import { Board } from "~/models/board";
+import { EditPage } from "~/pages/edit-page";
 import { di } from "~/server/di";
-import { createLogger } from "~/utils/logger";
+import {
+  BoardDbSaveError,
+  BoardPdsSaveError,
+} from "~/server/service/board/boardEvent";
+import { tryCatch } from "~/utils/tryCatch";
 
 import type { Route } from "./+types/edit";
-
-const logger = createLogger("edit");
+import type { action as syncAction } from "./sync";
 
 export async function action({ request, context }: Route.ActionArgs) {
+  const logger = di.logger.child("edit");
   const i18next = getInstance(context);
-  const [user, agent] = await Promise.all([
-    di.sessionService.getSessionUser(request),
-    di.sessionService.getSessionAgent(request),
-  ]);
-  if (!user || !agent) {
-    return { error: i18next.t("edit.invalid-session-error-message") };
+  const editorDid = await di.sessionService.getSessionDid(request);
+  if (!editorDid) {
+    setToast(context, {
+      message: i18next.t("edit.invalid-session-error-message"),
+      type: "error",
+    });
+    return redirect("/login", {
+      headers: {
+        "Set-Cookie": await di.sessionService.destroySession(request),
+      },
+    });
   }
-  const form = await request.formData();
+  const form = await request.formData().catch(() => {
+    throw data(null, { status: 400 });
+  });
   const rawBoard = form.get("board");
   if (typeof rawBoard !== "string") {
-    return { error: i18next.t("edit.invalid-form-error-message") };
+    setToast(context, {
+      message: i18next.t("edit.invalid-form-error-message"),
+      type: "error",
+    });
+    return null;
   }
-  // 1. 楽観的にDBを更新
-  const parsedBoard = await di.boardService.parseBoardFromForm(
-    user.did,
-    rawBoard,
-  );
+  const parsedBoard = await tryCatch(() =>
+    Board.fromRecord(editorDid, JSON.parse(rawBoard)),
+  )();
   if (parsedBoard instanceof Error) {
-    logger.warn({ error: parsedBoard }, "boardの形式が不正でした");
-    return { error: i18next.t("edit.invalid-form-error-message") };
+    logger.warn("boardの形式が不正でした", { error: parsedBoard });
+    setToast(context, {
+      message: i18next.t("edit.invalid-form-error-message"),
+      type: "error",
+    });
+    return null;
   }
-  await di.boardService.saveBoard(parsedBoard);
   try {
-    // 2. PDSにも保存
-    await agent.updateBoard(parsedBoard);
+    await di.boardEventService.handleEditorSave(parsedBoard);
   } catch (error) {
-    logger.error(error, "PDSへのボードの保存に失敗しました");
+    if (error instanceof BoardPdsSaveError) {
+      logger.error(error.message, { error });
+      setToast(context, {
+        message: i18next.t("edit.save-board-error-message"),
+        type: "error",
+      });
+      return null;
+    }
+    if (error instanceof BoardDbSaveError) {
+      logger.error(error.message, { error });
+      setToast(context, {
+        message: i18next.t("edit.save-delayed-warning-message"),
+        type: "warning",
+      });
+      const editor = await di.ownerService.findOwnerView(editorDid);
+      return redirect(`/${editor.handleOrDid}`);
+    }
+    throw error;
   }
-  // 3. 閲覧ページにリダイレクト
-  return redirect(`/${user.handle}?success`);
+  logger.info("ボードを保存しました", {
+    ownerDid: editorDid,
+    cardCount: parsedBoard.cards.length,
+  });
+  const editor = await di.ownerService.findOwnerView(editorDid);
+  return redirect(`/${editor.handleOrDid}?success`);
 }
 
 export async function loader({ request }: Route.LoaderArgs) {
-  const user = await di.sessionService.getSessionUser(request);
-  if (!user) {
+  const editorDid = await di.sessionService.getSessionDid(request);
+  if (!editorDid) {
     throw redirect("/login");
   }
-  const board = await di.boardService.findOrFetchBoard(user.did);
+  const [editorView, board] = await Promise.all([
+    di.ownerService.findOwnerView(editorDid),
+    di.boardService.findBoard(editorDid),
+  ]);
   return {
-    user,
+    editor: editorView,
     board: board && { cards: board.cards },
   };
 }
 
 export default function Index({ loaderData }: Route.ComponentProps) {
-  const { user, board } = loaderData;
-  const { t } = useTranslation();
-  const umami = useUmami();
-
-  // 更新ボタンを押したりしたときに確認ダイアログを出す
-  useBeforeUnload((event) => {
-    umami.track("unload-edit");
-    event.preventDefault();
-  });
-
-  // 戻るボタンを押したりしたときに確認ダイアログを出す
-  const blocker = useBlocker(
-    ({ currentLocation, nextLocation, historyAction }) =>
-      // 保存ボタンを押したときの移動以外のとき
-      (currentLocation.pathname !== nextLocation.pathname &&
-        nextLocation.pathname !== `/${user.handle}`) ||
-      // /alice.testから/editに移動して戻るとき
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
-      historyAction === "POP",
-  );
+  const sync = useFetcher<typeof syncAction>();
+  const submitSync = () =>
+    sync.submit(null, { method: "post", action: "/sync" });
 
   useEffect(() => {
-    if (blocker.state !== "blocked") return;
-    if (confirm(t("edit.confirm-leave-message"))) {
-      umami.track("leave-edit", {
-        action: "confirm",
-      });
-      blocker.proceed();
-    } else {
-      umami.track("leave-edit", {
-        action: "cancel",
-      });
-      blocker.reset();
+    if (!loaderData.board && sync.state === "idle" && !sync.data) {
+      void submitSync();
     }
-  }, [t, blocker, umami]);
+  });
+
+  const syncState =
+    loaderData.board || (sync.state === "idle" && sync.data?.ok)
+      ? "ready"
+      : sync.state !== "idle" || !sync.data
+        ? "loading"
+        : "error";
 
   return (
-    <>
-      <Main>
-        <BoardViewer user={user} board={board} editable />
-      </Main>
-      <RouteToaster />
-    </>
+    <EditPage
+      {...loaderData}
+      syncState={syncState}
+      onRetrySync={() => void submitSync()}
+    />
   );
 }

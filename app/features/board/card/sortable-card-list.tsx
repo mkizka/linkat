@@ -1,13 +1,14 @@
-import type { Dispatch, SetStateAction } from "react";
 import { arrayMove, List } from "react-movable";
 
-import { SortableCard, type SortableCardProps } from "./sortable-card";
+import type { ValidCard } from "~/models/card";
 
-type CardStateValue = SortableCardProps["card"][];
+import { SortableCard } from "./sortable-card";
+
+type CardStateValue = (ValidCard & { id: string })[];
 
 type Props = {
   cards: CardStateValue;
-  setCards: Dispatch<SetStateAction<CardStateValue>>;
+  setCards: (cards: CardStateValue) => void;
   sortable?: boolean;
 };
 

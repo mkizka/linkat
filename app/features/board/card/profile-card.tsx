@@ -2,7 +2,7 @@ import { UserIcon } from "@heroicons/react/24/solid";
 import type { ReactNode } from "react";
 
 import { Card } from "~/components/card";
-import type { User } from "~/models/user";
+import type { OwnerView } from "~/server/service/owner/ownerView";
 
 function Avatar({ avatar }: { avatar: string }) {
   return (
@@ -24,26 +24,26 @@ function AvatarPlaceholder() {
   );
 }
 
-export type ProfileCardProps = {
-  user: Pick<User, "avatar" | "displayName" | "handle">;
+type ProfileCardProps = {
+  owner: OwnerView;
   actions?: ReactNode;
 };
 
-export function ProfileCard({ user, actions }: ProfileCardProps) {
+export function ProfileCard({ owner, actions }: ProfileCardProps) {
   return (
     <Card>
       <div className="card-body gap-2">
         <div className="flex items-center">
-          {user.avatar ? (
-            <Avatar avatar={user.avatar} />
+          {owner.avatarUrl ? (
+            <Avatar avatar={owner.avatarUrl} />
           ) : (
             <AvatarPlaceholder />
           )}
           <div className="flex flex-1 justify-end gap-2">{actions}</div>
         </div>
         <div>
-          <h2 className="text-xl font-bold">{user.displayName}</h2>
-          <p className="text-gray-500">@{user.handle}</p>
+          <h2 className="text-xl font-bold">{owner.displayName}</h2>
+          <p className="text-gray-500">{owner.displayHandle}</p>
         </div>
       </div>
     </Card>

@@ -1,0 +1,25 @@
+import type { Meta, StoryObj } from "@storybook/react-vite";
+
+import { Footer, Header, Main, RootLayout } from "./layout";
+
+const meta = {
+  component: RootLayout,
+  parameters: { layout: "fullscreen" },
+  args: {
+    children: <Main className="py-20">コンテンツ</Main>,
+  },
+} satisfies Meta<typeof RootLayout>;
+
+export default meta;
+
+type Story = StoryObj<typeof meta>;
+
+export const Default: Story = {};
+
+export const HeaderOnly: Story = {
+  render: () => <Header />,
+};
+
+export const FooterWithNavigation: Story = {
+  render: () => <Footer withNavigation />,
+};
