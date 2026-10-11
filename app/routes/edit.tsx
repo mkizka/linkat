@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { redirect, useFetcher } from "react-router";
+import { data, redirect, useFetcher } from "react-router";
 import { setToast } from "remix-toast/middleware";
 
 import { getInstance } from "~/i18n/i18n";
@@ -31,7 +31,9 @@ export async function action({ request, context }: Route.ActionArgs) {
       },
     });
   }
-  const form = await request.formData();
+  const form = await request.formData().catch(() => {
+    throw data(null, { status: 400 });
+  });
   const rawBoard = form.get("board");
   if (typeof rawBoard !== "string") {
     setToast(context, {
