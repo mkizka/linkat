@@ -59,7 +59,7 @@
     "saved-share-text": "Linkatでリンク集を作りました！ #linkat {{url}}",
     "board-share-text": "{{displayName}}さんのボード #linkat {{url}}"
   },
-  "board-page": {
+  "board-actions": {
     "edit-button": "編集"
   },
   "board-menu": {

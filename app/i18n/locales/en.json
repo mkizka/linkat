@@ -59,7 +59,7 @@
     "saved-share-text": "I created a Link in Bio using Linkat! #linkat {{url}}",
     "board-share-text": "{{displayName}}'s board #linkat {{url}}"
   },
-  "board-page": {
+  "board-actions": {
     "edit-button": "Edit"
   },
   "board-menu": {
