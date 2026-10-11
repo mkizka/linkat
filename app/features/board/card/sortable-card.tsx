@@ -66,7 +66,24 @@ function EditableCard({ card, parsed, isDragging }: EditableCardProps) {
     cardModal.open();
   };
 
-  const isRich = parsed.type === "feed" || parsed.type === "embed";
+  const handle = (
+    <div
+      className="flex size-10 shrink-0 cursor-grab items-center justify-center text-base-content/50 select-none"
+      data-movable-handle
+    >
+      ⋮⋮
+    </div>
+  );
+  const editButton = (
+    <button
+      type="button"
+      className="btn btn-square btn-ghost"
+      data-testid="sortable-card__edit"
+      onClick={handleOpen}
+    >
+      <PencilSquareIcon className="size-6" />
+    </button>
+  );
 
   return (
     <Card
@@ -74,33 +91,23 @@ function EditableCard({ card, parsed, isDragging }: EditableCardProps) {
         "animate-in zoom-in-100 scale-[103%]": isDragging,
       })}
     >
-      <div
-        className={cn("flex flex-row items-center gap-2 px-2", {
-          "card-body py-4": !isRich,
-        })}
-      >
-        <div
-          className="flex size-10 shrink-0 cursor-grab items-center justify-center text-base-content/50 select-none"
-          data-movable-handle
-        >
-          ⋮⋮
-        </div>
-        {isRich ? (
-          <div className="pointer-events-none min-w-0 flex-1">
+      {parsed.type === "feed" || parsed.type === "embed" ? (
+        <>
+          <div className="flex items-center justify-between px-2 pt-2">
+            {handle}
+            {editButton}
+          </div>
+          <div className="pointer-events-none">
             <CardContent parsed={parsed} />
           </div>
-        ) : (
+        </>
+      ) : (
+        <div className="card-body flex-row items-center gap-2 px-2 py-4">
+          {handle}
           <TextCardContent parsed={parsed} />
-        )}
-        <button
-          type="button"
-          className="btn btn-square btn-ghost"
-          data-testid="sortable-card__edit"
-          onClick={handleOpen}
-        >
-          <PencilSquareIcon className="size-6" />
-        </button>
-      </div>
+          {editButton}
+        </div>
+      )}
     </Card>
   );
 }
