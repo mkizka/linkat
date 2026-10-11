@@ -25,7 +25,6 @@ export default function Index({
       isLogin={isLogin}
       user={{
         avatar: null,
-        description: null,
         displayName: t("sample.user-name"),
         handle: "bsky.app",
       }}
