@@ -10,7 +10,7 @@ export function Input({ label, errors, ...props }: Props) {
     <div>
       <label className="fieldset">
         <span className="label">{label}</span>
-        <input className="input" {...props} />
+        <input className="input w-full" {...props} />
       </label>
       {errors && <p className="p-1 text-sm text-error">{errors}</p>}
     </div>
