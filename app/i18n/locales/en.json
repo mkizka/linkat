@@ -9,7 +9,11 @@
     "notes-link": "Things to keep in mind when using Linkat",
     "reason-bluesky-account": "Use your\nBluesky account",
     "reason-embed": "Embed posts\nand feeds",
-    "reason-your-data": "Your data\nstays yours"
+    "reason-your-data": "Your data\nstays yours",
+    "sample-owner-name": "You can make a board like this",
+    "sample-text": "Text-only is OK too",
+    "sample-feed-name": "Feeds work too",
+    "sample-feed-description": "This is how they look"
   },
   "recent-boards": {
     "title": "Everyone's boards"

@@ -9,7 +9,11 @@
     "notes-link": "Linkatを使用するにあたっての注意",
     "reason-bluesky-account": "Blueskyアカウント\nが使える",
     "reason-embed": "投稿・フィード\n埋め込み対応",
-    "reason-your-data": "データは\nあなたのもの"
+    "reason-your-data": "データは\nあなたのもの",
+    "sample-owner-name": "こんなリンク集が作れます",
+    "sample-text": "テキストだけでもOK",
+    "sample-feed-name": "フィードも使えます",
+    "sample-feed-description": "こんな感じで表示されます"
   },
   "recent-boards": {
     "title": "みんなのリンク集"

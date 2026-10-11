@@ -8,19 +8,52 @@ import {
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 
+import { Card } from "~/components/card";
 import { Main, RootLayout } from "~/components/layout";
-import { BoardViewer } from "~/features/board/board-viewer";
-import { useSampleBoard } from "~/features/board/sample-board";
+import { BlueskyFeedView } from "~/features/board/card/bluesky-feed";
+import { parseCard } from "~/features/board/card/parser";
+import { ProfileCard } from "~/features/board/card/profile-card";
+import { CardContent } from "~/features/board/card/sortable-card";
 import { RecentBoards } from "~/features/top/recent-boards";
+import type { ValidCard } from "~/models/card";
 import type { OwnerView } from "~/server/service/owner/ownerView";
 import { cn } from "~/utils/cn";
 
 function SampleBoardPreview({ url }: { url: string }) {
   const { t } = useTranslation();
-  const { owner, cards } = useSampleBoard();
+  const owner: OwnerView = {
+    did: "did:web:example.com",
+    handleOrDid: "example.com",
+    displayHandle: "@example.com",
+    displayName: t("_index.sample-owner-name"),
+    avatarUrl: null,
+  };
+  const cards: ValidCard[] = [
+    { url: "https://example.com" },
+    { text: t("_index.sample-text") },
+    { url: "https://bsky.app/profile/mkizka.net/post/3mxm6rvnfns25" },
+  ];
   return (
-    <div className="relative">
-      <BoardViewer url={url} owner={owner} board={{ cards }} />
+    <div className="relative -rotate-2 px-4 [zoom:0.8]">
+      <div className="flex flex-col gap-2">
+        <ProfileCard owner={owner} url={url} />
+        {cards.map((card) => (
+          <Card key={card.url ?? card.text}>
+            <CardContent parsed={parseCard(card)} />
+          </Card>
+        ))}
+        <Card>
+          <BlueskyFeedView
+            feed={{
+              displayName: t("_index.sample-feed-name"),
+              description: t("_index.sample-feed-description"),
+              creatorHandle: "example.com",
+            }}
+            error={false}
+            url="https://bsky.app/profile/example.com/feed/sample"
+          />
+        </Card>
+      </div>
       <Link
         to="/sample"
         className="absolute inset-0"
