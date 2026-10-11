@@ -86,7 +86,7 @@ jobs:
       - name: Upload Storybook
         if: github.ref == 'refs/heads/main' || github.actor == 'mkizka'
         run: |
-          STORYBOOK_S3_PATH="storybook/${{ github.ref == 'refs/heads/main' && 'main' || github.sha }}"
+          STORYBOOK_S3_PATH="storybook/${{ github.ref == 'refs/heads/main' && 'main' || format('pr{0}', github.event.number) }}"
           aws s3 cp storybook-static "s3://$STORYBOOK_S3_PATH" --recursive
           echo "STORYBOOK_URL=${{ vars.S3_BASE_URL }}/$STORYBOOK_S3_PATH/index.html" >> $GITHUB_ENV
         env:
