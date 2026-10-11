@@ -85,37 +85,37 @@ function EditableCard({ card, parsed, isDragging }: EditableCardProps) {
     </button>
   );
 
-  return (
-    <Card
-      className={cn("relative", {
-        "animate-in zoom-in-100 scale-[103%]": isDragging,
-      })}
-    >
-      {parsed.type === "embed" ? (
-        <>
-          <div className="pointer-events-none">
-            <CardContent parsed={parsed} />
-          </div>
-          <div className="absolute inset-0 flex items-center justify-between rounded-[inherit] bg-base-100/60 px-2">
-            {handle}
-            {editButton}
-          </div>
-        </>
-      ) : parsed.type === "feed" ? (
-        <div className="card-body flex-row items-center gap-2 px-2 py-4">
+  const dragging = cn({
+    "animate-in zoom-in-100 scale-[103%]": isDragging,
+  });
+
+  if (parsed.type === "embed") {
+    return (
+      <div className={cn("relative", dragging)}>
+        <div className="pointer-events-none">
+          <CardContent parsed={parsed} />
+        </div>
+        <div className="absolute inset-0 flex items-center justify-between rounded-xl bg-base-100/60 px-2">
           {handle}
+          {editButton}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <Card className={dragging}>
+      <div className="card-body flex-row items-center gap-2 px-2 py-4">
+        {handle}
+        {parsed.type === "feed" ? (
           <div className="pointer-events-none min-w-0 flex-1 [&_.card-body]:p-0">
             <CardContent parsed={parsed} />
           </div>
-          {editButton}
-        </div>
-      ) : (
-        <div className="card-body flex-row items-center gap-2 px-2 py-4">
-          {handle}
+        ) : (
           <TextCardContent parsed={parsed} />
-          {editButton}
-        </div>
-      )}
+        )}
+        {editButton}
+      </div>
     </Card>
   );
 }
@@ -150,6 +150,9 @@ export function SortableCard({
         </Card>
       </a>
     );
+  }
+  if (parsed.type === "embed") {
+    return <CardContent parsed={parsed} />;
   }
   return (
     <Card>
