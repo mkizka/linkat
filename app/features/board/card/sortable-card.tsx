@@ -87,20 +87,28 @@ function EditableCard({ card, parsed, isDragging }: EditableCardProps) {
 
   return (
     <Card
-      className={cn({
+      className={cn("relative", {
         "animate-in zoom-in-100 scale-[103%]": isDragging,
       })}
     >
-      {parsed.type === "feed" || parsed.type === "embed" ? (
+      {parsed.type === "embed" ? (
         <>
-          <div className="flex items-center justify-between px-2 pt-2">
-            {handle}
-            {editButton}
-          </div>
           <div className="pointer-events-none">
             <CardContent parsed={parsed} />
           </div>
+          <div className="absolute inset-0 flex items-center justify-between rounded-[inherit] bg-base-100/60 px-2">
+            {handle}
+            {editButton}
+          </div>
         </>
+      ) : parsed.type === "feed" ? (
+        <div className="flex flex-row items-center px-2">
+          {handle}
+          <div className="pointer-events-none min-w-0 flex-1">
+            <CardContent parsed={parsed} />
+          </div>
+          {editButton}
+        </div>
       ) : (
         <div className="card-body flex-row items-center gap-2 px-2 py-4">
           {handle}
