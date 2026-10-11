@@ -1,5 +1,5 @@
-import type { Did } from "@atproto/did";
-import { eq } from "drizzle-orm";
+import { asDid, type Did } from "@atproto/did";
+import { and, desc, eq, inArray, sql } from "drizzle-orm";
 
 import { Board } from "~/models/board";
 import type { Db } from "~/server/infrastructure/drizzle";
@@ -9,6 +9,10 @@ export interface IBoardRepository {
   find: (userDid: Did) => Promise<Board | null>;
   save: (board: Board) => Promise<void>;
   delete: (userDid: Did) => Promise<void>;
+  findRecentlyUpdated: (params: {
+    userDids: Did[];
+    limit?: number;
+  }) => Promise<{ userDid: Did; updatedAt: Date }[]>;
 }
 
 export const boardRepositoryFactory = ({
@@ -39,5 +43,20 @@ export const boardRepositoryFactory = ({
   },
   async delete(userDid) {
     await db.delete(boardTable).where(eq(boardTable.userDid, userDid));
+  },
+  async findRecentlyUpdated({ userDids, limit }) {
+    const query = db
+      .select({ userDid: boardTable.userDid, updatedAt: boardTable.updatedAt })
+      .from(boardTable)
+      .where(
+        and(
+          inArray(boardTable.userDid, userDids),
+          sql`jsonb_array_length((${boardTable.record}::jsonb)->'cards') > 0`,
+        ),
+      )
+      .orderBy(desc(boardTable.updatedAt))
+      .$dynamic();
+    const rows = await (limit ? query.limit(limit) : query);
+    return rows.map((row) => ({ ...row, userDid: asDid(row.userDid) }));
   },
 });

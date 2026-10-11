@@ -15,6 +15,7 @@ import { atpassportServiceFactory } from "~/server/service/atpassportService/atp
 import { authServiceFactory } from "~/server/service/authService/auth";
 import { boardServiceFactory } from "~/server/service/boardService/board";
 import { didServiceFactory } from "~/server/service/didService/did";
+import { followServiceFactory } from "~/server/service/followService/follow";
 import { jetstreamServiceFactory } from "~/server/service/jetstreamService/jetstream";
 import { sessionServiceFactory } from "~/server/service/sessionService/session";
 import { userServiceFactory } from "~/server/service/userService/user";
@@ -40,6 +41,7 @@ export const di = await createRegistry()
     ["boardRepository", "didService"],
     boardServiceFactory,
   )
+  .service("followService", ["boardRepository"], followServiceFactory)
   .service("atpassportService", ["atpassportClient"], atpassportServiceFactory)
   .service("authService", ["oauthClient"], authServiceFactory)
   .service(

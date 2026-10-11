@@ -106,5 +106,15 @@
     "header-account": "アカウント",
     "header-board": "ボード",
     "delete-board-warning": "PDSに保存されているボードを削除します。削除後は元に戻せません。"
+  },
+  "following": {
+    "title": "フォロー中のボード",
+    "empty-title": "フォロー中のボードはまだありません",
+    "empty-description": "フォロワーにLinkatを紹介してみてください！",
+    "share-button": "Blueskyで紹介する",
+    "share-text": "Linkatで自分のリンク集を作ってみませんか？ #linkat {{url}}",
+    "error-title": "フォロー中のボードを取得できませんでした",
+    "error-description": "時間をおいてもう一度お試しください。",
+    "reload-button": "再読み込み"
   }
 }

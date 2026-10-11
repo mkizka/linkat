@@ -106,5 +106,15 @@
     "header-account": "Account",
     "header-board": "Board",
     "delete-board-warning": "Delete your board saved in PDS. This action cannot be undone."
+  },
+  "following": {
+    "title": "Boards you follow",
+    "empty-title": "No boards from people you follow yet",
+    "empty-description": "Try introducing Linkat to your followers!",
+    "share-button": "Share on Bluesky",
+    "share-text": "Create your own Link in Bio with Linkat! #linkat {{url}}",
+    "error-title": "Couldn't load boards you follow",
+    "error-description": "Please try again later.",
+    "reload-button": "Reload"
   }
 }
