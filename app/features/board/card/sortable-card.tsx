@@ -56,16 +56,15 @@ function EditableCard({ card, parsed, isDragging }: EditableCardProps) {
   return (
     <Card
       className={cn("flex-row items-center px-2", {
-        "ring ring-neutral animate-in zoom-in-100 scale-[103%]": isDragging,
+        "animate-in zoom-in-100 scale-[103%]": isDragging,
       })}
     >
-      <button
-        type="button"
-        className="btn btn-square btn-ghost cursor-grab text-base-content/50"
+      <div
+        className="flex size-10 shrink-0 cursor-grab items-center justify-center text-base-content/50 select-none"
         data-movable-handle
       >
         ⋮⋮
-      </button>
+      </div>
       <div className="pointer-events-none min-w-0 flex-1">
         <CardContent parsed={parsed} />
       </div>
