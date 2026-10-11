@@ -32,14 +32,20 @@
   "edit": {
     "invalid-session-error-message": "The login information was invalid",
     "invalid-form-error-message": "The form is invalid",
-    "confirm-leave-message": "Unsaved changes will be lost. Are you sure?"
+    "title": "Edit Board",
+    "cancel-button": "Cancel",
+    "submit-button": "Save",
+    "confirm-leave-title": "You have unsaved changes",
+    "confirm-leave-description": "If you leave now, your changes will be lost.",
+    "confirm-leave-cancel": "Keep editing",
+    "confirm-leave-confirm": "Discard and leave",
+    "confirm-delete-title": "Delete this card?",
+    "confirm-delete-description": "This card will be removed from the list.",
+    "confirm-delete-cancel": "Cancel",
+    "confirm-delete-confirm": "Delete"
   },
   "board": {
     "meta-title": "{{displayName}}(@{{handle}})'s board"
-  },
-  "board-viewer": {
-    "confirm-delete-message": "Are you sure you want to delete?",
-    "submit-button": "Save"
   },
   "share-modal": {
     "title": "Saved",

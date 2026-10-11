@@ -32,14 +32,20 @@
   "edit": {
     "invalid-session-error-message": "ログイン情報が無効でした",
     "invalid-form-error-message": "フォームが無効です",
-    "confirm-leave-message": "保存していない変更は失われます。よろしいですか？"
+    "title": "ボードを編集",
+    "cancel-button": "キャンセル",
+    "submit-button": "保存",
+    "confirm-leave-title": "保存していない変更があります",
+    "confirm-leave-description": "このまま戻ると変更は失われます。",
+    "confirm-leave-cancel": "編集を続ける",
+    "confirm-leave-confirm": "破棄して戻る",
+    "confirm-delete-title": "カードを削除しますか？",
+    "confirm-delete-description": "このカードを一覧から削除します。",
+    "confirm-delete-cancel": "やめる",
+    "confirm-delete-confirm": "削除する"
   },
   "board": {
     "meta-title": "{{displayName}}(@{{handle}})さんのボード"
-  },
-  "board-viewer": {
-    "confirm-delete-message": "本当に削除しますか？",
-    "submit-button": "保存"
   },
   "share-modal": {
     "title": "保存しました",

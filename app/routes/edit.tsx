@@ -1,15 +1,33 @@
-import { useEffect } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { redirect, useBeforeUnload, useBlocker } from "react-router";
+import {
+  Form,
+  Link,
+  redirect,
+  useBeforeUnload,
+  useBlocker,
+  useNavigation,
+} from "react-router";
 
+import { Button } from "~/components/button";
+import { ConfirmDialog } from "~/components/confirm-dialog";
 import { Main } from "~/components/layout";
-import { BoardViewer } from "~/features/board/board-viewer";
+import { ProfileCard } from "~/features/board/card/profile-card";
+import { SortableCardList } from "~/features/board/card/sortable-card-list";
+import {
+  CardFormModal,
+  cardModal,
+} from "~/features/board/form/card-form-modal";
+import type { CardFormPayload } from "~/features/board/form/card-form-provider";
+import { CardFormProvider } from "~/features/board/form/card-form-provider";
 import { RouteToaster } from "~/features/toast/route";
 import { useUmami } from "~/hooks/useUmami";
 import { getInstance } from "~/i18n/i18n";
+import type { ValidCard } from "~/models/card";
 import { di } from "~/server/di";
 import { env } from "~/utils/env";
 import { createLogger } from "~/utils/logger";
+import { resolveHandleIfNeeded } from "~/utils/url";
 
 import type { Route } from "./+types/edit";
 
@@ -62,48 +80,130 @@ export async function loader({ request }: Route.LoaderArgs) {
   };
 }
 
-export default function Index({ loaderData }: Route.ComponentProps) {
+const withId = (card: ValidCard) => ({
+  ...card,
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+  id: crypto.randomUUID() as string,
+});
+
+const toBoardJson = (cards: (ValidCard & { id: string })[]) =>
+  JSON.stringify({ cards: cards.map(({ id: _, ...card }) => card) });
+
+export default function Edit({ loaderData }: Route.ComponentProps) {
   const { user, board, url } = loaderData;
   const { t } = useTranslation();
   const umami = useUmami();
+  const navigation = useNavigation();
+  const [cards, setCards] = useState(() => (board?.cards ?? []).map(withId));
+  const [initialBoardJson] = useState(() => toBoardJson(cards));
+  const [deletingCardId, setDeletingCardId] = useState<string | null>(null);
+  const boardJson = toBoardJson(cards);
+  const isDirty = boardJson !== initialBoardJson;
+  const isSaving = navigation.state !== "idle";
 
-  // 更新ボタンを押したりしたときに確認ダイアログを出す
   useBeforeUnload((event) => {
+    if (!isDirty) return;
     umami.track("unload-edit");
     event.preventDefault();
   });
 
-  // 戻るボタンを押したりしたときに確認ダイアログを出す
   const blocker = useBlocker(
-    ({ currentLocation, nextLocation, historyAction }) =>
-      // 保存ボタンを押したときの移動以外のとき
-      (currentLocation.pathname !== nextLocation.pathname &&
-        nextLocation.pathname !== `/${user.handle}`) ||
-      // /alice.testから/editに移動して戻るとき
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
-      historyAction === "POP",
+    ({ currentLocation, nextLocation }) =>
+      isDirty &&
+      !isSaving &&
+      currentLocation.pathname !== nextLocation.pathname,
   );
 
-  useEffect(() => {
-    if (blocker.state !== "blocked") return;
-    if (confirm(t("edit.confirm-leave-message"))) {
-      umami.track("leave-edit", {
-        action: "confirm",
-      });
-      blocker.proceed();
+  const handleSubmitCardForm = async (payload: CardFormPayload) => {
+    const resolvedUrl =
+      payload.url && (await resolveHandleIfNeeded(payload.url));
+    if (payload.id) {
+      setCards((cards) =>
+        cards.map((card) =>
+          card.id === payload.id
+            ? {
+                id: payload.id,
+                text: payload.text,
+                emoji: payload.emoji,
+                url: resolvedUrl,
+              }
+            : card,
+        ),
+      );
     } else {
-      umami.track("leave-edit", {
-        action: "cancel",
-      });
-      blocker.reset();
+      setCards((cards) => [...cards, withId({ ...payload, url: resolvedUrl })]);
     }
-  }, [t, blocker, umami]);
+    cardModal.close();
+  };
+
+  const handleDeleteCard = () => {
+    setCards((cards) => cards.filter((card) => card.id !== deletingCardId));
+    setDeletingCardId(null);
+    cardModal.close();
+  };
 
   return (
     <>
+      <header className="sticky top-0 z-10 bg-base-100 shadow">
+        <div className="mx-auto grid w-full max-w-screen-sm grid-cols-[1fr_auto_1fr] items-center gap-2 px-4 py-2">
+          <Link
+            to={board ? `/${user.handle}` : "/"}
+            className="btn justify-self-start"
+            data-testid="edit-bar__cancel"
+          >
+            {t("edit.cancel-button")}
+          </Link>
+          <h1 className="font-bold">{t("edit.title")}</h1>
+          <Form method="post" className="justify-self-end">
+            <input name="board" type="hidden" value={boardJson} />
+            <Button
+              className="btn-primary"
+              data-testid="edit-bar__submit"
+              loading={isSaving}
+              data-umami-event="click-submit-button"
+              data-umami-event-cards={cards.length}
+            >
+              {t("edit.submit-button")}
+            </Button>
+          </Form>
+        </div>
+      </header>
       <Main>
-        <BoardViewer user={user} board={board} url={url} editable />
+        <CardFormProvider
+          onSubmit={handleSubmitCardForm}
+          onDelete={setDeletingCardId}
+        >
+          <div className="flex flex-col gap-2 py-4">
+            <ProfileCard user={user} url={url} />
+            <SortableCardList cards={cards} onChange={setCards} />
+            <CardFormModal />
+          </div>
+        </CardFormProvider>
       </Main>
+      <ConfirmDialog
+        open={deletingCardId !== null}
+        title={t("edit.confirm-delete-title")}
+        description={t("edit.confirm-delete-description")}
+        cancelLabel={t("edit.confirm-delete-cancel")}
+        confirmLabel={t("edit.confirm-delete-confirm")}
+        onCancel={() => setDeletingCardId(null)}
+        onConfirm={handleDeleteCard}
+      />
+      <ConfirmDialog
+        open={blocker.state === "blocked"}
+        title={t("edit.confirm-leave-title")}
+        description={t("edit.confirm-leave-description")}
+        cancelLabel={t("edit.confirm-leave-cancel")}
+        confirmLabel={t("edit.confirm-leave-confirm")}
+        onCancel={() => {
+          umami.track("leave-edit", { action: "cancel" });
+          blocker.reset?.();
+        }}
+        onConfirm={() => {
+          umami.track("leave-edit", { action: "confirm" });
+          blocker.proceed?.();
+        }}
+      />
       <RouteToaster />
     </>
   );

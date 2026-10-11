@@ -1,8 +1,5 @@
 import { useFormMetadata } from "@conform-to/react";
-import {
-  ArrowsUpDownIcon,
-  PencilSquareIcon,
-} from "@heroicons/react/24/outline";
+import { PencilSquareIcon } from "@heroicons/react/24/outline";
 
 import { Card } from "~/components/card";
 import { cardModal } from "~/features/board/form/card-form-modal";
@@ -39,19 +36,47 @@ function CardContent({ parsed }: CardContentProps) {
   );
 }
 
-type CardBodyProps = {
+type EditableCardProps = {
+  card: SortableCardProps["card"];
   parsed: ReturnType<typeof parseCard>;
   isDragging?: boolean;
 };
 
-function CardBody({ parsed, isDragging }: CardBodyProps) {
+function EditableCard({ card, parsed, isDragging }: EditableCardProps) {
+  const form = useFormMetadata<CardFormPayload>();
+
+  const handleOpen = () => {
+    form.update({ name: "text", value: card.text });
+    form.update({ name: "url", value: card.url });
+    form.update({ name: "emoji", value: card.emoji });
+    form.update({ name: "id", value: card.id });
+    cardModal.open();
+  };
+
   return (
     <Card
-      className={cn({
+      className={cn("flex-row items-center px-2", {
         "ring ring-neutral animate-in zoom-in-100 scale-[103%]": isDragging,
       })}
     >
-      <CardContent parsed={parsed} />
+      <button
+        type="button"
+        className="btn btn-square btn-ghost cursor-grab text-base-content/50"
+        data-movable-handle
+      >
+        ⋮⋮
+      </button>
+      <div className="pointer-events-none min-w-0 flex-1">
+        <CardContent parsed={parsed} />
+      </div>
+      <button
+        type="button"
+        className="btn btn-square btn-ghost"
+        data-testid="sortable-card__edit"
+        onClick={handleOpen}
+      >
+        <PencilSquareIcon className="size-6" />
+      </button>
     </Card>
   );
 }
@@ -67,18 +92,12 @@ export function SortableCard({
   sortable,
   isDragging,
 }: SortableCardProps) {
-  const form = useFormMetadata<CardFormPayload>();
   const parsed = parseCard(card);
 
-  const handleOpen = () => {
-    form.update({ name: "text", value: card.text });
-    form.update({ name: "url", value: card.url });
-    form.update({ name: "emoji", value: card.emoji });
-    form.update({ name: "id", value: card.id });
-    cardModal.open();
-  };
-
-  if (parsed.type === "link" && !sortable) {
+  if (sortable) {
+    return <EditableCard card={card} parsed={parsed} isDragging={isDragging} />;
+  }
+  if (parsed.type === "link") {
     return (
       <a
         href={card.url}
@@ -87,28 +106,15 @@ export function SortableCard({
         className="relative block"
         data-umami-event="click-card-link"
       >
-        <CardBody parsed={parsed} isDragging={isDragging} />
+        <Card>
+          <CardContent parsed={parsed} />
+        </Card>
       </a>
     );
   }
   return (
-    <article className="relative">
-      {sortable && <div className="absolute z-10 size-full" />}
-      <CardBody parsed={parsed} isDragging={isDragging} />
-      {sortable && !isDragging && (
-        <div className="absolute right-2 top-2 z-20 flex gap-2">
-          <button className="btn btn-square" data-movable-handle>
-            <ArrowsUpDownIcon className="size-6" />
-          </button>
-          <button
-            className="btn btn-square"
-            data-testid={`sortable-card__edit`}
-            onClick={handleOpen}
-          >
-            <PencilSquareIcon className="size-6" />
-          </button>
-        </div>
-      )}
-    </article>
+    <Card>
+      <CardContent parsed={parsed} />
+    </Card>
   );
 }

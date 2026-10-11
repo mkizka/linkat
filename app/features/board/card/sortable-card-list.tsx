@@ -1,24 +1,22 @@
-import type { Dispatch, SetStateAction } from "react";
 import { arrayMove, List } from "react-movable";
 
 import { SortableCard, type SortableCardProps } from "./sortable-card";
 
-type CardStateValue = SortableCardProps["card"][];
+type Cards = SortableCardProps["card"][];
 
 type Props = {
-  cards: CardStateValue;
-  setCards: Dispatch<SetStateAction<CardStateValue>>;
-  sortable?: boolean;
+  cards: Cards;
+  onChange?: (cards: Cards) => void;
 };
 
-export function SortableCardList({ cards, setCards, sortable }: Props) {
+export function SortableCardList({ cards, onChange }: Props) {
   return (
     <List
       values={cards}
       lockVertically
-      disabled={!sortable}
+      disabled={!onChange}
       onChange={({ oldIndex, newIndex }) =>
-        setCards(arrayMove(cards, oldIndex, newIndex))
+        onChange?.(arrayMove(cards, oldIndex, newIndex))
       }
       renderList={({ children, props }) => (
         <ul {...props} className="flex flex-col gap-2">
@@ -37,7 +35,7 @@ export function SortableCardList({ cards, setCards, sortable }: Props) {
             <SortableCard
               card={value}
               isDragging={isDragged}
-              sortable={sortable}
+              sortable={!!onChange}
             />
           </li>
         );

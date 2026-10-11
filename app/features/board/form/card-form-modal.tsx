@@ -1,8 +1,6 @@
 import { useFormMetadata } from "@conform-to/react";
-import { PlusCircleIcon } from "@heroicons/react/24/solid";
+import { PlusIcon } from "@heroicons/react/24/outline";
 import { useTranslation } from "react-i18next";
-
-import { Card } from "~/components/card";
 
 import { CardForm } from "./card-form";
 import type { CardFormPayload } from "./card-form-provider";
@@ -38,16 +36,15 @@ export function CardFormModal() {
 
   return (
     <>
-      <Card
-        className="bg-neutral text-neutral-content hover:bg-neutral/80"
+      <button
+        type="button"
+        className="btn h-auto border-2 border-dashed border-base-content/30 bg-transparent py-4"
         onClick={handleOpen}
         data-testid="card-form-modal__button"
       >
-        <div className="card-body flex-row items-center justify-center">
-          <PlusCircleIcon className="size-8" />
-          {t("card-form-modal.add-card")}
-        </div>
-      </Card>
+        <PlusIcon className="size-6" />
+        {t("card-form-modal.add-card")}
+      </button>
       <dialog id={EDIT_CARD_MODAL_ID} className="modal top-8 items-start">
         <div className="modal-box">
           <CardForm />

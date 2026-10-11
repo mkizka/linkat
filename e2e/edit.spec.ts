@@ -51,7 +51,7 @@ test.describe("編集", () => {
     });
 
     await test.step("保存して閲覧ページで順番を確認", async () => {
-      await page.getByTestId("board-viewer__submit").click();
+      await page.getByTestId("edit-bar__submit").click();
       await page.waitForURL((url) => url.pathname !== "/edit");
       await page.getByTestId("show-modal__close").click();
       await expect(card1).toBeVisible();
@@ -70,7 +70,7 @@ test.describe("編集", () => {
     });
 
     await test.step("保存して閲覧ページで順番を確認", async () => {
-      await page.getByTestId("board-viewer__submit").click();
+      await page.getByTestId("edit-bar__submit").click();
       await page.waitForURL((url) => url.pathname !== "/edit");
       await page.getByTestId("show-modal__close").click();
       await expect(card1).toBeVisible();
@@ -88,7 +88,7 @@ test.describe("編集", () => {
     });
 
     await test.step("保存して閲覧ページで編集を確認", async () => {
-      await page.getByTestId("board-viewer__submit").click();
+      await page.getByTestId("edit-bar__submit").click();
       await page.waitForURL((url) => url.pathname !== "/edit");
       await page.getByTestId("show-modal__close").click();
       await expect(card1).not.toBeVisible();
@@ -100,10 +100,11 @@ test.describe("編集", () => {
       await page.getByTestId("profile-card__edit").click();
       await card1Edited.getByTestId("sortable-card__edit").click();
       await page.getByTestId("card-form__delete").click();
+      await page.getByTestId("confirm-dialog__confirm").click();
     });
 
     await test.step("保存して閲覧ページで削除を確認", async () => {
-      await page.getByTestId("board-viewer__submit").click();
+      await page.getByTestId("edit-bar__submit").click();
       await page.waitForURL((url) => url.pathname !== "/edit");
       await page.getByTestId("show-modal__close").click();
       await expect(card1Edited).not.toBeVisible();
