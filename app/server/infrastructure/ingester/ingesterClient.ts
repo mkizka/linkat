@@ -1,5 +1,5 @@
 import type { Did } from "@atproto/did";
-import * as Sentry from "@sentry/react-router";
+import { trace } from "@opentelemetry/api";
 import { Jetstream } from "@skyware/jetstream";
 import WebSocket from "ws";
 
@@ -55,10 +55,22 @@ export const ingesterClientFactory = ({
   const logBoardError = logError("ボードの更新に失敗しました");
   const logProfileError = logError("プロフィールの更新に失敗しました");
 
+  const tracer = trace.getTracer("jetstream");
+
   const handle =
-    <E>(task: (event: E) => Promise<void>, onError: (error: unknown) => void) =>
+    <E extends { kind: string }>(
+      task: (event: E) => Promise<void>,
+      onError: (error: unknown) => void,
+    ) =>
     (event: E) => {
-      void Sentry.startNewTrace(() => task(event).catch(onError));
+      void tracer.startActiveSpan(
+        `jetstream ${event.kind}`,
+        { root: true },
+        (span) =>
+          task(event)
+            .catch(onError)
+            .finally(() => span.end()),
+      );
     };
 
   jetstream.on("open", () => {
