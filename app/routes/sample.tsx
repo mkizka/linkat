@@ -21,6 +21,7 @@ export default function Index({ loaderData: { url } }: Route.ComponentProps) {
           url={url}
           user={{
             avatar: null,
+            description: null,
             displayName: t("sample.user-name"),
             handle: "bsky.app",
           }}
