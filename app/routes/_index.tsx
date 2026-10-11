@@ -35,7 +35,7 @@ export default function Index({ loaderData }: Route.ComponentProps) {
   const { isLogin } = loaderData;
   const { t, i18n } = useTranslation();
   return (
-    <RootLayout isLogin={isLogin}>
+    <RootLayout>
       <Main className="utils--center">
         <div className="text-center">
           <h2

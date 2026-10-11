@@ -83,7 +83,8 @@
     "creator-text": "Feed by {{handle}}"
   },
   "layout": {
-    "footer-message": "Create a Link in Bio with Linkat"
+    "footer-message": "Create a Link in Bio with Linkat",
+    "about-link": "About Linkat"
   },
   "error-boundary": {
     "image-alt": "Image of a dog with a sad expression",
