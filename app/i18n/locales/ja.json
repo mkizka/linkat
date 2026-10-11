@@ -24,7 +24,7 @@
     "atpassport-link": "@passportとは？"
   },
   "sample": {
-    "user-name": "サンプル",
+    "owner-name": "サンプル",
     "you-can-write-text-instead-of-url": "URLの代わりにテキストも書ける",
     "you-can-write-only-text": "テキストだけでもOK",
     "bluesky-url-is-embedded": "BlueskyのURLは自動で埋め込まれます"
@@ -32,10 +32,18 @@
   "edit": {
     "invalid-session-error-message": "ログイン情報が無効でした",
     "invalid-form-error-message": "フォームが無効です",
-    "confirm-leave-message": "保存していない変更は失われます。よろしいですか？"
+    "save-board-error-message": "ボードの保存に失敗しました",
+    "save-delayed-warning-message": "変更の反映に時間がかかっています。少し待ってリロードしてみてください",
+    "confirm-leave-message": "保存していない変更は失われます。よろしいですか？",
+    "sync-loading-message": "PDSからデータを読み込んでいます",
+    "sync-error-message": "PDSからデータを読み込めませんでした",
+    "sync-retry-button": "再試行",
+    "sync-error-description": "少し待ってから再試行してください",
+    "sync-success-message": "PDSに保存されていたボードを読み込みました"
   },
   "board": {
-    "meta-title": "{{displayName}}(@{{handle}})さんのボード"
+    "meta-title": "{{displayName}}(@{{handle}})さんのボード",
+    "hidden-message": "このボードは表示できません"
   },
   "board-viewer": {
     "confirm-delete-message": "本当に削除しますか？",
@@ -95,7 +103,9 @@
     "text": "トップに戻る"
   },
   "delete": {
-    "invalid-session-error-message": "ログイン情報が無効でした"
+    "invalid-session-error-message": "ログイン情報が無効でした",
+    "delete-board-error-message": "ボードの削除に失敗しました",
+    "delete-delayed-warning-message": "削除の反映に時間がかかっています。少し時間を空けてからご確認ください"
   },
   "delete-board-button": {
     "text": "ボードを削除する",

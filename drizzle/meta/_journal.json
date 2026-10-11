@@ -8,6 +8,62 @@
       "when": 1789875018410,
       "tag": "0000_init",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1790873426375,
+      "tag": "0001_avatar_cid",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1790958508252,
+      "tag": "0002_handle_unique",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1791012116838,
+      "tag": "0003_user_status",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1791113409404,
+      "tag": "0004_board_without_user_fkey",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1791117864506,
+      "tag": "0005_owner",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1791121724723,
+      "tag": "0006_account_state",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1791127646636,
+      "tag": "0007_backfill_avatar_cid",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1791127776230,
+      "tag": "0008_drop_avatar",
+      "breakpoints": true
     }
   ]
 }

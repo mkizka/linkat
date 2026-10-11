@@ -1,0 +1,111 @@
+name: Large Test
+
+on:
+  workflow_run:
+    workflows: ["Test"]
+    types: [completed]
+    branches: [main]
+
+jobs:
+  wait-for-deployment:
+    if: github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    concurrency:
+      group: large-test
+      cancel-in-progress: false
+      queue: max
+    outputs:
+      status: ${{ steps.wait.outputs.status }}
+    steps:
+      - run: npm i -g @railway/cli
+      - name: Wait for Railway deployment
+        id: wait
+        run: |
+          TARGET_SHA="${{ github.event.workflow_run.head_sha }}"
+          for i in $(seq 1 60); do
+            STATUS=$(railway deployment list \
+              --project "$RAILWAY_PROJECT_ID" \
+              --environment "$RAILWAY_ENVIRONMENT_ID" \
+              --service "$RAILWAY_SERVICE_ID" \
+              --json | jq -r --arg sha "$TARGET_SHA" '[.[] | select(.meta.commitHash == $sha)][0].status // empty')
+            echo "deployment status: ${STATUS:-<not found yet>}"
+            case "$STATUS" in
+              SUCCESS) echo "status=success" >> "$GITHUB_OUTPUT"; exit 0 ;;
+              SKIPPED|REMOVED) echo "Railway deployment $STATUS"; echo "status=skipped" >> "$GITHUB_OUTPUT"; exit 0 ;;
+              FAILED|CRASHED) echo "Railway deployment failed"; echo "status=failed" >> "$GITHUB_OUTPUT"; exit 1 ;;
+            esac
+            sleep 10
+          done
+          echo "Timed out waiting for Railway deployment"
+          echo "status=timeout" >> "$GITHUB_OUTPUT"
+          exit 1
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+          RAILWAY_PROJECT_ID: ${{ vars.RAILWAY_PROJECT_ID }}
+          RAILWAY_ENVIRONMENT_ID: ${{ vars.RAILWAY_ENVIRONMENT_ID }}
+          RAILWAY_SERVICE_ID: ${{ vars.RAILWAY_SERVICE_ID }}
+
+  large-test:
+    needs: wait-for-deployment
+    if: needs.wait-for-deployment.outputs.status == 'success'
+    runs-on: ubuntu-latest
+    outputs:
+      report_url: ${{ steps.upload-report.outputs.report_url }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+      - run: |
+          npm i -g corepack@latest
+          corepack enable pnpm
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+      - run: pnpm i
+      - run: pnpm playwright install --with-deps
+      - run: pnpm test:large
+        env:
+          PLAYWRIGHT_TEST_BASE_URL: https://linkat.blue
+          LARGE_TEST_HANDLE: ${{ secrets.E2E_HANDLE }}
+          LARGE_TEST_PASSWORD: ${{ secrets.E2E_PASSWORD }}
+      - name: Upload Report
+        id: upload-report
+        if: always()
+        run: |
+          REPORT_S3_PATH="playwright-report/production"
+          aws s3 cp playwright-report/large "s3://$REPORT_S3_PATH" --recursive
+          echo "report_url=${{ vars.S3_BASE_URL }}/$REPORT_S3_PATH/index.html" >> "$GITHUB_OUTPUT"
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_ENDPOINT_URL: ${{ secrets.AWS_ENDPOINT_URL }}
+          AWS_DEFAULT_REGION: auto
+
+  notify:
+    needs: [wait-for-deployment, large-test]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify Discord
+        run: |
+          case "${{ needs.wait-for-deployment.outputs.status }}" in
+            skipped) MESSAGE="⏭️ Large Test skipped (Railway deployment not running)" ;;
+            success)
+              if [ "${{ needs.large-test.result }}" = "success" ]; then
+                MESSAGE="✅ Large Test succeeded"
+              else
+                MESSAGE="❌ Large Test failed"
+              fi
+              ;;
+            *) MESSAGE="❌ Large Test failed (Railway deployment not ready)" ;;
+          esac
+          jq -n \
+            --arg message "$MESSAGE" \
+            --arg report "${{ needs.large-test.outputs.report_url }}" \
+            --arg run "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+            --arg commit "${{ github.server_url }}/${{ github.repository }}/commit/${{ github.event.workflow_run.head_sha }}" \
+            '{content: ("\($message)\n\n" + (if $report == "" then "" else "📊 \($report)\n" end) + "🔗 \($run)\n📝 \($commit)")}' |
+            curl -sf -X POST -H "Content-Type: application/json" -d @- "$DISCORD_WEBHOOK_URL"
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}

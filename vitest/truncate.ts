@@ -4,7 +4,7 @@ import { env } from "~/utils/env";
 
 const tablesToTruncate = [
   "Board",
-  "User",
+  "Owner",
   "AuthSession",
   "AuthState",
   "JetstreamCursor",
