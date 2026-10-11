@@ -8,44 +8,26 @@ import {
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 
-import { Card } from "~/components/card";
 import { Main, RootLayout } from "~/components/layout";
-import { parseCard } from "~/features/board/card/parser";
-import { CardContent } from "~/features/board/card/sortable-card";
+import { BoardViewer } from "~/features/board/board-viewer";
 import { useSampleBoard } from "~/features/board/sample-board";
-import { OwnerAvatar, RecentBoards } from "~/features/top/recent-boards";
+import { RecentBoards } from "~/features/top/recent-boards";
 import type { OwnerView } from "~/server/service/owner/ownerView";
 import { cn } from "~/utils/cn";
 
-function SampleBoardPreview() {
+function SampleBoardPreview({ url }: { url: string }) {
+  const { t } = useTranslation();
   const { owner, cards } = useSampleBoard();
-  const parsedCards = cards.map(parseCard);
-  const previewCards = (["link", "text", "embed"] as const).flatMap((type) =>
-    parsedCards.filter((card) => card.type === type).slice(0, 1),
-  );
   return (
-    <Link
-      to="/sample"
-      className="block -rotate-2 px-4"
-      data-umami-event="click-sample-preview"
-    >
-      <div className="pointer-events-none flex flex-col gap-2 rounded-box bg-base-100 p-3 shadow-xl">
-        <div className="flex items-center gap-2">
-          <OwnerAvatar owner={owner} />
-          <div>
-            <p className="font-bold">{owner.displayName}</p>
-            <p className="text-sm text-base-content/70">
-              {owner.displayHandle}
-            </p>
-          </div>
-        </div>
-        {previewCards.map((parsed) => (
-          <Card key={parsed.type} className="bg-base-200 shadow-none">
-            <CardContent parsed={parsed} />
-          </Card>
-        ))}
-      </div>
-    </Link>
+    <div className="relative">
+      <BoardViewer url={url} owner={owner} board={{ cards }} />
+      <Link
+        to="/sample"
+        className="absolute inset-0"
+        aria-label={t("_index.sample-link")}
+        data-umami-event="click-sample-preview"
+      />
+    </div>
   );
 }
 
@@ -71,9 +53,10 @@ function Reasons() {
 type Props = {
   isLogin: boolean;
   recentOwners: OwnerView[];
+  sampleUrl: string;
 };
 
-export function TopPage({ isLogin, recentOwners }: Props) {
+export function TopPage({ isLogin, recentOwners, sampleUrl }: Props) {
   const { t, i18n } = useTranslation();
   const hero = (
     <h2
@@ -107,7 +90,7 @@ export function TopPage({ isLogin, recentOwners }: Props) {
             </Link>
           </div>
           <RecentBoards owners={recentOwners} />
-          <SampleBoardPreview />
+          <SampleBoardPreview url={sampleUrl} />
           <Reasons />
         </Main>
       </RootLayout>

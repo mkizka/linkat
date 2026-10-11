@@ -18,7 +18,7 @@ type CardContentProps = {
   parsed: ReturnType<typeof parseCard>;
 };
 
-export function CardContent({ parsed }: CardContentProps) {
+function CardContent({ parsed }: CardContentProps) {
   if (parsed.type === "feed") {
     return <BlueskyFeed feedUri={parsed.feedUri} url={parsed.url} />;
   }

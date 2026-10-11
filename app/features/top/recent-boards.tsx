@@ -4,7 +4,7 @@ import { Link } from "react-router";
 
 import type { OwnerView } from "~/server/service/owner/ownerView";
 
-export function OwnerAvatar({ owner }: { owner: OwnerView }) {
+function OwnerAvatar({ owner }: { owner: OwnerView }) {
   return (
     <div className="avatar avatar-placeholder">
       <div className="w-9 rounded-full bg-neutral text-neutral-content">
