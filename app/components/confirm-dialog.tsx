@@ -58,6 +58,9 @@ export function ConfirmDialog({
           </button>
         </div>
       </div>
+      <button type="button" className="modal-backdrop" onClick={onCancel}>
+        close
+      </button>
     </dialog>
   );
 }
