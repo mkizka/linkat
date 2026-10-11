@@ -96,7 +96,7 @@ function Editor({ editor, board, url }: EditorProps) {
   return (
     <>
       <header className="sticky top-0 z-10 bg-base-100 shadow">
-        <div className="mx-auto grid w-full max-w-screen-sm grid-cols-[1fr_auto_1fr] items-center gap-2 px-4 py-2">
+        <div className="grid w-full grid-cols-[1fr_auto_1fr] items-center gap-2 px-4 py-2">
           <Link
             to={board ? `/${editor.handleOrDid}` : "/"}
             className="btn justify-self-start"
