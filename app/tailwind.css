@@ -30,13 +30,6 @@ body {
   --root-bg: var(--color-base-300);
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    --color-base-200: oklch(96.1151% 0 0);
-    --color-base-300: oklch(92.4169% 0.00108 197.138);
-  }
-}
-
 .utils--center {
   @apply flex h-full w-full items-center justify-center;
 }
