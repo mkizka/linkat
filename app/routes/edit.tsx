@@ -1,210 +1,127 @@
-import { useState } from "react";
-import { useTranslation } from "react-i18next";
-import {
-  Form,
-  Link,
-  redirect,
-  useBeforeUnload,
-  useBlocker,
-  useNavigation,
-} from "react-router";
+import { useEffect } from "react";
+import { data, redirect, useFetcher } from "react-router";
+import { setToast } from "remix-toast/middleware";
 
-import { Button } from "~/components/button";
-import { ConfirmDialog } from "~/components/confirm-dialog";
-import { Main } from "~/components/layout";
-import { ProfileCard } from "~/features/board/card/profile-card";
-import { SortableCardList } from "~/features/board/card/sortable-card-list";
-import {
-  CardFormModal,
-  cardModal,
-} from "~/features/board/form/card-form-modal";
-import type { CardFormPayload } from "~/features/board/form/card-form-provider";
-import { CardFormProvider } from "~/features/board/form/card-form-provider";
-import { RouteToaster } from "~/features/toast/route";
-import { useUmami } from "~/hooks/useUmami";
 import { getInstance } from "~/i18n/i18n";
-import type { ValidCard } from "~/models/card";
+import { Board } from "~/models/board";
+import { EditPage } from "~/pages/edit-page";
 import { di } from "~/server/di";
+import {
+  BoardDbSaveError,
+  BoardPdsSaveError,
+} from "~/server/service/board/boardEvent";
 import { env } from "~/utils/env";
-import { createLogger } from "~/utils/logger";
-import { resolveHandleIfNeeded } from "~/utils/url";
+import { tryCatch } from "~/utils/tryCatch";
 
 import type { Route } from "./+types/edit";
-
-const logger = createLogger("edit");
+import type { action as syncAction } from "./sync";
 
 export async function action({ request, context }: Route.ActionArgs) {
+  const logger = di.logger.child("edit");
   const i18next = getInstance(context);
-  const [user, agent] = await Promise.all([
-    di.sessionService.getSessionUser(request),
-    di.sessionService.getSessionAgent(request),
-  ]);
-  if (!user || !agent) {
-    return { error: i18next.t("edit.invalid-session-error-message") };
+  const editorDid = await di.sessionService.getSessionDid(request);
+  if (!editorDid) {
+    setToast(context, {
+      message: i18next.t("edit.invalid-session-error-message"),
+      type: "error",
+    });
+    return redirect("/login", {
+      headers: {
+        "Set-Cookie": await di.sessionService.destroySession(request),
+      },
+    });
   }
-  const form = await request.formData();
+  const form = await request.formData().catch(() => {
+    throw data(null, { status: 400 });
+  });
   const rawBoard = form.get("board");
   if (typeof rawBoard !== "string") {
-    return { error: i18next.t("edit.invalid-form-error-message") };
+    setToast(context, {
+      message: i18next.t("edit.invalid-form-error-message"),
+      type: "error",
+    });
+    return null;
   }
-  // 1. 楽観的にDBを更新
-  const parsedBoard = await di.boardService.parseBoardFromForm(
-    user.did,
-    rawBoard,
-  );
+  const parsedBoard = await tryCatch(() =>
+    Board.fromRecord(editorDid, JSON.parse(rawBoard)),
+  )();
   if (parsedBoard instanceof Error) {
-    logger.warn({ error: parsedBoard }, "boardの形式が不正でした");
-    return { error: i18next.t("edit.invalid-form-error-message") };
+    logger.warn("boardの形式が不正でした", { error: parsedBoard });
+    setToast(context, {
+      message: i18next.t("edit.invalid-form-error-message"),
+      type: "error",
+    });
+    return null;
   }
-  await di.boardService.saveBoard(parsedBoard);
   try {
-    // 2. PDSにも保存
-    await agent.updateBoard(parsedBoard);
+    await di.boardEventService.handleEditorSave(parsedBoard);
   } catch (error) {
-    logger.error(error, "PDSへのボードの保存に失敗しました");
+    if (error instanceof BoardPdsSaveError) {
+      logger.error(error.message, { error });
+      setToast(context, {
+        message: i18next.t("edit.save-board-error-message"),
+        type: "error",
+      });
+      return null;
+    }
+    if (error instanceof BoardDbSaveError) {
+      logger.error(error.message, { error });
+      setToast(context, {
+        message: i18next.t("edit.save-delayed-warning-message"),
+        type: "warning",
+      });
+      const editor = await di.ownerService.findOwnerView(editorDid);
+      return redirect(`/${editor.handleOrDid}`);
+    }
+    throw error;
   }
-  // 3. 閲覧ページにリダイレクト
-  return redirect(`/${user.handle}?success`);
+  logger.info("ボードを保存しました", {
+    ownerDid: editorDid,
+    cardCount: parsedBoard.cards.length,
+  });
+  const editor = await di.ownerService.findOwnerView(editorDid);
+  return redirect(`/${editor.handleOrDid}?success`);
 }
 
 export async function loader({ request }: Route.LoaderArgs) {
-  const user = await di.sessionService.getSessionUser(request);
-  if (!user) {
+  const editorDid = await di.sessionService.getSessionDid(request);
+  if (!editorDid) {
     throw redirect("/login");
   }
-  const board = await di.boardService.findOrFetchBoard(user.did);
+  const [editorView, board] = await Promise.all([
+    di.ownerService.findOwnerView(editorDid),
+    di.boardService.findBoard(editorDid),
+  ]);
   return {
-    user,
+    editor: editorView,
     board: board && { cards: board.cards },
-    url: `${env.PUBLIC_URL}/${user.handle}`,
+    url: `${env.PUBLIC_URL}/${editorView.handleOrDid}`,
   };
 }
 
-const withId = (card: ValidCard) => ({
-  ...card,
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-  id: crypto.randomUUID() as string,
-});
+export default function Index({ loaderData }: Route.ComponentProps) {
+  const sync = useFetcher<typeof syncAction>();
+  const submitSync = () =>
+    sync.submit(null, { method: "post", action: "/sync" });
 
-const toBoardJson = (cards: (ValidCard & { id: string })[]) =>
-  JSON.stringify({ cards: cards.map(({ id: _, ...card }) => card) });
-
-export default function Edit({ loaderData }: Route.ComponentProps) {
-  const { user, board, url } = loaderData;
-  const { t } = useTranslation();
-  const umami = useUmami();
-  const navigation = useNavigation();
-  const [cards, setCards] = useState(() => (board?.cards ?? []).map(withId));
-  const [initialBoardJson] = useState(() => toBoardJson(cards));
-  const [deletingCardId, setDeletingCardId] = useState<string | null>(null);
-  const boardJson = toBoardJson(cards);
-  const isDirty = boardJson !== initialBoardJson;
-  const isSaving = navigation.state !== "idle";
-
-  useBeforeUnload((event) => {
-    if (!isDirty) return;
-    umami.track("unload-edit");
-    event.preventDefault();
+  useEffect(() => {
+    if (!loaderData.board && sync.state === "idle" && !sync.data) {
+      void submitSync();
+    }
   });
 
-  const blocker = useBlocker(
-    ({ currentLocation, nextLocation }) =>
-      isDirty &&
-      !isSaving &&
-      currentLocation.pathname !== nextLocation.pathname,
-  );
-
-  const handleSubmitCardForm = async (payload: CardFormPayload) => {
-    const resolvedUrl =
-      payload.url && (await resolveHandleIfNeeded(payload.url));
-    if (payload.id) {
-      setCards((cards) =>
-        cards.map((card) =>
-          card.id === payload.id
-            ? {
-                id: payload.id,
-                text: payload.text,
-                emoji: payload.emoji,
-                url: resolvedUrl,
-              }
-            : card,
-        ),
-      );
-    } else {
-      setCards((cards) => [...cards, withId({ ...payload, url: resolvedUrl })]);
-    }
-    cardModal.close();
-  };
-
-  const handleDeleteCard = () => {
-    setCards((cards) => cards.filter((card) => card.id !== deletingCardId));
-    setDeletingCardId(null);
-    cardModal.close();
-  };
+  const syncState =
+    loaderData.board || (sync.state === "idle" && sync.data?.ok)
+      ? "ready"
+      : sync.state !== "idle" || !sync.data
+        ? "loading"
+        : "error";
 
   return (
-    <>
-      <header className="sticky top-0 z-10 bg-base-100 shadow">
-        <div className="mx-auto grid w-full max-w-screen-sm grid-cols-[1fr_auto_1fr] items-center gap-2 px-4 py-2">
-          <Link
-            to={board ? `/${user.handle}` : "/"}
-            className="btn justify-self-start"
-            data-testid="edit-bar__cancel"
-          >
-            {t("edit.cancel-button")}
-          </Link>
-          <h1 className="font-bold">{t("edit.title")}</h1>
-          <Form method="post" className="justify-self-end">
-            <input name="board" type="hidden" value={boardJson} />
-            <Button
-              className="btn-primary"
-              data-testid="edit-bar__submit"
-              loading={isSaving}
-              data-umami-event="click-submit-button"
-              data-umami-event-cards={cards.length}
-            >
-              {t("edit.submit-button")}
-            </Button>
-          </Form>
-        </div>
-      </header>
-      <Main>
-        <CardFormProvider
-          onSubmit={handleSubmitCardForm}
-          onDelete={setDeletingCardId}
-        >
-          <div className="flex flex-col gap-2 py-4">
-            <ProfileCard user={user} url={url} />
-            <SortableCardList cards={cards} onChange={setCards} />
-            <CardFormModal />
-          </div>
-        </CardFormProvider>
-      </Main>
-      <ConfirmDialog
-        open={deletingCardId !== null}
-        title={t("edit.confirm-delete-title")}
-        description={t("edit.confirm-delete-description")}
-        cancelLabel={t("edit.confirm-delete-cancel")}
-        confirmLabel={t("edit.confirm-delete-confirm")}
-        onCancel={() => setDeletingCardId(null)}
-        onConfirm={handleDeleteCard}
-      />
-      <ConfirmDialog
-        open={blocker.state === "blocked"}
-        title={t("edit.confirm-leave-title")}
-        description={t("edit.confirm-leave-description")}
-        cancelLabel={t("edit.confirm-leave-cancel")}
-        confirmLabel={t("edit.confirm-leave-confirm")}
-        onCancel={() => {
-          umami.track("leave-edit", { action: "cancel" });
-          blocker.reset?.();
-        }}
-        onConfirm={() => {
-          umami.track("leave-edit", { action: "confirm" });
-          blocker.proceed?.();
-        }}
-      />
-      <RouteToaster />
-    </>
+    <EditPage
+      {...loaderData}
+      syncState={syncState}
+      onRetrySync={() => void submitSync()}
+    />
   );
 }

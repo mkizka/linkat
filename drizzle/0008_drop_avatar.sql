@@ -1,0 +1,1 @@
+ALTER TABLE "Owner" DROP COLUMN "avatar";

@@ -1,0 +1,124 @@
+import { expect, test } from "./fixtures";
+
+test.describe("編集", () => {
+  test("カードの編集操作を一通り確認", async ({ page, login, account }) => {
+    page.on("dialog", (dialog) => dialog.accept());
+
+    await test.step("ログイン", async () => {
+      await login();
+    });
+
+    const text1 = `1. ${crypto.randomUUID()}`;
+    const text2 = `2. ${crypto.randomUUID()}`;
+    const text1Edited = `1(edit). ${crypto.randomUUID()}`;
+    const card1 = page.locator('[data-testid="sortable-card"]', {
+      hasText: text1,
+    });
+    const card2 = page.locator('[data-testid="sortable-card"]', {
+      hasText: text2,
+    });
+    const card1Edited = page.locator('[data-testid="sortable-card"]', {
+      hasText: text1Edited,
+    });
+
+    await test.step("カードを追加", async () => {
+      await page.getByTestId("card-form-modal__button").click();
+      await page.getByTestId("card-form__url").fill("https://example.com");
+      await page.getByTestId("card-form__text").fill(text1);
+      await page.getByTestId("card-form__submit").click();
+      await expect(card1).toBeVisible();
+    });
+
+    await test.step("カードを追加(2回目)", async () => {
+      await page.getByTestId("card-form-modal__button").click();
+      await page.getByTestId("card-form__url").fill("https://example.com");
+      await page.getByTestId("card-form__text").fill(text2);
+      await page.getByTestId("card-form__submit").click();
+      await expect(card2).toBeVisible();
+    });
+
+    await test.step("保存して閲覧ページで順番を確認", async () => {
+      await page.getByTestId("edit-bar__submit").click();
+      await page.waitForURL((url) => url.pathname === `/${account.handle}`);
+      await page.getByTestId("show-modal__close").click();
+      await expect(page.getByText(`@${account.handle}`)).toBeVisible();
+      await expect(card1).toBeVisible();
+      await expect(card2).toBeVisible();
+      const allCards = await page
+        .getByTestId("sortable-card")
+        .allTextContents();
+      expect(allCards.indexOf(text1)).toBeLessThan(allCards.indexOf(text2));
+    });
+
+    await test.step("カードを並べ替える", async () => {
+      await page.getByTestId("profile-card__edit").click();
+      await card1
+        .locator("[data-movable-handle]")
+        .dragTo(card2, { timeout: 2000 });
+    });
+
+    await test.step("保存して閲覧ページで順番を確認", async () => {
+      await page.getByTestId("edit-bar__submit").click();
+      await page.waitForURL((url) => url.pathname !== "/edit");
+      await page.getByTestId("show-modal__close").click();
+      await expect(card1).toBeVisible();
+      await expect(card2).toBeVisible();
+      const sorted = await page.getByTestId("sortable-card").allTextContents();
+      expect(sorted.indexOf(text1)).toBeGreaterThan(sorted.indexOf(text2));
+    });
+
+    await test.step("カードを編集", async () => {
+      await page.getByTestId("profile-card__edit").click();
+      await card1.getByTestId("sortable-card__edit").click();
+      await page.getByTestId("card-form__url").fill("https://example.com");
+      await page.getByTestId("card-form__text").fill(text1Edited);
+      await page.getByTestId("card-form__submit").click();
+    });
+
+    await test.step("保存して閲覧ページで編集を確認", async () => {
+      await page.getByTestId("edit-bar__submit").click();
+      await page.waitForURL((url) => url.pathname !== "/edit");
+      await page.getByTestId("show-modal__close").click();
+      await expect(card1).not.toBeVisible();
+      await expect(card1Edited).toBeVisible();
+      await expect(card2).toBeVisible();
+    });
+
+    await test.step("カードを削除", async () => {
+      await page.getByTestId("profile-card__edit").click();
+      await card1Edited.getByTestId("sortable-card__edit").click();
+      await page.getByTestId("card-form__delete").click();
+      await page
+        .locator("dialog[open]")
+        .getByTestId("confirm-dialog__confirm")
+        .click();
+    });
+
+    await test.step("保存して閲覧ページで削除を確認", async () => {
+      await page.getByTestId("edit-bar__submit").click();
+      await page.waitForURL((url) => url.pathname !== "/edit");
+      await page.getByTestId("show-modal__close").click();
+      await expect(card1Edited).not.toBeVisible();
+    });
+
+    await test.step("ボードを削除", async () => {
+      await page.goto("/settings");
+      await page.getByTestId("delete-board-button").click();
+    });
+
+    await test.step("編集ページで削除されていることを確認", async () => {
+      await page.getByTestId("index__edit-link").click();
+      await page.waitForURL("/edit");
+      await expect(
+        page.locator('[data-testid="sortable-card"]'),
+      ).not.toBeVisible();
+    });
+
+    await test.step("ログアウト", async () => {
+      await page.goto("/settings");
+      await page.getByTestId("logout-button").click();
+      await page.waitForURL((url) => url.pathname === "/");
+      await expect(page.getByTestId("index__login-link")).toBeVisible();
+    });
+  });
+});

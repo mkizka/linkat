@@ -1,17 +1,16 @@
 import { createRequestHandler } from "@react-router/express";
 import express from "express";
-import pinoHttp from "pino-http";
 import type { ServerBuild } from "react-router";
 
 import { di } from "~/server/di.js";
+import { httpLogger } from "~/server/infrastructure/logger/logger.js";
 
 import { env } from "./utils/env.js";
-import { createLogger } from "./utils/logger.js";
 
-// OAuthログインを行うためにE2Eテスト実行時のprocess.env.NODE_ENVはdevelopmentになっている
-// 代わりにprocess.env.E2Eが設定されているので、その場合はviteを使わない
+// OAuthログインを行うためにmedium/largeテスト実行時のprocess.env.NODE_ENVはdevelopmentになっている
+// 代わりにprocess.env.PLAYWRIGHTが設定されているので、その場合はviteを使わない
 const viteDevServer =
-  env.NODE_ENV === "production" || process.env.E2E
+  env.NODE_ENV === "production" || process.env.PLAYWRIGHT
     ? null
     : await import("vite").then((vite) =>
         vite.createServer({
@@ -19,29 +18,23 @@ const viteDevServer =
         }),
       );
 
+const logger = di.logger.child("server");
+
 const app = express();
 // RailwayのエッジでTLS終端されるため、X-Forwarded-Protoを信頼しないとreq.protocolが常にhttpになり、
 // react-routerのCSRFチェック(Origin: httpsとrequest.url: httpの不一致)でログインが400になる
 app.set("trust proxy", true);
 
-app.use(
-  pinoHttp({
-    logger: createLogger("http"),
-    customSuccessMessage: (req, res, responseTime) => {
-      return `${req.method} ${res.statusCode} ${req.url} ${responseTime}ms`;
-    },
-    customErrorMessage: (req, res) => {
-      return `${req.method} ${res.statusCode} ${req.url}`;
-    },
-    ...(env.NODE_ENV === "development" && {
-      serializers: {
-        req: () => undefined,
-        res: () => undefined,
-        responseTime: () => undefined,
-      },
-    }),
-  }),
-);
+app.use(httpLogger);
+
+app.use((req, res, next) => {
+  if (["GET", "HEAD", "POST"].includes(req.method)) {
+    next();
+    return;
+  }
+  res.set("Allow", "GET, HEAD, POST, OPTIONS");
+  res.sendStatus(req.method === "OPTIONS" ? 204 : 405);
+});
 
 if (viteDevServer) {
   app.use(viteDevServer.middlewares);
@@ -78,13 +71,11 @@ const build = viteDevServer
 
 app.use(createRequestHandler({ build }));
 
-const logger = createLogger("server");
-
 app.listen(env.PORT, "0.0.0.0", () => {
   logger.info(`App listening on ${env.PUBLIC_URL}`);
   if (!env.DISABLE_JETSTREAM) {
-    di.jetstreamService.startJetstream().catch((error: unknown) => {
-      logger.error(error, "Jetstreamの起動に失敗しました");
+    di.ingesterClient.start().catch((error: unknown) => {
+      logger.error("Ingesterの起動に失敗しました", { error });
     });
   }
 });

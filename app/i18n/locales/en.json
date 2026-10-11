@@ -24,7 +24,7 @@
     "atpassport-link": "What is @passport?"
   },
   "sample": {
-    "user-name": "Sample",
+    "owner-name": "Sample",
     "you-can-write-text-instead-of-url": "You can write text instead of a URL",
     "you-can-write-only-text": "Text-only is also OK",
     "bluesky-url-is-embedded": "Bluesky URLs are embedded automatically"
@@ -42,10 +42,18 @@
     "confirm-delete-title": "Delete this card?",
     "confirm-delete-description": "This card will be removed from the list.",
     "confirm-delete-cancel": "Cancel",
-    "confirm-delete-confirm": "Delete"
+    "confirm-delete-confirm": "Delete",
+    "save-board-error-message": "Failed to save the board",
+    "save-delayed-warning-message": "The changes are taking a while to appear. Please wait a moment and reload.",
+    "sync-loading-message": "Loading your data from your PDS",
+    "sync-error-message": "Failed to load your data from your PDS",
+    "sync-retry-button": "Retry",
+    "sync-error-description": "Please wait a moment and try again",
+    "sync-success-message": "Loaded the board saved on your PDS"
   },
   "board": {
-    "meta-title": "{{displayName}}(@{{handle}})'s board"
+    "meta-title": "{{displayName}}(@{{handle}})'s board",
+    "hidden-message": "This board is unavailable"
   },
   "share-modal": {
     "title": "Saved",
@@ -101,7 +109,9 @@
     "text": "Back to top"
   },
   "delete": {
-    "invalid-session-error-message": "The login information was invalid"
+    "invalid-session-error-message": "The login information was invalid",
+    "delete-board-error-message": "Failed to delete the board",
+    "delete-delayed-warning-message": "The deletion is taking a while to appear. Please check again after a while."
   },
   "delete-board-button": {
     "text": "Delete your board",

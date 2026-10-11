@@ -1,12 +1,14 @@
 import { arrayMove, List } from "react-movable";
 
-import { SortableCard, type SortableCardProps } from "./sortable-card";
+import type { ValidCard } from "~/models/card";
 
-type Cards = SortableCardProps["card"][];
+import { SortableCard } from "./sortable-card";
+
+type CardStateValue = (ValidCard & { id: string })[];
 
 type Props = {
-  cards: Cards;
-  onChange?: (cards: Cards) => void;
+  cards: CardStateValue;
+  onChange?: (cards: CardStateValue) => void;
 };
 
 export function SortableCardList({ cards, onChange }: Props) {
