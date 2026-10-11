@@ -1,6 +1,4 @@
-import { Footer, Main } from "~/components/layout";
-import { BoardViewer } from "~/features/board/board-viewer";
-import { ShareModal } from "~/features/board/share-modal";
+import { BoardPage } from "~/features/board/board-page";
 import { getInstance } from "~/i18n/i18n";
 import { di } from "~/server/di";
 import { env } from "~/utils/env";
@@ -35,6 +33,7 @@ export async function loader({ request, params, context }: Route.LoaderArgs) {
     user,
     board: { cards: board.cards },
     isMine: user.isOwnedBy(userDid),
+    isLogin: userDid !== null,
     title: `${title} | Linkat`,
     url: `${env.PUBLIC_URL}/${user.handle}`,
     ogImageUrl: `${env.PUBLIC_URL}/${user.handle}/og`,
@@ -48,14 +47,14 @@ export const meta: Route.MetaFunction = ({ loaderData }) => {
 };
 
 export default function Index({ loaderData }: Route.ComponentProps) {
-  const { user, board, url, isMine } = loaderData;
+  const { user, board, url, isMine, isLogin } = loaderData;
   return (
-    <>
-      <Main>
-        <BoardViewer user={user} board={board} url={url} isMine={isMine} />
-        <ShareModal url={url} />
-      </Main>
-      <Footer withNavigation />
-    </>
+    <BoardPage
+      user={user}
+      board={board}
+      url={url}
+      isMine={isMine}
+      isLogin={isLogin}
+    />
   );
 }

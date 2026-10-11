@@ -1,5 +1,5 @@
 import { PencilSquareIcon } from "@heroicons/react/24/outline";
-import { useState } from "react";
+import { type ReactNode, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Form, useNavigation } from "react-router";
 
@@ -18,9 +18,8 @@ type Props = {
   user: ProfileCardProps["user"];
   // loaderDataはシリアライズされるためプレーンなデータ構造で受け取る
   board: { cards: ValidCard[] } | null;
-  url: string;
   editable?: boolean;
-  isMine?: boolean;
+  profileActions?: ReactNode;
 };
 
 const withId = (card: ValidCard) => ({
@@ -29,7 +28,7 @@ const withId = (card: ValidCard) => ({
   id: crypto.randomUUID() as string,
 });
 
-export function BoardViewer({ user, board, url, editable, isMine }: Props) {
+export function BoardViewer({ user, board, editable, profileActions }: Props) {
   const [cards, setCards] = useState((board?.cards ?? []).map(withId));
   const { t } = useTranslation();
   const navigation = useNavigation();
@@ -73,11 +72,7 @@ export function BoardViewer({ user, board, url, editable, isMine }: Props) {
       onDelete={handleDeleteCardForm}
     >
       <div className="flex flex-col gap-2 py-4">
-        <ProfileCard
-          user={user}
-          url={url}
-          showEditButton={!editable && isMine}
-        />
+        <ProfileCard user={user} actions={profileActions} />
         <SortableCardList
           cards={cards}
           setCards={setCards}

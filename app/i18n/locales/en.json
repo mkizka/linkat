@@ -42,16 +42,23 @@
     "submit-button": "Save"
   },
   "share-modal": {
-    "title": "Saved",
+    "saved-title": "Board saved",
+    "share-title": "Share board",
     "description": "Let's share your Link in Bio!",
     "post-to-bluesky": "Post to Bluesky",
     "copy-url": "Copy URL",
     "copied-message": "Copied!",
-    "share-text": "I created a Link in Bio using Linkat! #linkat {{url}}"
+    "saved-share-text": "I created a Link in Bio using Linkat! #linkat {{url}}",
+    "board-share-text": "{{displayName}}'s board #linkat {{url}}"
   },
-  "profile-card": {
+  "board-page": {
     "edit-button": "Edit",
-    "share-text": "{{displayName}}'s board #linkat {{url}}"
+    "menu": "Menu",
+    "share": "Share",
+    "following": "Following",
+    "settings": "Settings",
+    "top": "Top",
+    "create-link": "Create your own Link in Bio with Linkat"
   },
   "card-form": {
     "text-label": "Text",

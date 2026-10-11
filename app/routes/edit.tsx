@@ -8,7 +8,6 @@ import { RouteToaster } from "~/features/toast/route";
 import { useUmami } from "~/hooks/useUmami";
 import { getInstance } from "~/i18n/i18n";
 import { di } from "~/server/di";
-import { env } from "~/utils/env";
 import { createLogger } from "~/utils/logger";
 
 import type { Route } from "./+types/edit";
@@ -58,12 +57,11 @@ export async function loader({ request }: Route.LoaderArgs) {
   return {
     user,
     board: board && { cards: board.cards },
-    url: `${env.PUBLIC_URL}/${user.handle}`,
   };
 }
 
 export default function Index({ loaderData }: Route.ComponentProps) {
-  const { user, board, url } = loaderData;
+  const { user, board } = loaderData;
   const { t } = useTranslation();
   const umami = useUmami();
 
@@ -102,7 +100,7 @@ export default function Index({ loaderData }: Route.ComponentProps) {
   return (
     <>
       <Main>
-        <BoardViewer user={user} board={board} url={url} editable />
+        <BoardViewer user={user} board={board} editable />
       </Main>
       <RouteToaster />
     </>
