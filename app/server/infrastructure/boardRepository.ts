@@ -1,14 +1,16 @@
 import type { Did } from "@atproto/did";
-import { eq } from "drizzle-orm";
+import { desc, eq, sql } from "drizzle-orm";
 
 import { Board } from "~/models/board";
+import { User } from "~/models/user";
 import type { Db } from "~/server/infrastructure/drizzle";
-import { boardTable } from "~/server/infrastructure/schema";
+import { boardTable, userTable } from "~/server/infrastructure/schema";
 
 export interface IBoardRepository {
   find: (userDid: Did) => Promise<Board | null>;
   save: (board: Board) => Promise<void>;
   delete: (userDid: Did) => Promise<void>;
+  findRecentlyUpdatedUsers: (limit: number) => Promise<User[]>;
 }
 
 export const boardRepositoryFactory = ({
@@ -39,5 +41,17 @@ export const boardRepositoryFactory = ({
   },
   async delete(userDid) {
     await db.delete(boardTable).where(eq(boardTable.userDid, userDid));
+  },
+  async findRecentlyUpdatedUsers(limit) {
+    const rows = await db
+      .select({ user: userTable })
+      .from(boardTable)
+      .innerJoin(userTable, eq(boardTable.userDid, userTable.did))
+      .where(
+        sql`jsonb_array_length((${boardTable.record})::jsonb -> 'cards') > 0`,
+      )
+      .orderBy(desc(boardTable.updatedAt))
+      .limit(limit);
+    return rows.map((row) => new User(row.user));
   },
 });

@@ -87,4 +87,28 @@ describe("boardRepository", () => {
       await expect(actual).resolves.not.toThrow();
     });
   });
+
+  describe("findRecentlyUpdatedUsers", () => {
+    test("カードがあるボードの持ち主を更新日時が新しい順に件数分返す", async () => {
+      // arrange
+      await BoardFactory.create({ updatedAt: new Date(2000, 0, 1) });
+      const newest = await BoardFactory.create({
+        updatedAt: new Date(2000, 0, 3),
+      });
+      await BoardFactory.create({
+        record: JSON.stringify({ cards: [] }),
+        updatedAt: new Date(2000, 0, 4),
+      });
+      const middle = await BoardFactory.create({
+        updatedAt: new Date(2000, 0, 2),
+      });
+      // act
+      const actual = await boardRepository.findRecentlyUpdatedUsers(2);
+      // assert
+      expect(actual.map((user) => user.did)).toEqual([
+        newest.userDid,
+        middle.userDid,
+      ]);
+    });
+  });
 });
