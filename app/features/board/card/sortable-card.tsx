@@ -5,7 +5,7 @@ import { useCardModal } from "~/features/board/form/card-form-modal";
 import { cn } from "~/utils/cn";
 
 import { parseCard } from "./parser";
-import { CardContent, TextCardContent } from "./view-card";
+import { CardContent } from "./view-card";
 import type { CardWithId } from "./with-id";
 
 type Props = {
@@ -58,13 +58,16 @@ export function SortableCard({ card, isDragging }: Props) {
     <Card className={dragging}>
       <div className="card-body flex-row items-center gap-2 px-2 py-4">
         {handle}
-        {parsed.type === "feed" ? (
-          <div className="pointer-events-none min-w-0 flex-1 [&_.card-body]:p-0">
-            <CardContent parsed={parsed} />
-          </div>
-        ) : (
-          <TextCardContent parsed={parsed} />
-        )}
+        <div
+          className={cn(
+            "pointer-events-none min-w-0 flex-1",
+            parsed.type === "feed"
+              ? "[&_.card-body]:p-0"
+              : "flex items-center gap-2",
+          )}
+        >
+          <CardContent parsed={parsed} />
+        </div>
         {editButton}
       </div>
     </Card>

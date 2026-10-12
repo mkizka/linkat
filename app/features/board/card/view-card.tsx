@@ -3,18 +3,19 @@ import type { ValidCard } from "~/models/card";
 
 import { BlueskyEmbed } from "./bluesky-embed";
 import { BlueskyFeed } from "./bluesky-feed";
-import type { ParsedLinkCard, ParsedTextCard } from "./parser";
 import { parseCard } from "./parser";
 
 type CardContentProps = {
   parsed: ReturnType<typeof parseCard>;
 };
 
-export function TextCardContent({
-  parsed,
-}: {
-  parsed: ParsedLinkCard | ParsedTextCard;
-}) {
+export function CardContent({ parsed }: CardContentProps) {
+  if (parsed.type === "feed") {
+    return <BlueskyFeed feedUri={parsed.feedUri} url={parsed.url} />;
+  }
+  if (parsed.type === "embed") {
+    return <BlueskyEmbed blueskyUri={parsed.blueskyUri} />;
+  }
   return (
     <>
       {parsed.emoji ? (
@@ -29,22 +30,22 @@ export function TextCardContent({
   );
 }
 
-export function CardContent({ parsed }: CardContentProps) {
-  if (parsed.type === "feed") {
-    return <BlueskyFeed feedUri={parsed.feedUri} url={parsed.url} />;
-  }
-  if (parsed.type === "embed") {
-    return <BlueskyEmbed blueskyUri={parsed.blueskyUri} />;
-  }
-  return (
-    <div className="card-body flex-row items-center gap-2">
-      <TextCardContent parsed={parsed} />
-    </div>
-  );
-}
-
 export function ViewCard({ card }: { card: ValidCard }) {
   const parsed = parseCard(card);
+  if (parsed.type === "embed") {
+    return <CardContent parsed={parsed} />;
+  }
+  const content = (
+    <Card>
+      {parsed.type === "feed" ? (
+        <CardContent parsed={parsed} />
+      ) : (
+        <div className="card-body flex-row items-center gap-2">
+          <CardContent parsed={parsed} />
+        </div>
+      )}
+    </Card>
+  );
   if (parsed.type === "link") {
     return (
       <a
@@ -54,18 +55,9 @@ export function ViewCard({ card }: { card: ValidCard }) {
         className="relative block"
         data-umami-event="click-card-link"
       >
-        <Card>
-          <CardContent parsed={parsed} />
-        </Card>
+        {content}
       </a>
     );
   }
-  if (parsed.type === "embed") {
-    return <CardContent parsed={parsed} />;
-  }
-  return (
-    <Card>
-      <CardContent parsed={parsed} />
-    </Card>
-  );
+  return content;
 }
