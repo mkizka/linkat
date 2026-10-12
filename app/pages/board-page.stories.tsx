@@ -12,7 +12,7 @@ const meta = {
       displayHandle: "@example.bsky.social",
       displayName: "Example",
       description:
-        "Linkatでリンク集を作っています。\nBlueskyの自己紹介はここに表示されます。\n長い文章は2行で折りたたまれます。",
+        "あいうえおかきくけこ\nさしすせそたちつてと\nなにぬねのはひふへほ",
       avatarUrl: null,
     },
     board: {

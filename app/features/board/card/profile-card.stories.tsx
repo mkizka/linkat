@@ -32,7 +32,7 @@ export const WithLongDescription: Story = {
     owner: {
       ...meta.args.owner,
       description:
-        "1行目の自己紹介です\n2行目の自己紹介です\n3行目は折りたたまれて見えません",
+        "あいうえおかきくけこ\nさしすせそたちつてと\nなにぬねのはひふへほ",
     },
   },
 };
@@ -42,7 +42,7 @@ export const WithLongSingleLineDescription: Story = {
     owner: {
       ...meta.args.owner,
       description:
-        "改行を含まない長い自己紹介の例です。Linkatでリンク集を作っています。Blueskyでは主にWeb開発や日々の出来事について投稿しています。気軽にフォローしてください。",
+        "あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをんあいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほ",
     },
   },
 };
