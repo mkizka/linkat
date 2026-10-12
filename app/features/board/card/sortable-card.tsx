@@ -4,8 +4,8 @@ import { Card } from "~/components/card";
 import { useCardModal } from "~/features/board/form/card-form-modal";
 import { cn } from "~/utils/cn";
 
+import { CardContent } from "./card-content";
 import { parseCard } from "./parser";
-import { CardContent } from "./view-card";
 import type { CardWithId } from "./with-id";
 
 type Props = {
