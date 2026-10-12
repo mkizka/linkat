@@ -5,7 +5,17 @@ import { TopPage } from "./top-page";
 const meta = {
   component: TopPage,
   parameters: { layout: "fullscreen" },
-  args: { isLogin: false },
+  args: {
+    isLogin: false,
+    sampleUrl: "https://linkat.blue/sample",
+    recentOwners: Array.from({ length: 8 }, (_, i) => ({
+      did: `did:plc:${i}`,
+      handleOrDid: `user${i}.bsky.social`,
+      displayHandle: `@user${i}.bsky.social`,
+      displayName: `User ${i}`,
+      avatarUrl: null,
+    })),
+  },
 } satisfies Meta<typeof TopPage>;
 
 export default meta;
