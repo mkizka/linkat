@@ -7,7 +7,7 @@ import { ProfileCard } from "./card/profile-card";
 import { SortableCardList } from "./card/sortable-card-list";
 import type { CardWithId } from "./card/with-id";
 import { withId } from "./card/with-id";
-import { CardFormModal, cardModal } from "./form/card-form-modal";
+import { CardFormModal, closeCardModal } from "./form/card-form-modal";
 import type { CardFormPayload } from "./form/card-form-provider";
 import { CardFormProvider } from "./form/card-form-provider";
 
@@ -37,12 +37,12 @@ export function BoardEditor({ owner, cards, setCards }: Props) {
     } else {
       setCards((cards) => [...cards, withId({ ...payload, url: resolvedUrl })]);
     }
-    cardModal.close();
+    closeCardModal();
   };
 
   const handleDeleteCard = (id: string) => {
     setCards((cards) => cards.filter((card) => card.id !== id));
-    cardModal.close();
+    closeCardModal();
   };
 
   return (
