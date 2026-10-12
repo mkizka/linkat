@@ -133,10 +133,10 @@ export function CardForm({ onDelete }: Props) {
       </div>
       <ConfirmDialog
         open={isConfirmingDelete}
-        title={t("edit.confirm-delete-title")}
-        description={t("edit.confirm-delete-description")}
-        cancelLabel={t("edit.confirm-delete-cancel")}
-        confirmLabel={t("edit.confirm-delete-confirm")}
+        title={t("card-form.confirm-delete-title")}
+        description={t("card-form.confirm-delete-description")}
+        cancelLabel={t("card-form.confirm-delete-cancel")}
+        confirmLabel={t("card-form.confirm-delete-confirm")}
         onCancel={() => setIsConfirmingDelete(false)}
         onConfirm={handleDelete}
       />
