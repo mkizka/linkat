@@ -18,7 +18,7 @@ export function BoardViewer({ owner, board, url, isMine }: Props) {
       <ProfileCard owner={owner} url={url} showEditButton={isMine} />
       <ul className="flex flex-col gap-2">
         {board?.cards.map((card, index) => (
-          <li key={index}>
+          <li key={index} data-testid="board-card">
             <ViewCard card={card} />
           </li>
         ))}

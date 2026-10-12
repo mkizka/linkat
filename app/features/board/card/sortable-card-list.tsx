@@ -28,7 +28,7 @@ export function SortableCardList({ cards, onChange }: Props) {
             key={key}
             {...rest}
             className="list-none"
-            data-testid={`sortable-card`}
+            data-testid="board-card"
           >
             <SortableCard card={value} isDragging={isDragged} />
           </li>

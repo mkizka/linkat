@@ -9,7 +9,7 @@ test.describe("同期", () => {
   }) => {
     test.skip(size === "large", "dev-envのPDSを操作するため");
     const text = `PDS. ${crypto.randomUUID()}`;
-    const card = page.locator('[data-testid="sortable-card"]', {
+    const card = page.locator('[data-testid="board-card"]', {
       hasText: text,
     });
 
