@@ -34,7 +34,7 @@ test.describe("別のデバイスでログアウトした後", () => {
     login,
   }) => {
     await logoutOnOtherDevice(browser, login);
-    await page.getByTestId("board-viewer__submit").click();
+    await page.getByTestId("edit-bar__submit").click();
     await expectRedirectedToLogin(page);
   });
 

@@ -39,7 +39,7 @@ test.describe("同期", () => {
     });
 
     await test.step("保存するとハンドルのURLに移る", async () => {
-      await page.getByTestId("board-viewer__submit").click();
+      await page.getByTestId("edit-bar__submit").click();
       await page.waitForURL((url) => url.pathname === `/${account.handle}`);
       await page.getByTestId("show-modal__close").click();
       await expect(card).toBeVisible();

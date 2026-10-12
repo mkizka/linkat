@@ -34,10 +34,6 @@ export const Mine: Story = {
   args: { isMine: true },
 };
 
-export const Editable: Story = {
-  args: { editable: true, isMine: true },
-};
-
 export const Empty: Story = {
   args: { board: null },
 };
