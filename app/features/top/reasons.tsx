@@ -13,9 +13,9 @@ export function Reasons() {
     { icon: LockClosedIcon, text: t("_index.reason-your-data") },
   ];
   return (
-    <ul className="grid grid-cols-3 gap-2 rounded-box bg-base-100 px-2 py-4 text-center text-xs font-bold">
+    <ul className="grid grid-cols-3 divide-x divide-base-300 rounded-box bg-base-100 px-2 py-4 text-center text-xs font-bold">
       {reasons.map(({ icon: Icon, text }) => (
-        <li key={text} className="flex flex-col items-center gap-2">
+        <li key={text} className="flex flex-col items-center gap-2 px-2">
           <Icon className="size-6 text-blue-500" />
           <span className="whitespace-pre-line">{text}</span>
         </li>

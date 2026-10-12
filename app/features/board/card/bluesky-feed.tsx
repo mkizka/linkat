@@ -1,5 +1,6 @@
 import { Client } from "@atproto/lex";
 import { asAtUriString } from "@atproto/syntax";
+import { HashtagIcon } from "@heroicons/react/24/solid";
 import { createContext, use, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -53,9 +54,13 @@ export function BlueskyFeedView({ feed, error, url }: BlueskyFeedViewProps) {
     <a href={url} target="_blank" rel="noreferrer">
       <div className="card-body gap-2">
         <div className="flex items-center gap-2">
-          <div className="avatar">
-            <div className="w-10 rounded-full">
-              <img src={feed.avatar} />
+          <div className="avatar avatar-placeholder">
+            <div className="w-10 rounded-full bg-neutral text-neutral-content">
+              {feed.avatar ? (
+                <img src={feed.avatar} />
+              ) : (
+                <HashtagIcon className="w-6" />
+              )}
             </div>
           </div>
           <div className="flex-1 overflow-hidden">
