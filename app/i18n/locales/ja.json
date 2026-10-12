@@ -113,7 +113,8 @@
   },
   "logout-button": {
     "text": "ログアウト",
-    "confirm-message": "ログアウトしますか？"
+    "confirm-message": "ログアウトしますか？",
+    "cancel": "キャンセル"
   },
   "delete": {
     "invalid-session-error-message": "ログイン情報が無効でした",
@@ -121,8 +122,11 @@
     "delete-delayed-warning-message": "削除の反映に時間がかかっています。少し時間を空けてからご確認ください"
   },
   "delete-board-button": {
-    "text": "ボードを削除する",
-    "confirm-message": "本当にボードを削除しますか？"
+    "text": "ボードを削除",
+    "confirm-message": "ボードを削除しますか？",
+    "confirm-description": "削除後は元に戻せません。",
+    "confirm": "削除する",
+    "cancel": "キャンセル"
   },
   "settings": {
     "title": "設定",

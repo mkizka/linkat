@@ -113,7 +113,8 @@
   },
   "logout-button": {
     "text": "Logout",
-    "confirm-message": "Are you sure you want to log out?"
+    "confirm-message": "Are you sure you want to log out?",
+    "cancel": "Cancel"
   },
   "delete": {
     "invalid-session-error-message": "The login information was invalid",
@@ -121,8 +122,11 @@
     "delete-delayed-warning-message": "The deletion is taking a while to appear. Please check again after a while."
   },
   "delete-board-button": {
-    "text": "Delete your board",
-    "confirm-message": "Are you sure you want to delete your board?"
+    "text": "Delete board",
+    "confirm-message": "Delete your board?",
+    "confirm-description": "This action cannot be undone.",
+    "confirm": "Delete",
+    "cancel": "Cancel"
   },
   "settings": {
     "title": "Settings",

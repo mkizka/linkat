@@ -13,7 +13,7 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
     <Card>
       <section className="card-body gap-4">
-        <h2 className="card-title text-base">{title}</h2>
+        <h2 className="text-sm font-bold text-base-content/70">{title}</h2>
         {children}
       </section>
     </Card>
