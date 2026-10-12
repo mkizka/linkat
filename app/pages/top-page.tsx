@@ -1,8 +1,11 @@
 import {
-  ArrowRightIcon,
   AtSymbolIcon,
+  Cog6ToothIcon,
+  EyeIcon,
   PencilSquareIcon,
+  PlusIcon,
 } from "@heroicons/react/24/outline";
+import { UserIcon } from "@heroicons/react/24/solid";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 
@@ -14,12 +17,13 @@ import type { OwnerView } from "~/server/service/owner/ownerView";
 import { cn } from "~/utils/cn";
 
 type Props = {
-  isLogin: boolean;
+  editor: OwnerView | null;
+  hasBoard: boolean;
   recentOwners: OwnerView[];
   sampleUrl: string;
 };
 
-export function TopPage({ isLogin, recentOwners, sampleUrl }: Props) {
+export function TopPage({ editor, hasBoard, recentOwners, sampleUrl }: Props) {
   const { t, i18n } = useTranslation();
   const hero = (
     <h2
@@ -31,7 +35,7 @@ export function TopPage({ isLogin, recentOwners, sampleUrl }: Props) {
       {t("_index.hero-text")}
     </h2>
   );
-  if (!isLogin) {
+  if (!editor) {
     return (
       <RootLayout>
         <Main className="flex flex-col gap-8 py-8">
@@ -59,32 +63,62 @@ export function TopPage({ isLogin, recentOwners, sampleUrl }: Props) {
       </RootLayout>
     );
   }
+  const tiles = [
+    ...(hasBoard
+      ? [
+          {
+            to: `/${editor.handleOrDid}`,
+            icon: EyeIcon,
+            label: t("_index.view-board-link"),
+          },
+          {
+            to: "/edit",
+            icon: PencilSquareIcon,
+            label: t("_index.edit-link"),
+            testId: "index__edit-link",
+          },
+        ]
+      : [
+          {
+            to: "/edit",
+            icon: PlusIcon,
+            label: t("_index.create-board-link"),
+            testId: "index__edit-link",
+          },
+        ]),
+    { to: "/settings", icon: Cog6ToothIcon, label: t("_index.settings-link") },
+  ];
   return (
     <RootLayout>
-      <Main className="utils--center">
-        <div className="text-center">
-          {hero}
-          <div className="mt-12 flex flex-col items-center gap-2">
-            <Link
-              to="/edit"
-              className="btn btn-primary w-64"
-              data-testid="index__edit-link"
-            >
-              <PencilSquareIcon className="size-6" />
-              {t("_index.edit-link")}
-            </Link>
-            <Link to="/sample" className="btn btn-neutral w-64">
-              <ArrowRightIcon className="size-6" />
-              {t("_index.sample-link")}
-            </Link>
-            <div className={cn("flex flex-col gap-2 mt-8")}>
-              <p>
-                <Link to="/about" className="underline">
-                  {t("_index.notes-link")}
-                </Link>
-              </p>
+      <Main className="flex flex-col gap-8 py-8">
+        <div className="flex flex-col items-center text-center">
+          <div className="avatar avatar-placeholder mb-2">
+            <div className="w-24 rounded-full bg-neutral text-neutral-content">
+              {editor.avatarUrl ? (
+                <img src={editor.avatarUrl} alt="" />
+              ) : (
+                <UserIcon className="w-14" />
+              )}
             </div>
           </div>
+          <h2 className="text-xl font-bold">{editor.displayName}</h2>
+          <p className="text-base-content/70">{editor.displayHandle}</p>
+        </div>
+        <div className="flex justify-center gap-2">
+          {tiles.map(({ to, icon: Icon, label, testId }) => (
+            <Link
+              key={to}
+              to={to}
+              className="card w-[calc((100%-1rem)/3)] items-center gap-1 bg-base-100 py-3 text-sm font-bold shadow-sm"
+              data-testid={testId}
+            >
+              <Icon className="size-6" />
+              {label}
+            </Link>
+          ))}
+        </div>
+        <div className="px-8">
+          <RecentBoards owners={recentOwners} />
         </div>
       </Main>
     </RootLayout>

@@ -3,7 +3,7 @@
     "meta-title": "Linkat | Create a Link in Bio for Bluesky",
     "meta-description": "Linkat is an AT Protocol service for creating a \"Link in Bio\" for Bluesky. Your links are saved in your PDS.",
     "hero-text": "Create your Link in Bio\nfor Bluesky",
-    "edit-link": "Edit Board",
+    "edit-link": "Edit",
     "login-link": "Log in to get started",
     "sample-link": "View Sample",
     "notes-link": "Things to keep in mind when using Linkat",
@@ -13,7 +13,10 @@
     "sample-owner-name": "You can make a board like this",
     "sample-text": "Text-only is OK too",
     "sample-feed-name": "Feeds work too",
-    "sample-feed-description": "This is how they look"
+    "sample-feed-description": "This is how they look",
+    "view-board-link": "View Board",
+    "create-board-link": "Create Board",
+    "settings-link": "Settings"
   },
   "recent-boards": {
     "title": "Everyone's boards"

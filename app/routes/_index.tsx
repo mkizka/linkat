@@ -10,7 +10,10 @@ export const loader = async ({ request, context }: Route.LoaderArgs) => {
   const editorDid = await di.sessionService.getSessionDid(request);
   const i18next = getInstance(context);
   return {
-    isLogin: !!editorDid,
+    editor: editorDid ? await di.ownerService.findOwnerView(editorDid) : null,
+    hasBoard: editorDid
+      ? !!(await di.boardService.findBoard(editorDid))
+      : false,
     recentOwners: await di.boardService.findRecentOwnerViews(8),
     sampleUrl: `${env.PUBLIC_URL}/sample`,
     title: i18next.t("_index.meta-title"),
@@ -27,7 +30,8 @@ export const meta = ({ loaderData }: Route.MetaArgs) => {
 export default function Index({ loaderData }: Route.ComponentProps) {
   return (
     <TopPage
-      isLogin={loaderData.isLogin}
+      editor={loaderData.editor}
+      hasBoard={loaderData.hasBoard}
       recentOwners={loaderData.recentOwners}
       sampleUrl={loaderData.sampleUrl}
     />
