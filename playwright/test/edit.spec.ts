@@ -11,13 +11,13 @@ test.describe("編集", () => {
     const text1 = `1. ${crypto.randomUUID()}`;
     const text2 = `2. ${crypto.randomUUID()}`;
     const text1Edited = `1(edit). ${crypto.randomUUID()}`;
-    const card1 = page.locator('[data-testid="sortable-card"]', {
+    const card1 = page.locator('[data-testid="board-card"]', {
       hasText: text1,
     });
-    const card2 = page.locator('[data-testid="sortable-card"]', {
+    const card2 = page.locator('[data-testid="board-card"]', {
       hasText: text2,
     });
-    const card1Edited = page.locator('[data-testid="sortable-card"]', {
+    const card1Edited = page.locator('[data-testid="board-card"]', {
       hasText: text1Edited,
     });
 
@@ -44,9 +44,7 @@ test.describe("編集", () => {
       await expect(page.getByText(`@${account.handle}`)).toBeVisible();
       await expect(card1).toBeVisible();
       await expect(card2).toBeVisible();
-      const allCards = await page
-        .getByTestId("sortable-card")
-        .allTextContents();
+      const allCards = await page.getByTestId("board-card").allTextContents();
       expect(allCards.indexOf(text1)).toBeLessThan(allCards.indexOf(text2));
     });
 
@@ -63,7 +61,7 @@ test.describe("編集", () => {
       await page.getByTestId("show-modal__close").click();
       await expect(card1).toBeVisible();
       await expect(card2).toBeVisible();
-      const sorted = await page.getByTestId("sortable-card").allTextContents();
+      const sorted = await page.getByTestId("board-card").allTextContents();
       expect(sorted.indexOf(text1)).toBeGreaterThan(sorted.indexOf(text2));
     });
 
@@ -110,7 +108,7 @@ test.describe("編集", () => {
       await page.getByTestId("index__edit-link").click();
       await page.waitForURL("/edit");
       await expect(
-        page.locator('[data-testid="sortable-card"]'),
+        page.locator('[data-testid="board-card"]'),
       ).not.toBeVisible();
     });
 

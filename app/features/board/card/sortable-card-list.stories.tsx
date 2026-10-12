@@ -21,16 +21,14 @@ const meta = {
       </CardFormProvider>
     ),
   ],
-  args: { cards },
+  args: { cards, onChange: fn() },
 } satisfies Meta<typeof SortableCardList>;
 
 export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {};
-
-export const Sortable: Story = {
+export const Default: Story = {
   render: function Render(args) {
     const [cards, setCards] = useState(args.cards);
     return <SortableCardList cards={cards} onChange={setCards} />;
