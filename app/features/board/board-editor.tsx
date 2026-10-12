@@ -13,7 +13,7 @@ import { CardFormModal, cardModal } from "./form/card-form-modal";
 import type { CardFormPayload } from "./form/card-form-provider";
 import { CardFormProvider } from "./form/card-form-provider";
 
-export type EditingCard = ValidCard & { id: string };
+type EditingCard = ValidCard & { id: string };
 
 export const withId = (card: ValidCard): EditingCard => ({
   ...card,

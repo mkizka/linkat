@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useNavigation } from "react-router";
 
 import { Main } from "~/components/layout";
-import type { EditingCard } from "~/features/board/board-editor";
 import { BoardEditor, withId } from "~/features/board/board-editor";
 import { EditBar } from "~/features/edit/edit-bar";
 import { LeaveConfirmDialog } from "~/features/edit/leave-confirm-dialog";
@@ -17,14 +16,11 @@ type EditorProps = {
   url: string;
 };
 
-const toBoardJson = (cards: EditingCard[]) =>
-  JSON.stringify({ cards: cards.map(({ id: _, ...card }) => card) });
-
 function Editor({ editor, board, url }: EditorProps) {
   const navigation = useNavigation();
   const [cards, setCards] = useState(() => (board?.cards ?? []).map(withId));
-  const [initialBoardJson] = useState(() => toBoardJson(cards));
-  const boardJson = toBoardJson(cards);
+  const [initialBoardJson] = useState(() => JSON.stringify({ cards }));
+  const boardJson = JSON.stringify({ cards });
   const isSaving = navigation.state !== "idle";
 
   return (
