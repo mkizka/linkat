@@ -25,7 +25,11 @@ export const cardModal = {
   },
 };
 
-export function CardFormModal() {
+type Props = {
+  onDelete: (id: string) => void;
+};
+
+export function CardFormModal({ onDelete }: Props) {
   const form = useFormMetadata<CardFormPayload>();
   const { t } = useTranslation();
 
@@ -47,7 +51,7 @@ export function CardFormModal() {
       </button>
       <dialog id={EDIT_CARD_MODAL_ID} className="modal items-start">
         <div className="modal-box mt-8">
-          <CardForm />
+          <CardForm onDelete={onDelete} />
           <form method="dialog">
             <button className="btn btn-circle btn-ghost btn-sm absolute right-2 top-2">
               ✕

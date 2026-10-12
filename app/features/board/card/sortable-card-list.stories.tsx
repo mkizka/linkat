@@ -16,7 +16,7 @@ const meta = {
   component: SortableCardList,
   decorators: [
     (Story) => (
-      <CardFormProvider onSubmit={fn()} onDelete={fn()}>
+      <CardFormProvider onSubmit={fn()}>
         <Story />
       </CardFormProvider>
     ),

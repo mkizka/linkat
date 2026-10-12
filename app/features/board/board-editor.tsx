@@ -1,8 +1,5 @@
 import type { Dispatch, SetStateAction } from "react";
-import { useState } from "react";
-import { useTranslation } from "react-i18next";
 
-import { ConfirmDialog } from "~/components/confirm-dialog";
 import type { OwnerView } from "~/server/service/owner/ownerView";
 import { resolveHandleIfNeeded } from "~/utils/url";
 
@@ -22,9 +19,6 @@ type Props = {
 };
 
 export function BoardEditor({ owner, url, cards, setCards }: Props) {
-  const { t } = useTranslation();
-  const [deletingCardId, setDeletingCardId] = useState<string | null>(null);
-
   const handleSubmitCardForm = async (payload: CardFormPayload) => {
     const resolvedUrl =
       payload.url && (await resolveHandleIfNeeded(payload.url));
@@ -47,31 +41,18 @@ export function BoardEditor({ owner, url, cards, setCards }: Props) {
     cardModal.close();
   };
 
-  const handleDeleteCard = () => {
-    setCards((cards) => cards.filter((card) => card.id !== deletingCardId));
-    setDeletingCardId(null);
+  const handleDeleteCard = (id: string) => {
+    setCards((cards) => cards.filter((card) => card.id !== id));
     cardModal.close();
   };
 
   return (
-    <CardFormProvider
-      onSubmit={handleSubmitCardForm}
-      onDelete={setDeletingCardId}
-    >
+    <CardFormProvider onSubmit={handleSubmitCardForm}>
       <div className="flex flex-col gap-2 py-4">
         <ProfileCard owner={owner} url={url} />
         <SortableCardList cards={cards} onChange={setCards} />
-        <CardFormModal />
+        <CardFormModal onDelete={handleDeleteCard} />
       </div>
-      <ConfirmDialog
-        open={deletingCardId !== null}
-        title={t("edit.confirm-delete-title")}
-        description={t("edit.confirm-delete-description")}
-        cancelLabel={t("edit.confirm-delete-cancel")}
-        confirmLabel={t("edit.confirm-delete-confirm")}
-        onCancel={() => setDeletingCardId(null)}
-        onConfirm={handleDeleteCard}
-      />
     </CardFormProvider>
   );
 }
