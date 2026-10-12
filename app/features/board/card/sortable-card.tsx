@@ -6,56 +6,17 @@ import { cardModal } from "~/features/board/form/card-form-modal";
 import type { CardFormPayload } from "~/features/board/form/card-form-provider";
 import { cn } from "~/utils/cn";
 
-import { BlueskyEmbed } from "./bluesky-embed";
-import { BlueskyFeed } from "./bluesky-feed";
-import type { ParsedLinkCard, ParsedTextCard } from "./parser";
 import { parseCard } from "./parser";
+import { CardContent, TextCardContent } from "./view-card";
 import type { CardWithId } from "./with-id";
 
-type CardContentProps = {
-  parsed: ReturnType<typeof parseCard>;
-};
-
-function TextCardContent({
-  parsed,
-}: {
-  parsed: ParsedLinkCard | ParsedTextCard;
-}) {
-  return (
-    <>
-      {parsed.emoji ? (
-        <div className="flex size-6 shrink-0 items-center justify-center text-xl">
-          {parsed.emoji}
-        </div>
-      ) : (
-        parsed.type === "link" && <parsed.icon className="size-6 shrink-0" />
-      )}
-      <p className="flex-1 truncate">{parsed.text}</p>
-    </>
-  );
-}
-
-function CardContent({ parsed }: CardContentProps) {
-  if (parsed.type === "feed") {
-    return <BlueskyFeed feedUri={parsed.feedUri} url={parsed.url} />;
-  }
-  if (parsed.type === "embed") {
-    return <BlueskyEmbed blueskyUri={parsed.blueskyUri} />;
-  }
-  return (
-    <div className="card-body flex-row items-center gap-2">
-      <TextCardContent parsed={parsed} />
-    </div>
-  );
-}
-
-type EditableCardProps = {
-  card: SortableCardProps["card"];
-  parsed: ReturnType<typeof parseCard>;
+type Props = {
+  card: CardWithId;
   isDragging?: boolean;
 };
 
-function EditableCard({ card, parsed, isDragging }: EditableCardProps) {
+export function SortableCard({ card, isDragging }: Props) {
+  const parsed = parseCard(card);
   const form = useFormMetadata<CardFormPayload>();
 
   const handleOpen = () => {
@@ -116,47 +77,6 @@ function EditableCard({ card, parsed, isDragging }: EditableCardProps) {
         )}
         {editButton}
       </div>
-    </Card>
-  );
-}
-
-type SortableCardProps = {
-  card: CardWithId;
-  isDragging?: boolean;
-  sortable?: boolean;
-};
-
-export function SortableCard({
-  card,
-  sortable,
-  isDragging,
-}: SortableCardProps) {
-  const parsed = parseCard(card);
-
-  if (sortable) {
-    return <EditableCard card={card} parsed={parsed} isDragging={isDragging} />;
-  }
-  if (parsed.type === "link") {
-    return (
-      <a
-        href={card.url}
-        target="_blank"
-        rel="noreferrer"
-        className="relative block"
-        data-umami-event="click-card-link"
-      >
-        <Card>
-          <CardContent parsed={parsed} />
-        </Card>
-      </a>
-    );
-  }
-  if (parsed.type === "embed") {
-    return <CardContent parsed={parsed} />;
-  }
-  return (
-    <Card>
-      <CardContent parsed={parsed} />
     </Card>
   );
 }
