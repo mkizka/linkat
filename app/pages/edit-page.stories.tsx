@@ -18,6 +18,12 @@ const meta = {
       cards: [
         { url: "https://example.com", text: "Example" },
         { text: "テキストのみのカード", emoji: "📝" },
+        {
+          url: "https://bsky.app/profile/did:plc:z72i7hdynmk6r22z27h6tvur/post/3l6oveex3ii2l",
+        },
+        {
+          url: "https://bsky.app/profile/did:plc:z72i7hdynmk6r22z27h6tvur/feed/whats-hot",
+        },
       ],
     },
     syncState: "ready",

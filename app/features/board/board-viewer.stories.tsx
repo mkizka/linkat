@@ -28,10 +28,6 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {};
 
-export const Editable: Story = {
-  args: { editable: true },
-};
-
 export const Empty: Story = {
   args: { board: null },
 };
