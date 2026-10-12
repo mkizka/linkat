@@ -11,7 +11,8 @@ const meta = {
       handleOrDid: "example.bsky.social",
       displayHandle: "@example.bsky.social",
       displayName: "Example",
-      description: null,
+      description:
+        "Linkatでリンク集を作っています。\nBlueskyの自己紹介はここに表示されます。\n長い文章は2行で折りたたまれます。",
       avatarUrl: null,
     },
     board: {

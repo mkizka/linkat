@@ -34,6 +34,7 @@
     "atpassport-link": "What is @passport?"
   },
   "sample": {
+    "owner-description": "Your Bluesky bio appears here.\nLong bios are collapsed to two lines.\nTap to read the whole text.",
     "owner-name": "Sample",
     "you-can-write-text-instead-of-url": "You can write text instead of a URL",
     "you-can-write-only-text": "Text-only is also OK",

@@ -36,3 +36,13 @@ export const WithLongDescription: Story = {
     },
   },
 };
+
+export const WithLongSingleLineDescription: Story = {
+  args: {
+    owner: {
+      ...meta.args.owner,
+      description:
+        "改行を含まない長い自己紹介の例です。Linkatでリンク集を作っています。Blueskyでは主にWeb開発や日々の出来事について投稿しています。気軽にフォローしてください。",
+    },
+  },
+};

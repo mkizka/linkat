@@ -19,7 +19,7 @@ export function SamplePage({ url }: Props) {
             handleOrDid: "bsky.app",
             displayHandle: "@bsky.app",
             displayName: t("sample.owner-name"),
-            description: null,
+            description: t("sample.owner-description"),
             avatarUrl: null,
           }}
           board={{
