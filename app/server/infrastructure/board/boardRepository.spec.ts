@@ -87,36 +87,4 @@ describe("boardRepository", () => {
       await expect(actual).resolves.not.toThrow();
     });
   });
-
-  describe("findRecentOwners", () => {
-    test("非表示でない持ち主を、ボードの更新日時が新しい順に件数分返す", async () => {
-      // arrange
-      await BoardFactory.create({ updatedAt: new Date(2000, 0, 1) });
-      const newest = await BoardFactory.create({
-        updatedAt: new Date(2000, 0, 3),
-      });
-      const empty = await BoardFactory.create({
-        record: JSON.stringify({ cards: [] }),
-        updatedAt: new Date(2000, 0, 4),
-      });
-      const hiddenOwner = await OwnerFactory.create({ active: false });
-      await BoardFactory.create({
-        ownerDid: hiddenOwner.did,
-        updatedAt: new Date(2000, 0, 5),
-      });
-      const withoutOwner = await BoardFactory.create({
-        ownerDid: "did:plc:without-owner",
-        updatedAt: new Date(2000, 0, 2),
-      });
-      // act
-      const actual = await boardRepository.findRecentOwners(3);
-      // assert
-      expect(actual.map(({ ownerDid }) => ownerDid)).toEqual([
-        empty.ownerDid,
-        newest.ownerDid,
-        withoutOwner.ownerDid,
-      ]);
-      expect(actual[2]?.owner).toBeNull();
-    });
-  });
 });

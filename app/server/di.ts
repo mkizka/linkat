@@ -19,6 +19,7 @@ import { identityResolverFactory } from "~/server/infrastructure/owner/identityR
 import { ownerRepositoryFactory } from "~/server/infrastructure/owner/ownerRepository";
 import { profileFetcherFactory } from "~/server/infrastructure/owner/profileFetcher";
 import { profileRecordParserFactory } from "~/server/infrastructure/owner/profileRecordParser";
+import { recentOwnersQueryFactory } from "~/server/infrastructure/query/recentOwnersQuery";
 import { atpassportServiceFactory } from "~/server/service/auth/atpassport";
 import { authServiceFactory } from "~/server/service/auth/auth";
 import { sessionServiceFactory } from "~/server/service/auth/session";
@@ -35,6 +36,7 @@ export const di = await createRegistry()
   .service("boardRepository", ["db"], boardRepositoryFactory)
   .service("cursorRepository", ["db"], cursorRepositoryFactory)
   .service("ownerRepository", ["db"], ownerRepositoryFactory)
+  .service("recentOwnersQuery", ["db"], recentOwnersQueryFactory)
   .service("handleIndex", ["db"], handleIndexFactory)
   .service("oauthStateStore", ["db"], stateStoreFactory)
   .service("oauthSessionStore", ["db"], sessionStoreFactory)
@@ -66,7 +68,13 @@ export const di = await createRegistry()
   )
   .service(
     "boardService",
-    ["boardRepository", "handleIndex", "ownerRepository", "ownerViewService"],
+    [
+      "boardRepository",
+      "handleIndex",
+      "ownerRepository",
+      "ownerViewService",
+      "recentOwnersQuery",
+    ],
     boardServiceFactory,
   )
   .service(
