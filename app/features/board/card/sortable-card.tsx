@@ -1,9 +1,7 @@
-import { useFormMetadata } from "@conform-to/react";
 import { Bars2Icon, PencilSquareIcon } from "@heroicons/react/24/outline";
 
 import { Card } from "~/components/card";
-import { cardModal } from "~/features/board/form/card-form-modal";
-import type { CardFormPayload } from "~/features/board/form/card-form-provider";
+import { useCardModal } from "~/features/board/form/card-form-modal";
 import { cn } from "~/utils/cn";
 
 import { BlueskyEmbed } from "./bluesky-embed";
@@ -56,15 +54,7 @@ type EditableCardProps = {
 };
 
 function EditableCard({ card, parsed, isDragging }: EditableCardProps) {
-  const form = useFormMetadata<CardFormPayload>();
-
-  const handleOpen = () => {
-    form.update({ name: "text", value: card.text });
-    form.update({ name: "url", value: card.url });
-    form.update({ name: "emoji", value: card.emoji });
-    form.update({ name: "id", value: card.id });
-    cardModal.open();
-  };
+  const { openEdit } = useCardModal();
 
   const handle = (
     <div
@@ -79,7 +69,7 @@ function EditableCard({ card, parsed, isDragging }: EditableCardProps) {
       type="button"
       className="btn btn-square btn-ghost"
       data-testid="sortable-card__edit"
-      onClick={handleOpen}
+      onClick={() => openEdit(card)}
     >
       <PencilSquareIcon className="size-6" />
     </button>
