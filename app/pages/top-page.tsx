@@ -36,7 +36,7 @@ export function TopPage({ isLogin, recentOwners, sampleUrl }: Props) {
       <RootLayout>
         <Main className="flex flex-col gap-8 py-8">
           {hero}
-          <div className="flex flex-col items-center gap-2">
+          <div className="flex flex-col items-center gap-4">
             <Link
               to="/login"
               className="btn-bluesky btn w-64 rounded-full text-blue-100"
