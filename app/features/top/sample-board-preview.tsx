@@ -5,7 +5,7 @@ import { BoardViewer } from "~/features/board/board-viewer";
 import { FeedFetcherContext } from "~/features/board/card/bluesky-feed";
 import type { OwnerView } from "~/server/service/owner/ownerView";
 
-export function SampleBoardPreview() {
+export function SampleBoardPreview({ url }: { url: string }) {
   const { t } = useTranslation();
   const owner: OwnerView = {
     did: "did:web:example.com",
@@ -31,7 +31,7 @@ export function SampleBoardPreview() {
   return (
     <div className="relative -rotate-2 px-4 [zoom:0.8]">
       <FeedFetcherContext value={fetchMockFeed}>
-        <BoardViewer owner={owner} board={{ cards }} />
+        <BoardViewer url={url} owner={owner} board={{ cards }} />
       </FeedFetcherContext>
       <Link
         to="/sample"

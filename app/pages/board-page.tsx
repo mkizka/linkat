@@ -2,9 +2,9 @@ import { useTranslation } from "react-i18next";
 
 import { Card } from "~/components/card";
 import { Main } from "~/components/layout";
-import { BoardActions } from "~/features/board/board-actions";
 import { BoardFooter } from "~/features/board/board-footer";
 import { BoardViewer } from "~/features/board/board-viewer";
+import { ShareModal } from "~/features/board/share-modal";
 import type { ValidCard } from "~/models/card";
 import type { OwnerView } from "~/server/service/owner/ownerView";
 
@@ -19,18 +19,8 @@ type Props = {
 export function BoardPage({ owner, board, url, isMine, isLogin }: Props) {
   return (
     <Main className="flex flex-col">
-      <BoardViewer
-        owner={owner}
-        board={board}
-        profileActions={
-          <BoardActions
-            owner={owner}
-            url={url}
-            isMine={isMine}
-            isLogin={isLogin}
-          />
-        }
-      />
+      <BoardViewer owner={owner} board={board} url={url} isMine={isMine} />
+      <ShareModal url={url} />
       <BoardFooter showCreateLink={!isLogin && !isMine} />
     </Main>
   );

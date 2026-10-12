@@ -32,6 +32,7 @@ const meta = {
         },
       ],
     },
+    url: "https://linkat.blue/example.bsky.social",
     syncState: "ready",
     onRetrySync: fn(),
   },

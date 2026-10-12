@@ -4,13 +4,8 @@ import { ShareModal } from "./share-modal";
 
 const meta = {
   component: ShareModal,
-  args: {
-    ref: (el: HTMLDialogElement | null) => el?.showModal(),
-    url: "https://linkat.blue/example.bsky.social",
-    title: "ボードを共有",
-    shareText:
-      "Exampleさんのボード #linkat https://linkat.blue/example.bsky.social",
-  },
+  args: { url: "https://linkat.blue/example.bsky.social" },
+  parameters: { path: "/?success" },
 } satisfies Meta<typeof ShareModal>;
 
 export default meta;

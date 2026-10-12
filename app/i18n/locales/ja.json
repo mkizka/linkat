@@ -62,26 +62,19 @@
     "hidden-message": "このボードは表示できません"
   },
   "share-modal": {
-    "saved-title": "ボードを保存しました",
-    "share-title": "ボードを共有",
+    "title": "保存しました",
     "description": "リンク集をシェアしよう！",
     "post-to-bluesky": "Blueskyにポストする",
     "copy-url": "URLをコピーする",
     "copied-message": "コピーしました！",
-    "saved-share-text": "Linkatでリンク集を作りました！ #linkat {{url}}",
-    "board-share-text": "{{displayName}}さんのボード #linkat {{url}}"
-  },
-  "board-actions": {
-    "edit-button": "編集"
-  },
-  "board-menu": {
-    "menu": "メニュー",
-    "share": "共有",
-    "settings": "設定",
-    "top": "トップへ"
+    "share-text": "Linkatでリンク集を作りました！ #linkat {{url}}"
   },
   "board-footer": {
     "create-link": "Linkatで自分のリンク集を作る"
+  },
+  "profile-card": {
+    "edit-button": "編集",
+    "share-text": "{{displayName}}さんのボード #linkat {{url}}"
   },
   "card-form": {
     "text-label": "テキスト",

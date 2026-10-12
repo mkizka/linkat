@@ -4,6 +4,9 @@ import { SampleBoardPreview } from "./sample-board-preview";
 
 const meta = {
   component: SampleBoardPreview,
+  args: {
+    url: "https://linkat.blue/sample",
+  },
 } satisfies Meta<typeof SampleBoardPreview>;
 
 export default meta;

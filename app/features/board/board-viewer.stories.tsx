@@ -19,6 +19,7 @@ const meta = {
         { text: "テキストのみのカード", emoji: "📝" },
       ],
     },
+    url: "https://linkat.blue/example.bsky.social",
   },
 } satisfies Meta<typeof BoardViewer>;
 
@@ -27,6 +28,10 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {};
+
+export const Mine: Story = {
+  args: { isMine: true },
+};
 
 export const Empty: Story = {
   args: { board: null },

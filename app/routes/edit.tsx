@@ -10,6 +10,7 @@ import {
   BoardDbSaveError,
   BoardPdsSaveError,
 } from "~/server/service/board/boardEvent";
+import { env } from "~/utils/env";
 import { tryCatch } from "~/utils/tryCatch";
 
 import type { Route } from "./+types/edit";
@@ -94,6 +95,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   return {
     editor: editorView,
     board: board && { cards: board.cards },
+    url: `${env.PUBLIC_URL}/${editorView.handleOrDid}`,
   };
 }
 

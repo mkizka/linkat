@@ -13,11 +13,12 @@ import { CardFormProvider } from "./form/card-form-provider";
 
 type Props = {
   owner: OwnerView;
+  url: string;
   cards: CardWithId[];
   setCards: Dispatch<SetStateAction<CardWithId[]>>;
 };
 
-export function BoardEditor({ owner, cards, setCards }: Props) {
+export function BoardEditor({ owner, url, cards, setCards }: Props) {
   const handleSubmitCardForm = async (payload: CardFormPayload) => {
     const resolvedUrl =
       payload.url && (await resolveHandleIfNeeded(payload.url));
@@ -48,7 +49,7 @@ export function BoardEditor({ owner, cards, setCards }: Props) {
   return (
     <CardFormProvider onSubmit={handleSubmitCardForm}>
       <div className="flex flex-col gap-2 py-4">
-        <ProfileCard owner={owner} />
+        <ProfileCard owner={owner} url={url} />
         <SortableCardList cards={cards} onChange={setCards} />
         <CardFormModal onDelete={handleDeleteCard} />
       </div>
