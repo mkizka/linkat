@@ -37,11 +37,7 @@ type BlueskyFeedViewProps = {
 export function BlueskyFeedView({ feed, error, url }: BlueskyFeedViewProps) {
   const { t } = useTranslation();
   if (error) {
-    return (
-      <div className="card-body">
-        <p>{t("bluesky-feed.error-message")}</p>
-      </div>
-    );
+    return <p>{t("bluesky-feed.error-message")}</p>;
   }
   if (!feed) {
     return (
@@ -51,33 +47,34 @@ export function BlueskyFeedView({ feed, error, url }: BlueskyFeedViewProps) {
     );
   }
   return (
-    <a href={url} target="_blank" rel="noreferrer">
-      <div className="card-body gap-2">
-        <div className="flex items-center gap-2">
-          <div className="avatar avatar-placeholder">
-            <div className="w-10 rounded-full bg-neutral text-neutral-content">
-              {feed.avatar ? (
-                <img src={feed.avatar} />
-              ) : (
-                <HashtagIcon className="w-6" />
-              )}
-            </div>
-          </div>
-          <div className="flex-1 overflow-hidden">
-            <p className="truncate font-bold leading-snug">
-              {feed.displayName}
-            </p>
-            <p className="truncate leading-snug text-gray-500">
-              {t("bluesky-feed.creator-text", {
-                handle: feed.creatorHandle,
-              })}
-            </p>
+    <a
+      href={url}
+      target="_blank"
+      rel="noreferrer"
+      className="flex flex-col gap-2"
+    >
+      <div className="flex items-center gap-2">
+        <div className="avatar avatar-placeholder">
+          <div className="w-10 rounded-full bg-neutral text-neutral-content">
+            {feed.avatar ? (
+              <img src={feed.avatar} />
+            ) : (
+              <HashtagIcon className="w-6" />
+            )}
           </div>
         </div>
-        <p className="whitespace-pre-line [overflow-wrap:break-word]">
-          {feed.description}
-        </p>
+        <div className="flex-1 overflow-hidden">
+          <p className="truncate font-bold leading-snug">{feed.displayName}</p>
+          <p className="truncate leading-snug text-gray-500">
+            {t("bluesky-feed.creator-text", {
+              handle: feed.creatorHandle,
+            })}
+          </p>
+        </div>
       </div>
+      <p className="whitespace-pre-line [overflow-wrap:break-word]">
+        {feed.description}
+      </p>
     </a>
   );
 }

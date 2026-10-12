@@ -11,13 +11,9 @@ export function ViewCard({ card }: { card: ValidCard }) {
   }
   const content = (
     <Card>
-      {parsed.type === "feed" ? (
+      <div className="card-body">
         <CardContent parsed={parsed} />
-      ) : (
-        <div className="card-body flex-row items-center gap-2">
-          <CardContent parsed={parsed} />
-        </div>
-      )}
+      </div>
     </Card>
   );
   if (parsed.type === "link") {

@@ -14,7 +14,7 @@ export function CardContent({ parsed }: CardContentProps) {
     return <BlueskyEmbed blueskyUri={parsed.blueskyUri} />;
   }
   return (
-    <>
+    <div className="flex items-center gap-2">
       {parsed.emoji ? (
         <div className="flex size-6 shrink-0 items-center justify-center text-xl">
           {parsed.emoji}
@@ -23,6 +23,6 @@ export function CardContent({ parsed }: CardContentProps) {
         parsed.type === "link" && <parsed.icon className="size-6 shrink-0" />
       )}
       <p className="flex-1 truncate">{parsed.text}</p>
-    </>
+    </div>
   );
 }

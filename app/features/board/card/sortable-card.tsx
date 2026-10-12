@@ -58,14 +58,7 @@ export function SortableCard({ card, isDragging }: Props) {
     <Card className={dragging}>
       <div className="card-body flex-row items-center gap-2 px-2 py-4">
         {handle}
-        <div
-          className={cn(
-            "pointer-events-none min-w-0 flex-1",
-            parsed.type === "feed"
-              ? "[&_.card-body]:p-0"
-              : "flex items-center gap-2",
-          )}
-        >
+        <div className="pointer-events-none min-w-0 flex-1">
           <CardContent parsed={parsed} />
         </div>
         {editButton}
