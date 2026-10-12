@@ -4,13 +4,13 @@ import { Bars2Icon, PencilSquareIcon } from "@heroicons/react/24/outline";
 import { Card } from "~/components/card";
 import { cardModal } from "~/features/board/form/card-form-modal";
 import type { CardFormPayload } from "~/features/board/form/card-form-provider";
-import type { ValidCard } from "~/models/card";
 import { cn } from "~/utils/cn";
 
 import { BlueskyEmbed } from "./bluesky-embed";
 import { BlueskyFeed } from "./bluesky-feed";
 import type { ParsedLinkCard, ParsedTextCard } from "./parser";
 import { parseCard } from "./parser";
+import type { CardWithId } from "./with-id";
 
 type CardContentProps = {
   parsed: ReturnType<typeof parseCard>;
@@ -121,7 +121,7 @@ function EditableCard({ card, parsed, isDragging }: EditableCardProps) {
 }
 
 type SortableCardProps = {
-  card: ValidCard & { id: string };
+  card: CardWithId;
   isDragging?: boolean;
   sortable?: boolean;
 };

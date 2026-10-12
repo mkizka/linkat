@@ -3,28 +3,22 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { ConfirmDialog } from "~/components/confirm-dialog";
-import type { ValidCard } from "~/models/card";
 import type { OwnerView } from "~/server/service/owner/ownerView";
 import { resolveHandleIfNeeded } from "~/utils/url";
 
 import { ProfileCard } from "./card/profile-card";
 import { SortableCardList } from "./card/sortable-card-list";
+import type { CardWithId } from "./card/with-id";
+import { withId } from "./card/with-id";
 import { CardFormModal, cardModal } from "./form/card-form-modal";
 import type { CardFormPayload } from "./form/card-form-provider";
 import { CardFormProvider } from "./form/card-form-provider";
 
-type EditingCard = ValidCard & { id: string };
-
-export const withId = (card: ValidCard): EditingCard => ({
-  ...card,
-  id: crypto.randomUUID(),
-});
-
 type Props = {
   owner: OwnerView;
   url: string;
-  cards: EditingCard[];
-  setCards: Dispatch<SetStateAction<EditingCard[]>>;
+  cards: CardWithId[];
+  setCards: Dispatch<SetStateAction<CardWithId[]>>;
 };
 
 export function BoardEditor({ owner, url, cards, setCards }: Props) {

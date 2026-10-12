@@ -2,7 +2,8 @@ import { useState } from "react";
 import { useNavigation } from "react-router";
 
 import { Main } from "~/components/layout";
-import { BoardEditor, withId } from "~/features/board/board-editor";
+import { BoardEditor } from "~/features/board/board-editor";
+import { withId } from "~/features/board/card/with-id";
 import { EditBar } from "~/features/edit/edit-bar";
 import { LeaveConfirmDialog } from "~/features/edit/leave-confirm-dialog";
 import { SyncError } from "~/features/edit/sync-error";
