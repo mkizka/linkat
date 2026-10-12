@@ -49,10 +49,6 @@
     "confirm-leave-description": "If you leave now, your changes will be lost.",
     "confirm-leave-cancel": "Keep editing",
     "confirm-leave-confirm": "Discard and leave",
-    "confirm-delete-title": "Delete this card?",
-    "confirm-delete-description": "This card will be removed from the list.",
-    "confirm-delete-cancel": "Cancel",
-    "confirm-delete-confirm": "Delete",
     "save-board-error-message": "Failed to save the board",
     "save-delayed-warning-message": "The changes are taking a while to appear. Please wait a moment and reload.",
     "sync-loading-message": "Loading your data from your PDS",
@@ -87,7 +83,11 @@
     "emoji-select-button": "Select emoji",
     "emoji-reset-button": "Reset selection",
     "help-input-message": "Either the URL or text can be left blank.",
-    "help-emoji-message": "When not selected, it will be automatically determined based on the URL."
+    "help-emoji-message": "When not selected, it will be automatically determined based on the URL.",
+    "confirm-delete-title": "Delete this card?",
+    "confirm-delete-description": "This card will be removed from the list.",
+    "confirm-delete-cancel": "Cancel",
+    "confirm-delete-confirm": "Delete"
   },
   "card-form-modal": {
     "add-card": "Add Card"
