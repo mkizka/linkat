@@ -11,6 +11,8 @@ export const loader = async ({ request, context }: Route.LoaderArgs) => {
   const i18next = getInstance(context);
   return {
     isLogin: !!editorDid,
+    recentOwners: await di.boardService.findRecentOwnerViews(8),
+    sampleUrl: `${env.PUBLIC_URL}/sample`,
     title: i18next.t("_index.meta-title"),
     description: i18next.t("_index.meta-description"),
     url: env.PUBLIC_URL,
@@ -23,5 +25,11 @@ export const meta = ({ loaderData }: Route.MetaArgs) => {
 };
 
 export default function Index({ loaderData }: Route.ComponentProps) {
-  return <TopPage isLogin={loaderData.isLogin} />;
+  return (
+    <TopPage
+      isLogin={loaderData.isLogin}
+      recentOwners={loaderData.recentOwners}
+      sampleUrl={loaderData.sampleUrl}
+    />
+  );
 }
