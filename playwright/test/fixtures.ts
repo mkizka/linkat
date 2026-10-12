@@ -15,7 +15,7 @@ const authorize = async (page: Page, { handle, password }: Account) => {
   await page.locator("[name='password']").fill(password);
   await page.locator("button", { hasText: "Sign in" }).click();
   await page.locator("button", { hasText: "Authorize" }).click();
-  await page.waitForURL((url) => url.pathname === "/edit");
+  await page.waitForURL((url) => url.pathname === "/");
 };
 
 const createAccount = async (): Promise<Account> => {

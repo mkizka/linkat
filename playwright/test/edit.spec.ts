@@ -6,6 +6,7 @@ test.describe("編集", () => {
 
     await test.step("ログイン", async () => {
       await login();
+      await page.goto("/edit");
     });
 
     const text1 = `1. ${crypto.randomUUID()}`;
