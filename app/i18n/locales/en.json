@@ -103,7 +103,6 @@
     "creator-text": "Feed by {{handle}}"
   },
   "layout": {
-    "footer-message": "Create a Link in Bio with Linkat",
     "about-link": "About Linkat"
   },
   "error-boundary": {

@@ -103,7 +103,6 @@
     "creator-text": "{{handle}}によるフィード"
   },
   "layout": {
-    "footer-message": "Linkatでリンク集を作ろう",
     "about-link": "Linkatについて"
   },
   "error-boundary": {

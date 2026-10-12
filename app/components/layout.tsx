@@ -89,25 +89,10 @@ export function Main({ className, children }: MainProps) {
   );
 }
 
-type FooterProps = {
-  withNavigation?: boolean;
-};
-
-export function Footer({ withNavigation }: FooterProps) {
+export function Footer() {
   const { t } = useTranslation();
   return (
     <footer className="mx-auto w-full max-w-screen-sm bg-base-200 px-4">
-      {withNavigation && (
-        <nav className="pt-4 text-center">
-          <Link
-            to="/"
-            className="hover:underline"
-            data-umami-event="click-footer-top-link"
-          >
-            {t("layout.footer-message")}
-          </Link>
-        </nav>
-      )}
       <nav className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 border-t border-base-300 py-4 text-sm text-base-content/70">
         <Link
           to="/about"
