@@ -10,6 +10,7 @@ const meta = {
       handleOrDid: `user${i}.bsky.social`,
       displayHandle: `@user${i}.bsky.social`,
       displayName: `User ${i}`,
+      description: null,
       avatarUrl: null,
     })),
   },

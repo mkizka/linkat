@@ -12,6 +12,7 @@ export function SampleBoardPreview({ url }: { url: string }) {
     handleOrDid: "example.com",
     displayHandle: "@example.com",
     displayName: t("_index.sample-owner-name"),
+    description: null,
     avatarUrl: null,
   };
   const cards = [
