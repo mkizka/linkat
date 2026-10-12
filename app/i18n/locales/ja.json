@@ -49,10 +49,6 @@
     "confirm-leave-description": "このまま戻ると変更は失われます。",
     "confirm-leave-cancel": "編集を続ける",
     "confirm-leave-confirm": "破棄して戻る",
-    "confirm-delete-title": "カードを削除しますか？",
-    "confirm-delete-description": "このカードを一覧から削除します。",
-    "confirm-delete-cancel": "やめる",
-    "confirm-delete-confirm": "削除する",
     "save-board-error-message": "ボードの保存に失敗しました",
     "save-delayed-warning-message": "変更の反映に時間がかかっています。少し待ってリロードしてみてください",
     "sync-loading-message": "PDSからデータを読み込んでいます",
@@ -97,7 +93,11 @@
     "emoji-select-button": "絵文字を選択",
     "emoji-reset-button": "未選択に戻す",
     "help-input-message": "URLかテキストはどちらか空欄でもOKです。",
-    "help-emoji-message": "未選択時はURLに応じて自動で決まります。"
+    "help-emoji-message": "未選択時はURLに応じて自動で決まります。",
+    "confirm-delete-title": "カードを削除しますか？",
+    "confirm-delete-description": "このカードを一覧から削除します。",
+    "confirm-delete-cancel": "やめる",
+    "confirm-delete-confirm": "削除する"
   },
   "card-form-modal": {
     "add-card": "カードを追加"
