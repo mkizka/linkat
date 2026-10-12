@@ -9,8 +9,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   try {
     const did = await di.authService.handleCallback(request.url);
     logger.info("ログインに成功しました", { did });
-    const board = await di.boardService.findBoard(did);
-    return redirect(board ? "/" : "/edit", {
+    return redirect("/", {
       headers: {
         "Set-Cookie": await di.sessionService.createSession(request, did),
       },

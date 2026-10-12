@@ -32,6 +32,7 @@ test.describe("同期", () => {
 
     await test.step("ログインすると取り込んだボードを編集できる", async () => {
       await login();
+      await page.goto("/edit");
       await expect(card).toBeVisible();
       await expect(
         page.getByTestId("toaster").locator(".alert-success"),
