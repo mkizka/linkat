@@ -11,7 +11,6 @@ const meta = {
       creatorHandle: "example.bsky.social",
     },
     error: false,
-    url: "https://bsky.app/profile/example.bsky.social/feed/sample",
   },
 } satisfies Meta<typeof BlueskyFeedView>;
 

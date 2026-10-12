@@ -5,7 +5,7 @@ import type { CardWithId } from "./with-id";
 
 type Props = {
   cards: CardWithId[];
-  onChange?: (cards: CardWithId[]) => void;
+  onChange: (cards: CardWithId[]) => void;
 };
 
 export function SortableCardList({ cards, onChange }: Props) {
@@ -13,9 +13,8 @@ export function SortableCardList({ cards, onChange }: Props) {
     <List
       values={cards}
       lockVertically
-      disabled={!onChange}
       onChange={({ oldIndex, newIndex }) =>
-        onChange?.(arrayMove(cards, oldIndex, newIndex))
+        onChange(arrayMove(cards, oldIndex, newIndex))
       }
       renderList={({ children, props }) => (
         <ul {...props} className="flex flex-col gap-2">
@@ -29,13 +28,9 @@ export function SortableCardList({ cards, onChange }: Props) {
             key={key}
             {...rest}
             className="list-none"
-            data-testid={`sortable-card`}
+            data-testid="board-card"
           >
-            <SortableCard
-              card={value}
-              isDragging={isDragged}
-              sortable={!!onChange}
-            />
+            <SortableCard card={value} isDragging={isDragged} />
           </li>
         );
       }}
