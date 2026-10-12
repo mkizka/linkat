@@ -16,10 +16,9 @@ import { cn } from "~/utils/cn";
 type Props = {
   isLogin: boolean;
   recentOwners: OwnerView[];
-  sampleUrl: string;
 };
 
-export function TopPage({ isLogin, recentOwners, sampleUrl }: Props) {
+export function TopPage({ isLogin, recentOwners }: Props) {
   const { t, i18n } = useTranslation();
   const hero = (
     <h2
@@ -53,7 +52,7 @@ export function TopPage({ isLogin, recentOwners, sampleUrl }: Props) {
             </Link>
           </div>
           <RecentBoards owners={recentOwners} />
-          <SampleBoardPreview url={sampleUrl} />
+          <SampleBoardPreview />
           <Reasons />
         </Main>
       </RootLayout>
