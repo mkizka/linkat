@@ -11,7 +11,7 @@ const expectRedirectedToLogin = async (page: Page) => {
 };
 
 test.describe("別のデバイスでログアウトした後", () => {
-  test.beforeEach(async ({ login }) => {
+  test.beforeEach(async ({ page, login }) => {
     await login();
     await page.goto("/edit");
   });
