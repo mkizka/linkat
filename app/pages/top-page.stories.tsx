@@ -7,7 +7,6 @@ const meta = {
   parameters: { layout: "fullscreen" },
   args: {
     isLogin: false,
-    sampleUrl: "https://linkat.blue/sample",
     recentOwners: Array.from({ length: 8 }, (_, i) => ({
       did: `did:plc:${i}`,
       handleOrDid: `user${i}.bsky.social`,

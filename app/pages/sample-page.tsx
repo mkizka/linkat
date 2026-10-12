@@ -3,17 +3,12 @@ import { useTranslation } from "react-i18next";
 import { Footer, Main } from "~/components/layout";
 import { BoardViewer } from "~/features/board/board-viewer";
 
-type Props = {
-  url: string;
-};
-
-export function SamplePage({ url }: Props) {
+export function SamplePage() {
   const { t } = useTranslation();
   return (
     <>
       <Main>
         <BoardViewer
-          url={url}
           owner={{
             did: "did:plc:z72i7hdynmk6r22z27h6tvur",
             handleOrDid: "bsky.app",
