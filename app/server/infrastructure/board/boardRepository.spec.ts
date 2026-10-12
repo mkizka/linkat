@@ -89,13 +89,13 @@ describe("boardRepository", () => {
   });
 
   describe("findRecentOwners", () => {
-    test("カードがあり非表示でない持ち主を、ボードの更新日時が新しい順に件数分返す", async () => {
+    test("非表示でない持ち主を、ボードの更新日時が新しい順に件数分返す", async () => {
       // arrange
       await BoardFactory.create({ updatedAt: new Date(2000, 0, 1) });
       const newest = await BoardFactory.create({
         updatedAt: new Date(2000, 0, 3),
       });
-      await BoardFactory.create({
+      const empty = await BoardFactory.create({
         record: JSON.stringify({ cards: [] }),
         updatedAt: new Date(2000, 0, 4),
       });
@@ -109,13 +109,14 @@ describe("boardRepository", () => {
         updatedAt: new Date(2000, 0, 2),
       });
       // act
-      const actual = await boardRepository.findRecentOwners(2);
+      const actual = await boardRepository.findRecentOwners(3);
       // assert
       expect(actual.map(({ ownerDid }) => ownerDid)).toEqual([
+        empty.ownerDid,
         newest.ownerDid,
         withoutOwner.ownerDid,
       ]);
-      expect(actual[1]?.owner).toBeNull();
+      expect(actual[2]?.owner).toBeNull();
     });
   });
 });

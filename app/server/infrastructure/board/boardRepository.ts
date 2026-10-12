@@ -1,5 +1,5 @@
 import { asDid, type Did } from "@atproto/did";
-import { and, desc, eq, isNull, or, sql } from "drizzle-orm";
+import { desc, eq, isNull, or } from "drizzle-orm";
 
 import { Board } from "~/models/board";
 import { Owner } from "~/models/owner";
@@ -49,12 +49,7 @@ export const boardRepositoryFactory = ({
       .select({ ownerDid: boardTable.ownerDid, owner: ownerTable })
       .from(boardTable)
       .leftJoin(ownerTable, eq(boardTable.ownerDid, ownerTable.did))
-      .where(
-        and(
-          sql`jsonb_array_length((${boardTable.record})::jsonb -> 'cards') > 0`,
-          or(isNull(ownerTable.did), eq(ownerTable.active, true)),
-        ),
-      )
+      .where(or(isNull(ownerTable.did), eq(ownerTable.active, true)))
       .orderBy(desc(boardTable.updatedAt))
       .limit(limit);
     return rows.map((row) => ({
