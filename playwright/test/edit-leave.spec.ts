@@ -20,7 +20,6 @@ test.describe("編集(離脱確認)", () => {
 
     await test.step("トップページから編集ページに移る", async () => {
       await login();
-      await page.goto("/");
       await openEdit();
     });
 
