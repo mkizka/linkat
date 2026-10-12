@@ -16,8 +16,14 @@ const meta = {
     },
     board: {
       cards: [
-        { url: "https://example.com", text: "Example" },
-        { text: "テキストのみのカード", emoji: "📝" },
+        { url: "https://example.com" },
+        { text: "テキストのみのカード" },
+        { url: "https://example.com", text: "テキストとURLのカード" },
+        {
+          url: "https://example.com",
+          text: "絵文字アイコンのカード",
+          emoji: "📝",
+        },
         {
           url: "https://bsky.app/profile/did:plc:z72i7hdynmk6r22z27h6tvur/post/3l6oveex3ii2l",
         },
