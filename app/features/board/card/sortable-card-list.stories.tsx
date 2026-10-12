@@ -16,16 +16,12 @@ const meta = {
   component: SortableCardList,
   decorators: [
     (Story) => (
-      <CardFormProvider onSubmit={fn()} onDelete={fn()}>
+      <CardFormProvider onSubmit={fn()}>
         <Story />
       </CardFormProvider>
     ),
   ],
-  args: { cards, setCards: fn() },
-  render: function Render(args) {
-    const [cards, setCards] = useState(args.cards);
-    return <SortableCardList {...args} cards={cards} setCards={setCards} />;
-  },
+  args: { cards },
 } satisfies Meta<typeof SortableCardList>;
 
 export default meta;
@@ -35,5 +31,8 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {};
 
 export const Sortable: Story = {
-  args: { sortable: true },
+  render: function Render(args) {
+    const [cards, setCards] = useState(args.cards);
+    return <SortableCardList cards={cards} onChange={setCards} />;
+  },
 };
