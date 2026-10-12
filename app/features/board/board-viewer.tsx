@@ -2,7 +2,7 @@ import type { ValidCard } from "~/models/card";
 import type { OwnerView } from "~/server/service/owner/ownerView";
 
 import { ProfileCard } from "./card/profile-card";
-import { ViewCard } from "./card/view-card";
+import { ViewCardList } from "./card/view-card-list";
 
 type Props = {
   owner: OwnerView;
@@ -16,13 +16,7 @@ export function BoardViewer({ owner, board, url, isMine }: Props) {
   return (
     <div className="flex flex-col gap-2 py-4">
       <ProfileCard owner={owner} url={url} showEditButton={isMine} />
-      <ul className="flex flex-col gap-2">
-        {board?.cards.map((card, index) => (
-          <li key={index} data-testid="board-card">
-            <ViewCard card={card} />
-          </li>
-        ))}
-      </ul>
+      <ViewCardList cards={board?.cards ?? []} />
     </div>
   );
 }
