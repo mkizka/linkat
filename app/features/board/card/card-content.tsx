@@ -1,14 +1,14 @@
 import { BlueskyEmbed } from "./bluesky-embed";
 import { BlueskyFeed } from "./bluesky-feed";
-import type { parseCard } from "./parser";
+import type { ParsedCard } from "./parser";
 
 type CardContentProps = {
-  parsed: ReturnType<typeof parseCard>;
+  parsed: ParsedCard;
 };
 
 export function CardContent({ parsed }: CardContentProps) {
   if (parsed.type === "feed") {
-    return <BlueskyFeed feedUri={parsed.feedUri} url={parsed.url} />;
+    return <BlueskyFeed feedUri={parsed.feedUri} />;
   }
   if (parsed.type === "embed") {
     return <BlueskyEmbed blueskyUri={parsed.blueskyUri} />;

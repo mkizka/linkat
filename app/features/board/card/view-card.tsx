@@ -4,7 +4,11 @@ import type { ValidCard } from "~/models/card";
 import { CardContent } from "./card-content";
 import { parseCard } from "./parser";
 
-export function ViewCard({ card }: { card: ValidCard }) {
+type Props = {
+  card: ValidCard;
+};
+
+export function ViewCard({ card }: Props) {
   const parsed = parseCard(card);
   if (parsed.type === "embed") {
     return <CardContent parsed={parsed} />;
@@ -16,7 +20,7 @@ export function ViewCard({ card }: { card: ValidCard }) {
       </div>
     </Card>
   );
-  if (parsed.type === "link") {
+  if (card.url) {
     return (
       <a
         href={card.url}

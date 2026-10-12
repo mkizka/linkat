@@ -31,10 +31,9 @@ export const FeedFetcherContext = createContext(fetchFeed);
 type BlueskyFeedViewProps = {
   feed: Feed | null;
   error: boolean;
-  url: string;
 };
 
-export function BlueskyFeedView({ feed, error, url }: BlueskyFeedViewProps) {
+export function BlueskyFeedView({ feed, error }: BlueskyFeedViewProps) {
   const { t } = useTranslation();
   if (error) {
     return <p>{t("bluesky-feed.error-message")}</p>;
@@ -47,12 +46,7 @@ export function BlueskyFeedView({ feed, error, url }: BlueskyFeedViewProps) {
     );
   }
   return (
-    <a
-      href={url}
-      target="_blank"
-      rel="noreferrer"
-      className="flex flex-col gap-2"
-    >
+    <div className="flex flex-col gap-2">
       <div className="flex items-center gap-2">
         <div className="avatar avatar-placeholder">
           <div className="w-10 rounded-full bg-neutral text-neutral-content">
@@ -75,16 +69,15 @@ export function BlueskyFeedView({ feed, error, url }: BlueskyFeedViewProps) {
       <p className="whitespace-pre-line [overflow-wrap:break-word]">
         {feed.description}
       </p>
-    </a>
+    </div>
   );
 }
 
 type Props = {
   feedUri: string;
-  url: string;
 };
 
-export function BlueskyFeed({ feedUri, url }: Props) {
+export function BlueskyFeed({ feedUri }: Props) {
   const [feed, setFeed] = useState<Feed | null>(null);
   const [showError, setShowError] = useState(false);
   const fetchFeed = use(FeedFetcherContext);
@@ -99,5 +92,5 @@ export function BlueskyFeed({ feedUri, url }: Props) {
       });
   }, [fetchFeed, feedUri]);
 
-  return <BlueskyFeedView feed={feed} error={showError} url={url} />;
+  return <BlueskyFeedView feed={feed} error={showError} />;
 }
