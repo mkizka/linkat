@@ -14,6 +14,7 @@ test.describe("別のデバイスでログアウトした後", () => {
   test.beforeEach(async ({ page, login }) => {
     page.on("dialog", (dialog) => dialog.accept());
     await login();
+    await page.goto("/edit");
   });
 
   const logoutOnOtherDevice = async (
