@@ -115,9 +115,6 @@
     "text": "ログアウト",
     "confirm-message": "ログアウトしますか？"
   },
-  "back-button": {
-    "text": "トップに戻る"
-  },
   "delete": {
     "invalid-session-error-message": "ログイン情報が無効でした",
     "delete-board-error-message": "ボードの削除に失敗しました",
@@ -131,6 +128,9 @@
     "title": "設定",
     "header-account": "アカウント",
     "header-board": "ボード",
-    "delete-board-warning": "PDSに保存されているボードを削除します。削除後は元に戻せません。"
+    "delete-board-warning": "PDSに保存されているボードを削除します。削除後は元に戻せません。",
+    "header-display": "表示",
+    "language": "言語",
+    "logged-in-as": "{{handle}} でログイン中"
   }
 }

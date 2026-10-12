@@ -24,7 +24,7 @@ export function LogoutButton() {
     <Form action="/logout" method="post" onSubmit={handleSubmit}>
       <Button
         type="submit"
-        className="btn btn-error"
+        className="btn"
         data-umami-event="click-logout-button"
         data-testid="logout-button"
       >

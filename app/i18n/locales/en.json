@@ -115,9 +115,6 @@
     "text": "Logout",
     "confirm-message": "Are you sure you want to log out?"
   },
-  "back-button": {
-    "text": "Back to top"
-  },
   "delete": {
     "invalid-session-error-message": "The login information was invalid",
     "delete-board-error-message": "Failed to delete the board",
@@ -131,6 +128,9 @@
     "title": "Settings",
     "header-account": "Account",
     "header-board": "Board",
-    "delete-board-warning": "Delete your board saved in PDS. This action cannot be undone."
+    "delete-board-warning": "Delete your board saved in PDS. This action cannot be undone.",
+    "header-display": "Display",
+    "language": "Language",
+    "logged-in-as": "Logged in as {{handle}}"
   }
 }

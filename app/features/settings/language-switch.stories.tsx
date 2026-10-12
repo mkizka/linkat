@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import { BackButton } from "./back-button";
+import { LanguageSwitch } from "./language-switch";
 
 const meta = {
-  component: BackButton,
-} satisfies Meta<typeof BackButton>;
+  component: LanguageSwitch,
+} satisfies Meta<typeof LanguageSwitch>;
 
 export default meta;
 
