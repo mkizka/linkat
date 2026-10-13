@@ -22,6 +22,7 @@ const meta = {
     },
     url: "https://linkat.blue/example.bsky.social",
     isMine: false,
+    isLogin: false,
   },
 } satisfies Meta<typeof BoardPage>;
 
@@ -31,12 +32,16 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {};
 
+export const LoggedIn: Story = {
+  args: { isLogin: true },
+};
+
 export const Mine: Story = {
-  args: { isMine: true },
+  args: { isMine: true, isLogin: true },
 };
 
 export const Saved: Story = {
-  args: { isMine: true },
+  args: { isMine: true, isLogin: true },
   parameters: { path: "/?success" },
 };
 

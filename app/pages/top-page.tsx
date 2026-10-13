@@ -11,17 +11,16 @@ type Props = {
   editor: OwnerView | null;
   hasBoard: boolean;
   recentOwners: OwnerView[];
-  sampleUrl: string;
 };
 
-export function TopPage({ editor, hasBoard, recentOwners, sampleUrl }: Props) {
+export function TopPage({ editor, hasBoard, recentOwners }: Props) {
   if (!editor) {
     return (
       <RootLayout>
         <Main className="flex flex-col gap-8 py-8">
           <Hero />
           <RecentBoards owners={recentOwners} />
-          <SampleBoardPreview url={sampleUrl} />
+          <SampleBoardPreview />
           <Reasons />
         </Main>
       </RootLayout>
