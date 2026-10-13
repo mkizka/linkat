@@ -6,7 +6,8 @@ const meta = {
   component: TopPage,
   parameters: { layout: "fullscreen" },
   args: {
-    isLogin: false,
+    editor: null,
+    hasBoard: false,
     sampleUrl: "https://linkat.blue/sample",
     recentOwners: Array.from({ length: 8 }, (_, i) => ({
       did: `did:plc:${i}`,
@@ -24,6 +25,18 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {};
 
+const editor = {
+  did: "did:plc:me",
+  handleOrDid: "me.bsky.social",
+  displayHandle: "@me.bsky.social",
+  displayName: "Me",
+  avatarUrl: null,
+} as const;
+
 export const Login: Story = {
-  args: { isLogin: true },
+  args: { editor, hasBoard: true },
+};
+
+export const LoginWithoutBoard: Story = {
+  args: { editor, hasBoard: false },
 };
