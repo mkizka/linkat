@@ -14,10 +14,9 @@ import type { OwnerView } from "~/server/service/owner/ownerView";
 type EditorProps = {
   editor: OwnerView;
   board: { cards: ValidCard[] } | null;
-  url: string;
 };
 
-function Editor({ editor, board, url }: EditorProps) {
+function Editor({ editor, board }: EditorProps) {
   const navigation = useNavigation();
   const [cards, setCards] = useState(() => (board?.cards ?? []).map(withId));
   const [initialBoardJson] = useState(() => JSON.stringify({ cards }));
@@ -33,12 +32,7 @@ function Editor({ editor, board, url }: EditorProps) {
         isSaving={isSaving}
       />
       <Main>
-        <BoardEditor
-          owner={editor}
-          url={url}
-          cards={cards}
-          setCards={setCards}
-        />
+        <BoardEditor owner={editor} cards={cards} setCards={setCards} />
       </Main>
       <LeaveConfirmDialog
         isDirty={boardJson !== initialBoardJson}

@@ -29,6 +29,7 @@ export async function loader({ request, params, context }: Route.LoaderArgs) {
     owner,
     board: { cards: board.cards },
     isMine: owner.did === viewerDid,
+    isLogin: viewerDid !== null,
     title: `${title} | Linkat`,
     url: `${env.PUBLIC_URL}/${owner.handleOrDid}`,
     ogImageUrl: `${env.PUBLIC_URL}/${owner.handleOrDid}/og`,
@@ -49,6 +50,14 @@ export default function Index({ loaderData }: Route.ComponentProps) {
   if (loaderData.hidden) {
     return <HiddenBoardPage status={loaderData.status} />;
   }
-  const { owner, board, url, isMine } = loaderData;
-  return <BoardPage owner={owner} board={board} url={url} isMine={isMine} />;
+  const { owner, board, url, isMine, isLogin } = loaderData;
+  return (
+    <BoardPage
+      owner={owner}
+      board={board}
+      url={url}
+      isMine={isMine}
+      isLogin={isLogin}
+    />
+  );
 }

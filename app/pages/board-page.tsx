@@ -2,8 +2,8 @@ import { useTranslation } from "react-i18next";
 
 import { Card } from "~/components/card";
 import { Footer, Main } from "~/components/layout";
+import { BoardActions } from "~/features/board/board-actions";
 import { BoardViewer } from "~/features/board/board-viewer";
-import { ShareModal } from "~/features/board/share-modal";
 import type { ValidCard } from "~/models/card";
 import type { OwnerView } from "~/server/service/owner/ownerView";
 
@@ -12,14 +12,25 @@ type Props = {
   board: { cards: ValidCard[] };
   url: string;
   isMine: boolean;
+  isLogin: boolean;
 };
 
-export function BoardPage({ owner, board, url, isMine }: Props) {
+export function BoardPage({ owner, board, url, isMine, isLogin }: Props) {
   return (
     <>
       <Main>
-        <BoardViewer owner={owner} board={board} url={url} isMine={isMine} />
-        <ShareModal url={url} />
+        <BoardViewer
+          owner={owner}
+          board={board}
+          profileActions={
+            <BoardActions
+              owner={owner}
+              url={url}
+              isMine={isMine}
+              isLogin={isLogin}
+            />
+          }
+        />
       </Main>
       <Footer withNavigation />
     </>
