@@ -18,7 +18,10 @@ export type BoardView =
 export interface IBoardService {
   findBoard: (ownerDid: Did) => Promise<Board | null>;
   findBoardView: (handleOrDid: string) => Promise<BoardView>;
-  findRecentOwnerViews: (limit: number) => Promise<OwnerView[]>;
+  findRecentOwnerViews: (
+    limit: number,
+    excludeDid?: Did,
+  ) => Promise<OwnerView[]>;
 }
 
 export const boardServiceFactory = ({
@@ -58,8 +61,8 @@ export const boardServiceFactory = ({
       board,
     };
   },
-  async findRecentOwnerViews(limit) {
-    const owners = await recentOwnersQuery.find(limit);
+  async findRecentOwnerViews(limit, excludeDid) {
+    const owners = await recentOwnersQuery.find(limit, excludeDid);
     return owners.map(({ ownerDid, owner }) =>
       ownerViewService.toOwnerView(ownerDid, owner),
     );

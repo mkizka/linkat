@@ -1,3 +1,5 @@
+import { asDid } from "@atproto/did";
+
 import { BoardFactory } from "~/server/factories/board";
 import { OwnerFactory } from "~/server/factories/owner";
 import { db } from "~/server/infrastructure/db/drizzle";
@@ -36,6 +38,19 @@ describe("recentOwnersQuery", () => {
         withoutOwner.ownerDid,
       ]);
       expect(actual[2]?.owner).toBeNull();
+    });
+    test("除外したDIDの持ち主は返さない", async () => {
+      // arrange
+      const excluded = await BoardFactory.create({
+        updatedAt: new Date(2000, 0, 2),
+      });
+      const other = await BoardFactory.create({
+        updatedAt: new Date(2000, 0, 1),
+      });
+      // act
+      const actual = await recentOwnersQuery.find(2, asDid(excluded.ownerDid));
+      // assert
+      expect(actual.map(({ ownerDid }) => ownerDid)).toEqual([other.ownerDid]);
     });
   });
 });
