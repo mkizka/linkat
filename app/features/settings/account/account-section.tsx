@@ -3,8 +3,8 @@ import { useTranslation } from "react-i18next";
 
 import type { OwnerView } from "~/server/service/owner/ownerView";
 
+import { SettingsSection } from "../settings-section";
 import { LogoutButton } from "./logout-button";
-import { SettingsSection } from "./settings-section";
 
 type Props = {
   editor: OwnerView;

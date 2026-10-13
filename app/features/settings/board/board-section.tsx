@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 
+import { SettingsSection } from "../settings-section";
 import { DeleteBoardButton } from "./delete-button";
-import { SettingsSection } from "./settings-section";
 
 type Props = {
   handle: string;

@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 
+import { SettingsSection } from "../settings-section";
 import { LanguageSwitch } from "./language-switch";
-import { SettingsSection } from "./settings-section";
 
 export function DisplaySection() {
   const { t } = useTranslation();

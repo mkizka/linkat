@@ -1,9 +1,9 @@
 import { useTranslation } from "react-i18next";
 
 import { Main, RootLayout } from "~/components/layout";
-import { AccountSection } from "~/features/settings/account-section";
-import { BoardSection } from "~/features/settings/board-section";
-import { DisplaySection } from "~/features/settings/display-section";
+import { AccountSection } from "~/features/settings/account/account-section";
+import { BoardSection } from "~/features/settings/board/board-section";
+import { DisplaySection } from "~/features/settings/display/display-section";
 import type { OwnerView } from "~/server/service/owner/ownerView";
 
 type Props = {
