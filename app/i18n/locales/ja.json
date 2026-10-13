@@ -3,7 +3,7 @@
     "meta-title": "Linkat | Blueskyのためのリンク集を作ろう",
     "meta-description": "Linkat（リンクアット）は、Blueskyのためのリンク集を作成できるAT Protocolサービスです。作成したリンク集はあなたのアカウントのPDSに保存されます。",
     "hero-text": "Blueskyのための\nリンク集を作ろう",
-    "edit-link": "ボードを編集",
+    "edit-link": "編集",
     "login-link": "ログインして始める",
     "sample-link": "サンプルを見る",
     "notes-link": "Linkatを使用するにあたっての注意",
@@ -13,7 +13,10 @@
     "sample-owner-name": "こんな感じでつくれます",
     "sample-text": "テキストだけでもOK",
     "sample-feed-name": "フィードも使えます",
-    "sample-feed-description": "こんな感じで表示されます"
+    "sample-feed-description": "こんな感じで表示されます",
+    "view-board-link": "ボードを見る",
+    "create-board-link": "ボードを作る",
+    "settings-link": "設定"
   },
   "recent-boards": {
     "title": "みんなのリンク集"
