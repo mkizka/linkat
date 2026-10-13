@@ -65,19 +65,26 @@
     "hidden-message": "This board is unavailable"
   },
   "share-modal": {
-    "title": "Saved",
+    "saved-title": "Board saved",
+    "share-title": "Share board",
     "description": "Let's share your Link in Bio!",
     "post-to-bluesky": "Post to Bluesky",
     "copy-url": "Copy URL",
     "copied-message": "Copied!",
-    "share-text": "I created a Link in Bio using Linkat! #linkat {{url}}"
+    "saved-share-text": "I created a Link in Bio using Linkat! #linkat {{url}}",
+    "board-share-text": "{{displayName}}'s board #linkat {{url}}"
   },
   "board-footer": {
     "create-link": "Create your own Link in Bio with Linkat"
   },
-  "profile-card": {
-    "edit-button": "Edit",
-    "share-text": "{{displayName}}'s board #linkat {{url}}"
+  "board-actions": {
+    "edit-button": "Edit"
+  },
+  "board-menu": {
+    "menu": "Menu",
+    "share": "Share",
+    "settings": "Settings",
+    "top": "Top"
   },
   "card-form": {
     "text-label": "Text",
