@@ -1,4 +1,9 @@
-import { EllipsisHorizontalIcon } from "@heroicons/react/24/outline";
+import {
+  ArrowUpOnSquareIcon,
+  Cog6ToothIcon,
+  EllipsisHorizontalIcon,
+  HomeIcon,
+} from "@heroicons/react/24/outline";
 import { useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
@@ -16,10 +21,15 @@ export function BoardMenu({ isLogin, onShare }: Props) {
   const close = () => ref.current?.close();
   const links = isLogin
     ? [
-        { to: "/settings", label: t("board-menu.settings") },
-        { to: "/", label: t("board-menu.top") },
+        {
+          to: "/settings",
+          label: t("board-menu.settings"),
+          Icon: Cog6ToothIcon,
+        },
+        { to: "/", label: t("board-menu.top"), Icon: HomeIcon },
       ]
-    : [{ to: "/", label: t("board-menu.top") }];
+    : [{ to: "/", label: t("board-menu.top"), Icon: HomeIcon }];
+  const itemClass = "flex h-12 items-center gap-3 rounded-box px-4 font-bold";
 
   return (
     <>
@@ -34,7 +44,7 @@ export function BoardMenu({ isLogin, onShare }: Props) {
       </button>
       <dialog className="modal modal-bottom" ref={ref}>
         <div
-          className="modal-box mx-auto max-w-screen-sm px-4 pt-3"
+          className="modal-box mx-auto max-w-screen-sm px-3 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))]"
           onTouchStart={(e) => {
             touchStartYRef.current = e.touches[0]?.clientY ?? 0;
           }}
@@ -47,23 +57,28 @@ export function BoardMenu({ isLogin, onShare }: Props) {
             }
           }}
         >
-          <div className="mx-auto mb-2 h-1 w-10 rounded-full bg-base-300" />
-          <ul className="menu w-full text-base">
+          <div className="mx-auto mb-3 h-1.5 w-10 rounded-full bg-base-content/20" />
+          <ul className="menu w-full gap-1 p-0 text-base">
             <li>
               <button
                 type="button"
+                className={itemClass}
                 onClick={() => {
                   close();
                   onShare();
                 }}
                 data-testid="board-menu__share"
               >
+                <ArrowUpOnSquareIcon className="size-6" />
                 {t("board-menu.share")}
               </button>
             </li>
             {links.map((link) => (
               <li key={link.to}>
-                <Link to={link.to}>{link.label}</Link>
+                <Link to={link.to} className={itemClass}>
+                  <link.Icon className="size-6" />
+                  {link.label}
+                </Link>
               </li>
             ))}
           </ul>
