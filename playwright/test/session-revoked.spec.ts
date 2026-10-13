@@ -12,7 +12,6 @@ const expectRedirectedToLogin = async (page: Page) => {
 
 test.describe("別のデバイスでログアウトした後", () => {
   test.beforeEach(async ({ page, login }) => {
-    page.on("dialog", (dialog) => dialog.accept());
     await login();
     await page.goto("/edit");
   });
@@ -22,10 +21,13 @@ test.describe("別のデバイスでログアウトした後", () => {
     login: (page: Page) => Promise<void>,
   ) => {
     const otherPage = await (await browser.newContext()).newPage();
-    otherPage.on("dialog", (dialog) => dialog.accept());
     await login(otherPage);
     await otherPage.goto("/settings");
     await otherPage.getByTestId("logout-button").click();
+    await otherPage
+      .locator("dialog[open]")
+      .getByTestId("confirm-dialog__confirm")
+      .click();
     await otherPage.waitForURL((url) => url.pathname === "/");
   };
 
@@ -47,6 +49,10 @@ test.describe("別のデバイスでログアウトした後", () => {
     await page.goto("/settings");
     await logoutOnOtherDevice(browser, login);
     await page.getByTestId("delete-board-button").click();
+    await page
+      .locator("dialog[open]")
+      .getByTestId("confirm-dialog__confirm")
+      .click();
     await expectRedirectedToLogin(page);
   });
 

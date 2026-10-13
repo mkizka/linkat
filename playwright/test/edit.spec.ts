@@ -103,6 +103,10 @@ test.describe("編集", () => {
     await test.step("ボードを削除", async () => {
       await page.goto("/settings");
       await page.getByTestId("delete-board-button").click();
+      await page
+        .locator("dialog[open]")
+        .getByTestId("confirm-dialog__confirm")
+        .click();
     });
 
     await test.step("編集ページで削除されていることを確認", async () => {
@@ -116,6 +120,10 @@ test.describe("編集", () => {
     await test.step("ログアウト", async () => {
       await page.goto("/settings");
       await page.getByTestId("logout-button").click();
+      await page
+        .locator("dialog[open]")
+        .getByTestId("confirm-dialog__confirm")
+        .click();
       await page.waitForURL((url) => url.pathname === "/");
       await expect(page.getByTestId("index__login-link")).toBeVisible();
     });
