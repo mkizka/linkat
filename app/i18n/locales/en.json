@@ -72,7 +72,7 @@
     "copied-message": "Copied!",
     "share-text": "I created a Link in Bio using Linkat! #linkat {{url}}"
   },
-  "profile-card": {
+  "board-actions": {
     "edit-button": "Edit",
     "share-text": "{{displayName}}'s board #linkat {{url}}"
   },

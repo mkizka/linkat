@@ -72,7 +72,7 @@
     "copied-message": "コピーしました！",
     "share-text": "Linkatでリンク集を作りました！ #linkat {{url}}"
   },
-  "profile-card": {
+  "board-actions": {
     "edit-button": "編集",
     "share-text": "{{displayName}}さんのボード #linkat {{url}}"
   },

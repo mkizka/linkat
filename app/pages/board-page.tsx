@@ -2,6 +2,7 @@ import { useTranslation } from "react-i18next";
 
 import { Card } from "~/components/card";
 import { Footer, Main } from "~/components/layout";
+import { BoardActions } from "~/features/board/board-actions";
 import { BoardViewer } from "~/features/board/board-viewer";
 import { ShareModal } from "~/features/board/share-modal";
 import type { ValidCard } from "~/models/card";
@@ -18,7 +19,13 @@ export function BoardPage({ owner, board, url, isMine }: Props) {
   return (
     <>
       <Main>
-        <BoardViewer owner={owner} board={board} url={url} isMine={isMine} />
+        <BoardViewer
+          owner={owner}
+          board={board}
+          profileActions={
+            <BoardActions owner={owner} url={url} isMine={isMine} />
+          }
+        />
         <ShareModal url={url} />
       </Main>
       <Footer withNavigation />

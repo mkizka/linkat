@@ -18,7 +18,6 @@ export const loader = async ({ request, context }: Route.LoaderArgs) => {
     editor,
     hasBoard: !!board,
     recentOwners,
-    sampleUrl: `${env.PUBLIC_URL}/sample`,
     title: i18next.t("_index.meta-title"),
     description: i18next.t("_index.meta-description"),
     url: env.PUBLIC_URL,
@@ -36,7 +35,6 @@ export default function Index({ loaderData }: Route.ComponentProps) {
       editor={loaderData.editor}
       hasBoard={loaderData.hasBoard}
       recentOwners={loaderData.recentOwners}
-      sampleUrl={loaderData.sampleUrl}
     />
   );
 }
