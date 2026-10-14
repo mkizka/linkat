@@ -21,7 +21,7 @@ function Editor({ editor, board }: EditorProps) {
   const [cards, setCards] = useState(() => (board?.cards ?? []).map(withId));
   const [initialBoardJson] = useState(() => JSON.stringify({ cards }));
   const boardJson = JSON.stringify({ cards });
-  const isSaving = navigation.state !== "idle";
+  const isSaving = navigation.formData !== undefined;
 
   return (
     <>
