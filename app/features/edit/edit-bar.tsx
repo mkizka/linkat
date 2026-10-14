@@ -1,26 +1,28 @@
+import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { useTranslation } from "react-i18next";
 import { Form, Link } from "react-router";
 
 import { Button } from "~/components/button";
 
 type Props = {
-  cancelTo: string;
+  boardPath: string | null;
   boardJson: string;
   cardCount: number;
   isSaving: boolean;
 };
 
-export function EditBar({ cancelTo, boardJson, cardCount, isSaving }: Props) {
+export function EditBar({ boardPath, boardJson, cardCount, isSaving }: Props) {
   const { t } = useTranslation();
   return (
     <header className="sticky top-0 z-10 mx-auto w-full max-w-screen-sm bg-base-200/90 backdrop-blur">
       <div className="grid w-full grid-cols-[1fr_auto_1fr] items-center gap-2 px-4 py-2">
         <Link
-          to={cancelTo}
+          to={boardPath ?? "/"}
           className="btn justify-self-start"
-          data-testid="edit-bar__cancel"
+          data-testid="edit-bar__back"
         >
-          {t("edit.cancel-button")}
+          <ArrowLeftIcon className="size-4" aria-hidden />
+          {t(boardPath ? "edit.back-to-board" : "edit.back-to-top")}
         </Link>
         <h1 className="font-bold">{t("edit.title")}</h1>
         <Form method="post" className="justify-self-end">

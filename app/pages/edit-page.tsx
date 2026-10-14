@@ -26,7 +26,7 @@ function Editor({ editor, board }: EditorProps) {
   return (
     <>
       <EditBar
-        cancelTo={board ? `/${editor.handleOrDid}` : "/"}
+        boardPath={board ? `/${editor.handleOrDid}` : null}
         boardJson={boardJson}
         cardCount={cards.length}
         isSaving={isSaving}
