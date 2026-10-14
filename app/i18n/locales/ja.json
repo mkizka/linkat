@@ -46,7 +46,6 @@
     "invalid-session-error-message": "ログイン情報が無効でした",
     "invalid-form-error-message": "フォームが無効です",
     "title": "ボードを編集",
-    "back-to-board": "ボードに戻る",
     "back-to-top": "トップに戻る",
     "submit-button": "保存",
     "confirm-leave-title": "保存していない変更があります",

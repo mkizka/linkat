@@ -5,24 +5,23 @@ import { Form, Link } from "react-router";
 import { Button } from "~/components/button";
 
 type Props = {
-  boardPath: string | null;
   boardJson: string;
   cardCount: number;
   isSaving: boolean;
 };
 
-export function EditBar({ boardPath, boardJson, cardCount, isSaving }: Props) {
+export function EditBar({ boardJson, cardCount, isSaving }: Props) {
   const { t } = useTranslation();
   return (
     <header className="sticky top-0 z-10 mx-auto w-full max-w-screen-sm bg-base-200/90 backdrop-blur">
       <div className="grid w-full grid-cols-[1fr_auto_1fr] items-center gap-2 px-4 py-2">
         <Link
-          to={boardPath ?? "/"}
+          to="/"
           className="btn justify-self-start"
           data-testid="edit-bar__back"
         >
           <ArrowLeftIcon className="size-4" aria-hidden />
-          {t(boardPath ? "edit.back-to-board" : "edit.back-to-top")}
+          {t("edit.back-to-top")}
         </Link>
         <h1 className="font-bold">{t("edit.title")}</h1>
         <Form method="post" className="justify-self-end">
