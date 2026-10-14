@@ -9,6 +9,7 @@ import { GenericContainer, Wait } from "testcontainers";
 
 import { PORTS } from "./constants";
 
+// TestNetworkのPDSはos.tmpdir()以下にデータを作って終了後も残すので、専用ディレクトリに集めて終了時に消す
 const tmp = await mkdtemp(join(tmpdir(), "linkat-dev-env-"));
 process.env.TMPDIR = tmp;
 
