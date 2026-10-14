@@ -24,7 +24,7 @@ export function RecentBoards({ owners }: { owners: OwnerView[] }) {
     return null;
   }
   return (
-    <section className="mb-4 flex flex-col gap-2">
+    <section className="flex flex-col gap-4">
       <h2 className="text-center text-sm font-bold text-base-content/70">
         {t("recent-boards.title")}
       </h2>
