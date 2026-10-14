@@ -1,76 +1,65 @@
 import { LanguageIcon } from "@heroicons/react/24/outline";
-import { type ReactNode, useRef } from "react";
+import { type ReactNode } from "react";
 import GitHubButton from "react-github-btn";
 import { useTranslation } from "react-i18next";
 import { Form, Link } from "react-router";
 
-import { useUmami } from "~/hooks/useUmami";
 import { cn } from "~/utils/cn";
 
 import { BlueskyIcon } from "./icons/bluesky";
 import { GitHubIcon } from "./icons/github";
 
 export function Header() {
-  const detailsRef = useRef<HTMLDetailsElement>(null);
-  const umami = useUmami();
-  const handleClick = () => {
-    if (detailsRef.current) {
-      detailsRef.current.removeAttribute("open");
-    }
-  };
   return (
-    <header className="mx-auto flex w-full max-w-screen-sm items-center justify-between bg-base-200 px-4 pt-2">
+    <header className="mx-auto flex w-full max-w-screen-sm items-center bg-base-200 px-4 pt-2">
       <Link to="/" className="text-xl font-bold">
         Linkat
       </Link>
-      <details
-        className="dropdown dropdown-end"
-        ref={detailsRef}
-        onClick={(event) => {
-          if (
-            event.target instanceof HTMLElement &&
-            event.target.tagName === "BUTTON"
-          ) {
-            return;
-          }
-          umami.track("click-header-lang", {
-            action: "open",
-          });
-        }}
-      >
-        <summary className="btn btn-square btn-sm shadow dark:btn-neutral light:bg-white">
-          <LanguageIcon className="size-6" />
-        </summary>
-        <Form>
-          <ul className="menu dropdown-content z-[1] w-52 rounded-box p-2 shadow light:bg-white dark:bg-neutral">
-            <li>
-              <button
-                type="submit"
-                name="lng"
-                value="ja"
-                onClick={handleClick}
-                data-umami-event="click-header-lang"
-                data-umami-event-action="select-ja"
-              >
-                日本語
-              </button>
-            </li>
-            <li>
-              <button
-                type="submit"
-                name="lng"
-                value="en"
-                onClick={handleClick}
-                data-umami-event="click-header-lang"
-                data-umami-event-action="select-en"
-              >
-                English
-              </button>
-            </li>
-          </ul>
-        </Form>
-      </details>
     </header>
+  );
+}
+
+const languages = [
+  { value: "ja", label: "日本語" },
+  { value: "en", label: "English" },
+];
+
+function LanguageMenu() {
+  const { i18n } = useTranslation();
+  return (
+    <div className="dropdown dropdown-top dropdown-end">
+      <div
+        tabIndex={0}
+        role="button"
+        className="btn btn-outline btn-xs gap-1 border-base-content/30 text-sm font-normal text-base-content/70"
+        data-umami-event="click-footer-lang"
+        data-umami-event-action="open"
+      >
+        <LanguageIcon className="size-4" aria-hidden />
+        {i18n.language === "en" ? "English" : "日本語"}
+      </div>
+      <Form>
+        <ul
+          tabIndex={0}
+          className="menu dropdown-content z-[1] mb-2 w-40 rounded-box p-2 shadow light:bg-white dark:bg-neutral"
+        >
+          {languages.map(({ value, label }) => (
+            <li key={value}>
+              <button
+                type="submit"
+                name="lng"
+                value={value}
+                onClick={(event) => event.currentTarget.blur()}
+                data-umami-event="click-footer-lang"
+                data-umami-event-action={`select-${value}`}
+              >
+                {label}
+              </button>
+            </li>
+          ))}
+        </ul>
+      </Form>
+    </div>
   );
 }
 
@@ -131,13 +120,16 @@ export function Footer() {
             </div>
           </div>
         </div>
-        <Link
-          to="/about"
-          className="underline"
-          data-umami-event="click-footer-about-link"
-        >
-          {t("layout.about-link")}
-        </Link>
+        <div className="flex items-center gap-4">
+          <Link
+            to="/about"
+            className="underline"
+            data-umami-event="click-footer-about-link"
+          >
+            {t("layout.about-link")}
+          </Link>
+          <LanguageMenu />
+        </div>
       </nav>
     </footer>
   );
