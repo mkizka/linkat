@@ -123,7 +123,7 @@ export function CardForm({ onDelete }: Props) {
         {fields.id.value && (
           <Button
             type="button"
-            className="btn-error"
+            className="btn-ghost text-error"
             onClick={() => setIsConfirmingDelete(true)}
             data-testid="card-form__delete"
           >
