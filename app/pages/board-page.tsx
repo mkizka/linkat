@@ -1,9 +1,9 @@
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router";
 
 import { Card } from "~/components/card";
-import { Main } from "~/components/layout";
+import { Footer, Main } from "~/components/layout";
 import { BoardActions } from "~/features/board/board-actions";
-import { BoardFooter } from "~/features/board/board-footer";
 import { BoardViewer } from "~/features/board/board-viewer";
 import type { ValidCard } from "~/models/card";
 import type { OwnerView } from "~/server/service/owner/ownerView";
@@ -17,22 +17,34 @@ type Props = {
 };
 
 export function BoardPage({ owner, board, url, isMine, isLogin }: Props) {
+  const { t } = useTranslation();
   return (
-    <Main className="flex flex-col">
-      <BoardViewer
-        owner={owner}
-        board={board}
-        profileActions={
-          <BoardActions
-            owner={owner}
-            url={url}
-            isMine={isMine}
-            isLogin={isLogin}
-          />
-        }
-      />
-      <BoardFooter showCreateLink={!isLogin && !isMine} />
-    </Main>
+    <>
+      <Main className="flex flex-col gap-4 pb-4">
+        <BoardViewer
+          owner={owner}
+          board={board}
+          profileActions={
+            <BoardActions
+              owner={owner}
+              url={url}
+              isMine={isMine}
+              isLogin={isLogin}
+            />
+          }
+        />
+        {!isLogin && !isMine && (
+          <Link
+            to="/"
+            className="btn mt-auto"
+            data-umami-event="click-create-link"
+          >
+            {t("board-footer.create-link")}
+          </Link>
+        )}
+      </Main>
+      <Footer />
+    </>
   );
 }
 
@@ -50,7 +62,7 @@ export function HiddenBoardPage({ status }: { status: string | null }) {
           </div>
         </Card>
       </Main>
-      <BoardFooter showCreateLink={false} />
+      <Footer />
     </>
   );
 }

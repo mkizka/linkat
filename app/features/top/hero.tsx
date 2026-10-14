@@ -16,7 +16,7 @@ export function Hero() {
       >
         {t("_index.hero-text")}
       </h2>
-      <div className="flex flex-col items-center gap-4">
+      <div className="flex flex-col items-center gap-6">
         <Link
           to="/login"
           className="btn-bluesky btn w-64 rounded-full text-blue-100"
