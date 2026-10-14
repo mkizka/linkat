@@ -101,6 +101,7 @@ app.on("exit", async () => {
 });
 for (const signal of ["SIGINT", "SIGTERM"]) {
   process.on(signal, () => {
+    // detachedで起動したappはプロセスグループのリーダーなので、負のPIDでpnpmやtsxなどの子孫ごと止める
     if (app.pid) process.kill(-app.pid, "SIGTERM");
   });
 }
