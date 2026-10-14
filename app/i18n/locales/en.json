@@ -74,6 +74,9 @@
     "saved-share-text": "I created a Link in Bio using Linkat! #linkat {{url}}",
     "board-share-text": "{{displayName}}'s board #linkat {{url}}"
   },
+  "board-footer": {
+    "create-link": "Create your own Link in Bio with Linkat"
+  },
   "board-actions": {
     "edit-button": "Edit"
   },
@@ -110,7 +113,6 @@
     "creator-text": "Feed by {{handle}}"
   },
   "layout": {
-    "footer-message": "Create a Link in Bio with Linkat",
     "about-link": "About Linkat"
   },
   "error-boundary": {

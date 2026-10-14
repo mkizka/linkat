@@ -20,6 +20,6 @@ export const HeaderOnly: Story = {
   render: () => <Header />,
 };
 
-export const FooterWithNavigation: Story = {
-  render: () => <Footer withNavigation />,
+export const FooterOnly: Story = {
+  render: () => <Footer />,
 };

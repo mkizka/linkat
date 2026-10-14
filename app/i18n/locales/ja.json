@@ -74,6 +74,9 @@
     "saved-share-text": "Linkatでリンク集を作りました！ #linkat {{url}}",
     "board-share-text": "{{displayName}}さんのボード #linkat {{url}}"
   },
+  "board-footer": {
+    "create-link": "Linkatで自分のリンク集を作る"
+  },
   "board-actions": {
     "edit-button": "編集"
   },
@@ -110,7 +113,6 @@
     "creator-text": "{{handle}}によるフィード"
   },
   "layout": {
-    "footer-message": "Linkatでリンク集を作ろう",
     "about-link": "Linkatについて"
   },
   "error-boundary": {

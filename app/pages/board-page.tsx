@@ -1,8 +1,9 @@
 import { useTranslation } from "react-i18next";
 
 import { Card } from "~/components/card";
-import { Footer, Main } from "~/components/layout";
+import { Main } from "~/components/layout";
 import { BoardActions } from "~/features/board/board-actions";
+import { BoardFooter } from "~/features/board/board-footer";
 import { BoardViewer } from "~/features/board/board-viewer";
 import type { ValidCard } from "~/models/card";
 import type { OwnerView } from "~/server/service/owner/ownerView";
@@ -17,23 +18,21 @@ type Props = {
 
 export function BoardPage({ owner, board, url, isMine, isLogin }: Props) {
   return (
-    <>
-      <Main>
-        <BoardViewer
-          owner={owner}
-          board={board}
-          profileActions={
-            <BoardActions
-              owner={owner}
-              url={url}
-              isMine={isMine}
-              isLogin={isLogin}
-            />
-          }
-        />
-      </Main>
-      <Footer withNavigation />
-    </>
+    <Main className="flex flex-col">
+      <BoardViewer
+        owner={owner}
+        board={board}
+        profileActions={
+          <BoardActions
+            owner={owner}
+            url={url}
+            isMine={isMine}
+            isLogin={isLogin}
+          />
+        }
+      />
+      <BoardFooter showCreateLink={!isLogin && !isMine} />
+    </Main>
   );
 }
 
@@ -51,7 +50,7 @@ export function HiddenBoardPage({ status }: { status: string | null }) {
           </div>
         </Card>
       </Main>
-      <Footer withNavigation />
+      <BoardFooter showCreateLink={false} />
     </>
   );
 }
