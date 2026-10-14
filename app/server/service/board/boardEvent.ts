@@ -1,7 +1,10 @@
 import type { Did } from "@atproto/did";
 
 import type { Board } from "~/models/board";
-import type { IBoardPdsRepository } from "~/server/infrastructure/board/boardPdsRepository";
+import {
+  BoardAlreadyExistsError,
+  type IBoardPdsRepository,
+} from "~/server/infrastructure/board/boardPdsRepository";
 import type { IBoardRepository } from "~/server/infrastructure/board/boardRepository";
 import type { IOwnerRepository } from "~/server/infrastructure/owner/ownerRepository";
 import type { IOwnerService } from "~/server/service/owner/owner";
@@ -9,6 +12,12 @@ import type { IOwnerService } from "~/server/service/owner/owner";
 export class BoardPdsSaveError extends Error {
   constructor(cause: unknown) {
     super("PDSへのボードの保存に失敗しました", { cause });
+  }
+}
+
+export class BoardPdsConflictError extends Error {
+  constructor(cause: unknown) {
+    super("PDSに写しの無いボードがあったため保存しませんでした", { cause });
   }
 }
 
@@ -59,9 +68,17 @@ export const boardEventServiceFactory = ({
       await boardRepository.save(board);
     },
     async handleEditorSave(board) {
+      const hasCopy = !!(await boardRepository.find(board.ownerDid));
       try {
-        await boardPdsRepository.save(board);
+        await boardPdsRepository.save(board, { onlyIfAbsent: !hasCopy });
       } catch (error) {
+        if (error instanceof BoardAlreadyExistsError) {
+          const pdsBoard = await boardPdsRepository.find(board.ownerDid);
+          if (pdsBoard) {
+            await boardRepository.save(pdsBoard);
+          }
+          throw new BoardPdsConflictError(error);
+        }
         throw new BoardPdsSaveError(error);
       }
       try {

@@ -53,7 +53,8 @@
     "confirm-leave-cancel": "Keep editing",
     "confirm-leave-confirm": "Discard and leave",
     "save-board-error-message": "Failed to save the board",
-    "save-delayed-warning-message": "The changes are taking a while to appear. Please wait a moment and reload."
+    "save-delayed-warning-message": "The changes are taking a while to appear. Please wait a moment and reload.",
+    "save-conflict-message": "Loaded the board saved on your PDS. Please edit it again."
   },
   "sync": {
     "loading-message": "Loading your data from your PDS",

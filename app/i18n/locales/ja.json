@@ -53,7 +53,8 @@
     "confirm-leave-cancel": "編集を続ける",
     "confirm-leave-confirm": "破棄して戻る",
     "save-board-error-message": "ボードの保存に失敗しました",
-    "save-delayed-warning-message": "変更の反映に時間がかかっています。少し待ってリロードしてみてください"
+    "save-delayed-warning-message": "変更の反映に時間がかかっています。少し待ってリロードしてみてください",
+    "save-conflict-message": "PDSに保存されていたボードを読み込みました。もう一度編集してください"
   },
   "sync": {
     "loading-message": "PDSからデータを読み込んでいます",

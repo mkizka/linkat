@@ -1,14 +1,13 @@
 import { data, redirect } from "react-router";
 import { setToast } from "remix-toast/middleware";
 
-import { SyncGate } from "~/features/sync/sync-gate";
-import { useSync } from "~/features/sync/use-sync";
 import { getInstance } from "~/i18n/i18n";
 import { Board } from "~/models/board";
 import { EditPage } from "~/pages/edit-page";
 import { di } from "~/server/di";
 import {
   BoardDbSaveError,
+  BoardPdsConflictError,
   BoardPdsSaveError,
 } from "~/server/service/board/boardEvent";
 import { tryCatch } from "~/utils/tryCatch";
@@ -55,6 +54,14 @@ export async function action({ request, context }: Route.ActionArgs) {
   try {
     await di.boardEventService.handleEditorSave(parsedBoard);
   } catch (error) {
+    if (error instanceof BoardPdsConflictError) {
+      logger.warn(error.message, { error });
+      setToast(context, {
+        message: i18next.t("edit.save-conflict-message"),
+        type: "warning",
+      });
+      return redirect("/edit");
+    }
     if (error instanceof BoardPdsSaveError) {
       logger.error(error.message, { error });
       setToast(context, {
@@ -87,10 +94,14 @@ export async function loader({ request }: Route.LoaderArgs) {
   if (!editorDid) {
     throw redirect("/login");
   }
-  const [editorView, board] = await Promise.all([
+  const [hasOwner, editorView, board] = await Promise.all([
+    di.ownerService.hasOwner(editorDid),
     di.ownerService.findOwnerView(editorDid),
     di.boardService.findBoard(editorDid),
   ]);
+  if (!hasOwner) {
+    throw redirect("/");
+  }
   return {
     editor: editorView,
     board: board && { cards: board.cards },
@@ -98,10 +109,5 @@ export async function loader({ request }: Route.LoaderArgs) {
 }
 
 export default function Index({ loaderData }: Route.ComponentProps) {
-  const sync = useSync(!loaderData.board);
-  return (
-    <SyncGate state={sync.state} onRetry={sync.retry}>
-      <EditPage {...loaderData} />
-    </SyncGate>
-  );
+  return <EditPage key={JSON.stringify(loaderData.board)} {...loaderData} />;
 }
