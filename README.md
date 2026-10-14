@@ -20,7 +20,7 @@ pnpm install
 pnpm dev
 ```
 
-After running the commands, open [http://localhost:3000](http://localhost:3000) in your browser.
+After running the commands, open [http://localhost:3000](http://localhost:3000) in your browser and log in as `alice.test` with password `password`. All data is removed when the command exits.
 
 ## Contributing
 
