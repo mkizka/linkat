@@ -17,7 +17,7 @@ export function EditBar({ boardJson, cardCount, isSaving }: Props) {
       <div className="grid w-full grid-cols-[1fr_auto_1fr] items-center gap-2 px-4 py-2">
         <Link
           to="/"
-          className="btn justify-self-start"
+          className="btn justify-self-start gap-1 px-3 whitespace-nowrap"
           data-testid="edit-bar__back"
         >
           <ArrowLeftIcon className="size-4" aria-hidden />

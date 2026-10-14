@@ -46,7 +46,7 @@
     "invalid-session-error-message": "The login information was invalid",
     "invalid-form-error-message": "The form is invalid",
     "title": "Edit Board",
-    "back-to-top": "Back to top",
+    "back-to-top": "Top",
     "submit-button": "Save",
     "confirm-leave-title": "You have unsaved changes",
     "confirm-leave-description": "If you leave now, your changes will be lost.",
@@ -119,7 +119,7 @@
     "image-alt": "Image of a dog with a sad expression",
     "image-source-start": "Image from",
     "image-source-end": "",
-    "back-to-top": "Back to top",
+    "back-to-top": "Top",
     "not-found-message": "Page not found.",
     "error-message": "An error occurred."
   },

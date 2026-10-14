@@ -46,7 +46,7 @@
     "invalid-session-error-message": "ログイン情報が無効でした",
     "invalid-form-error-message": "フォームが無効です",
     "title": "ボードを編集",
-    "back-to-top": "トップに戻る",
+    "back-to-top": "トップ",
     "submit-button": "保存",
     "confirm-leave-title": "保存していない変更があります",
     "confirm-leave-description": "このまま戻ると変更は失われます。",
@@ -119,7 +119,7 @@
     "image-alt": "悲しい表情をした犬の画像",
     "image-source-start": "画像は",
     "image-source-end": "より",
-    "back-to-top": "トップに戻る",
+    "back-to-top": "トップ",
     "not-found-message": "ページが見つかりませんでした。",
     "error-message": "エラーが発生しました。"
   },
