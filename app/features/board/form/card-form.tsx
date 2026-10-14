@@ -113,7 +113,7 @@ export function CardForm({ onDelete }: Props) {
       <div className="mt-2 flex flex-col gap-2">
         <Button
           type="submit"
-          className="btn-neutral"
+          className="btn-primary"
           data-testid="card-form__submit"
         >
           {fields.id.value
