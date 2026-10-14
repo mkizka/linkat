@@ -31,7 +31,7 @@ function LanguageMenu() {
       <div
         tabIndex={0}
         role="button"
-        className="inline-flex cursor-pointer items-center gap-1 underline"
+        className="btn btn-outline btn-xs gap-1 border-base-content/30 text-sm font-normal text-base-content/70"
         data-umami-event="click-footer-lang"
         data-umami-event-action="open"
       >
