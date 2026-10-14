@@ -124,7 +124,7 @@ describe("boardEventService", () => {
     const getRecordUrl =
       "https://pds.example.com/xrpc/com.atproto.repo.getRecord";
 
-    test("PDSにボードがあれば持ち主とボードの写しを書く", async () => {
+    test("PDSにボードがあればボードの写しを書く", async () => {
       // arrange
       const did = asDid("did:plc:synceditor");
       server.use(
@@ -139,7 +139,6 @@ describe("boardEventService", () => {
       const actual = await boardEventService.handleEditorSync(did);
       // assert
       expect(actual).toEqual({ boardImported: true });
-      expect(ownerService.syncOwner).toHaveBeenCalledWith(did);
       expect(await boardRepository.find(did)).toEqual(
         new Board(did, dummyCards),
       );
@@ -159,7 +158,6 @@ describe("boardEventService", () => {
       const actual = await boardEventService.handleEditorSync(did);
       // assert
       expect(actual).toEqual({ boardImported: false });
-      expect(ownerService.syncOwner).toHaveBeenCalledWith(did);
       expect(await boardRepository.find(did)).toBeNull();
     });
   });
