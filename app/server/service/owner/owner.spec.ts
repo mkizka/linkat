@@ -70,6 +70,25 @@ describe("ownerService", () => {
     });
   });
 
+  describe("hasOwner", () => {
+    test("写しがあればtrueを返す", async () => {
+      // arrange
+      const owner = await OwnerFactory.create();
+      // act
+      const actual = await ownerService.hasOwner(asDid(owner.did));
+      // assert
+      expect(actual).toBe(true);
+    });
+    test("写しが無ければfalseを返す", async () => {
+      // arrange
+      const did = asDid("did:plc:hasnoowner00000000000000");
+      // act
+      const actual = await ownerService.hasOwner(did);
+      // assert
+      expect(actual).toBe(false);
+    });
+  });
+
   describe("syncOwner", () => {
     test("写しが無ければ、ハンドルを解決しプロフィールを取得して作る", async () => {
       // arrange

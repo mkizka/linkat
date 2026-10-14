@@ -1,7 +1,7 @@
 import { createSession, expect, test, xrpc } from "./fixtures";
 
 test.describe("同期", () => {
-  test("PDSにあるボードを/editを開いたときに取り込む", async ({
+  test("PDSにあるボードをログイン後のトップで取り込む", async ({
     page,
     login,
     account,
@@ -30,13 +30,16 @@ test.describe("同期", () => {
       );
     });
 
-    await test.step("ログインすると取り込んだボードを編集できる", async () => {
+    await test.step("ログインするとトップで取り込む", async () => {
       await login();
-      await page.goto("/edit");
-      await expect(card).toBeVisible();
       await expect(
         page.getByTestId("toaster").locator(".alert-success"),
       ).toBeVisible();
+    });
+
+    await test.step("取り込んだボードを編集できる", async () => {
+      await page.goto("/edit");
+      await expect(card).toBeVisible();
     });
 
     await test.step("保存するとハンドルのURLに移る", async () => {

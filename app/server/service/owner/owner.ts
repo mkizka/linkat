@@ -9,6 +9,7 @@ import type { IOwnerViewService, OwnerView } from "./ownerView";
 
 export interface IOwnerService {
   findOwnerView: (did: Did) => Promise<OwnerView>;
+  hasOwner: (did: Did) => Promise<boolean>;
   syncOwner: (did: Did) => Promise<Owner>;
   updateProfile: (did: Did, profile: Profile | null) => Promise<Owner | null>;
   refreshHandle: (did: Did) => Promise<Owner | null>;
@@ -31,6 +32,9 @@ export const ownerServiceFactory = ({
       did,
       await ownerRepository.findByDid(did),
     );
+  },
+  async hasOwner(did) {
+    return !!(await ownerRepository.findByDid(did));
   },
   async syncOwner(did) {
     const identity = await identityResolver.resolve(did);

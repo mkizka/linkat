@@ -12,12 +12,12 @@ export function SyncError({ onRetry }: { onRetry: () => void }) {
     <div className="flex flex-col items-center gap-4 text-center" role="alert">
       <ExclamationCircleIcon className="size-12 text-error" />
       <div>
-        <p>{t("edit.sync-error-message")}</p>
-        <p className="text-sm opacity-70">{t("edit.sync-error-description")}</p>
+        <p>{t("sync.error-message")}</p>
+        <p className="text-sm opacity-70">{t("sync.error-description")}</p>
       </div>
       <Button className="btn-primary" onClick={onRetry}>
         <ArrowPathIcon className="size-5" />
-        {t("edit.sync-retry-button")}
+        {t("sync.retry-button")}
       </Button>
     </div>
   );

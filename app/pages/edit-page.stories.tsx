@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { fn } from "storybook/test";
 
 import { EditPage } from "./edit-page";
 
@@ -32,8 +31,6 @@ const meta = {
         },
       ],
     },
-    syncState: "ready",
-    onRetrySync: fn(),
   },
 } satisfies Meta<typeof EditPage>;
 
@@ -42,11 +39,3 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {};
-
-export const SyncLoading: Story = {
-  args: { syncState: "loading" },
-};
-
-export const SyncError: Story = {
-  args: { syncState: "error" },
-};
