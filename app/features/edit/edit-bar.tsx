@@ -4,20 +4,19 @@ import { Form, Link } from "react-router";
 import { Button } from "~/components/button";
 
 type Props = {
-  cancelTo: string;
   boardJson: string;
   cardCount: number;
   isSaving: boolean;
 };
 
-export function EditBar({ cancelTo, boardJson, cardCount, isSaving }: Props) {
+export function EditBar({ boardJson, cardCount, isSaving }: Props) {
   const { t } = useTranslation();
   return (
     <header className="sticky top-0 z-10 mx-auto w-full max-w-screen-sm bg-base-200/90 backdrop-blur">
       <div className="grid w-full grid-cols-[1fr_auto_1fr] items-center gap-2 px-4 py-2">
         <Link
-          to={cancelTo}
-          className="btn justify-self-start"
+          to="/"
+          className="btn justify-self-start px-3 whitespace-nowrap"
           data-testid="edit-bar__cancel"
         >
           {t("edit.cancel-button")}
