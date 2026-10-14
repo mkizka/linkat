@@ -113,7 +113,7 @@ export function CardForm({ onDelete }: Props) {
       <div className="mt-2 flex flex-col gap-2">
         <Button
           type="submit"
-          className="btn-neutral"
+          className="btn-primary"
           data-testid="card-form__submit"
         >
           {fields.id.value
@@ -123,7 +123,7 @@ export function CardForm({ onDelete }: Props) {
         {fields.id.value && (
           <Button
             type="button"
-            className="btn-error"
+            className="btn-ghost text-error"
             onClick={() => setIsConfirmingDelete(true)}
             data-testid="card-form__delete"
           >
