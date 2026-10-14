@@ -10,7 +10,7 @@ export default defineConfig(base, {
     baseURL: "http://localhost:3000",
   },
   webServer: {
-    command: "node --import tsx playwright/server/dev-env.ts pnpm start:local",
+    command: "node --import tsx scripts/dev-env/index.ts pnpm start:local",
     cwd: "../..",
     // WSLのmirroredモードでは空きポートへの接続が応答なしで固まるので、portによる起動済みの確認を避ける
     wait: { stdout: /App listening/ },
