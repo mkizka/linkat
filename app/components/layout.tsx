@@ -96,34 +96,36 @@ export function Footer() {
   const { t } = useTranslation();
   return (
     <footer className="mx-auto w-full max-w-screen-sm bg-base-200 px-4">
-      <nav className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 border-t border-base-300 pb-12 pt-4 text-sm text-base-content/70">
-        <Link
-          to="/about"
-          className="underline"
-          data-umami-event="click-footer-about-link"
-        >
-          {t("layout.about-link")}
-        </Link>
-        <a
-          href="https://bsky.app/profile/linkat.blue"
-          target="_blank"
-          rel="noreferrer"
-          className="inline-flex items-center gap-1 underline"
-          data-umami-event="click-footer-bsky-link"
-        >
-          <BlueskyIcon className="size-4" aria-hidden />
-          Bluesky
-        </a>
-        <a
-          href="https://github.com/mkizka/linkat"
-          target="_blank"
-          rel="noreferrer"
-          className="inline-flex items-center gap-1 underline"
-          data-umami-event="click-footer-github-link"
-        >
-          <GitHubIcon className="size-4" aria-hidden />
-          GitHub
-        </a>
+      <nav className="flex flex-col items-center gap-2 border-t border-base-300 pb-8 pt-4 text-sm text-base-content/70">
+        <div className="flex flex-wrap justify-center gap-x-4 gap-y-1">
+          <Link
+            to="/about"
+            className="underline"
+            data-umami-event="click-footer-about-link"
+          >
+            {t("layout.about-link")}
+          </Link>
+          <a
+            href="https://bsky.app/profile/linkat.blue"
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-1 underline"
+            data-umami-event="click-footer-bsky-link"
+          >
+            <BlueskyIcon className="size-4" aria-hidden />
+            Bluesky
+          </a>
+          <a
+            href="https://github.com/mkizka/linkat"
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-1 underline"
+            data-umami-event="click-footer-github-link"
+          >
+            <GitHubIcon className="size-4" aria-hidden />
+            GitHub
+          </a>
+        </div>
         <div className="relative h-5 w-20">
           <div className="loading loading-spinner absolute size-4"></div>
           <div className="absolute">

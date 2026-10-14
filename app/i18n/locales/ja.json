@@ -75,7 +75,7 @@
     "board-share-text": "{{displayName}}さんのボード #linkat {{url}}"
   },
   "board-footer": {
-    "create-link": "Linkatで自分のリンク集を作る"
+    "create-link": "Linkatでリンク集を作ろう"
   },
   "board-actions": {
     "edit-button": "編集"
