@@ -52,7 +52,7 @@ test.describe("編集(離脱確認)", () => {
 
     await test.step("破棄すると移る", async () => {
       await addCard();
-      await page.getByTestId("edit-bar__back").click();
+      await page.getByTestId("edit-bar__cancel").click();
       await leaveDialog.getByTestId("confirm-dialog__confirm").click();
       await page.waitForURL((url) => url.pathname === "/");
     });

@@ -1,4 +1,3 @@
-import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { useTranslation } from "react-i18next";
 import { Form, Link } from "react-router";
 
@@ -17,11 +16,10 @@ export function EditBar({ boardJson, cardCount, isSaving }: Props) {
       <div className="grid w-full grid-cols-[1fr_auto_1fr] items-center gap-2 px-4 py-2">
         <Link
           to="/"
-          className="btn justify-self-start gap-1 px-3 whitespace-nowrap"
-          data-testid="edit-bar__back"
+          className="btn justify-self-start px-3 whitespace-nowrap"
+          data-testid="edit-bar__cancel"
         >
-          <ArrowLeftIcon className="size-4" aria-hidden />
-          {t("edit.back-to-top")}
+          {t("edit.cancel-button")}
         </Link>
         <h1 className="font-bold">{t("edit.title")}</h1>
         <Form method="post" className="justify-self-end">
