@@ -1,7 +1,7 @@
 import { type Page, test as base } from "@playwright/test";
 import { z } from "zod";
 
-import { PORTS } from "../../scripts/dev-env/constants";
+import { PORTS } from "../../dev-env/constants";
 
 export type TestSize = "medium" | "large";
 

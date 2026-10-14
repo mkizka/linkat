@@ -9,7 +9,7 @@
     "build": "run-p -s build:*",
     "build:remix": "react-router build",
     "build:server": "node ./scripts/build-server.js",
-    "dev": "node --import tsx ./scripts/dev-env/index.ts pnpm dev:server",
+    "dev": "node --import tsx ./dev-env/server.ts pnpm dev:server",
     "dev:server": "NODE_OPTIONS='--import ./instrument.server.mjs' NODE_ENV=development tsx watch --ignore 'vite.config.ts.*' --env-file .env ./app/server.ts | pino-pretty",
     "format": "pnpm _eslint --fix && prettier . --write",
     "postinstall": "./scripts/postinstall.sh",
