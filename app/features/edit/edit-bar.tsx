@@ -13,7 +13,7 @@ type Props = {
 export function EditBar({ cancelTo, boardJson, cardCount, isSaving }: Props) {
   const { t } = useTranslation();
   return (
-    <header className="sticky top-0 z-10 bg-base-100 shadow">
+    <header className="sticky top-0 z-10 mx-auto w-full max-w-screen-sm bg-base-200/90 backdrop-blur">
       <div className="grid w-full grid-cols-[1fr_auto_1fr] items-center gap-2 px-4 py-2">
         <Link
           to={cancelTo}
