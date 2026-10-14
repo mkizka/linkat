@@ -18,8 +18,10 @@ export function TopPage({ editor, hasBoard, recentOwners }: Props) {
     return (
       <RootLayout>
         <Main className="flex flex-col gap-8 py-8">
-          <Hero />
-          <RecentBoards owners={recentOwners} />
+          <div className="flex flex-col gap-6">
+            <Hero />
+            <RecentBoards owners={recentOwners} />
+          </div>
           <SampleBoardPreview />
           <Reasons />
         </Main>
