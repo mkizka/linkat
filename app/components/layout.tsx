@@ -97,14 +97,7 @@ export function Footer() {
   return (
     <footer className="mx-auto w-full max-w-screen-sm bg-base-200 px-4">
       <nav className="flex flex-col items-center gap-2 border-t border-base-300 pb-8 pt-4 text-sm text-base-content/70">
-        <div className="flex flex-wrap justify-center gap-x-4 gap-y-1">
-          <Link
-            to="/about"
-            className="underline"
-            data-umami-event="click-footer-about-link"
-          >
-            {t("layout.about-link")}
-          </Link>
+        <div className="flex items-center gap-4">
           <a
             href="https://bsky.app/profile/linkat.blue"
             target="_blank"
@@ -125,19 +118,26 @@ export function Footer() {
             <GitHubIcon className="size-4" aria-hidden />
             GitHub
           </a>
-        </div>
-        <div className="relative h-5 w-20">
-          <div className="loading loading-spinner absolute size-4"></div>
-          <div className="absolute">
-            <GitHubButton
-              href="https://github.com/mkizka/linkat"
-              data-color-scheme="no-preference: light; light: light; dark: dark;"
-              data-icon="octicon-star"
-              data-show-count="true"
-              aria-label="Star mkizka/linkat on GitHub"
-            />
+          <div className="relative h-5 w-14">
+            <div className="loading loading-spinner absolute size-4"></div>
+            <div className="absolute">
+              <GitHubButton
+                href="https://github.com/mkizka/linkat"
+                data-color-scheme="no-preference: light; light: light; dark: dark;"
+                data-icon="octicon-star"
+                data-show-count="true"
+                aria-label="Star mkizka/linkat on GitHub"
+              />
+            </div>
           </div>
         </div>
+        <Link
+          to="/about"
+          className="underline"
+          data-umami-event="click-footer-about-link"
+        >
+          {t("layout.about-link")}
+        </Link>
       </nav>
     </footer>
   );
