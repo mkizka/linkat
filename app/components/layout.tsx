@@ -7,6 +7,9 @@ import { Form, Link } from "react-router";
 import { useUmami } from "~/hooks/useUmami";
 import { cn } from "~/utils/cn";
 
+import { BlueskyIcon } from "./icons/bluesky";
+import { GitHubIcon } from "./icons/github";
+
 export function Header() {
   const detailsRef = useRef<HTMLDetailsElement>(null);
   const umami = useUmami();
@@ -93,7 +96,41 @@ export function Footer() {
   const { t } = useTranslation();
   return (
     <footer className="mx-auto w-full max-w-screen-sm bg-base-200 px-4">
-      <nav className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 border-t border-base-300 py-4 text-sm text-base-content/70">
+      <nav className="flex flex-col items-center gap-2 border-t border-base-300 pb-8 pt-4 text-sm text-base-content/70">
+        <div className="flex items-center gap-4">
+          <a
+            href="https://bsky.app/profile/linkat.blue"
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-1 underline"
+            data-umami-event="click-footer-bsky-link"
+          >
+            <BlueskyIcon className="size-4" aria-hidden />
+            Bluesky
+          </a>
+          <a
+            href="https://github.com/mkizka/linkat"
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-1 underline"
+            data-umami-event="click-footer-github-link"
+          >
+            <GitHubIcon className="size-4" aria-hidden />
+            GitHub
+          </a>
+          <div className="relative h-5 w-14">
+            <div className="loading loading-spinner absolute size-4"></div>
+            <div className="absolute">
+              <GitHubButton
+                href="https://github.com/mkizka/linkat"
+                data-color-scheme="no-preference: light; light: light; dark: dark;"
+                data-icon="octicon-star"
+                data-show-count="true"
+                aria-label="Star mkizka/linkat on GitHub"
+              />
+            </div>
+          </div>
+        </div>
         <Link
           to="/about"
           className="underline"
@@ -101,36 +138,6 @@ export function Footer() {
         >
           {t("layout.about-link")}
         </Link>
-        <a
-          href="https://bsky.app/profile/linkat.blue"
-          target="_blank"
-          rel="noreferrer"
-          className="underline"
-          data-umami-event="click-footer-bsky-link"
-        >
-          Bluesky
-        </a>
-        <a
-          href="https://github.com/mkizka/linkat"
-          target="_blank"
-          rel="noreferrer"
-          className="underline"
-          data-umami-event="click-footer-github-link"
-        >
-          GitHub
-        </a>
-        <div className="relative h-5 w-20">
-          <div className="loading loading-spinner absolute size-4"></div>
-          <div className="absolute">
-            <GitHubButton
-              href="https://github.com/mkizka/linkat"
-              data-color-scheme="no-preference: light; light: light; dark: dark;"
-              data-icon="octicon-star"
-              data-show-count="true"
-              aria-label="Star mkizka/linkat on GitHub"
-            />
-          </div>
-        </div>
       </nav>
     </footer>
   );
