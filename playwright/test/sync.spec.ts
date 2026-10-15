@@ -1,7 +1,7 @@
 import { createSession, expect, test, xrpc } from "./fixtures";
 
 test.describe("同期", () => {
-  test("PDSにあるボードを/editを開いたときに取り込む", async ({
+  test("PDSにあるプロフィールとボードをログイン後のトップで取り込む", async ({
     page,
     login,
     account,
@@ -9,12 +9,23 @@ test.describe("同期", () => {
   }) => {
     test.skip(size === "large", "dev-envのPDSを操作するため");
     const text = `PDS. ${crypto.randomUUID()}`;
+    const displayName = `Name ${crypto.randomUUID().slice(0, 8)}`;
     const card = page.locator('[data-testid="board-card"]', {
       hasText: text,
     });
 
-    await test.step("Linkatを通さずPDSにボードを書く", async () => {
+    await test.step("Linkatを通さずPDSにプロフィールとボードを書く", async () => {
       const { did, accessJwt } = await createSession(account);
+      await xrpc(
+        "com.atproto.repo.putRecord",
+        {
+          repo: did,
+          collection: "app.bsky.actor.profile",
+          rkey: "self",
+          record: { $type: "app.bsky.actor.profile", displayName },
+        },
+        accessJwt,
+      );
       await xrpc(
         "com.atproto.repo.putRecord",
         {
@@ -30,13 +41,22 @@ test.describe("同期", () => {
       );
     });
 
-    await test.step("ログインすると取り込んだボードを編集できる", async () => {
+    await test.step("ログインするとトップで取り込み、プロフィールを表示する", async () => {
       await login();
-      await page.goto("/edit");
-      await expect(card).toBeVisible();
       await expect(
         page.getByTestId("toaster").locator(".alert-success"),
       ).toBeVisible();
+      await expect(
+        page.getByRole("heading", { name: displayName }),
+      ).toBeVisible();
+      await expect(
+        page.getByText(`@${account.handle}`, { exact: true }),
+      ).toBeVisible();
+    });
+
+    await test.step("取り込んだボードを編集できる", async () => {
+      await page.goto("/edit");
+      await expect(card).toBeVisible();
     });
 
     await test.step("保存するとハンドルのURLに移る", async () => {

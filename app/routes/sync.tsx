@@ -25,7 +25,7 @@ export async function action({ request, context }: Route.ActionArgs) {
   });
   if (result.boardImported) {
     setToast(context, {
-      message: getInstance(context).t("edit.sync-success-message"),
+      message: getInstance(context).t("sync.success-message"),
       type: "success",
     });
   }

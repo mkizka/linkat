@@ -53,12 +53,14 @@
     "confirm-leave-cancel": "Keep editing",
     "confirm-leave-confirm": "Discard and leave",
     "save-board-error-message": "Failed to save the board",
-    "save-delayed-warning-message": "The changes are taking a while to appear. Please wait a moment and reload.",
-    "sync-loading-message": "Loading your data from your PDS",
-    "sync-error-message": "Failed to load your data from your PDS",
-    "sync-retry-button": "Retry",
-    "sync-error-description": "Please wait a moment and try again",
-    "sync-success-message": "Loaded the board saved on your PDS"
+    "save-delayed-warning-message": "The changes are taking a while to appear. Please wait a moment and reload."
+  },
+  "sync": {
+    "loading-message": "Loading your data from your PDS",
+    "error-message": "Failed to load your data from your PDS",
+    "retry-button": "Retry",
+    "error-description": "Please wait a moment and try again",
+    "success-message": "Loaded the board saved on your PDS"
   },
   "board": {
     "meta-title": "{{displayName}}(@{{handle}})'s board",
