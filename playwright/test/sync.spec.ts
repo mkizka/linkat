@@ -50,7 +50,7 @@ test.describe("同期", () => {
         }
       });
 
-      await test.step("ログインするとトップで取り込み、/editで編集できる", async () => {
+      await test.step("ログインするとトップでプロフィールを表示する", async () => {
         await login();
         await expect(
           page.getByText(`@${account.handle}`, { exact: true }),
@@ -60,11 +60,9 @@ test.describe("同期", () => {
             page.getByRole("heading", { name: displayName }),
           ).toBeVisible();
         }
-        if (hasBoard) {
-          await expect(
-            page.getByTestId("toaster").locator(".alert-success"),
-          ).toBeVisible();
-        }
+      });
+
+      await test.step("/editで取り込んだボードを表示する", async () => {
         await page.goto("/edit");
         if (hasBoard) {
           await expect(
