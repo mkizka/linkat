@@ -50,7 +50,7 @@ test.describe("同期", () => {
         }
       });
 
-      await test.step("ログインするとトップでプロフィールを表示する", async () => {
+      await test.step("ログインするとトップで取り込み、/editで編集できる", async () => {
         await login();
         await expect(
           page.getByText(`@${account.handle}`, { exact: true }),
@@ -65,11 +65,7 @@ test.describe("同期", () => {
             page.getByTestId("toaster").locator(".alert-success"),
           ).toBeVisible();
         }
-      });
-
-      await test.step("/editで取り込んだボードを編集できる", async () => {
         await page.goto("/edit");
-        await expect(page.getByTestId("edit-bar__submit")).toBeVisible();
         if (hasBoard) {
           await expect(
             page.locator('[data-testid="board-card"]', { hasText: text }),
@@ -110,7 +106,7 @@ test.describe("同期", () => {
       );
     });
 
-    await test.step("ログイン後に/editで取り込んだボードを編集できる", async () => {
+    await test.step("ログインすると取り込んだボードを編集できる", async () => {
       await login();
       await page.goto("/edit");
       await expect(card).toBeVisible();
