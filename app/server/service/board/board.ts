@@ -57,14 +57,14 @@ export const boardServiceFactory = ({
     }
     return {
       type: "ok",
-      owner: ownerViewService.toOwnerView(did, owner),
+      owner: ownerViewService.toOwnerView(owner ?? did),
       board,
     };
   },
   async findRecentOwnerViews(limit, excludeDid) {
     const owners = await recentOwnersQuery.find(limit, excludeDid);
     return owners.map(({ ownerDid, owner }) =>
-      ownerViewService.toOwnerView(ownerDid, owner),
+      ownerViewService.toOwnerView(owner ?? ownerDid),
     );
   },
 });

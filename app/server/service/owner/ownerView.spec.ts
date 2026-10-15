@@ -27,7 +27,7 @@ describe("ownerViewService.toOwnerView", () => {
     // arrange
     const owner = createOwner({ handle: "example.com" });
     // act
-    const actual = ownerViewService.toOwnerView(did, owner);
+    const actual = ownerViewService.toOwnerView(owner);
     // assert
     expect(actual).toMatchObject({
       handleOrDid: "example.com",
@@ -38,7 +38,7 @@ describe("ownerViewService.toOwnerView", () => {
     // arrange
     const owner = createOwner({ handle: null });
     // act
-    const actual = ownerViewService.toOwnerView(did, owner);
+    const actual = ownerViewService.toOwnerView(owner);
     // assert
     expect(actual).toMatchObject({
       handleOrDid: "did:plc:dummy",
@@ -49,17 +49,17 @@ describe("ownerViewService.toOwnerView", () => {
     // arrange
     const owner = createOwner({ avatarCid: "bafkreiavatar" });
     // act
-    const actual = ownerViewService.toOwnerView(did, owner).avatarUrl;
+    const actual = ownerViewService.toOwnerView(owner).avatarUrl;
     // assert
     expect(actual).toBe(
       "https://cdn.bsky.app/img/avatar/plain/did:plc:dummy/bafkreiavatar@jpeg",
     );
   });
-  test("写しが無ければURLと表示にDIDを使い、表示名とアバターはnullにする", () => {
+  test("DIDだけを渡せばURLと表示にDIDを使い、表示名とアバターはnullにする", () => {
     // arrange
-    const owner = null;
+    const ownerOrDid = did;
     // act
-    const actual = ownerViewService.toOwnerView(did, owner);
+    const actual = ownerViewService.toOwnerView(ownerOrDid);
     // assert
     expect(actual).toEqual({
       did: "did:plc:dummy",

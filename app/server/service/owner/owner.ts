@@ -28,7 +28,7 @@ export const ownerServiceFactory = ({
 }): IOwnerService => ({
   async findOwnerView(did) {
     const owner = await ownerRepository.findByDid(did);
-    return owner && ownerViewService.toOwnerView(did, owner);
+    return owner && ownerViewService.toOwnerView(owner);
   },
   async syncOwner(did) {
     const identity = await identityResolver.resolve(did);
