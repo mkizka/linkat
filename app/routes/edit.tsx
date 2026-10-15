@@ -77,7 +77,7 @@ export async function action({ request, context }: Route.ActionArgs) {
         type: "warning",
       });
       const editor = await di.ownerService.findOwnerView(editorDid);
-      return redirect(`/${editor.handleOrDid}`);
+      return redirect(`/${editor?.handleOrDid ?? editorDid}`);
     }
     throw error;
   }
@@ -86,7 +86,7 @@ export async function action({ request, context }: Route.ActionArgs) {
     cardCount: parsedBoard.cards.length,
   });
   const editor = await di.ownerService.findOwnerView(editorDid);
-  return redirect(`/${editor.handleOrDid}?success`);
+  return redirect(`/${editor?.handleOrDid ?? editorDid}?success`);
 }
 
 export async function loader({ request }: Route.LoaderArgs) {
@@ -94,16 +94,15 @@ export async function loader({ request }: Route.LoaderArgs) {
   if (!editorDid) {
     throw redirect("/login");
   }
-  const [hasOwner, editorView, board] = await Promise.all([
-    di.ownerService.hasOwner(editorDid),
+  const [editor, board] = await Promise.all([
     di.ownerService.findOwnerView(editorDid),
     di.boardService.findBoard(editorDid),
   ]);
-  if (!hasOwner) {
+  if (!editor) {
     throw redirect("/");
   }
   return {
-    editor: editorView,
+    editor,
     board: board && { cards: board.cards },
   };
 }
