@@ -4,8 +4,6 @@ import { useBeforeUnload, useBlocker } from "react-router";
 
 import { Main } from "~/components/layout";
 import { BoardViewer } from "~/features/board/board-viewer";
-import { SyncError } from "~/features/edit/sync-error";
-import { SyncLoading } from "~/features/edit/sync-loading";
 import { useUmami } from "~/hooks/useUmami";
 import type { ValidCard } from "~/models/card";
 import type { OwnerView } from "~/server/service/owner/ownerView";
@@ -55,26 +53,10 @@ function Editor({ editor, board, url }: EditorProps) {
   return <BoardViewer owner={editor} board={board} url={url} editable />;
 }
 
-type Props = EditorProps & {
-  syncState: "ready" | "loading" | "error";
-  onRetrySync: () => void;
-};
-
-export function EditPage({ syncState, onRetrySync, ...editorProps }: Props) {
-  if (syncState === "ready") {
-    return (
-      <Main>
-        <Editor {...editorProps} />
-      </Main>
-    );
-  }
+export function EditPage(props: EditorProps) {
   return (
-    <Main className="utils--center">
-      {syncState === "loading" ? (
-        <SyncLoading />
-      ) : (
-        <SyncError onRetry={onRetrySync} />
-      )}
+    <Main>
+      <Editor {...props} />
     </Main>
   );
 }
