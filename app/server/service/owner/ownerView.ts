@@ -11,15 +11,11 @@ export type OwnerView = {
 };
 
 export interface IOwnerViewService {
-  toOwnerView: (owner: Owner | Did) => OwnerView;
+  toOwnerView: (did: Did, owner: Owner | null) => OwnerView;
 }
 
 export const ownerViewServiceFactory = (): IOwnerViewService => ({
-  toOwnerView(ownerOrDid) {
-    const [did, owner] =
-      typeof ownerOrDid === "string"
-        ? [ownerOrDid, null]
-        : [ownerOrDid.did, ownerOrDid];
+  toOwnerView(did, owner) {
     const handleOrDid = owner?.handle ?? did;
     return {
       did,
