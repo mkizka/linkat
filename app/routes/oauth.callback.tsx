@@ -9,6 +9,9 @@ export async function loader({ request }: Route.LoaderArgs) {
   try {
     const did = await di.authService.handleCallback(request.url);
     logger.info("ログインに成功しました", { did });
+    await di.ownerService.syncOwner(did).catch((error: unknown) => {
+      logger.error("ログイン時の同期に失敗しました", { did, error });
+    });
     return redirect("/", {
       headers: {
         "Set-Cookie": await di.sessionService.createSession(request, did),

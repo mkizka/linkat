@@ -1,5 +1,3 @@
-import { SyncGate } from "~/features/sync/sync-gate";
-import { useSync } from "~/features/sync/use-sync";
 import { getInstance } from "~/i18n/i18n";
 import { TopPage } from "~/pages/top-page";
 import { di } from "~/server/di";
@@ -18,7 +16,6 @@ export const loader = async ({ request, context }: Route.LoaderArgs) => {
   ]);
   return {
     editor,
-    needsSync: !!editorDid && !editor,
     hasBoard: !!board,
     recentOwners,
     title: i18next.t("_index.meta-title"),
@@ -33,14 +30,11 @@ export const meta = ({ loaderData }: Route.MetaArgs) => {
 };
 
 export default function Index({ loaderData }: Route.ComponentProps) {
-  const sync = useSync(loaderData.needsSync);
   return (
-    <SyncGate state={sync.state} onRetry={sync.retry}>
-      <TopPage
-        editor={loaderData.editor}
-        hasBoard={loaderData.hasBoard}
-        recentOwners={loaderData.recentOwners}
-      />
-    </SyncGate>
+    <TopPage
+      editor={loaderData.editor}
+      hasBoard={loaderData.hasBoard}
+      recentOwners={loaderData.recentOwners}
+    />
   );
 }

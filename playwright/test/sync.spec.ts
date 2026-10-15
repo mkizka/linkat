@@ -9,7 +9,7 @@ const patterns = [
 
 test.describe("同期", () => {
   for (const { hasProfile, hasBoard } of patterns) {
-    test(`PDSのプロフィールが${hasProfile ? "あり" : "なし"}、ボードが${hasBoard ? "あり" : "なし"}なら、ログイン後のトップでその状態で取り込む`, async ({
+    test(`PDSのプロフィールが${hasProfile ? "あり" : "なし"}、ボードが${hasBoard ? "あり" : "なし"}なら、ログイン後のトップと/editでその状態で取り込む`, async ({
       page,
       login,
       account,
@@ -65,6 +65,9 @@ test.describe("同期", () => {
       await test.step("/editで取り込んだボードを表示する", async () => {
         await page.goto("/edit");
         if (hasBoard) {
+          await expect(
+            page.getByTestId("toaster").locator(".alert-success"),
+          ).toBeVisible();
           await expect(
             page.locator('[data-testid="board-card"]', { hasText: text }),
           ).toBeVisible();
