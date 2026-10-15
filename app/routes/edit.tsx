@@ -29,6 +29,10 @@ export async function action({ request, context }: Route.ActionArgs) {
       },
     });
   }
+  const editor = await di.ownerService.findOwnerView(editorDid);
+  if (!editor) {
+    return redirect("/");
+  }
   const form = await request.formData().catch(() => {
     throw data(null, { status: 400 });
   });
@@ -76,8 +80,7 @@ export async function action({ request, context }: Route.ActionArgs) {
         message: i18next.t("edit.save-delayed-warning-message"),
         type: "warning",
       });
-      const editor = await di.ownerService.findOwnerView(editorDid);
-      return redirect(`/${editor?.handleOrDid ?? editorDid}`);
+      return redirect(`/${editor.handleOrDid}`);
     }
     throw error;
   }
@@ -85,8 +88,7 @@ export async function action({ request, context }: Route.ActionArgs) {
     ownerDid: editorDid,
     cardCount: parsedBoard.cards.length,
   });
-  const editor = await di.ownerService.findOwnerView(editorDid);
-  return redirect(`/${editor?.handleOrDid ?? editorDid}?success`);
+  return redirect(`/${editor.handleOrDid}?success`);
 }
 
 export async function loader({ request }: Route.LoaderArgs) {
