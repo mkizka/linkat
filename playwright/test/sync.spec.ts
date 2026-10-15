@@ -1,7 +1,80 @@
 import { createSession, expect, test, xrpc } from "./fixtures";
 
+const patterns = [
+  { hasProfile: true, hasBoard: true },
+  { hasProfile: true, hasBoard: false },
+  { hasProfile: false, hasBoard: true },
+  { hasProfile: false, hasBoard: false },
+];
+
 test.describe("同期", () => {
-  test("PDSにあるボードを/editを開いたときに取り込む", async ({
+  for (const { hasProfile, hasBoard } of patterns) {
+    test(`PDSのプロフィールが${hasProfile ? "あり" : "なし"}、ボードが${hasBoard ? "あり" : "なし"}なら、/editを開いたときにその状態で取り込む`, async ({
+      page,
+      login,
+      account,
+      size,
+    }) => {
+      test.skip(size === "large", "dev-envのPDSを操作するため");
+      const displayName = `Name ${crypto.randomUUID().slice(0, 8)}`;
+      const text = `PDS. ${crypto.randomUUID()}`;
+
+      await test.step("Linkatを通さずPDSにレコードを書く", async () => {
+        const { did, accessJwt } = await createSession(account);
+        if (hasProfile) {
+          await xrpc(
+            "com.atproto.repo.putRecord",
+            {
+              repo: did,
+              collection: "app.bsky.actor.profile",
+              rkey: "self",
+              record: { $type: "app.bsky.actor.profile", displayName },
+            },
+            accessJwt,
+          );
+        }
+        if (hasBoard) {
+          await xrpc(
+            "com.atproto.repo.putRecord",
+            {
+              repo: did,
+              collection: "blue.linkat.board",
+              rkey: "self",
+              record: {
+                $type: "blue.linkat.board",
+                cards: [{ url: "https://example.com", text }],
+              },
+            },
+            accessJwt,
+          );
+        }
+      });
+
+      await test.step("ログインすると取り込んだ状態で編集できる", async () => {
+        await login();
+        await expect(
+          page.getByText(`@${account.handle}`, { exact: true }),
+        ).toBeVisible();
+        if (hasProfile) {
+          await expect(
+            page.getByRole("heading", { name: displayName }),
+          ).toBeVisible();
+        }
+        if (hasBoard) {
+          await expect(
+            page.getByTestId("toaster").locator(".alert-success"),
+          ).toBeVisible();
+          await expect(
+            page.locator('[data-testid="sortable-card"]', { hasText: text }),
+          ).toBeVisible();
+        } else {
+          await expect(page.getByTestId("sortable-card")).toHaveCount(0);
+        }
+      });
+    });
+  }
+
+  test("PDSから取り込んだボードを保存できる", async ({
     page,
     login,
     account,
@@ -33,9 +106,6 @@ test.describe("同期", () => {
     await test.step("ログインすると取り込んだボードを編集できる", async () => {
       await login();
       await expect(card).toBeVisible();
-      await expect(
-        page.getByTestId("toaster").locator(".alert-success"),
-      ).toBeVisible();
     });
 
     await test.step("保存するとハンドルのURLに移る", async () => {
