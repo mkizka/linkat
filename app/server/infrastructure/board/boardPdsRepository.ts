@@ -1,7 +1,8 @@
 import type { Did } from "@atproto/did";
-import { Client, l, XrpcResponseError } from "@atproto/lex";
+import { Client, XrpcResponseError } from "@atproto/lex";
 
 import boardLexicon from "~/generated/blue/linkat/board";
+import putRecord from "~/generated/com/atproto/repo/putRecord";
 import { Board } from "~/models/board";
 import type { IOAuthClient } from "~/server/infrastructure/auth/oauthClient";
 
@@ -10,24 +11,6 @@ export interface IBoardPdsRepository {
   save: (board: Board, options?: { onlyIfAbsent?: boolean }) => Promise<void>;
   delete: (did: Did) => Promise<void>;
 }
-
-const putRecord = l.procedure(
-  "com.atproto.repo.putRecord",
-  l.params(),
-  l.jsonPayload({
-    repo: l.string({ format: "did" }),
-    collection: l.string({ format: "nsid" }),
-    rkey: l.string({ format: "record-key" }),
-    validate: l.boolean(),
-    record: l.lexMap(),
-    swapRecord: l.optional(l.nullable(l.string({ format: "cid" }))),
-  }),
-  l.jsonPayload({
-    uri: l.string({ format: "at-uri" }),
-    cid: l.string({ format: "cid" }),
-  }),
-  ["InvalidSwap"],
-);
 
 export class BoardAlreadyExistsError extends Error {
   constructor(cause: unknown) {
