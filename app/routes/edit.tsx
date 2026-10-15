@@ -1,7 +1,8 @@
-import { useEffect } from "react";
-import { data, redirect, useFetcher } from "react-router";
+import { data, redirect } from "react-router";
 import { setToast } from "remix-toast/middleware";
 
+import { SyncGate } from "~/features/sync/sync-gate";
+import { useSync } from "~/features/sync/use-sync";
 import { getInstance } from "~/i18n/i18n";
 import { Board } from "~/models/board";
 import { EditPage } from "~/pages/edit-page";
@@ -15,7 +16,6 @@ import { env } from "~/utils/env";
 import { tryCatch } from "~/utils/tryCatch";
 
 import type { Route } from "./+types/edit";
-import type { action as syncAction } from "./sync";
 
 export async function action({ request, context }: Route.ActionArgs) {
   const logger = di.logger.child("edit");
@@ -109,29 +109,10 @@ export async function loader({ request }: Route.LoaderArgs) {
 }
 
 export default function Index({ loaderData }: Route.ComponentProps) {
-  const sync = useFetcher<typeof syncAction>();
-  const submitSync = () =>
-    sync.submit(null, { method: "post", action: "/sync" });
-
-  useEffect(() => {
-    if (!loaderData.board && sync.state === "idle" && !sync.data) {
-      void submitSync();
-    }
-  });
-
-  const syncState =
-    loaderData.board || (sync.state === "idle" && sync.data?.ok)
-      ? "ready"
-      : sync.state !== "idle" || !sync.data
-        ? "loading"
-        : "error";
-
+  const sync = useSync(!loaderData.board);
   return (
-    <EditPage
-      key={JSON.stringify(loaderData.board)}
-      {...loaderData}
-      syncState={syncState}
-      onRetrySync={() => void submitSync()}
-    />
+    <SyncGate state={sync.state} onRetry={sync.retry}>
+      <EditPage key={JSON.stringify(loaderData.board)} {...loaderData} />
+    </SyncGate>
   );
 }
