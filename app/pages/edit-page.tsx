@@ -8,13 +8,13 @@ import { useUmami } from "~/hooks/useUmami";
 import type { ValidCard } from "~/models/card";
 import type { OwnerView } from "~/server/service/owner/ownerView";
 
-type EditorProps = {
+type Props = {
   editor: OwnerView;
   board: { cards: ValidCard[] } | null;
   url: string;
 };
 
-function Editor({ editor, board, url }: EditorProps) {
+export function EditPage({ editor, board, url }: Props) {
   const { t } = useTranslation();
   const umami = useUmami();
 
@@ -50,13 +50,9 @@ function Editor({ editor, board, url }: EditorProps) {
     }
   }, [t, blocker, umami]);
 
-  return <BoardViewer owner={editor} board={board} url={url} editable />;
-}
-
-export function EditPage(props: EditorProps) {
   return (
     <Main>
-      <Editor {...props} />
+      <BoardViewer owner={editor} board={board} url={url} editable />
     </Main>
   );
 }
