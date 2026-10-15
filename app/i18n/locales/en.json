@@ -39,7 +39,8 @@
     "sync-error-message": "Failed to load your data from your PDS",
     "sync-retry-button": "Retry",
     "sync-error-description": "Please wait a moment and try again",
-    "sync-success-message": "Loaded the board saved on your PDS"
+    "sync-success-message": "Loaded the board saved on your PDS",
+    "save-conflict-message": "Loaded the board saved on your PDS. Please edit it again."
   },
   "board": {
     "meta-title": "{{displayName}}(@{{handle}})'s board",

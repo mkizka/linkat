@@ -39,7 +39,8 @@
     "sync-error-message": "PDSからデータを読み込めませんでした",
     "sync-retry-button": "再試行",
     "sync-error-description": "少し待ってから再試行してください",
-    "sync-success-message": "PDSに保存されていたボードを読み込みました"
+    "sync-success-message": "PDSに保存されていたボードを読み込みました",
+    "save-conflict-message": "PDSに保存されていたボードを読み込みました。もう一度編集してください"
   },
   "board": {
     "meta-title": "{{displayName}}(@{{handle}})さんのボード",

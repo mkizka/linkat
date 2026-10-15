@@ -18,6 +18,7 @@ import {
   BoardDbDeleteError,
   BoardDbSaveError,
   boardEventServiceFactory,
+  BoardPdsConflictError,
   BoardPdsDeleteError,
   BoardPdsSaveError,
 } from "./boardEvent";
@@ -57,7 +58,7 @@ describe("boardEventService", () => {
     const putRecordUrl =
       "https://pds.example.com/xrpc/com.atproto.repo.putRecord";
 
-    test("PDSに保存してからボードの写しだけを保存する", async () => {
+    test("写しが無ければ、PDSにレコードが無いことを条件に保存する", async () => {
       // arrange
       const owner = await OwnerFactory.create();
       const board = new Board(owner.did, dummyCards);
@@ -80,8 +81,59 @@ describe("boardEventService", () => {
         collection: "blue.linkat.board",
         rkey: "self",
         record: { cards: dummyCards },
+        swapRecord: null,
       });
       expect(await boardRepository.find(asDid(owner.did))).toEqual(board);
+    });
+    test("写しがあれば、条件を付けずに保存する", async () => {
+      // arrange
+      const { ownerDid } = await BoardFactory.create();
+      const board = new Board(ownerDid, dummyCards);
+      let putRecordBody: unknown;
+      server.use(
+        http.post(putRecordUrl, async ({ request }) => {
+          putRecordBody = await request.json();
+          return HttpResponse.json({
+            uri: dummyBoardRecord.uri,
+            cid: dummyBoardRecord.cid,
+          });
+        }),
+      );
+      // act
+      await boardEventService.handleEditorSave(board);
+      // assert
+      expect(putRecordBody).not.toHaveProperty("swapRecord");
+      expect(await boardRepository.find(asDid(ownerDid))).toEqual(board);
+    });
+    test("写しが無いのにPDSにボードがあれば、PDSのボードを取り込んでBoardPdsConflictErrorを投げる", async () => {
+      // arrange
+      const owner = await OwnerFactory.create();
+      const pdsCards = [{ url: "https://example.com/pds" }];
+      server.use(
+        http.post(putRecordUrl, () =>
+          HttpResponse.json(
+            { error: "InvalidSwap", message: "Record was at bafy" },
+            { status: 400 },
+          ),
+        ),
+        http.get(
+          "https://pds.example.com/xrpc/com.atproto.repo.getRecord",
+          () =>
+            HttpResponse.json({
+              uri: dummyBoardRecord.uri,
+              value: { $type: "blue.linkat.board", cards: pdsCards },
+            }),
+        ),
+      );
+      // act
+      const actual = boardEventService.handleEditorSave(
+        new Board(owner.did, dummyCards),
+      );
+      // assert
+      await expect(actual).rejects.toThrow(BoardPdsConflictError);
+      expect(await boardRepository.find(asDid(owner.did))).toEqual(
+        new Board(owner.did, pdsCards),
+      );
     });
     test("PDSへの保存に失敗したら写しを保存せずBoardPdsSaveErrorを投げる", async () => {
       // arrange

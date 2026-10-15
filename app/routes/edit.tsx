@@ -8,6 +8,7 @@ import { EditPage } from "~/pages/edit-page";
 import { di } from "~/server/di";
 import {
   BoardDbSaveError,
+  BoardPdsConflictError,
   BoardPdsSaveError,
 } from "~/server/service/board/boardEvent";
 import { env } from "~/utils/env";
@@ -56,6 +57,14 @@ export async function action({ request, context }: Route.ActionArgs) {
   try {
     await di.boardEventService.handleEditorSave(parsedBoard);
   } catch (error) {
+    if (error instanceof BoardPdsConflictError) {
+      logger.warn(error.message, { error });
+      setToast(context, {
+        message: i18next.t("edit.save-conflict-message"),
+        type: "warning",
+      });
+      return redirect("/edit");
+    }
     if (error instanceof BoardPdsSaveError) {
       logger.error(error.message, { error });
       setToast(context, {
@@ -119,6 +128,7 @@ export default function Index({ loaderData }: Route.ComponentProps) {
 
   return (
     <EditPage
+      key={JSON.stringify(loaderData.board)}
       {...loaderData}
       syncState={syncState}
       onRetrySync={() => void submitSync()}
