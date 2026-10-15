@@ -72,7 +72,7 @@ export async function loader({ context }: LoaderFunctionArgs) {
 export function Layout({ children }: { children: React.ReactNode }) {
   const loaderData = useRouteLoaderData<typeof loader>("root");
   return (
-    <html lang={loaderData?.locale ?? "en"} className="font-murecho">
+    <html lang={loaderData?.locale ?? "en"}>
       <head>
         {loaderData?.umami.scriptUrl && loaderData.umami.websiteId && (
           <script
