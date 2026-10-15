@@ -38,7 +38,6 @@ jobs:
       - run: pnpm i
       - run: pnpm playwright install --with-deps
       - run: cp .env.example .env
-      - run: pnpm setup-dev
       - run: pnpm build
       - run: pnpm test:medium
       - name: Upload Report

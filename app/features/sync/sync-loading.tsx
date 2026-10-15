@@ -5,7 +5,7 @@ export function SyncLoading() {
   return (
     <div className="flex flex-col items-center gap-4 text-center" role="status">
       <div className="loading loading-spinner w-12" />
-      <p>{t("edit.sync-loading-message")}</p>
+      <p>{t("sync.loading-message")}</p>
     </div>
   );
 }

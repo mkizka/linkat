@@ -30,6 +30,10 @@ body {
   --root-bg: var(--color-base-300);
 }
 
+html {
+  @apply font-murecho;
+}
+
 .utils--center {
   @apply flex h-full w-full items-center justify-center;
 }

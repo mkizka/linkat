@@ -1,16 +1,30 @@
+import { execSync, spawn } from "node:child_process";
+import { mkdtemp, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+
 import { TestNetwork } from "@atproto/dev-env";
 import { PostgreSqlContainer } from "@testcontainers/postgresql";
 import { GenericContainer, Wait } from "testcontainers";
 
 import { PORTS } from "./constants";
 
+// TestNetworkのPDSはos.tmpdir()以下にデータを作って終了後も残すので、専用ディレクトリに集めて終了時に消す
+const tmp = await mkdtemp(join(tmpdir(), "linkat-dev-env-"));
+process.env.TMPDIR = tmp;
+
 const postgres = await new PostgreSqlContainer("postgres:18-alpine").start();
+const DATABASE_URL = postgres.getConnectionUri();
+execSync("pnpm drizzle-kit migrate", {
+  stdio: "inherit",
+  env: { ...process.env, DATABASE_URL },
+});
 
 // TestNetworkは必須にしているが、AppViewはredisを使わない
 process.env.REDIS_HOST ??= "localhost";
 
 const network = await TestNetwork.create({
-  dbPostgresUrl: postgres.getConnectionUri(),
+  dbPostgresUrl: DATABASE_URL,
   dbPostgresSchema: "linkat",
   plc: { port: PORTS.plc },
   pds: { port: PORTS.pds, hostname: "localhost" },
@@ -44,7 +58,15 @@ await agent.com.atproto.repo.createRecord({
   },
 });
 
-await new GenericContainer("ghcr.io/bluesky-social/jetstream:v0.3.3")
+await network.pds.getAgent().createAccount({
+  handle: "alice.test",
+  email: "alice@example.com",
+  password: "password",
+});
+
+const jetstream = await new GenericContainer(
+  "ghcr.io/bluesky-social/jetstream:v0.3.3",
+)
   .withNetworkMode("host")
   .withEnvironment({
     JETSTREAM_ADDR: `:${PORTS.jetstream}`,
@@ -56,4 +78,30 @@ await new GenericContainer("ghcr.io/bluesky-social/jetstream:v0.3.3")
   .withWaitStrategy(Wait.forLogMessage(/steady-state consumer running/))
   .start();
 
-process.stdout.write("atproto network is ready\n");
+process.stdout.write("Test account: alice.test / password\n");
+
+const app = spawn(process.argv.slice(2).join(" "), {
+  shell: true,
+  detached: true,
+  stdio: "inherit",
+  env: {
+    ...process.env,
+    DATABASE_URL,
+    ATPROTO_PLC_URL: `http://localhost:${PORTS.plc}`,
+    ATPROTO_HANDLE_RESOLVER_URL: `http://localhost:${PORTS.pds}`,
+    JETSTREAM_URL: `ws://localhost:${PORTS.jetstream}/subscribe`,
+  },
+});
+
+app.on("exit", async () => {
+  await network.close();
+  await Promise.all([jetstream.stop(), postgres.stop()]);
+  await rm(tmp, { recursive: true, force: true });
+  process.exit();
+});
+for (const signal of ["SIGINT", "SIGTERM"]) {
+  process.on(signal, () => {
+    // detachedで起動したappはプロセスグループのリーダーなので、負のPIDでpnpmやtsxなどの子孫ごと止める
+    if (app.pid) process.kill(-app.pid, "SIGTERM");
+  });
+}
