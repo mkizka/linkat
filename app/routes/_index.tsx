@@ -11,15 +11,14 @@ import type { Route } from "./+types/_index";
 export const loader = async ({ request, context }: Route.LoaderArgs) => {
   const editorDid = await di.sessionService.getSessionDid(request);
   const i18next = getInstance(context);
-  const [editor, hasOwner, board, recentOwners] = await Promise.all([
+  const [editor, board, recentOwners] = await Promise.all([
     editorDid ? di.ownerService.findOwnerView(editorDid) : null,
-    editorDid ? di.ownerService.hasOwner(editorDid) : false,
     editorDid ? di.boardService.findBoard(editorDid) : null,
     di.boardService.findRecentOwnerViews(8, editorDid ?? undefined),
   ]);
   return {
     editor,
-    needsSync: !!editor && !hasOwner,
+    needsSync: !!editorDid && !editor,
     hasBoard: !!board,
     recentOwners,
     title: i18next.t("_index.meta-title"),
