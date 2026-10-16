@@ -7,7 +7,7 @@ import {
 import { Card } from "~/components/card";
 import { cardModal } from "~/features/board/form/card-form-modal";
 import type { CardFormPayload } from "~/features/board/form/card-form-provider";
-import type { ValidCard } from "~/models/card";
+import type { BoardCard } from "~/models/board";
 import { cn } from "~/utils/cn";
 
 import { BlueskyEmbed } from "./bluesky-embed";
@@ -57,7 +57,7 @@ function CardBody({ parsed, isDragging }: CardBodyProps) {
 }
 
 type SortableCardProps = {
-  card: ValidCard & { id: string };
+  card: BoardCard & { id: string };
   isDragging?: boolean;
   sortable?: boolean;
 };

@@ -3,13 +3,13 @@ import { getZodConstraint, parseWithZod } from "@conform-to/zod/v4";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
 
-import { cardSchema } from "~/models/card";
+import { cardSchema } from "~/models/board";
 
-const _schema = cardSchema.extend({
+const schema = cardSchema.safeExtend({
   id: z.string().optional(),
 });
 
-export type CardFormPayload = z.infer<typeof _schema>;
+export type CardFormPayload = z.infer<typeof schema>;
 
 type CardFormProps = {
   onSubmit: (payload: CardFormPayload) => Promise<void> | void;
@@ -23,14 +23,17 @@ export function CardFormProvider({
   children,
 }: CardFormProps) {
   const { t } = useTranslation();
-  const schema = _schema.refine((value) => value.text || value.url, {
-    message: t("card-form-provider.input-required-error-message"),
-  });
   const [form] = useForm({
     id: "card-form",
     constraint: getZodConstraint(schema),
     onValidate({ formData }) {
-      return parseWithZod(formData, { schema });
+      return parseWithZod(formData, {
+        schema,
+        error: (issue) =>
+          issue.code === "custom" && issue.path?.length === 0
+            ? t("card-form-provider.input-required-error-message")
+            : undefined,
+      });
     },
     onSubmit: async (event, { submission, formData }) => {
       event.preventDefault();

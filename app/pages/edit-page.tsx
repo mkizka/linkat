@@ -5,12 +5,12 @@ import { useBeforeUnload, useBlocker } from "react-router";
 import { Main } from "~/components/layout";
 import { BoardViewer } from "~/features/board/board-viewer";
 import { useUmami } from "~/hooks/useUmami";
-import type { ValidCard } from "~/models/card";
+import type { BoardCard } from "~/models/board";
 import type { OwnerView } from "~/server/service/owner/ownerView";
 
 type Props = {
   editor: OwnerView;
-  board: { cards: ValidCard[] } | null;
+  board: { cards: BoardCard[] } | null;
   url: string;
 };
 

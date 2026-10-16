@@ -1,10 +1,10 @@
 import { arrayMove, List } from "react-movable";
 
-import type { ValidCard } from "~/models/card";
+import type { BoardCard } from "~/models/board";
 
 import { SortableCard } from "./sortable-card";
 
-type CardStateValue = (ValidCard & { id: string })[];
+type CardStateValue = (BoardCard & { id: string })[];
 
 type Props = {
   cards: CardStateValue;
