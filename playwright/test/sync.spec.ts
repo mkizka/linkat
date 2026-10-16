@@ -9,7 +9,7 @@ const patterns = [
 
 test.describe("同期", () => {
   for (const { hasProfile, hasBoard } of patterns) {
-    test(`PDSのプロフィールが${hasProfile ? "あり" : "なし"}、ボードが${hasBoard ? "あり" : "なし"}なら、ログイン後のトップと/editでその状態で取り込む`, async ({
+    test(`PDSのプロフィールが${hasProfile ? "あり" : "なし"}、ボードが${hasBoard ? "あり" : "なし"}なら、ログイン後のトップでその状態で取り込む`, async ({
       page,
       login,
       account,
@@ -66,9 +66,6 @@ test.describe("同期", () => {
         await page.goto("/edit");
         if (hasBoard) {
           await expect(
-            page.getByTestId("toaster").locator(".alert-success"),
-          ).toBeVisible();
-          await expect(
             page.locator('[data-testid="board-card"]', { hasText: text }),
           ).toBeVisible();
         } else {
@@ -118,6 +115,37 @@ test.describe("同期", () => {
       await page.waitForURL((url) => url.pathname === `/${account.handle}`);
       await page.getByTestId("show-modal__close").click();
       await expect(card).toBeVisible();
+    });
+  });
+
+  test("設定画面からPDSのプロフィールを読み込み直せる", async ({
+    page,
+    login,
+    account,
+    size,
+  }) => {
+    test.skip(size === "large", "dev-envのPDSを操作するため");
+    const displayName = `Name ${crypto.randomUUID().slice(0, 8)}`;
+
+    await test.step("ログインした後にLinkatを通さずPDSのプロフィールを変える", async () => {
+      await login();
+      const { did, accessJwt } = await createSession(account);
+      await xrpc(
+        "com.atproto.repo.putRecord",
+        {
+          repo: did,
+          collection: "app.bsky.actor.profile",
+          rkey: "self",
+          record: { $type: "app.bsky.actor.profile", displayName },
+        },
+        accessJwt,
+      );
+    });
+
+    await test.step("設定画面で読み込み直すと表示名が変わる", async () => {
+      await page.goto("/settings");
+      await page.getByTestId("sync-button").click();
+      await expect(page.getByText(displayName)).toBeVisible();
     });
   });
 });

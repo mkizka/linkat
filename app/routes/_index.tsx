@@ -1,3 +1,6 @@
+import { Main } from "~/components/layout";
+import { SyncLoading } from "~/features/sync/sync-loading";
+import { useSync } from "~/features/sync/use-sync";
 import { getInstance } from "~/i18n/i18n";
 import { TopPage } from "~/pages/top-page";
 import { di } from "~/server/di";
@@ -15,7 +18,9 @@ export const loader = async ({ request, context }: Route.LoaderArgs) => {
     di.boardService.findRecentOwnerViews(8, editorDid ?? undefined),
   ]);
   return {
-    editor,
+    editor:
+      editor ?? (editorDid && di.ownerViewService.toOwnerView(editorDid, null)),
+    needsSync: !!editorDid && !editor,
     hasBoard: !!board,
     recentOwners,
     title: i18next.t("_index.meta-title"),
@@ -30,6 +35,14 @@ export const meta = ({ loaderData }: Route.MetaArgs) => {
 };
 
 export default function Index({ loaderData }: Route.ComponentProps) {
+  const sync = useSync(loaderData.needsSync);
+  if (sync.state === "loading") {
+    return (
+      <Main className="utils--center">
+        <SyncLoading />
+      </Main>
+    );
+  }
   return (
     <TopPage
       editor={loaderData.editor}

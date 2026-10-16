@@ -30,6 +30,10 @@ export async function action({ request, context }: Route.ActionArgs) {
       },
     });
   }
+  const editor = await di.ownerService.findOwnerView(editorDid);
+  if (!editor) {
+    return redirect("/");
+  }
   const form = await request.formData().catch(() => {
     throw data(null, { status: 400 });
   });
@@ -69,7 +73,6 @@ export async function action({ request, context }: Route.ActionArgs) {
         message: i18next.t("edit.save-delayed-warning-message"),
         type: "warning",
       });
-      const editor = await di.ownerService.findOwnerView(editorDid);
       return redirect(`/${editor.handleOrDid}`);
     }
     throw error;
@@ -78,7 +81,6 @@ export async function action({ request, context }: Route.ActionArgs) {
     ownerDid: editorDid,
     cardCount: parsedBoard.cards.length,
   });
-  const editor = await di.ownerService.findOwnerView(editorDid);
   return redirect(`/${editor.handleOrDid}?success`);
 }
 
@@ -87,12 +89,15 @@ export async function loader({ request }: Route.LoaderArgs) {
   if (!editorDid) {
     throw redirect("/login");
   }
-  const [editorView, board] = await Promise.all([
+  const [editor, board] = await Promise.all([
     di.ownerService.findOwnerView(editorDid),
     di.boardService.findBoard(editorDid),
   ]);
+  if (!editor) {
+    throw redirect("/");
+  }
   return {
-    editor: editorView,
+    editor,
     board: board && { cards: board.cards },
   };
 }

@@ -5,6 +5,7 @@ import type { OwnerView } from "~/server/service/owner/ownerView";
 
 import { SettingsSection } from "../settings-section";
 import { LogoutButton } from "./logout-button";
+import { SyncButton } from "./sync-button";
 
 type Props = {
   editor: OwnerView;
@@ -33,6 +34,7 @@ export function AccountSection({ editor }: Props) {
           </p>
         </div>
       </div>
+      <SyncButton />
       <LogoutButton />
     </SettingsSection>
   );

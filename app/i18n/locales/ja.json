@@ -149,6 +149,8 @@
     "delete-board-warning": "PDSに保存されているボードを削除します。削除後は元に戻せません。",
     "header-display": "表示",
     "language": "言語",
-    "logged-in-as": "{{handle}} でログイン中"
+    "logged-in-as": "{{handle}} でログイン中",
+    "sync-button": "PDSから読み込み直す",
+    "sync-done-message": "読み込みました"
   }
 }
