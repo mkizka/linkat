@@ -311,8 +311,8 @@ importers:
         specifier: 10.0.0
         version: 10.0.0(@standard-schema/spec@1.1.0)(react-router@8.4.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(react@19.3.0)
       satori:
-        specifier: 0.55.1
-        version: 0.55.1
+        specifier: 0.56.0
+        version: 0.56.0
       tailwind-merge:
         specifier: 3.7.0
         version: 3.7.0
@@ -6441,8 +6441,8 @@ packages:
   safer-buffer@2.1.2:
     resolution: {integrity: sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==}
 
-  satori@0.55.1:
-    resolution: {integrity: sha512-YieTyYI+LVOTOX+RYs1ufcf19ApxKKJ8pNHu0B0zJB4NnxCXIOXmIyti6X4zjfRJZna9XD7FjbXF+CyzhTu5FQ==}
+  satori@0.56.0:
+    resolution: {integrity: sha512-FGCEGRzHD5wSC2bVsg8nYUKGje15E56AI8dDaVoC1MobR4yWPImrkVh38f6za5BY6Gxo0yLEg9vOjyz9hzkhQQ==}
     engines: {node: '>=16'}
 
   scheduler@0.28.0:
@@ -13940,7 +13940,7 @@ snapshots:
 
   safer-buffer@2.1.2: {}
 
-  satori@0.55.1:
+  satori@0.56.0:
     dependencies:
       '@shuding/opentype.js': 1.4.0-beta.0
       css-background-parser: 0.1.0
