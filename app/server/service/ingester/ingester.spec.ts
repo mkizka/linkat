@@ -15,7 +15,10 @@ import { ownerRepositoryFactory } from "~/server/infrastructure/owner/ownerRepos
 import { profileFetcherFactory } from "~/server/infrastructure/owner/profileFetcher";
 import { profileRecordParserFactory } from "~/server/infrastructure/owner/profileRecordParser";
 import { boardEventServiceFactory } from "~/server/service/board/boardEvent";
-import { ownerServiceFactory } from "~/server/service/owner/owner";
+import {
+  ownerServiceFactory,
+  OwnerSyncError,
+} from "~/server/service/owner/owner";
 import { ownerViewServiceFactory } from "~/server/service/owner/ownerView";
 import { env } from "~/utils/env";
 
@@ -161,19 +164,18 @@ describe("ingesterService", () => {
   });
 
   describe("handleBoardCommit", () => {
-    test("持ち主の写しが無ければ、DIDを解決できなくても写しを作ってボードを保存する", async () => {
+    test("DIDを解決できなければ、持ち主の写しは作らずにボードを保存する", async () => {
       // arrange
       const did = "did:plc:newowner";
       identityResolver.resolve.mockResolvedValue(null);
       // act
-      await ingesterService.handleBoardCommit({
+      const actual = ingesterService.handleBoardCommit({
         did: asDid(did),
         record: boardRecord,
       });
       // assert
-      expect(await ownerRepository.findByDid(asDid(did))).toMatchObject({
-        handle: null,
-      });
+      await expect(actual).rejects.toThrow(OwnerSyncError);
+      expect(await ownerRepository.findByDid(asDid(did))).toBeNull();
       const { rows } = await pool.query(
         `SELECT * FROM "Board" WHERE "ownerDid" = $1`,
         [did],
@@ -189,7 +191,12 @@ describe("ingesterService", () => {
       server.use(
         http.get(
           "https://pds.example.com/xrpc/com.atproto.repo.getRecord",
-          () => HttpResponse.json("", { status: 500 }),
+          () =>
+            HttpResponse.json({
+              uri: `at://${owner.did}/app.bsky.actor.profile/self`,
+              cid: "bafyreidfayvfuwqa7qlnopdjiqrxzs6blmoeu4rujcjtnci5beludirz2a",
+              value: profileRecord,
+            }),
         ),
       );
       // act
@@ -200,7 +207,6 @@ describe("ingesterService", () => {
       // assert
       expect(await ownerRepository.findByDid(asDid(owner.did))).toMatchObject({
         handle: "new.example.com",
-        displayName: owner.displayName,
       });
     });
   });
