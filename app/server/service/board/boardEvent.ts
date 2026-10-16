@@ -55,8 +55,8 @@ export const boardEventServiceFactory = ({
   };
   return {
     async handleBoardCommit(board) {
-      await ownerService.syncOwner(board.ownerDid);
       await boardRepository.save(board);
+      await ownerService.syncOwner(board.ownerDid);
     },
     async handleEditorSave(board) {
       try {

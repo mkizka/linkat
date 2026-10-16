@@ -7,6 +7,12 @@ import type { IProfileFetcher } from "~/server/infrastructure/owner/profileFetch
 
 import type { IOwnerViewService, OwnerView } from "./ownerView";
 
+export class OwnerSyncError extends Error {
+  constructor(message: string, cause?: unknown) {
+    super(message, { cause });
+  }
+}
+
 export interface IOwnerService {
   findOwnerView: (did: Did) => Promise<OwnerView>;
   syncOwner: (did: Did) => Promise<Owner>;
@@ -35,11 +41,11 @@ export const ownerServiceFactory = ({
   async syncOwner(did) {
     const identity = await identityResolver.resolve(did);
     if (!identity) {
-      return await ownerRepository.upsert(did, { handle: null });
+      throw new OwnerSyncError("DIDの解決に失敗しました");
     }
     const profile = await profileFetcher.fetchProfile(identity.pds, did);
     if (profile instanceof Error) {
-      return await ownerRepository.upsert(did, { handle: identity.handle });
+      throw new OwnerSyncError("プロフィールの取得に失敗しました", profile);
     }
     return await ownerRepository.upsert(did, {
       handle: identity.handle,

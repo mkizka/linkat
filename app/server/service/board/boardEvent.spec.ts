@@ -120,6 +120,23 @@ describe("boardEventService", () => {
     });
   });
 
+  describe("handleBoardCommit", () => {
+    test("持ち主の同期に失敗しても、ボードの写しは保存する", async () => {
+      // arrange
+      const did = asDid("did:plc:commitsyncfailed");
+      ownerService.syncOwner.mockRejectedValue(new Error());
+      // act
+      const actual = boardEventService.handleBoardCommit(
+        new Board(did, dummyCards),
+      );
+      // assert
+      await expect(actual).rejects.toThrow();
+      expect(await boardRepository.find(did)).toEqual(
+        new Board(did, dummyCards),
+      );
+    });
+  });
+
   describe("handleEditorSync", () => {
     const getRecordUrl =
       "https://pds.example.com/xrpc/com.atproto.repo.getRecord";

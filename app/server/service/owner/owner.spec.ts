@@ -11,7 +11,7 @@ import { ownerRepositoryFactory } from "~/server/infrastructure/owner/ownerRepos
 import { profileFetcherFactory } from "~/server/infrastructure/owner/profileFetcher";
 import { profileRecordParserFactory } from "~/server/infrastructure/owner/profileRecordParser";
 
-import { ownerServiceFactory } from "./owner";
+import { ownerServiceFactory, OwnerSyncError } from "./owner";
 import { ownerViewServiceFactory } from "./ownerView";
 
 const identityResolver = mock<IIdentityResolver>();
@@ -93,36 +93,29 @@ describe("ownerService", () => {
       });
       expect(await ownerRepository.findByDid(did)).toEqual(actual);
     });
-    test("DIDを解決できなければ、ハンドルをnullにして既存のプロフィールを残す", async () => {
+    test("DIDを解決できなければ、写しを作らずにOwnerSyncErrorを投げる", async () => {
       // arrange
-      const owner = await OwnerFactory.create({
-        handle: "alice.example.com",
-        displayName: "Alice",
-      });
+      const did = asDid("did:plc:unresolvable");
       // act
-      const actual = await ownerService.syncOwner(asDid(owner.did));
+      const actual = ownerService.syncOwner(did);
       // assert
-      expect(actual).toMatchObject({ handle: null, displayName: "Alice" });
+      await expect(actual).rejects.toThrow(OwnerSyncError);
+      expect(await ownerRepository.findByDid(did)).toBeNull();
     });
-    test("プロフィールを取得できなければ、既存のプロフィールを残してハンドルは更新する", async () => {
+    test("プロフィールを取得できなければ、写しを作らずにOwnerSyncErrorを投げる", async () => {
       // arrange
-      const owner = await OwnerFactory.create({
-        handle: "old.example.com",
-        displayName: "Alice",
-      });
-      mockIdentity(owner.did, "alice.example.com");
+      const did = asDid("did:plc:profilefailed");
+      mockIdentity(did, "alice.example.com");
       server.use(
         http.get(getRecordUrl, () =>
           HttpResponse.json({ error: "InternalServerError" }, { status: 500 }),
         ),
       );
       // act
-      const actual = await ownerService.syncOwner(asDid(owner.did));
+      const actual = ownerService.syncOwner(did);
       // assert
-      expect(actual).toMatchObject({
-        handle: "alice.example.com",
-        displayName: "Alice",
-      });
+      await expect(actual).rejects.toThrow(OwnerSyncError);
+      expect(await ownerRepository.findByDid(did)).toBeNull();
     });
     test("プロフィールのレコードが無ければ、プロフィールを空にする", async () => {
       // arrange
