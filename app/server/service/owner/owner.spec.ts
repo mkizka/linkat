@@ -65,7 +65,11 @@ describe("ownerService", () => {
       const actual = await ownerService.findEditorView(did);
       // assert
       expect(actual).toEqual({
-        ...ownerViewService.toOwnerView(did, null),
+        did: "did:plc:notowner0000000000000000",
+        handleOrDid: "did:plc:notowner0000000000000000",
+        displayHandle: "@did:plc:notowner0000000000000000",
+        displayName: null,
+        avatarUrl: null,
         synced: false,
       });
       expect(identityResolver.resolve).not.toHaveBeenCalled();
