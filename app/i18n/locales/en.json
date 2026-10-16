@@ -149,8 +149,6 @@
     "delete-board-warning": "Delete your board saved in PDS. This action cannot be undone.",
     "header-display": "Display",
     "language": "Language",
-    "logged-in-as": "Logged in as {{handle}}",
-    "sync-button": "Reload from your PDS",
-    "sync-done-message": "Reloaded"
+    "logged-in-as": "Logged in as {{handle}}"
   }
 }
