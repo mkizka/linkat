@@ -2,6 +2,7 @@ import { UserIcon } from "@heroicons/react/24/solid";
 import type { ReactNode } from "react";
 
 import { Card } from "~/components/card";
+import { OwnerHandle } from "~/features/owner/owner-handle";
 import type { OwnerView } from "~/server/service/owner/ownerView";
 
 function Avatar({ avatar }: { avatar: string }) {
@@ -43,7 +44,9 @@ export function ProfileCard({ owner, actions }: ProfileCardProps) {
         </div>
         <div>
           <h2 className="text-xl font-bold">{owner.displayName}</h2>
-          <p className="text-gray-500">{owner.displayHandle}</p>
+          <p className="text-gray-500">
+            <OwnerHandle owner={owner} />
+          </p>
         </div>
       </div>
     </Card>

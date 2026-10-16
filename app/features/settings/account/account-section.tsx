@@ -1,6 +1,7 @@
 import { UserIcon } from "@heroicons/react/24/solid";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 
+import { OwnerHandle } from "~/features/owner/owner-handle";
 import type { OwnerView } from "~/server/service/owner/ownerView";
 
 import { SettingsSection } from "../settings-section";
@@ -29,7 +30,10 @@ export function AccountSection({ editor }: Props) {
             <p className="truncate font-bold">{editor.displayName}</p>
           )}
           <p className="truncate text-sm text-base-content/70">
-            {t("settings.logged-in-as", { handle: editor.displayHandle })}
+            <Trans
+              i18nKey="settings.logged-in-as"
+              components={{ handle: <OwnerHandle owner={editor} /> }}
+            />
           </p>
         </div>
       </div>
