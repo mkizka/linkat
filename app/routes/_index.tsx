@@ -13,7 +13,7 @@ export const loader = async ({ request, context }: Route.LoaderArgs) => {
   const editorDid = await di.sessionService.getSessionDid(request);
   const i18next = getInstance(context);
   const [editor, board, recentOwners] = await Promise.all([
-    editorDid ? di.ownerService.findOwnerView(editorDid) : null,
+    editorDid ? di.ownerService.findEditorView(editorDid) : null,
     editorDid ? di.boardService.findBoard(editorDid) : null,
     di.boardService.findRecentOwnerViews(8, editorDid ?? undefined),
   ]);

@@ -11,7 +11,6 @@ const meta = {
       displayHandle: "@example.bsky.social",
       displayName: "Example",
       avatarUrl: null,
-      synced: true,
     },
     board: {
       cards: [

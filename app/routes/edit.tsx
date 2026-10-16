@@ -30,7 +30,7 @@ export async function action({ request, context }: Route.ActionArgs) {
       },
     });
   }
-  const editor = await di.ownerService.findOwnerView(editorDid);
+  const editor = await di.ownerService.findEditorView(editorDid);
   if (!editor.synced) {
     return redirect("/");
   }
@@ -90,7 +90,7 @@ export async function loader({ request }: Route.LoaderArgs) {
     throw redirect("/login");
   }
   const [editor, board] = await Promise.all([
-    di.ownerService.findOwnerView(editorDid),
+    di.ownerService.findEditorView(editorDid),
     di.boardService.findBoard(editorDid),
   ]);
   if (!editor.synced) {

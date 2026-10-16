@@ -11,7 +11,6 @@ const meta = {
       displayHandle: `@user${i}.bsky.social`,
       displayName: `User ${i}`,
       avatarUrl: null,
-      synced: true,
     })),
   },
 } satisfies Meta<typeof RecentBoards>;

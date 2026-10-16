@@ -10,7 +10,7 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
   if (!editorDid) {
     throw redirect("/login");
   }
-  const editor = await di.ownerService.findOwnerView(editorDid);
+  const editor = await di.ownerService.findEditorView(editorDid);
   if (!editor.synced) {
     throw redirect("/");
   }

@@ -11,7 +11,6 @@ const meta = {
       displayHandle: "@me.bsky.social",
       displayName: "Me",
       avatarUrl: null,
-      synced: true,
     },
   },
 } satisfies Meta<typeof EditorProfile>;

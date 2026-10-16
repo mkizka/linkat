@@ -20,7 +20,6 @@ export function SamplePage({ url, isLogin }: Props) {
         displayHandle: "@bsky.app",
         displayName: t("sample.owner-name"),
         avatarUrl: null,
-        synced: true,
       }}
       board={{
         cards: [
