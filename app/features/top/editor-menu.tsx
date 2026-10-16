@@ -7,6 +7,8 @@ import {
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 
+import { BlueskyIcon } from "~/components/icons/bluesky";
+
 type Props = {
   handle: string;
   hasBoard: boolean;
@@ -28,6 +30,12 @@ export function EditorMenu({ handle, hasBoard }: Props) {
             label: t("_index.edit-link"),
             testId: "index__edit-link",
           },
+          {
+            to: "/export",
+            icon: BlueskyIcon,
+            label: t("_index.export-link"),
+            testId: "index__export-link",
+          },
         ]
       : [
           {
@@ -40,12 +48,12 @@ export function EditorMenu({ handle, hasBoard }: Props) {
     { to: "/settings", icon: Cog6ToothIcon, label: t("_index.settings-link") },
   ];
   return (
-    <nav className="flex justify-center gap-2">
+    <nav className="grid grid-cols-2 gap-2">
       {tiles.map(({ to, icon: Icon, label, testId }) => (
         <Link
           key={to}
           to={to}
-          className="card w-[calc((100%-1rem)/3)] items-center gap-1 bg-base-100 py-3 text-sm font-bold shadow-sm"
+          className="card items-center gap-1 bg-base-100 py-3 text-sm font-bold shadow-sm"
           data-testid={testId}
         >
           <Icon className="size-6" />
