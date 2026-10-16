@@ -7,8 +7,10 @@ import type { IProfileFetcher } from "~/server/infrastructure/owner/profileFetch
 
 import type { IOwnerViewService, OwnerView } from "./ownerView";
 
+export type EditorView = OwnerView & { synced: boolean };
+
 export interface IOwnerService {
-  findOwnerView: (did: Did) => Promise<OwnerView>;
+  findEditorView: (did: Did) => Promise<EditorView>;
   syncOwner: (did: Did) => Promise<Owner>;
   updateProfile: (did: Did, profile: Profile | null) => Promise<Owner | null>;
   refreshHandle: (did: Did) => Promise<Owner | null>;
@@ -26,11 +28,9 @@ export const ownerServiceFactory = ({
   identityResolver: IIdentityResolver;
   ownerViewService: IOwnerViewService;
 }): IOwnerService => ({
-  async findOwnerView(did) {
-    return ownerViewService.toOwnerView(
-      did,
-      await ownerRepository.findByDid(did),
-    );
+  async findEditorView(did) {
+    const owner = await ownerRepository.findByDid(did);
+    return { ...ownerViewService.toOwnerView(did, owner), synced: !!owner };
   },
   async syncOwner(did) {
     const identity = await identityResolver.resolve(did);
