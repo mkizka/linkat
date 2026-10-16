@@ -1,4 +1,4 @@
-import { cardSchema } from "./card";
+import { cardSchema, isExportableCard } from "./card";
 
 const successCard = {
   url: "https://example.com",
@@ -34,5 +34,16 @@ describe("cardSchema", () => {
     ${[]}                                    | ${"オブジェクトでなければパース失敗"}
   `("$description", ({ card }) => {
     expect(() => cardSchema.parse(card)).toThrow();
+  });
+});
+
+describe("isExportableCard", () => {
+  test.each([
+    { card: { url: "https://example.com" }, expected: true },
+    { card: { url: "http://example.com" }, expected: false },
+    { card: { url: "", text: "テキスト" }, expected: false },
+    { card: { text: "テキスト" }, expected: false },
+  ])("$card.url は書き出せるか: $expected", ({ card, expected }) => {
+    expect(isExportableCard(card)).toBe(expected);
   });
 });

@@ -17,3 +17,8 @@ export const cardSchema = z.object({
 });
 
 export type ValidCard = z.infer<typeof cardSchema>;
+
+export const MAX_EXPORT_CARDS = 10;
+
+export const isExportableCard = (card: ValidCard) =>
+  !!card.url?.startsWith("https://");
