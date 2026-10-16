@@ -1,8 +1,8 @@
 import { UserIcon } from "@heroicons/react/24/solid";
 import type { ReactNode } from "react";
-import { useTranslation } from "react-i18next";
 
 import { Card } from "~/components/card";
+import { OwnerHandle } from "~/features/owner/owner-handle";
 import type { OwnerView } from "~/server/service/owner/ownerView";
 
 function Avatar({ avatar }: { avatar: string }) {
@@ -31,7 +31,6 @@ type ProfileCardProps = {
 };
 
 export function ProfileCard({ owner, actions }: ProfileCardProps) {
-  const { t } = useTranslation();
   return (
     <Card>
       <div className="card-body gap-2">
@@ -46,7 +45,7 @@ export function ProfileCard({ owner, actions }: ProfileCardProps) {
         <div>
           <h2 className="text-xl font-bold">{owner.displayName}</h2>
           <p className="text-gray-500">
-            {owner.displayHandle ?? t("owner.invalid-handle")}
+            <OwnerHandle owner={owner} />
           </p>
         </div>
       </div>

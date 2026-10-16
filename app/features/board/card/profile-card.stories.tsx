@@ -20,3 +20,15 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {};
+
+export const InvalidHandle: Story = {
+  args: {
+    owner: {
+      did: "did:plc:example",
+      handleOrDid: "did:plc:example",
+      displayHandle: null,
+      displayName: "Example",
+      avatarUrl: null,
+    },
+  },
+};
