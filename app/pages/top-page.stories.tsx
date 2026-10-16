@@ -14,6 +14,7 @@ const meta = {
       displayHandle: `@user${i}.bsky.social`,
       displayName: `User ${i}`,
       avatarUrl: null,
+      synced: true,
     })),
   },
 } satisfies Meta<typeof TopPage>;
@@ -30,6 +31,7 @@ const editor = {
   displayHandle: "@me.bsky.social",
   displayName: "Me",
   avatarUrl: null,
+  synced: true,
 } as const;
 
 export const Login: Story = {

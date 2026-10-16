@@ -8,6 +8,7 @@ export type OwnerView = {
   displayHandle: string;
   displayName: string | null;
   avatarUrl: string | null;
+  synced: boolean;
 };
 
 export interface IOwnerViewService {
@@ -25,6 +26,7 @@ export const ownerViewServiceFactory = (): IOwnerViewService => ({
       avatarUrl: owner?.avatarCid
         ? `https://cdn.bsky.app/img/avatar/plain/${did}/${owner.avatarCid}@jpeg`
         : null,
+      synced: !!owner,
     };
   },
 });

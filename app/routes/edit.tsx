@@ -31,7 +31,7 @@ export async function action({ request, context }: Route.ActionArgs) {
     });
   }
   const editor = await di.ownerService.findOwnerView(editorDid);
-  if (!editor) {
+  if (!editor.synced) {
     return redirect("/");
   }
   const form = await request.formData().catch(() => {
@@ -93,7 +93,7 @@ export async function loader({ request }: Route.LoaderArgs) {
     di.ownerService.findOwnerView(editorDid),
     di.boardService.findBoard(editorDid),
   ]);
-  if (!editor) {
+  if (!editor.synced) {
     throw redirect("/");
   }
   return {

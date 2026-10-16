@@ -32,6 +32,7 @@ describe("ownerViewService.toOwnerView", () => {
     expect(actual).toMatchObject({
       handleOrDid: "example.com",
       displayHandle: "@example.com",
+      synced: true,
     });
   });
   test("ハンドルがnullならURLと表示にDIDを使う", () => {
@@ -55,7 +56,7 @@ describe("ownerViewService.toOwnerView", () => {
       "https://cdn.bsky.app/img/avatar/plain/did:plc:dummy/bafkreiavatar@jpeg",
     );
   });
-  test("写しが無ければURLと表示にDIDを使い、表示名とアバターはnullにする", () => {
+  test("写しが無ければ同期前として、URLと表示にDIDを使い、表示名とアバターはnullにする", () => {
     // arrange
     const owner = null;
     // act
@@ -67,6 +68,7 @@ describe("ownerViewService.toOwnerView", () => {
       displayHandle: "@did:plc:dummy",
       displayName: null,
       avatarUrl: null,
+      synced: false,
     });
   });
 });

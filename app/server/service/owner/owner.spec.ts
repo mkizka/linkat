@@ -58,13 +58,13 @@ describe("ownerService", () => {
       expect(actual).toMatchObject({ handleOrDid: owner.handle });
       expect(identityResolver.resolve).not.toHaveBeenCalled();
     });
-    test("写しに無いDIDはnullを返し、写しを作らない", async () => {
+    test("写しに無いDIDはDIDだけの表示用データを返し、写しを作らない", async () => {
       // arrange
       const did = asDid("did:plc:notowner0000000000000000");
       // act
       const actual = await ownerService.findOwnerView(did);
       // assert
-      expect(actual).toBeNull();
+      expect(actual).toEqual(ownerViewService.toOwnerView(did, null));
       expect(identityResolver.resolve).not.toHaveBeenCalled();
       expect(await ownerRepository.findByDid(did)).toBeNull();
     });

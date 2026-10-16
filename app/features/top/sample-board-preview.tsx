@@ -13,6 +13,7 @@ export function SampleBoardPreview() {
     displayHandle: "@example.com",
     displayName: t("_index.sample-owner-name"),
     avatarUrl: null,
+    synced: true,
   };
   const cards = [
     { url: "https://example.com" },

@@ -18,9 +18,8 @@ export const loader = async ({ request, context }: Route.LoaderArgs) => {
     di.boardService.findRecentOwnerViews(8, editorDid ?? undefined),
   ]);
   return {
-    editor:
-      editor ?? (editorDid && di.ownerViewService.toOwnerView(editorDid, null)),
-    needsSync: !!editorDid && !editor,
+    editor,
+    needsSync: !!editor && !editor.synced,
     hasBoard: !!board,
     recentOwners,
     title: i18next.t("_index.meta-title"),
