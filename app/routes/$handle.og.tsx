@@ -98,7 +98,7 @@ const renderImage = async (owner: OwnerView) => {
               color: "#6b7280",
             }}
           >
-            {owner.displayHandle}
+            {owner.displayHandle ?? ""}
           </p>
         </div>
       </div>

@@ -29,7 +29,9 @@ export function AccountSection({ editor }: Props) {
             <p className="truncate font-bold">{editor.displayName}</p>
           )}
           <p className="truncate text-sm text-base-content/70">
-            {t("settings.logged-in-as", { handle: editor.displayHandle })}
+            {t("settings.logged-in-as", {
+              handle: editor.displayHandle ?? t("owner.invalid-handle"),
+            })}
           </p>
         </div>
       </div>

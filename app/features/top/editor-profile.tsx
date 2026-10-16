@@ -1,8 +1,10 @@
 import { UserIcon } from "@heroicons/react/24/solid";
+import { useTranslation } from "react-i18next";
 
 import type { OwnerView } from "~/server/service/owner/ownerView";
 
 export function EditorProfile({ editor }: { editor: OwnerView }) {
+  const { t } = useTranslation();
   return (
     <section className="flex flex-col items-center text-center">
       <div className="avatar avatar-placeholder mb-2">
@@ -15,7 +17,9 @@ export function EditorProfile({ editor }: { editor: OwnerView }) {
         </div>
       </div>
       <h2 className="text-xl font-bold">{editor.displayName}</h2>
-      <p className="text-base-content/70">{editor.displayHandle}</p>
+      <p className="text-base-content/70">
+        {editor.displayHandle ?? t("owner.invalid-handle")}
+      </p>
     </section>
   );
 }

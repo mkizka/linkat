@@ -150,5 +150,8 @@
     "header-display": "Display",
     "language": "Language",
     "logged-in-as": "Logged in as {{handle}}"
+  },
+  "owner": {
+    "invalid-handle": "Invalid handle"
   }
 }

@@ -33,8 +33,16 @@ export function RecentBoards({ owners }: { owners: OwnerView[] }) {
           <Link
             key={owner.did}
             to={`/${owner.handleOrDid}`}
-            title={owner.displayName ?? owner.displayHandle}
-            aria-label={owner.displayName ?? owner.displayHandle}
+            title={
+              owner.displayName ??
+              owner.displayHandle ??
+              t("owner.invalid-handle")
+            }
+            aria-label={
+              owner.displayName ??
+              owner.displayHandle ??
+              t("owner.invalid-handle")
+            }
             data-umami-event="click-recent-board"
           >
             <OwnerAvatar owner={owner} />
