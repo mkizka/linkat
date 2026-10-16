@@ -67,7 +67,7 @@ describe("ownerService", () => {
       expect(actual).toEqual({
         did: "did:plc:notowner0000000000000000",
         handleOrDid: "did:plc:notowner0000000000000000",
-        displayHandle: "@did:plc:notowner0000000000000000",
+        displayHandle: null,
         displayName: null,
         avatarUrl: null,
         synced: false,
