@@ -9,7 +9,7 @@ export function OwnerHandle({ owner }: { owner: OwnerView }) {
     return owner.displayHandle;
   }
   return (
-    <span className="inline-flex items-center gap-0.5 align-bottom italic">
+    <span className="inline-flex items-center gap-0.5 align-bottom">
       <ExclamationCircleIcon className="size-[1em]" />
       {t("owner.invalid-handle")}
     </span>
