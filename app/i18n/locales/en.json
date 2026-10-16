@@ -72,7 +72,12 @@
     "done-note": "Changes to your board aren't reflected automatically. Export again after you change it.",
     "invalid-session-error-message": "The login information was invalid",
     "invalid-form-error-message": "The selected cards are invalid",
-    "export-error-message": "Failed to export"
+    "export-error-message": "Failed to export",
+    "reauth-title": "Permission is needed to export",
+    "reauth-description": "Allow this service to write to your profile. Just log in again with the button below.",
+    "reauth-button": "Log in again",
+    "reauth-denied-message": "Export was canceled because permission wasn't granted",
+    "reauth-error-message": "Couldn't start logging in again"
   },
   "sync": {
     "loading-message": "Loading your data from your PDS",

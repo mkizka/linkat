@@ -63,7 +63,11 @@ export async function loader({ request }: Route.LoaderArgs) {
   if (!board) {
     throw redirect("/");
   }
-  return { handle: editor.handleOrDid, cards: board.cards };
+  return {
+    handle: editor.handleOrDid,
+    cards: board.cards,
+    needsReauth: !(await di.authService.canExport(editorDid)),
+  };
 }
 
 export default function Export({
@@ -74,6 +78,7 @@ export default function Export({
     <ExportPage
       handle={loaderData.handle}
       cards={loaderData.cards}
+      needsReauth={loaderData.needsReauth}
       exportedCards={actionData?.exportedCards}
     />
   );

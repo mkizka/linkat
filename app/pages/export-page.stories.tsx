@@ -24,6 +24,10 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {};
 
+export const NeedsReauth: Story = {
+  args: { needsReauth: true },
+};
+
 export const Done: Story = {
   args: {
     exportedCards: [

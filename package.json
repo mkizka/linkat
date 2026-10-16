@@ -31,6 +31,7 @@
     "@atproto/jwk-jose": "0.2.4",
     "@atproto/lex": "0.3.14",
     "@atproto/oauth-client-node": "0.5.9",
+    "@atproto/oauth-scopes": "0.5.13",
     "@atproto/syntax": "0.7.6",
     "@conform-to/react": "1.21.2",
     "@conform-to/zod": "1.21.2",

@@ -71,7 +71,12 @@
     "done-note": "ボードを変えても自動では反映されません。変えたときはもう一度書き出してください。",
     "invalid-session-error-message": "ログイン情報が無効でした",
     "invalid-form-error-message": "選んだカードが無効です",
-    "export-error-message": "書き出しに失敗しました"
+    "export-error-message": "書き出しに失敗しました",
+    "reauth-title": "書き出しには許可が必要です",
+    "reauth-description": "このサービスにプロフィールへの書き込みを許可してください。以下のボタンから再ログインするだけです",
+    "reauth-button": "再ログインする",
+    "reauth-denied-message": "許可されなかったので、書き出しをやめました",
+    "reauth-error-message": "再ログインを始められませんでした"
   },
   "sync": {
     "loading-message": "PDSからデータを読み込んでいます",

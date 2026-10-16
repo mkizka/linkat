@@ -9,8 +9,10 @@ import type {
 import {
   atprotoLoopbackClientMetadata,
   NodeOAuthClient,
+  OAuthCallbackError,
   TokenRefreshError,
 } from "@atproto/oauth-client-node";
+import { ScopePermissionsTransition } from "@atproto/oauth-scopes";
 
 import { env, isProduction } from "~/utils/env";
 
@@ -22,6 +24,13 @@ const scope = [
   "repo:app.bsky.actor.link?action=create&action=delete",
   "repo:app.bsky.actor.profile?action=create&action=update",
 ].join(" ");
+
+const bskyLinkPermissions = [
+  { collection: "app.bsky.actor.link", action: "create" },
+  { collection: "app.bsky.actor.link", action: "delete" },
+  { collection: "app.bsky.actor.profile", action: "create" },
+  { collection: "app.bsky.actor.profile", action: "update" },
+] as const;
 
 const clientMetadata: OAuthClientMetadataInput = isProduction
   ? {
@@ -55,10 +64,22 @@ export class OAuthSessionInvalidError extends Error {
   }
 }
 
+export class OAuthAccessDeniedError extends Error {
+  constructor(
+    readonly state: string | null,
+    cause: unknown,
+  ) {
+    super("OAuthの許可が拒否されました", { cause });
+  }
+}
+
 export interface IOAuthClient {
-  authorize: (handle: string) => Promise<URL>;
-  callback: (params: URLSearchParams) => Promise<Did>;
+  authorize: (input: string, state?: string) => Promise<URL>;
+  callback: (
+    params: URLSearchParams,
+  ) => Promise<{ did: Did; state: string | null }>;
   restore: (did: Did) => Promise<Agent>;
+  canWriteBskyLinks: (did: Did) => Promise<boolean>;
   revoke: (did: Did) => Promise<void>;
   clientMetadata: NodeOAuthClient["clientMetadata"];
   jwks: NodeOAuthClient["jwks"];
@@ -81,21 +102,42 @@ export const oauthClientFactory = ({
     sessionStore: oauthSessionStore,
   });
 
+  const restore = async (did: Did) => {
+    try {
+      return await client.restore(did);
+    } catch (error) {
+      if (error instanceof TokenRefreshError) {
+        throw new OAuthSessionInvalidError(error);
+      }
+      throw error;
+    }
+  };
+
   return {
-    authorize: (handle) => client.authorize(handle, { scope }),
+    authorize: (input, state) => client.authorize(input, { scope, state }),
     async callback(params) {
-      const { session } = await client.callback(params);
-      return session.did;
-    },
-    async restore(did) {
       try {
-        return await client.restore(did);
+        const { session, state } = await client.callback(params);
+        return { did: session.did, state };
       } catch (error) {
-        if (error instanceof TokenRefreshError) {
-          throw new OAuthSessionInvalidError(error);
+        if (
+          error instanceof OAuthCallbackError &&
+          error.params.get("error") === "access_denied"
+        ) {
+          throw new OAuthAccessDeniedError(error.state ?? null, error);
         }
         throw error;
       }
+    },
+    restore,
+    async canWriteBskyLinks(did) {
+      const session = await restore(did);
+      const permissions = new ScopePermissionsTransition(
+        (await session.getTokenInfo()).scope,
+      );
+      return bskyLinkPermissions.every((permission) =>
+        permissions.allowsRepo(permission),
+      );
     },
     revoke: (did) => client.revoke(did),
     get clientMetadata() {

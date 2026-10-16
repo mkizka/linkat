@@ -1,10 +1,23 @@
 import type { Did } from "@atproto/did";
 
-import type { IOAuthClient } from "~/server/infrastructure/auth/oauthClient";
+import {
+  type IOAuthClient,
+  OAuthAccessDeniedError,
+} from "~/server/infrastructure/auth/oauthClient";
+
+const exportState = "export";
+
+export class ExportAuthorizationDeniedError extends Error {
+  constructor(cause: unknown) {
+    super("書き出しの許可が拒否されました", { cause });
+  }
+}
 
 export interface IAuthService {
   authorize: (handle: string) => Promise<URL>;
-  handleCallback: (url: string) => Promise<Did>;
+  authorizeExport: (did: Did) => Promise<URL>;
+  handleCallback: (url: string) => Promise<{ did: Did; toExport: boolean }>;
+  canExport: (did: Did) => Promise<boolean>;
   getClientMetadata: () => IOAuthClient["clientMetadata"];
   getJwks: () => IOAuthClient["jwks"];
 }
@@ -15,10 +28,23 @@ export const authServiceFactory = ({
   oauthClient: IOAuthClient;
 }): IAuthService => ({
   authorize: (handle) => oauthClient.authorize(handle),
-  handleCallback: (url) => {
+  authorizeExport: (did) => oauthClient.authorize(did, exportState),
+  async handleCallback(url) {
     const params = new URL(url).searchParams;
-    return oauthClient.callback(params);
+    try {
+      const { did, state } = await oauthClient.callback(params);
+      return { did, toExport: state === exportState };
+    } catch (error) {
+      if (
+        error instanceof OAuthAccessDeniedError &&
+        error.state === exportState
+      ) {
+        throw new ExportAuthorizationDeniedError(error);
+      }
+      throw error;
+    }
   },
+  canExport: (did) => oauthClient.canWriteBskyLinks(did),
   getClientMetadata: () => oauthClient.clientMetadata,
   getJwks: () => oauthClient.jwks,
 });

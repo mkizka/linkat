@@ -7,6 +7,7 @@ import { Main } from "~/components/layout";
 import { SelectCardList } from "~/features/board/card/select-card-list";
 import { ExportBar } from "~/features/export/export-bar";
 import { ExportDone } from "~/features/export/export-done";
+import { ExportReauth } from "~/features/export/export-reauth";
 import {
   type BoardCard,
   isExportableCard,
@@ -16,10 +17,16 @@ import {
 type Props = {
   handle: string;
   cards: BoardCard[];
+  needsReauth?: boolean;
   exportedCards?: BoardCard[];
 };
 
-export function ExportPage({ handle, cards, exportedCards }: Props) {
+export function ExportPage({
+  handle,
+  cards,
+  needsReauth,
+  exportedCards,
+}: Props) {
   const { t } = useTranslation();
   const navigation = useNavigation();
   const [selected, setSelected] = useState(() =>
@@ -29,6 +36,16 @@ export function ExportPage({ handle, cards, exportedCards }: Props) {
   );
   const isExporting = navigation.formData !== undefined;
 
+  if (needsReauth) {
+    return (
+      <>
+        <ExportBar cancelable />
+        <Main className="flex flex-col justify-center py-6">
+          <ExportReauth />
+        </Main>
+      </>
+    );
+  }
   if (exportedCards) {
     return (
       <>
@@ -45,6 +62,7 @@ export function ExportPage({ handle, cards, exportedCards }: Props) {
         <input key={index} type="hidden" name="index" value={index} />
       ))}
       <ExportBar
+        cancelable
         submitButton={
           <Button
             className="btn-primary"
