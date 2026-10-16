@@ -34,7 +34,7 @@ describe("ownerViewService.toOwnerView", () => {
       displayHandle: "@example.com",
     });
   });
-  test("ハンドルがnullならURLにDIDを使い、表示用のハンドルはnullにする", () => {
+  test("ハンドルがnullのとき", () => {
     // arrange
     const owner = createOwner({ handle: null });
     // act
@@ -55,7 +55,7 @@ describe("ownerViewService.toOwnerView", () => {
       "https://cdn.bsky.app/img/avatar/plain/did:plc:dummy/bafkreiavatar@jpeg",
     );
   });
-  test("写しが無ければURLにDIDを使い、表示用のハンドルと表示名とアバターはnullにする", () => {
+  test("写しが無いとき", () => {
     // arrange
     const owner = null;
     // act

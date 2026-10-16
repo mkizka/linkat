@@ -3,6 +3,7 @@ import fs from "fs";
 import { LRUCache } from "lru-cache";
 import satori from "satori";
 
+import { getInstance } from "~/i18n/i18n";
 import { di } from "~/server/di";
 import type { OwnerView } from "~/server/service/owner/ownerView";
 
@@ -23,7 +24,7 @@ const cardStyle = {
   boxShadow: "0 6px 18px rgb(0 0 0 / 0.06)",
 };
 
-const renderImage = async (owner: OwnerView) => {
+const renderImage = async (owner: OwnerView, displayHandle: string) => {
   const svg = await satori(
     <div
       style={{
@@ -98,7 +99,7 @@ const renderImage = async (owner: OwnerView) => {
               color: "#6b7280",
             }}
           >
-            {owner.displayHandle ?? ""}
+            {displayHandle}
           </p>
         </div>
       </div>
@@ -161,23 +162,23 @@ const renderImage = async (owner: OwnerView) => {
   return Uint8Array.from(buffer);
 };
 
-const createImage = async (owner: OwnerView) => {
-  const image = await renderImage(owner);
-  cache.set(owner.did, image);
-  return image;
-};
-
-export async function loader({ params }: Route.LoaderArgs) {
+export async function loader({ params, context }: Route.LoaderArgs) {
   const logger = di.logger.child("$handle.og");
   const result = await di.boardService.findBoardView(params.handle);
   if (result.type !== "ok") {
     throw new Response(null, { status: 404 });
   }
   const { owner } = result;
-  let image = cache.get(owner.did);
+  const i18next = getInstance(context);
+  const cacheKey = `${owner.did}:${i18next.language}`;
+  let image = cache.get(cacheKey);
   if (!image) {
     try {
-      image = await createImage(owner);
+      image = await renderImage(
+        owner,
+        owner.displayHandle ?? i18next.t("owner.invalid-handle"),
+      );
+      cache.set(cacheKey, image);
     } catch (error) {
       logger.warn("OGP画像の生成に失敗しました", { error });
       throw new Response(null, { status: 404 });
