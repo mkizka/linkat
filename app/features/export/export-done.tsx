@@ -2,14 +2,11 @@ import { CheckIcon } from "@heroicons/react/24/outline";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 
-import type { BoardCard } from "~/models/board";
-
 type Props = {
   handle: string;
-  cards: BoardCard[];
 };
 
-export function ExportDone({ handle, cards }: Props) {
+export function ExportDone({ handle }: Props) {
   const { t } = useTranslation();
   return (
     <div className="flex flex-col gap-5">
@@ -18,18 +15,11 @@ export function ExportDone({ handle, cards }: Props) {
           <CheckIcon className="size-7" strokeWidth={2.5} />
         </span>
         <h2 className="text-lg font-bold" data-testid="export-done__title">
-          {t("export.done-title", { count: cards.length })}
+          {t("export.done-title")}
         </h2>
         <p className="text-sm text-base-content/70">
           {t("export.done-description")}
         </p>
-        <ul className="flex flex-wrap justify-center gap-1.5 pt-1">
-          {cards.map((card, index) => (
-            <li key={index} className="badge border-none bg-base-200 font-bold">
-              {card.text || card.url}
-            </li>
-          ))}
-        </ul>
       </div>
       <div className="flex flex-col gap-2">
         <a

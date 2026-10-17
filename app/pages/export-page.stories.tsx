@@ -29,11 +29,5 @@ export const NeedsReauth: Story = {
 };
 
 export const Done: Story = {
-  args: {
-    exportedCards: [
-      { url: "https://bsky.app/profile/example.bsky.social", text: "Bluesky" },
-      { url: "https://github.com/example", text: "GitHub" },
-      { url: "https://example.com/portfolio" },
-    ],
-  },
+  args: { exported: true },
 };

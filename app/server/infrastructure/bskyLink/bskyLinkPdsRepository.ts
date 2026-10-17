@@ -32,6 +32,27 @@ const toLinkRecord = ({ url = "", text }: BoardCard) => {
   return text ? { ...record, title: truncateTitle(text) } : record;
 };
 
+export class BskyLinkExportError extends Error {
+  constructor(cause: unknown) {
+    super("Blueskyへのリンクの書き出しに失敗しました", { cause });
+  }
+}
+
+export class BskyLinkConflictError extends Error {
+  constructor(cause: unknown) {
+    super("書き出し中にBlueskyのプロフィールが変更されました", { cause });
+  }
+}
+
+export class BskyLinkCleanupError extends Error {
+  constructor(cause: unknown) {
+    super("古いBlueskyのリンクの削除に失敗しました", { cause });
+  }
+}
+
+const isXrpcError = (error: unknown, name: string) =>
+  error instanceof XrpcResponseError && error.error === name;
+
 export interface IBskyLinkPdsRepository {
   replace: (did: Did, cards: BoardCard[]) => Promise<void>;
 }
@@ -47,40 +68,50 @@ export const bskyLinkPdsRepositoryFactory = ({
     const profile = await client
       .getRecord(profileCollection, "self", { repo: did })
       .then(
-        ({ body }) => body.value,
+        ({ body }) => body,
         (error: unknown) => {
-          if (
-            error instanceof XrpcResponseError &&
-            error.error === "RecordNotFound"
-          ) {
-            return {};
+          if (isXrpcError(error, "RecordNotFound")) {
+            return null;
           }
-          throw error;
+          throw new BskyLinkExportError(error);
         },
       );
 
     const refs = [];
     for (const card of cards) {
-      const { body } = await client.createRecord(
-        toLinkRecord(card),
-        undefined,
-        { repo: did },
-      );
+      const { body } = await client
+        .createRecord(toLinkRecord(card), undefined, { repo: did })
+        .catch((error: unknown) => {
+          throw new BskyLinkExportError(error);
+        });
       refs.push({ uri: body.uri, cid: body.cid });
     }
 
-    await client.putRecord(
-      { ...profile, $type: profileCollection, links: refs },
-      "self",
-      { repo: did },
-    );
+    await client
+      .putRecord(
+        { ...profile?.value, $type: profileCollection, links: refs },
+        "self",
+        { repo: did, swapRecord: profile?.cid },
+      )
+      .catch((error: unknown) => {
+        if (isXrpcError(error, "InvalidSwap")) {
+          throw new BskyLinkConflictError(error);
+        }
+        throw new BskyLinkExportError(error);
+      });
 
     const oldLinkPrefix = `at://${did}/${linkCollection}/`;
-    const oldRkeys = (profileLinksSchema.safeParse(profile).data?.links ?? [])
+    const oldRkeys = (
+      profileLinksSchema.safeParse(profile?.value).data?.links ?? []
+    )
       .filter(({ uri }) => uri.startsWith(oldLinkPrefix))
       .map(({ uri }) => uri.slice(oldLinkPrefix.length));
-    for (const rkey of oldRkeys) {
-      await client.deleteRecord(linkCollection, rkey, { repo: did });
+    try {
+      for (const rkey of oldRkeys) {
+        await client.deleteRecord(linkCollection, rkey, { repo: did });
+      }
+    } catch (error) {
+      throw new BskyLinkCleanupError(error);
     }
   },
 });

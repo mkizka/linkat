@@ -4,6 +4,11 @@ import { setToast } from "remix-toast/middleware";
 import { getInstance } from "~/i18n/i18n";
 import { ExportPage } from "~/pages/export-page";
 import { di } from "~/server/di";
+import {
+  BskyLinkCleanupError,
+  BskyLinkConflictError,
+  BskyLinkExportError,
+} from "~/server/infrastructure/bskyLink/bskyLinkPdsRepository";
 import { BskyLinkSelectionError } from "~/server/service/bskyLink/bskyLink";
 
 import type { Route } from "./+types/export";
@@ -28,12 +33,12 @@ export async function action({ request, context }: Route.ActionArgs) {
   });
   const cardIndexes = form.getAll("index").map(Number);
   try {
-    const cards = await di.bskyLinkService.exportCards(editorDid, cardIndexes);
+    await di.bskyLinkService.exportCards(editorDid, cardIndexes);
     logger.info("Blueskyにリンクを書き出しました", {
       ownerDid: editorDid,
-      cardCount: cards.length,
+      cardCount: cardIndexes.length,
     });
-    return { exportedCards: cards };
+    return { exported: true };
   } catch (error) {
     if (error instanceof BskyLinkSelectionError) {
       setToast(context, {
@@ -42,12 +47,31 @@ export async function action({ request, context }: Route.ActionArgs) {
       });
       return null;
     }
-    logger.error("Blueskyへのリンクの書き出しに失敗しました", { error });
-    setToast(context, {
-      message: i18next.t("export.export-error-message"),
-      type: "error",
-    });
-    return null;
+    if (error instanceof BskyLinkExportError) {
+      logger.error(error.message, { error });
+      setToast(context, {
+        message: i18next.t("export.export-error-message"),
+        type: "error",
+      });
+      return null;
+    }
+    if (error instanceof BskyLinkConflictError) {
+      logger.error(error.message, { error });
+      setToast(context, {
+        message: i18next.t("export.conflict-error-message"),
+        type: "error",
+      });
+      return null;
+    }
+    if (error instanceof BskyLinkCleanupError) {
+      logger.error(error.message, { error });
+      setToast(context, {
+        message: i18next.t("export.cleanup-warning-message"),
+        type: "warning",
+      });
+      return { exported: true };
+    }
+    throw error;
   }
 }
 
@@ -79,7 +103,7 @@ export default function Export({
       handle={loaderData.handle}
       cards={loaderData.cards}
       needsReauth={loaderData.needsReauth}
-      exportedCards={actionData?.exportedCards}
+      exported={actionData?.exported}
     />
   );
 }
