@@ -1,9 +1,9 @@
-import type { ValidCard } from "~/models/card";
+import type { BoardCard } from "~/models/board";
 
 import { ViewCard } from "./view-card";
 
 type Props = {
-  cards: ValidCard[];
+  cards: BoardCard[];
 };
 
 export function ViewCardList({ cards }: Props) {
