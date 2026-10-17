@@ -1,10 +1,6 @@
 import type { Did } from "@atproto/did";
 
-import {
-  type BoardCard,
-  isExportableCard,
-  MAX_EXPORT_CARDS,
-} from "~/models/board";
+import { isExportableCard, MAX_EXPORT_CARDS } from "~/models/board";
 import type { IBoardRepository } from "~/server/infrastructure/board/boardRepository";
 import type { IBskyLinkPdsRepository } from "~/server/infrastructure/bskyLink/bskyLinkPdsRepository";
 
@@ -15,7 +11,7 @@ export class BskyLinkSelectionError extends Error {
 }
 
 export interface IBskyLinkService {
-  exportCards: (editorDid: Did, cardIndexes: number[]) => Promise<BoardCard[]>;
+  exportCards: (editorDid: Did, cardIndexes: number[]) => Promise<void>;
 }
 
 export const bskyLinkServiceFactory = ({
@@ -38,6 +34,5 @@ export const bskyLinkServiceFactory = ({
       throw new BskyLinkSelectionError();
     }
     await bskyLinkPdsRepository.replace(editorDid, cards);
-    return cards;
   },
 });
