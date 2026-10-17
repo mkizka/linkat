@@ -6,7 +6,12 @@ import { mock } from "vitest-mock-extended";
 import { server } from "~/mocks/server";
 import type { IOAuthClient } from "~/server/infrastructure/auth/oauthClient";
 
-import { bskyLinkPdsRepositoryFactory } from "./bskyLinkPdsRepository";
+import {
+  BskyLinkCleanupError,
+  BskyLinkConflictError,
+  BskyLinkExportError,
+  bskyLinkPdsRepositoryFactory,
+} from "./bskyLinkPdsRepository";
 
 const oauthClient = mock<IOAuthClient>();
 oauthClient.restore.mockImplementation((did) =>
@@ -29,6 +34,7 @@ describe("bskyLinkPdsRepository", () => {
         http.get(xrpcUrl("com.atproto.repo.getRecord"), () =>
           HttpResponse.json({
             uri: `at://${did}/app.bsky.actor.profile/self`,
+            cid,
             value: {
               $type: "app.bsky.actor.profile",
               displayName: "名前",
@@ -86,6 +92,7 @@ describe("bskyLinkPdsRepository", () => {
       expect(putBody).toMatchObject({
         collection: "app.bsky.actor.profile",
         rkey: "self",
+        swapRecord: cid,
         record: {
           displayName: "名前",
           links: [
@@ -138,5 +145,85 @@ describe("bskyLinkPdsRepository", () => {
         expect(created).toMatchObject([{ record: { title } }]);
       },
     );
+
+    describe("PDSとの通信に失敗したとき", () => {
+      const xrpcError = (error: string, status = 400) =>
+        HttpResponse.json({ error, message: error }, { status });
+
+      beforeEach(() => {
+        server.use(
+          http.get(xrpcUrl("com.atproto.repo.getRecord"), () =>
+            HttpResponse.json({
+              uri: `at://${did}/app.bsky.actor.profile/self`,
+              cid,
+              value: {
+                $type: "app.bsky.actor.profile",
+                links: [{ uri: `at://${did}/app.bsky.actor.link/old`, cid }],
+              },
+            }),
+          ),
+          http.post(xrpcUrl("com.atproto.repo.createRecord"), () =>
+            HttpResponse.json({
+              uri: `at://${did}/app.bsky.actor.link/new`,
+              cid,
+            }),
+          ),
+          http.post(xrpcUrl("com.atproto.repo.putRecord"), () =>
+            HttpResponse.json({
+              uri: `at://${did}/app.bsky.actor.profile/self`,
+              cid,
+            }),
+          ),
+          http.post(xrpcUrl("com.atproto.repo.deleteRecord"), () =>
+            HttpResponse.json({}),
+          ),
+        );
+      });
+
+      test.each([
+        {
+          method: http.get,
+          nsid: "com.atproto.repo.getRecord",
+          response: () => xrpcError("InternalServerError", 500),
+          expected: BskyLinkExportError,
+        },
+        {
+          method: http.post,
+          nsid: "com.atproto.repo.createRecord",
+          response: () => xrpcError("InternalServerError", 500),
+          expected: BskyLinkExportError,
+        },
+        {
+          method: http.post,
+          nsid: "com.atproto.repo.putRecord",
+          response: () => xrpcError("InternalServerError", 500),
+          expected: BskyLinkExportError,
+        },
+        {
+          method: http.post,
+          nsid: "com.atproto.repo.putRecord",
+          response: () => xrpcError("InvalidSwap"),
+          expected: BskyLinkConflictError,
+        },
+        {
+          method: http.post,
+          nsid: "com.atproto.repo.deleteRecord",
+          response: () => xrpcError("InternalServerError", 500),
+          expected: BskyLinkCleanupError,
+        },
+      ])(
+        "$nsid の失敗は $expected.name になる",
+        async ({ method, nsid, response, expected }) => {
+          // arrange
+          server.use(method(xrpcUrl(nsid), response));
+          // act
+          const actual = bskyLinkPdsRepository.replace(did, [
+            { url: "https://example.com" },
+          ]);
+          // assert
+          await expect(actual).rejects.toThrow(expected);
+        },
+      );
+    });
   });
 });
