@@ -168,6 +168,9 @@
     "delete-board-warning": "Delete your board saved in PDS. This action cannot be undone.",
     "header-display": "Display",
     "language": "Language",
-    "logged-in-as": "Logged in as {{handle}}"
+    "logged-in-as": "Logged in as <handle />"
+  },
+  "owner": {
+    "invalid-handle": "Invalid handle"
   }
 }

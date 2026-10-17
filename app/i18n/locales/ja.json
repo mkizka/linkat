@@ -167,6 +167,9 @@
     "delete-board-warning": "PDSに保存されているボードを削除します。削除後は元に戻せません。",
     "header-display": "表示",
     "language": "言語",
-    "logged-in-as": "{{handle}} でログイン中"
+    "logged-in-as": "<handle /> でログイン中"
+  },
+  "owner": {
+    "invalid-handle": "無効なハンドル"
   }
 }

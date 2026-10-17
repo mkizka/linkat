@@ -1,7 +1,27 @@
 import { asDid, type Did } from "@atproto/did";
+import emojiRegex from "emoji-regex";
 import { z } from "zod";
 
-import { cardSchema, type ValidCard } from "./card";
+const isOnlySingleEmoji = (val: string) => {
+  const emojis = val.match(emojiRegex());
+  return emojis?.length === 1 && val === emojis[0];
+};
+
+export const cardSchema = z
+  .object({
+    url: z
+      .url()
+      .refine((val) => val.startsWith("https://") || val.startsWith("http://"))
+      .or(z.literal(""))
+      .optional(),
+    text: z.string().optional(),
+    emoji: z.string().refine(isOnlySingleEmoji).or(z.literal("")).optional(),
+  })
+  .refine((card) => card.url || card.text, {
+    params: { code: "url-or-text-required" },
+  });
+
+export type BoardCard = z.infer<typeof cardSchema>;
 
 const boardSchema = z.object({
   cards: z
@@ -27,9 +47,9 @@ export class BoardParseError extends Error {
 
 export class Board {
   readonly ownerDid: Did;
-  readonly cards: ValidCard[];
+  readonly cards: BoardCard[];
 
-  constructor(ownerDid: string, cards: ValidCard[]) {
+  constructor(ownerDid: string, cards: BoardCard[]) {
     this.ownerDid = asDid(ownerDid);
     this.cards = cards;
   }
@@ -46,3 +66,8 @@ export class Board {
     return JSON.stringify({ cards: this.cards });
   }
 }
+
+export const MAX_EXPORT_CARDS = 10;
+
+export const isExportableCard = (card: BoardCard) =>
+  !!card.url?.startsWith("https://");

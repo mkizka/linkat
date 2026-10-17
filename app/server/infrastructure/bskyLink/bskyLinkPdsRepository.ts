@@ -2,7 +2,7 @@ import type { Did } from "@atproto/did";
 import { Client, XrpcResponseError } from "@atproto/lex";
 import { z } from "zod";
 
-import type { ValidCard } from "~/models/card";
+import type { BoardCard } from "~/models/board";
 import type { IOAuthClient } from "~/server/infrastructure/auth/oauthClient";
 
 const linkCollection = "app.bsky.actor.link";
@@ -23,7 +23,7 @@ const truncateTitle = (text: string) => {
   return graphemes.join("");
 };
 
-const toLinkRecord = ({ url = "", text }: ValidCard) => {
+const toLinkRecord = ({ url = "", text }: BoardCard) => {
   const record = {
     $type: linkCollection,
     url,
@@ -33,7 +33,7 @@ const toLinkRecord = ({ url = "", text }: ValidCard) => {
 };
 
 export interface IBskyLinkPdsRepository {
-  replace: (did: Did, cards: ValidCard[]) => Promise<void>;
+  replace: (did: Did, cards: BoardCard[]) => Promise<void>;
 }
 
 export const bskyLinkPdsRepositoryFactory = ({

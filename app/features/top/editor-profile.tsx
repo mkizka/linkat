@@ -1,5 +1,6 @@
 import { UserIcon } from "@heroicons/react/24/solid";
 
+import { OwnerHandle } from "~/features/owner/owner-handle";
 import type { OwnerView } from "~/server/service/owner/ownerView";
 
 export function EditorProfile({ editor }: { editor: OwnerView }) {
@@ -15,7 +16,9 @@ export function EditorProfile({ editor }: { editor: OwnerView }) {
         </div>
       </div>
       <h2 className="text-xl font-bold">{editor.displayName}</h2>
-      <p className="text-base-content/70">{editor.displayHandle}</p>
+      <p className="text-base-content/70">
+        <OwnerHandle owner={editor} />
+      </p>
     </section>
   );
 }
