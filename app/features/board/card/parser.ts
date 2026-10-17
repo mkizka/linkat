@@ -38,10 +38,9 @@ export type ParsedEmbedCard = {
 export type ParsedFeedCard = {
   type: "feed";
   feedUri: string;
-  url: string;
 };
 
-type ParsedCard =
+export type ParsedCard =
   ParsedLinkCard | ParsedTextCard | ParsedEmbedCard | ParsedFeedCard;
 
 const cardIcons: Record<string, CardIconComponent | undefined> = {
@@ -65,7 +64,6 @@ export const parseCard = (card: BoardCard): ParsedCard => {
     return {
       type: "feed",
       feedUri: atUri(url, "app.bsky.feed.generator"),
-      url: card.url,
     };
   }
   if (isBlueskyPostUrl(url)) {

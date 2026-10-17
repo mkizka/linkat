@@ -3,10 +3,23 @@
     "meta-title": "Linkat | Create a Link in Bio for Bluesky",
     "meta-description": "Linkat is an AT Protocol service for creating a \"Link in Bio\" for Bluesky. Your links are saved in your PDS.",
     "hero-text": "Create your Link in Bio\nfor Bluesky",
-    "edit-link": "Edit Board",
-    "login-link": "Login",
+    "edit-link": "Edit",
+    "login-link": "Log in to get started",
     "sample-link": "View Sample",
-    "notes-link": "Things to keep in mind when using Linkat"
+    "notes-link": "Things to keep in mind when using Linkat",
+    "reason-bluesky-account": "Connect with\nBluesky",
+    "reason-embed": "Embed posts\nand feeds",
+    "reason-your-data": "Your data\nstays yours",
+    "sample-owner-name": "You can make a board like this",
+    "sample-text": "Text-only is OK too",
+    "sample-feed-name": "Feeds work too",
+    "sample-feed-description": "This is how they look",
+    "view-board-link": "View Board",
+    "create-board-link": "Create Board",
+    "settings-link": "Settings"
+  },
+  "recent-boards": {
+    "title": "Everyone's boards"
   },
   "login": {
     "unknown-error-message": "An unknown error occurred",
@@ -32,9 +45,15 @@
   "edit": {
     "invalid-session-error-message": "The login information was invalid",
     "invalid-form-error-message": "The form is invalid",
+    "title": "Edit Board",
+    "cancel-button": "Cancel",
+    "submit-button": "Save",
+    "confirm-leave-title": "You have unsaved changes",
+    "confirm-leave-description": "If you leave now, your changes will be lost.",
+    "confirm-leave-cancel": "Keep editing",
+    "confirm-leave-confirm": "Discard and leave",
     "save-board-error-message": "Failed to save the board",
-    "save-delayed-warning-message": "The changes are taking a while to appear. Please wait a moment and reload.",
-    "confirm-leave-message": "Unsaved changes will be lost. Are you sure?"
+    "save-delayed-warning-message": "The changes are taking a while to appear. Please wait a moment and reload."
   },
   "sync": {
     "loading-message": "Loading your data from your PDS",
@@ -47,21 +66,27 @@
     "meta-title": "{{displayName}}(@{{handle}})'s board",
     "hidden-message": "This board is unavailable"
   },
-  "board-viewer": {
-    "confirm-delete-message": "Are you sure you want to delete?",
-    "submit-button": "Save"
-  },
   "share-modal": {
-    "title": "Saved",
+    "saved-title": "Board saved",
+    "share-title": "Share board",
     "description": "Let's share your Link in Bio!",
     "post-to-bluesky": "Post to Bluesky",
     "copy-url": "Copy URL",
     "copied-message": "Copied!",
-    "share-text": "I created a Link in Bio using Linkat! #linkat {{url}}"
+    "saved-share-text": "I created a Link in Bio using Linkat! #linkat {{url}}",
+    "board-share-text": "{{displayName}}'s board #linkat {{url}}"
   },
-  "profile-card": {
-    "edit-button": "Edit",
-    "share-text": "{{displayName}}'s board #linkat {{url}}"
+  "board-footer": {
+    "create-link": "Create a Link in Bio with Linkat"
+  },
+  "board-actions": {
+    "edit-button": "Edit"
+  },
+  "board-menu": {
+    "menu": "Menu",
+    "share": "Share",
+    "settings": "Settings",
+    "top": "Top"
   },
   "card-form": {
     "text-label": "Text",
@@ -73,7 +98,11 @@
     "emoji-select-button": "Select emoji",
     "emoji-reset-button": "Reset selection",
     "help-input-message": "Either the URL or text can be left blank.",
-    "help-emoji-message": "When not selected, it will be automatically determined based on the URL."
+    "help-emoji-message": "When not selected, it will be automatically determined based on the URL.",
+    "confirm-delete-title": "Delete this card?",
+    "confirm-delete-description": "This card will be removed from the list.",
+    "confirm-delete-cancel": "Cancel",
+    "confirm-delete-confirm": "Delete"
   },
   "card-form-modal": {
     "add-card": "Add Card"
@@ -86,7 +115,7 @@
     "creator-text": "Feed by {{handle}}"
   },
   "layout": {
-    "footer-message": "Create a Link in Bio with Linkat"
+    "about-link": "About Linkat"
   },
   "error-boundary": {
     "image-alt": "Image of a dog with a sad expression",
@@ -98,10 +127,8 @@
   },
   "logout-button": {
     "text": "Logout",
-    "confirm-message": "Are you sure you want to log out?"
-  },
-  "back-button": {
-    "text": "Back to top"
+    "confirm-message": "Are you sure you want to log out?",
+    "cancel": "Cancel"
   },
   "delete": {
     "invalid-session-error-message": "The login information was invalid",
@@ -109,13 +136,22 @@
     "delete-delayed-warning-message": "The deletion is taking a while to appear. Please check again after a while."
   },
   "delete-board-button": {
-    "text": "Delete your board",
-    "confirm-message": "Are you sure you want to delete your board?"
+    "text": "Delete board",
+    "confirm-message": "Delete your board?",
+    "confirm-description": "This action cannot be undone.",
+    "confirm": "Delete",
+    "cancel": "Cancel"
   },
   "settings": {
     "title": "Settings",
     "header-account": "Account",
     "header-board": "Board",
-    "delete-board-warning": "Delete your board saved in PDS. This action cannot be undone."
+    "delete-board-warning": "Delete your board saved in PDS. This action cannot be undone.",
+    "header-display": "Display",
+    "language": "Language",
+    "logged-in-as": "Logged in as <handle />"
+  },
+  "owner": {
+    "invalid-handle": "Invalid handle"
   }
 }

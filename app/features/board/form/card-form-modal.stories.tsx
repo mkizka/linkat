@@ -6,9 +6,10 @@ import { CardFormProvider } from "./card-form-provider";
 
 const meta = {
   component: CardFormModal,
+  args: { onDelete: fn() },
   decorators: [
     (Story) => (
-      <CardFormProvider onSubmit={fn()} onDelete={fn()}>
+      <CardFormProvider onSubmit={fn()}>
         <Story />
       </CardFormProvider>
     ),

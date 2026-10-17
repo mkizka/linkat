@@ -4,6 +4,7 @@ import type { Board } from "~/models/board";
 import type { IBoardRepository } from "~/server/infrastructure/board/boardRepository";
 import type { IHandleIndex } from "~/server/infrastructure/owner/handleIndex";
 import type { IOwnerRepository } from "~/server/infrastructure/owner/ownerRepository";
+import type { IRecentOwnersQuery } from "~/server/infrastructure/query/recentOwnersQuery";
 import type {
   IOwnerViewService,
   OwnerView,
@@ -17,6 +18,10 @@ export type BoardView =
 export interface IBoardService {
   findBoard: (ownerDid: Did) => Promise<Board | null>;
   findBoardView: (handleOrDid: string) => Promise<BoardView>;
+  findRecentOwnerViews: (
+    limit: number,
+    excludeDid?: Did,
+  ) => Promise<OwnerView[]>;
 }
 
 export const boardServiceFactory = ({
@@ -24,11 +29,13 @@ export const boardServiceFactory = ({
   handleIndex,
   ownerRepository,
   ownerViewService,
+  recentOwnersQuery,
 }: {
   boardRepository: IBoardRepository;
   handleIndex: IHandleIndex;
   ownerRepository: IOwnerRepository;
   ownerViewService: IOwnerViewService;
+  recentOwnersQuery: IRecentOwnersQuery;
 }): IBoardService => ({
   async findBoard(ownerDid) {
     return await boardRepository.find(ownerDid);
@@ -53,5 +60,11 @@ export const boardServiceFactory = ({
       owner: ownerViewService.toOwnerView(did, owner),
       board,
     };
+  },
+  async findRecentOwnerViews(limit, excludeDid) {
+    const owners = await recentOwnersQuery.find(limit, excludeDid);
+    return owners.map(({ ownerDid, owner }) =>
+      ownerViewService.toOwnerView(ownerDid, owner),
+    );
   },
 });

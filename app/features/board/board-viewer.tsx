@@ -1,109 +1,23 @@
-import { PencilSquareIcon } from "@heroicons/react/24/outline";
-import { useState } from "react";
-import { useTranslation } from "react-i18next";
-import { Form, useNavigation } from "react-router";
+import type { ReactNode } from "react";
 
-import { Button } from "~/components/button";
 import type { BoardCard } from "~/models/board";
 import type { OwnerView } from "~/server/service/owner/ownerView";
-import { resolveHandleIfNeeded } from "~/utils/url";
 
 import { ProfileCard } from "./card/profile-card";
-import { SortableCardList } from "./card/sortable-card-list";
-import { CardFormModal, cardModal } from "./form/card-form-modal";
-import type { CardFormPayload } from "./form/card-form-provider";
-import { CardFormProvider } from "./form/card-form-provider";
+import { ViewCardList } from "./card/view-card-list";
 
 type Props = {
   owner: OwnerView;
   // loaderDataはシリアライズされるためプレーンなデータ構造で受け取る
   board: { cards: BoardCard[] } | null;
-  url: string;
-  editable?: boolean;
-  isMine?: boolean;
+  profileActions?: ReactNode;
 };
 
-const withId = (card: BoardCard) => ({
-  ...card,
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-  id: crypto.randomUUID() as string,
-});
-
-export function BoardViewer({ owner, board, url, editable, isMine }: Props) {
-  const [cards, setCards] = useState((board?.cards ?? []).map(withId));
-  const { t } = useTranslation();
-  const navigation = useNavigation();
-
-  const handleSubmitCardForm = async (payload: CardFormPayload) => {
-    const resolvedUrl =
-      payload.url && (await resolveHandleIfNeeded(payload.url));
-    if (payload.id) {
-      setCards((cards) =>
-        cards.map((card) => {
-          if (card.id === payload.id) {
-            return {
-              id: payload.id,
-              text: payload.text,
-              emoji: payload.emoji,
-              url: resolvedUrl,
-            };
-          }
-          return card;
-        }),
-      );
-    } else {
-      setCards((cards) => {
-        const newCard = withId({ ...payload, url: resolvedUrl });
-        return [...cards, newCard];
-      });
-    }
-    cardModal.close();
-  };
-
-  const handleDeleteCardForm = (id: string) => {
-    const ok = confirm(t("board-viewer.confirm-delete-message"));
-    if (!ok) return;
-    setCards((cards) => cards.filter((card) => card.id !== id));
-    cardModal.close();
-  };
-
+export function BoardViewer({ owner, board, profileActions }: Props) {
   return (
-    <CardFormProvider
-      onSubmit={handleSubmitCardForm}
-      onDelete={handleDeleteCardForm}
-    >
-      <div className="flex flex-col gap-2 py-4">
-        <ProfileCard
-          owner={owner}
-          url={url}
-          showEditButton={!editable && isMine}
-        />
-        <SortableCardList
-          cards={cards}
-          setCards={setCards}
-          sortable={editable}
-        />
-        {editable && <CardFormModal />}
-        {editable && (
-          <Form method="post">
-            <input
-              name="board"
-              type="hidden"
-              value={JSON.stringify({ cards })}
-            />
-            <Button
-              className="btn-circle btn-primary btn-lg fixed bottom-4 right-4 w-32 shadow-xl"
-              data-testid="board-viewer__submit"
-              loading={navigation.state !== "idle"}
-              data-umami-event="click-submit-button"
-              data-umami-event-cards={cards.length}
-            >
-              <PencilSquareIcon className="size-8" />
-              {t("board-viewer.submit-button")}
-            </Button>
-          </Form>
-        )}
-      </div>
-    </CardFormProvider>
+    <div className="flex flex-col gap-2 py-4">
+      <ProfileCard owner={owner} actions={profileActions} />
+      <ViewCardList cards={board?.cards ?? []} />
+    </div>
   );
 }

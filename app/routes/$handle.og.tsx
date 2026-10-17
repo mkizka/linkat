@@ -15,11 +15,15 @@ const cache = new LRUCache<string, Uint8Array<ArrayBuffer>>({
 
 const fontData = fs.readFileSync("./fonts/Murecho-Bold.ttf");
 
+const cardStyle = {
+  display: "flex",
+  width: "900px",
+  backgroundColor: "#ffffff",
+  borderRadius: "28px",
+  boxShadow: "0 6px 18px rgb(0 0 0 / 0.06)",
+};
+
 const renderImage = async (owner: OwnerView) => {
-  //
-  // カード内の割合
-  // 100px(padding) + 200px(avatar) + 50px(mariginLeft) + 650px(handle/displayName) + 100px(padding) = 1100px
-  //
   const svg = await satori(
     <div
       style={{
@@ -28,91 +32,116 @@ const renderImage = async (owner: OwnerView) => {
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        justifyContent: "center",
-        backgroundColor: "#e5e6e6",
+        paddingTop: "70px",
+        gap: "22px",
+        backgroundColor: "#eceef1",
+        color: "#1d232a",
         fontFamily: '"Murecho"',
       }}
     >
       <div
         style={{
-          display: "flex",
-          padding: "100px",
-          width: "1100px",
-          height: "500px",
-          backgroundColor: "#ffffff",
-          borderRadius: "1rem",
-          // https://tailwindcss.com/docs/box-shadow
-          boxShadow:
-            "0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)",
+          ...cardStyle,
+          alignItems: "center",
+          gap: "40px",
+          padding: "56px 64px",
         }}
       >
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-          }}
-        >
-          {owner.avatarUrl ? (
-            <img
-              src={owner.avatarUrl}
-              style={{
-                width: "200px",
-                height: "200px",
-              }}
-            />
-          ) : (
-            <div
-              style={{
-                width: "200px",
-                height: "200px",
-                backgroundColor: "#aaa",
-              }}
-            />
-          )}
+        {owner.avatarUrl ? (
+          <img
+            src={owner.avatarUrl}
+            style={{
+              width: "160px",
+              height: "160px",
+              borderRadius: "80px",
+              objectFit: "cover",
+            }}
+          />
+        ) : (
           <div
             style={{
               display: "flex",
-              flexDirection: "column",
-              marginLeft: "50px",
-              width: "650px",
+              alignItems: "center",
+              justifyContent: "center",
+              width: "160px",
+              height: "160px",
+              borderRadius: "80px",
+              backgroundColor: "#2a323c",
             }}
           >
-            <p
-              style={{
-                fontSize: "4rem",
-                fontWeight: "bold",
-                textOverflow: "ellipsis",
-                whiteSpace: "nowrap",
-                overflow: "hidden",
-              }}
-            >
-              {owner.displayName}
-            </p>
-            <p
-              style={{
-                fontSize: "3rem",
-                textOverflow: "ellipsis",
-                whiteSpace: "nowrap",
-                overflow: "hidden",
-                color: "#6b7280",
-                marginTop: "-1rem",
-              }}
-            >
-              {owner.displayHandle}
-            </p>
+            <svg width="92" height="92" viewBox="0 0 24 24" fill="#e9ecef">
+              <path d="M7.5 6a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM3.751 20.105a8.25 8.25 0 0 1 16.498 0 .75.75 0 0 1-.437.695A18.683 18.683 0 0 1 12 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 0 1-.437-.695Z" />
+            </svg>
           </div>
+        )}
+        <div
+          style={{ display: "flex", flexDirection: "column", width: "570px" }}
+        >
+          <p
+            style={{
+              margin: 0,
+              fontSize: "64px",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+            }}
+          >
+            {owner.displayName}
+          </p>
+          <p
+            style={{
+              margin: 0,
+              fontSize: "36px",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              color: "#6b7280",
+            }}
+          >
+            {owner.displayHandle ?? "@handle.invalid"}
+          </p>
         </div>
+      </div>
+      <div
+        style={{
+          ...cardStyle,
+          alignItems: "center",
+          gap: "24px",
+          height: "110px",
+          padding: "0 48px",
+          borderRadius: "22px",
+        }}
+      >
+        <svg
+          width="40"
+          height="40"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="#1d232a"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" />
+        </svg>
         <div
           style={{
-            fontSize: "3.5rem",
-            fontWeight: "bold",
-            position: "absolute",
-            right: "4rem",
-            bottom: "2rem",
+            width: "320px",
+            height: "24px",
+            borderRadius: "12px",
+            backgroundColor: "#e5e7eb",
           }}
-        >
-          Linkat
-        </div>
+        />
+      </div>
+      <div
+        style={{
+          position: "absolute",
+          right: "48px",
+          bottom: "36px",
+          fontSize: "40px",
+        }}
+      >
+        Linkat
       </div>
     </div>,
     {

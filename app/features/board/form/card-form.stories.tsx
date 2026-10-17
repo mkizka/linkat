@@ -9,9 +9,10 @@ import { CardFormProvider } from "./card-form-provider";
 
 const meta = {
   component: CardForm,
+  args: { onDelete: fn() },
   decorators: [
     (Story) => (
-      <CardFormProvider onSubmit={fn()} onDelete={fn()}>
+      <CardFormProvider onSubmit={fn()}>
         <Story />
       </CardFormProvider>
     ),
@@ -33,7 +34,7 @@ function EditingCardForm() {
     form.update({ name: "emoji", value: "🔗" });
     // eslint-disable-next-line @eslint-react/exhaustive-deps
   }, []);
-  return <CardForm />;
+  return <CardForm onDelete={fn()} />;
 }
 
 export const Edit: Story = {

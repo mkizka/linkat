@@ -3,10 +3,23 @@
     "meta-title": "Linkat | Blueskyのためのリンク集を作ろう",
     "meta-description": "Linkat（リンクアット）は、Blueskyのためのリンク集を作成できるAT Protocolサービスです。作成したリンク集はあなたのアカウントのPDSに保存されます。",
     "hero-text": "Blueskyのための\nリンク集を作ろう",
-    "edit-link": "ボードを編集",
-    "login-link": "ログイン",
+    "edit-link": "編集",
+    "login-link": "ログインして始める",
     "sample-link": "サンプルを見る",
-    "notes-link": "Linkatを使用するにあたっての注意"
+    "notes-link": "Linkatを使用するにあたっての注意",
+    "reason-bluesky-account": "Blueskyと\n連携",
+    "reason-embed": "投稿・フィード\n埋め込み対応",
+    "reason-your-data": "データは\nあなたのもの",
+    "sample-owner-name": "こんな感じでつくれます",
+    "sample-text": "テキストだけでもOK",
+    "sample-feed-name": "フィードも使えます",
+    "sample-feed-description": "こんな感じで表示されます",
+    "view-board-link": "ボードを見る",
+    "create-board-link": "ボードを作る",
+    "settings-link": "設定"
+  },
+  "recent-boards": {
+    "title": "みんなのリンク集"
   },
   "login": {
     "unknown-error-message": "不明なエラーが発生しました",
@@ -32,9 +45,15 @@
   "edit": {
     "invalid-session-error-message": "ログイン情報が無効でした",
     "invalid-form-error-message": "フォームが無効です",
+    "title": "ボードを編集",
+    "cancel-button": "キャンセル",
+    "submit-button": "保存",
+    "confirm-leave-title": "保存していない変更があります",
+    "confirm-leave-description": "このまま戻ると変更は失われます。",
+    "confirm-leave-cancel": "編集を続ける",
+    "confirm-leave-confirm": "破棄して戻る",
     "save-board-error-message": "ボードの保存に失敗しました",
-    "save-delayed-warning-message": "変更の反映に時間がかかっています。少し待ってリロードしてみてください",
-    "confirm-leave-message": "保存していない変更は失われます。よろしいですか？"
+    "save-delayed-warning-message": "変更の反映に時間がかかっています。少し待ってリロードしてみてください"
   },
   "sync": {
     "loading-message": "PDSからデータを読み込んでいます",
@@ -47,21 +66,27 @@
     "meta-title": "{{displayName}}(@{{handle}})さんのボード",
     "hidden-message": "このボードは表示できません"
   },
-  "board-viewer": {
-    "confirm-delete-message": "本当に削除しますか？",
-    "submit-button": "保存"
-  },
   "share-modal": {
-    "title": "保存しました",
+    "saved-title": "ボードを保存しました",
+    "share-title": "ボードを共有",
     "description": "リンク集をシェアしよう！",
     "post-to-bluesky": "Blueskyにポストする",
     "copy-url": "URLをコピーする",
     "copied-message": "コピーしました！",
-    "share-text": "Linkatでリンク集を作りました！ #linkat {{url}}"
+    "saved-share-text": "Linkatでリンク集を作りました！ #linkat {{url}}",
+    "board-share-text": "{{displayName}}さんのボード #linkat {{url}}"
   },
-  "profile-card": {
-    "edit-button": "編集",
-    "share-text": "{{displayName}}さんのボード #linkat {{url}}"
+  "board-footer": {
+    "create-link": "Linkatでリンク集を作ろう"
+  },
+  "board-actions": {
+    "edit-button": "編集"
+  },
+  "board-menu": {
+    "menu": "メニュー",
+    "share": "共有",
+    "settings": "設定",
+    "top": "トップ"
   },
   "card-form": {
     "text-label": "テキスト",
@@ -73,7 +98,11 @@
     "emoji-select-button": "絵文字を選択",
     "emoji-reset-button": "未選択に戻す",
     "help-input-message": "URLかテキストはどちらか空欄でもOKです。",
-    "help-emoji-message": "未選択時はURLに応じて自動で決まります。"
+    "help-emoji-message": "未選択時はURLに応じて自動で決まります。",
+    "confirm-delete-title": "カードを削除しますか？",
+    "confirm-delete-description": "このカードを一覧から削除します。",
+    "confirm-delete-cancel": "やめる",
+    "confirm-delete-confirm": "削除する"
   },
   "card-form-modal": {
     "add-card": "カードを追加"
@@ -86,7 +115,7 @@
     "creator-text": "{{handle}}によるフィード"
   },
   "layout": {
-    "footer-message": "Linkatでリンク集を作ろう"
+    "about-link": "Linkatについて"
   },
   "error-boundary": {
     "image-alt": "悲しい表情をした犬の画像",
@@ -98,10 +127,8 @@
   },
   "logout-button": {
     "text": "ログアウト",
-    "confirm-message": "ログアウトしますか？"
-  },
-  "back-button": {
-    "text": "トップに戻る"
+    "confirm-message": "ログアウトしますか？",
+    "cancel": "キャンセル"
   },
   "delete": {
     "invalid-session-error-message": "ログイン情報が無効でした",
@@ -109,13 +136,22 @@
     "delete-delayed-warning-message": "削除の反映に時間がかかっています。少し時間を空けてからご確認ください"
   },
   "delete-board-button": {
-    "text": "ボードを削除する",
-    "confirm-message": "本当にボードを削除しますか？"
+    "text": "ボードを削除",
+    "confirm-message": "ボードを削除しますか？",
+    "confirm-description": "削除後は元に戻せません。",
+    "confirm": "削除する",
+    "cancel": "キャンセル"
   },
   "settings": {
     "title": "設定",
     "header-account": "アカウント",
     "header-board": "ボード",
-    "delete-board-warning": "PDSに保存されているボードを削除します。削除後は元に戻せません。"
+    "delete-board-warning": "PDSに保存されているボードを削除します。削除後は元に戻せません。",
+    "header-display": "表示",
+    "language": "言語",
+    "logged-in-as": "<handle /> でログイン中"
+  },
+  "owner": {
+    "invalid-handle": "無効なハンドル"
   }
 }

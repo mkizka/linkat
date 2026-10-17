@@ -1,0 +1,34 @@
+import type { Meta, StoryObj } from "@storybook/react-vite";
+
+import { EditorProfile } from "./editor-profile";
+
+const meta = {
+  component: EditorProfile,
+  args: {
+    editor: {
+      did: "did:plc:me",
+      handleOrDid: "me.bsky.social",
+      displayHandle: "@me.bsky.social",
+      displayName: "Me",
+      avatarUrl: null,
+    },
+  },
+} satisfies Meta<typeof EditorProfile>;
+
+export default meta;
+
+type Story = StoryObj<typeof meta>;
+
+export const Default: Story = {};
+
+export const InvalidHandle: Story = {
+  args: {
+    editor: {
+      did: "did:plc:example",
+      handleOrDid: "did:plc:example",
+      displayHandle: null,
+      displayName: "Example",
+      avatarUrl: null,
+    },
+  },
+};

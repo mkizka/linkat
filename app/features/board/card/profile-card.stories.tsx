@@ -12,7 +12,6 @@ const meta = {
       displayName: "Example",
       avatarUrl: null,
     },
-    url: "https://linkat.blue/example.bsky.social",
   },
 } satisfies Meta<typeof ProfileCard>;
 
@@ -22,6 +21,14 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {};
 
-export const WithEditButton: Story = {
-  args: { showEditButton: true },
+export const InvalidHandle: Story = {
+  args: {
+    owner: {
+      did: "did:plc:example",
+      handleOrDid: "did:plc:example",
+      displayHandle: null,
+      displayName: "Example",
+      avatarUrl: null,
+    },
+  },
 };
