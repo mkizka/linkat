@@ -2,11 +2,11 @@ import { CheckIcon } from "@heroicons/react/24/outline";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 
-import type { ValidCard } from "~/models/card";
+import type { BoardCard } from "~/models/board";
 
 type Props = {
   handle: string;
-  cards: ValidCard[];
+  cards: BoardCard[];
 };
 
 export function ExportDone({ handle, cards }: Props) {

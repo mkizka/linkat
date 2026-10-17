@@ -2,14 +2,14 @@ import { CheckIcon, NoSymbolIcon } from "@heroicons/react/24/outline";
 import { useTranslation } from "react-i18next";
 
 import { Card } from "~/components/card";
-import { isExportableCard, type ValidCard } from "~/models/card";
+import { type BoardCard, isExportableCard } from "~/models/board";
 import { cn } from "~/utils/cn";
 
 import { CardContent } from "./card-content";
 import { parseCard } from "./parser";
 
 type Props = {
-  card: ValidCard;
+  card: BoardCard;
   isSelected: boolean;
   disabled?: boolean;
   onToggle: () => void;

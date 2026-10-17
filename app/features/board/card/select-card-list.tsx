@@ -1,9 +1,9 @@
-import { MAX_EXPORT_CARDS, type ValidCard } from "~/models/card";
+import { type BoardCard, MAX_EXPORT_CARDS } from "~/models/board";
 
 import { SelectCard } from "./select-card";
 
 type Props = {
-  cards: ValidCard[];
+  cards: BoardCard[];
   selected: number[];
   onChange: (selected: number[]) => void;
 };
