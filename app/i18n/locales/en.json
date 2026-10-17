@@ -72,7 +72,9 @@
     "done-note": "Changes to your board aren't reflected automatically. Export again after you change it.",
     "invalid-session-error-message": "The login information was invalid",
     "invalid-form-error-message": "The selected cards are invalid",
-    "export-error-message": "Failed to export"
+    "export-error-message": "Failed to export to Bluesky. Your profile links have not changed",
+    "conflict-error-message": "Your Bluesky profile was changed during the export. Please try again",
+    "cleanup-warning-message": "Links were exported, but some old links could not be removed"
   },
   "sync": {
     "loading-message": "Loading your data from your PDS",
