@@ -73,7 +73,12 @@
     "invalid-form-error-message": "The selected cards are invalid",
     "export-error-message": "Failed to export to Bluesky. Your profile links have not changed",
     "conflict-error-message": "Your Bluesky profile was changed during the export. Please try again",
-    "cleanup-warning-message": "Links were exported, but some old links could not be removed"
+    "cleanup-warning-message": "Links were exported, but some old links could not be removed",
+    "reauth-title": "Permission is needed to export",
+    "reauth-description": "Allow this service to write to your profile. Just log in again with the button below.",
+    "reauth-button": "Log in again",
+    "reauth-denied-message": "Export was canceled because permission wasn't granted",
+    "reauth-error-message": "Couldn't start logging in again"
   },
   "sync": {
     "loading-message": "Loading your data from your PDS",

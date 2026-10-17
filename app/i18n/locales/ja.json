@@ -73,7 +73,12 @@
     "invalid-form-error-message": "選んだカードが無効です",
     "export-error-message": "Blueskyへの書き出しに失敗しました。プロフィールのリンクは変わっていません",
     "conflict-error-message": "書き出し中にBlueskyのプロフィールが変更されました。もう一度お試しください",
-    "cleanup-warning-message": "リンクは書き出しましたが、古いリンクの一部を削除できませんでした"
+    "cleanup-warning-message": "リンクは書き出しましたが、古いリンクの一部を削除できませんでした",
+    "reauth-title": "書き出しには許可が必要です",
+    "reauth-description": "このサービスにプロフィールへの書き込みを許可してください。以下のボタンから再ログインするだけです",
+    "reauth-button": "再ログインする",
+    "reauth-denied-message": "許可されなかったので、書き出しをやめました",
+    "reauth-error-message": "再ログインを始められませんでした"
   },
   "sync": {
     "loading-message": "PDSからデータを読み込んでいます",
