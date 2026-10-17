@@ -1,11 +1,11 @@
 import { Card } from "~/components/card";
-import type { ValidCard } from "~/models/card";
+import type { BoardCard } from "~/models/board";
 
 import { CardContent } from "./card-content";
 import { parseCard } from "./parser";
 
 type Props = {
-  card: ValidCard;
+  card: BoardCard;
 };
 
 export function ViewCard({ card }: Props) {

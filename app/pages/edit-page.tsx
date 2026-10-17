@@ -6,12 +6,12 @@ import { BoardEditor } from "~/features/board/board-editor";
 import { withId } from "~/features/board/card/with-id";
 import { EditBar } from "~/features/edit/edit-bar";
 import { LeaveConfirmDialog } from "~/features/edit/leave-confirm-dialog";
-import type { ValidCard } from "~/models/card";
+import type { BoardCard } from "~/models/board";
 import type { OwnerView } from "~/server/service/owner/ownerView";
 
 type Props = {
   editor: OwnerView;
-  board: { cards: ValidCard[] } | null;
+  board: { cards: BoardCard[] } | null;
 };
 
 export function EditPage({ editor, board }: Props) {

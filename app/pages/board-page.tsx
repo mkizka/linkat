@@ -5,12 +5,12 @@ import { Card } from "~/components/card";
 import { Footer, Main } from "~/components/layout";
 import { BoardActions } from "~/features/board/board-actions";
 import { BoardViewer } from "~/features/board/board-viewer";
-import type { ValidCard } from "~/models/card";
+import type { BoardCard } from "~/models/board";
 import type { OwnerView } from "~/server/service/owner/ownerView";
 
 type Props = {
   owner: OwnerView;
-  board: { cards: ValidCard[] };
+  board: { cards: BoardCard[] };
   url: string;
   isMine: boolean;
   isLogin: boolean;

@@ -1,8 +1,8 @@
-import type { ValidCard } from "~/models/card";
+import type { BoardCard } from "~/models/board";
 
-export type CardWithId = ValidCard & { id: string };
+export type CardWithId = BoardCard & { id: string };
 
-export const withId = (card: ValidCard): CardWithId => ({
+export const withId = (card: BoardCard): CardWithId => ({
   ...card,
   id: crypto.randomUUID(),
 });
