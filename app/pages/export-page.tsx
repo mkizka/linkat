@@ -16,10 +16,10 @@ import {
 type Props = {
   handle: string;
   cards: BoardCard[];
-  exportedCards?: BoardCard[];
+  exported?: boolean;
 };
 
-export function ExportPage({ handle, cards, exportedCards }: Props) {
+export function ExportPage({ handle, cards, exported }: Props) {
   const { t } = useTranslation();
   const navigation = useNavigation();
   const [selected, setSelected] = useState(() =>
@@ -29,12 +29,12 @@ export function ExportPage({ handle, cards, exportedCards }: Props) {
   );
   const isExporting = navigation.formData !== undefined;
 
-  if (exportedCards) {
+  if (exported) {
     return (
       <>
         <ExportBar />
         <Main className="flex flex-col justify-center py-6">
-          <ExportDone handle={handle} cards={exportedCards} />
+          <ExportDone handle={handle} />
         </Main>
       </>
     );

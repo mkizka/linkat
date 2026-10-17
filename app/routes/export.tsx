@@ -33,12 +33,12 @@ export async function action({ request, context }: Route.ActionArgs) {
   });
   const cardIndexes = form.getAll("index").map(Number);
   try {
-    const cards = await di.bskyLinkService.exportCards(editorDid, cardIndexes);
+    await di.bskyLinkService.exportCards(editorDid, cardIndexes);
     logger.info("Blueskyにリンクを書き出しました", {
       ownerDid: editorDid,
-      cardCount: cards.length,
+      cardCount: cardIndexes.length,
     });
-    return { exportedCards: cards };
+    return { exported: true };
   } catch (error) {
     if (error instanceof BskyLinkSelectionError) {
       setToast(context, {
@@ -69,12 +69,7 @@ export async function action({ request, context }: Route.ActionArgs) {
         message: i18next.t("export.cleanup-warning-message"),
         type: "warning",
       });
-      const board = await di.boardService.findBoard(editorDid);
-      const indexes = new Set(cardIndexes);
-      return {
-        exportedCards:
-          board?.cards.filter((_, index) => indexes.has(index)) ?? [],
-      };
+      return { exported: true };
     }
     throw error;
   }
@@ -103,7 +98,7 @@ export default function Export({
     <ExportPage
       handle={loaderData.handle}
       cards={loaderData.cards}
-      exportedCards={actionData?.exportedCards}
+      exported={actionData?.exported}
     />
   );
 }
