@@ -38,9 +38,8 @@ describe("bskyLinkService", () => {
         { url: "https://example.com/b" },
       ];
       // act
-      const actual = await bskyLinkService.exportCards(did, [2, 0]);
+      await bskyLinkService.exportCards(did, [2, 0]);
       // assert
-      expect(actual).toEqual(expected);
       expect(bskyLinkPdsRepository.replace).toHaveBeenCalledWith(did, expected);
     });
     test.each([[[]], [[1]], [[3]], [[0, 5]]])(

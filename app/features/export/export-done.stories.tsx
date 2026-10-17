@@ -6,11 +6,6 @@ const meta = {
   component: ExportDone,
   args: {
     handle: "me.bsky.social",
-    cards: [
-      { url: "https://github.com/me", text: "GitHub" },
-      { url: "https://me.example.com", text: "ブログ" },
-      { url: "https://portfolio.example.com" },
-    ],
   },
 } satisfies Meta<typeof ExportDone>;
 

@@ -64,7 +64,7 @@
     "no-url-badge": "URLなし",
     "not-https-badge": "httpsではない",
     "unselectable-note": "テキストだけのカードは、Blueskyのリンクにできないので選べません。",
-    "done-title": "{{count}}個のリンクを書き出しました",
+    "done-title": "リンクを書き出しました",
     "done-description": "Blueskyのプロフィールで、自己紹介の下に表示されます。",
     "view-on-bluesky-link": "Blueskyで見る",
     "back-to-top-link": "トップに戻る",
