@@ -30,7 +30,8 @@ export function CardFormProvider({
       return parseWithZod(formData, {
         schema,
         error: (issue) =>
-          issue.code === "custom" && issue.path?.length === 0
+          issue.code === "custom" &&
+          issue.params?.code === "url-or-text-required"
             ? t("card-form-provider.input-required-error-message")
             : undefined,
       });

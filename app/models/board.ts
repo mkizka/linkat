@@ -17,7 +17,9 @@ export const cardSchema = z
     text: z.string().optional(),
     emoji: z.string().refine(isOnlySingleEmoji).or(z.literal("")).optional(),
   })
-  .refine((card) => card.url || card.text);
+  .refine((card) => card.url || card.text, {
+    params: { code: "url-or-text-required" },
+  });
 
 export type BoardCard = z.infer<typeof cardSchema>;
 
