@@ -4,6 +4,11 @@ import { setToast } from "remix-toast/middleware";
 import { getInstance } from "~/i18n/i18n";
 import { ExportPage } from "~/pages/export-page";
 import { di } from "~/server/di";
+import {
+  BskyLinkCleanupError,
+  BskyLinkConflictError,
+  BskyLinkExportError,
+} from "~/server/infrastructure/bskyLink/bskyLinkPdsRepository";
 import { BskyLinkSelectionError } from "~/server/service/bskyLink/bskyLink";
 
 import type { Route } from "./+types/export";
@@ -42,12 +47,36 @@ export async function action({ request, context }: Route.ActionArgs) {
       });
       return null;
     }
-    logger.error("Blueskyへのリンクの書き出しに失敗しました", { error });
-    setToast(context, {
-      message: i18next.t("export.export-error-message"),
-      type: "error",
-    });
-    return null;
+    if (error instanceof BskyLinkExportError) {
+      logger.error(error.message, { error });
+      setToast(context, {
+        message: i18next.t("export.export-error-message"),
+        type: "error",
+      });
+      return null;
+    }
+    if (error instanceof BskyLinkConflictError) {
+      logger.error(error.message, { error });
+      setToast(context, {
+        message: i18next.t("export.conflict-error-message"),
+        type: "error",
+      });
+      return null;
+    }
+    if (error instanceof BskyLinkCleanupError) {
+      logger.error(error.message, { error });
+      setToast(context, {
+        message: i18next.t("export.cleanup-warning-message"),
+        type: "warning",
+      });
+      const board = await di.boardService.findBoard(editorDid);
+      const indexes = new Set(cardIndexes);
+      return {
+        exportedCards:
+          board?.cards.filter((_, index) => indexes.has(index)) ?? [],
+      };
+    }
+    throw error;
   }
 }
 
