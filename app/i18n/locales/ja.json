@@ -71,7 +71,9 @@
     "done-note": "ボードを変えても自動では反映されません。変えたときはもう一度書き出してください。",
     "invalid-session-error-message": "ログイン情報が無効でした",
     "invalid-form-error-message": "選んだカードが無効です",
-    "export-error-message": "書き出しに失敗しました"
+    "export-error-message": "Blueskyへの書き出しに失敗しました。プロフィールのリンクは変わっていません",
+    "conflict-error-message": "書き出し中にBlueskyのプロフィールが変更されました。もう一度お試しください",
+    "cleanup-warning-message": "リンクは書き出しましたが、古いリンクの一部を削除できませんでした"
   },
   "sync": {
     "loading-message": "PDSからデータを読み込んでいます",
