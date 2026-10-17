@@ -98,40 +98,45 @@ describe("bskyLinkPdsRepository", () => {
         { collection: "app.bsky.actor.link", rkey: "old" },
       ]);
     });
-    test("リンクのタイトルをカードのテキストの40書記素で切る", async () => {
-      // arrange
-      const family = "👨‍👩‍👧";
-      const created: unknown[] = [];
-      server.use(
-        http.get(xrpcUrl("com.atproto.repo.getRecord"), () =>
-          HttpResponse.json(
-            { error: "RecordNotFound", message: "Could not locate record" },
-            { status: 400 },
+    test.each([
+      { text: "あ".repeat(50), title: "あ".repeat(40) },
+      { text: "👨‍👩‍👧".repeat(50), title: "👨‍👩‍👧".repeat(17) },
+    ])(
+      "リンクのタイトルを40書記素かつ320バイト以内に切る($title)",
+      async ({ text, title }) => {
+        // arrange
+        const created: unknown[] = [];
+        server.use(
+          http.get(xrpcUrl("com.atproto.repo.getRecord"), () =>
+            HttpResponse.json(
+              { error: "RecordNotFound", message: "Could not locate record" },
+              { status: 400 },
+            ),
           ),
-        ),
-        http.post(
-          xrpcUrl("com.atproto.repo.createRecord"),
-          async ({ request }) => {
-            created.push(await request.json());
-            return HttpResponse.json({
-              uri: `at://${did}/app.bsky.actor.link/new`,
+          http.post(
+            xrpcUrl("com.atproto.repo.createRecord"),
+            async ({ request }) => {
+              created.push(await request.json());
+              return HttpResponse.json({
+                uri: `at://${did}/app.bsky.actor.link/new`,
+                cid,
+              });
+            },
+          ),
+          http.post(xrpcUrl("com.atproto.repo.putRecord"), () =>
+            HttpResponse.json({
+              uri: `at://${did}/app.bsky.actor.profile/self`,
               cid,
-            });
-          },
-        ),
-        http.post(xrpcUrl("com.atproto.repo.putRecord"), () =>
-          HttpResponse.json({
-            uri: `at://${did}/app.bsky.actor.profile/self`,
-            cid,
-          }),
-        ),
-      );
-      // act
-      await bskyLinkPdsRepository.replace(did, [
-        { url: "https://example.com", text: family.repeat(50) },
-      ]);
-      // assert
-      expect(created).toMatchObject([{ record: { title: family.repeat(17) } }]);
-    });
+            }),
+          ),
+        );
+        // act
+        await bskyLinkPdsRepository.replace(did, [
+          { url: "https://example.com", text },
+        ]);
+        // assert
+        expect(created).toMatchObject([{ record: { title } }]);
+      },
+    );
   });
 });
