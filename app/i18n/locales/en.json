@@ -16,7 +16,8 @@
     "sample-feed-description": "This is how they look",
     "view-board-link": "View Board",
     "create-board-link": "Create Board",
-    "settings-link": "Settings"
+    "settings-link": "Settings",
+    "export-link": "Export to Bluesky"
   },
   "recent-boards": {
     "title": "Everyone's boards"
@@ -54,6 +55,25 @@
     "confirm-leave-confirm": "Discard and leave",
     "save-board-error-message": "Failed to save the board",
     "save-delayed-warning-message": "The changes are taking a while to appear. Please wait a moment and reload."
+  },
+  "export": {
+    "title": "Export to Bluesky",
+    "cancel-button": "Cancel",
+    "submit-button": "Export",
+    "select-description": "Choose the cards to show on your profile",
+    "no-url-badge": "No URL",
+    "not-https-badge": "Not https",
+    "unselectable-note": "Text-only cards can't become Bluesky links, so they can't be selected.",
+    "done-title": "Exported your links",
+    "done-description": "They appear under your bio on your Bluesky profile.",
+    "view-on-bluesky-link": "View on Bluesky",
+    "back-to-top-link": "Back to top",
+    "done-note": "Changes to your board aren't reflected automatically. Export again after you change it.",
+    "invalid-session-error-message": "The login information was invalid",
+    "invalid-form-error-message": "The selected cards are invalid",
+    "export-error-message": "Failed to export to Bluesky. Your profile links have not changed",
+    "conflict-error-message": "Your Bluesky profile was changed during the export. Please try again",
+    "cleanup-warning-message": "Links were exported, but some old links could not be removed"
   },
   "sync": {
     "loading-message": "Loading your data from your PDS",

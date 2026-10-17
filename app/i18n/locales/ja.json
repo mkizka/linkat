@@ -16,7 +16,8 @@
     "sample-feed-description": "こんな感じで表示されます",
     "view-board-link": "ボードを見る",
     "create-board-link": "ボードを作る",
-    "settings-link": "設定"
+    "settings-link": "設定",
+    "export-link": "Blueskyに書き出す"
   },
   "recent-boards": {
     "title": "みんなのリンク集"
@@ -54,6 +55,25 @@
     "confirm-leave-confirm": "破棄して戻る",
     "save-board-error-message": "ボードの保存に失敗しました",
     "save-delayed-warning-message": "変更の反映に時間がかかっています。少し待ってリロードしてみてください"
+  },
+  "export": {
+    "title": "Blueskyに書き出す",
+    "cancel-button": "キャンセル",
+    "submit-button": "書き出す",
+    "select-description": "プロフィールに出すカードを選んでください",
+    "no-url-badge": "URLなし",
+    "not-https-badge": "httpsではない",
+    "unselectable-note": "テキストだけのカードは、Blueskyのリンクにできないので選べません。",
+    "done-title": "リンクを書き出しました",
+    "done-description": "Blueskyのプロフィールで、自己紹介の下に表示されます。",
+    "view-on-bluesky-link": "Blueskyで見る",
+    "back-to-top-link": "トップに戻る",
+    "done-note": "ボードを変えても自動では反映されません。変えたときはもう一度書き出してください。",
+    "invalid-session-error-message": "ログイン情報が無効でした",
+    "invalid-form-error-message": "選んだカードが無効です",
+    "export-error-message": "Blueskyへの書き出しに失敗しました。プロフィールのリンクは変わっていません",
+    "conflict-error-message": "書き出し中にBlueskyのプロフィールが変更されました。もう一度お試しください",
+    "cleanup-warning-message": "リンクは書き出しましたが、古いリンクの一部を削除できませんでした"
   },
   "sync": {
     "loading-message": "PDSからデータを読み込んでいます",
