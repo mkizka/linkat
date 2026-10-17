@@ -8,15 +8,15 @@ import { SelectCardList } from "~/features/board/card/select-card-list";
 import { ExportBar } from "~/features/export/export-bar";
 import { ExportDone } from "~/features/export/export-done";
 import {
+  type BoardCard,
   isExportableCard,
   MAX_EXPORT_CARDS,
-  type ValidCard,
-} from "~/models/card";
+} from "~/models/board";
 
 type Props = {
   handle: string;
-  cards: ValidCard[];
-  exportedCards?: ValidCard[];
+  cards: BoardCard[];
+  exportedCards?: BoardCard[];
 };
 
 export function ExportPage({ handle, cards, exportedCards }: Props) {
