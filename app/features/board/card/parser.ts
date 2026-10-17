@@ -4,7 +4,7 @@ import type { ComponentProps, FC } from "react";
 import { BlueskyIcon } from "~/components/icons/bluesky";
 import { GitHubIcon } from "~/components/icons/github";
 import { TwitterIcon } from "~/components/icons/twitter";
-import type { ValidCard } from "~/models/card";
+import type { BoardCard } from "~/models/board";
 import {
   atUri,
   isBlueskyFeedUrl,
@@ -51,7 +51,7 @@ const cardIcons: Record<string, CardIconComponent | undefined> = {
   "github.com": GitHubIcon,
 };
 
-export const parseCard = (card: ValidCard): ParsedCard => {
+export const parseCard = (card: BoardCard): ParsedCard => {
   if (!card.url) {
     return {
       type: "text",

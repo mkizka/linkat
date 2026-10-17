@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Form, useNavigation } from "react-router";
 
 import { Button } from "~/components/button";
-import type { ValidCard } from "~/models/card";
+import type { BoardCard } from "~/models/board";
 import type { OwnerView } from "~/server/service/owner/ownerView";
 import { resolveHandleIfNeeded } from "~/utils/url";
 
@@ -17,13 +17,13 @@ import { CardFormProvider } from "./form/card-form-provider";
 type Props = {
   owner: OwnerView;
   // loaderDataはシリアライズされるためプレーンなデータ構造で受け取る
-  board: { cards: ValidCard[] } | null;
+  board: { cards: BoardCard[] } | null;
   url: string;
   editable?: boolean;
   isMine?: boolean;
 };
 
-const withId = (card: ValidCard) => ({
+const withId = (card: BoardCard) => ({
   ...card,
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   id: crypto.randomUUID() as string,
