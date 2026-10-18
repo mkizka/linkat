@@ -31,9 +31,7 @@ export function TopPage({ editor, hasBoard, recentOwners }: Props) {
       <Main className="flex flex-col gap-8 py-8">
         <EditorProfile editor={editor} />
         <EditorMenu handle={editor.handleOrDid} hasBoard={hasBoard} />
-        <div className="px-8">
-          <RecentBoards owners={recentOwners} />
-        </div>
+        <RecentBoards owners={recentOwners} />
       </Main>
     </RootLayout>
   );
