@@ -11,9 +11,6 @@
     "reason-embed": "Embed posts\nand feeds",
     "reason-your-data": "Your data\nstays yours",
     "sample-owner-name": "You can make a board like this",
-    "sample-text": "Text-only is OK too",
-    "sample-feed-name": "Feeds work too",
-    "sample-feed-description": "This is how they look",
     "view-board-link": "View Board",
     "create-board-link": "Create Board",
     "export-link": "Export to Bluesky",
@@ -40,9 +37,10 @@
   },
   "sample": {
     "owner-name": "Sample",
-    "you-can-write-text-instead-of-url": "You can write text instead of a URL",
-    "you-can-write-only-text": "Text-only is also OK",
-    "bluesky-url-is-embedded": "Bluesky URLs are embedded automatically"
+    "text": "Text-only is OK too",
+    "post-url": "https://bsky.app/profile/did:plc:4gow62pk3vqpuwiwaslcwisa/post/3my55oetfpc2d",
+    "feed-name": "Feeds work too",
+    "feed-description": "This is how they look"
   },
   "edit": {
     "invalid-session-error-message": "The login information was invalid",

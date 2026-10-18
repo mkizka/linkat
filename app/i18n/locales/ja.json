@@ -11,9 +11,6 @@
     "reason-embed": "投稿・フィード\n埋め込み対応",
     "reason-your-data": "データは\nあなたのもの",
     "sample-owner-name": "こんな感じでつくれます",
-    "sample-text": "テキストだけでもOK",
-    "sample-feed-name": "フィードも使えます",
-    "sample-feed-description": "こんな感じで表示されます",
     "view-board-link": "ボードを見る",
     "create-board-link": "ボードを作る",
     "export-link": "Blueskyに書き出す",
@@ -40,9 +37,10 @@
   },
   "sample": {
     "owner-name": "サンプル",
-    "you-can-write-text-instead-of-url": "URLの代わりにテキストも書ける",
-    "you-can-write-only-text": "テキストだけでもOK",
-    "bluesky-url-is-embedded": "BlueskyのURLは自動で埋め込まれます"
+    "text": "テキストだけでもOK",
+    "post-url": "https://bsky.app/profile/did:plc:4gow62pk3vqpuwiwaslcwisa/post/3mxm6rvnfns25",
+    "feed-name": "フィードも使えます",
+    "feed-description": "こんな感じで表示されます"
   },
   "edit": {
     "invalid-session-error-message": "ログイン情報が無効でした",
