@@ -40,9 +40,9 @@
   },
   "sample": {
     "owner-name": "Sample",
-    "you-can-write-text-instead-of-url": "You can write text instead of a URL",
-    "you-can-write-only-text": "Text-only is also OK",
-    "bluesky-url-is-embedded": "Bluesky URLs are embedded automatically"
+    "text-only": "Text-only card",
+    "text-and-url": "Card with text and a URL",
+    "emoji": "Card with an emoji icon"
   },
   "edit": {
     "invalid-session-error-message": "The login information was invalid",

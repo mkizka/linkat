@@ -23,22 +23,15 @@ export function SamplePage({ url, isLogin }: Props) {
       }}
       board={{
         cards: [
+          { url: "https://example.com" },
+          { text: t("sample.text-only") },
+          { url: "https://example.com", text: t("sample.text-and-url") },
+          { url: "https://example.com", text: t("sample.emoji"), emoji: "📝" },
           {
-            url: "https://example.com",
-          },
-
-          {
-            url: "https://example.com",
-            text: t("sample.you-can-write-text-instead-of-url"),
-          },
-          {
-            text: t("sample.you-can-write-only-text"),
+            url: "https://bsky.app/profile/did:plc:z72i7hdynmk6r22z27h6tvur/post/3l6oveex3ii2l",
           },
           {
-            text: t("sample.bluesky-url-is-embedded"),
-          },
-          {
-            url: "https://bsky.app/profile/did:plc:z72i7hdynmk6r22z27h6tvur/post/3l47prg3wgy23",
+            url: "https://bsky.app/profile/did:plc:z72i7hdynmk6r22z27h6tvur/feed/whats-hot",
           },
         ],
       }}
