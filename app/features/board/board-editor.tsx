@@ -47,7 +47,7 @@ export function BoardEditor({ owner, cards, setCards }: Props) {
 
   return (
     <CardFormProvider onSubmit={handleSubmitCardForm}>
-      <div className="flex flex-col gap-2 py-4">
+      <div className="flex flex-col gap-2 pb-16 pt-4">
         <ProfileCard owner={owner} />
         <SortableCardList cards={cards} onChange={setCards} />
         <CardFormModal onDelete={handleDeleteCard} />
