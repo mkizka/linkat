@@ -16,6 +16,7 @@ test.describe("モデレーション", () => {
   }) => {
     const boardPath = `/${account.handle}?lng=ja`;
     const adminPage = await (await browser.newContext()).newPage();
+    const guestPage = await (await browser.newContext()).newPage();
 
     await test.step("ボードを保存", async () => {
       await login();
@@ -49,16 +50,18 @@ test.describe("モデレーション", () => {
       await expect(page.getByTestId("profile-card__edit")).toBeVisible();
     });
 
-    await test.step("非表示にすると管理者以外には表示できない", async () => {
+    await test.step("非表示にすると管理者と本人以外には表示できない", async () => {
       await setLevel("非表示");
       await expect(adminPage.getByTestId("moderation-banner")).toHaveText(
         /非表示中/,
       );
-      await page.goto(boardPath);
-      await expect(page.getByTestId("hidden-board__message")).toHaveText(
+      await guestPage.goto(boardPath);
+      await expect(guestPage.getByTestId("hidden-board__message")).toHaveText(
         "このボードは表示できません",
       );
-      const response = await page.request.get(`/${account.handle}/og`);
+      await page.goto(boardPath);
+      await expect(page.getByTestId("profile-card__edit")).toBeVisible();
+      const response = await guestPage.request.get(`/${account.handle}/og`);
       expect(response.status()).toBe(404);
     });
 

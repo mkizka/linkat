@@ -55,13 +55,14 @@ export const boardServiceFactory = ({
     if (!did) {
       return { type: "not-found" };
     }
+    const isMine = did === viewerDid;
     const owner = await ownerRepository.findByDid(did);
-    if (owner && !owner.active) {
+    if (owner && !owner.active && !isMine) {
       return { type: "hidden", status: owner.status };
     }
     const level = await moderationRepository.findLevel(did);
     const isAdmin = moderationService.isAdmin(viewerDid);
-    if (level === "hidden" && !isAdmin) {
+    if (level === "hidden" && !isAdmin && !isMine) {
       return { type: "hidden", status: null };
     }
     const board = await boardRepository.find(did);
