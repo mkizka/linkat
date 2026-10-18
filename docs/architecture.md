@@ -16,20 +16,20 @@
 
 ### ディレクトリ
 
-| 場所             | 役割                                                                        |
-| ---------------- | --------------------------------------------------------------------------- |
-| `app/routes`     | 入口。loader・actionでサービスを呼び、ページに値を渡す                      |
-| `app/pages`      | 画面1枚分のUI                                                               |
-| `app/features`   | 機能ごとのUI部品とhook                                                      |
-| `app/components` | 機能に依存しないUI部品                                                      |
-| `app/hooks`      | 機能に依存しないhook                                                        |
-| `app/schemas`    | レコードの値を検証するzodスキーマ。lexiconで表せない制約を補う              |
-| `app/generated`  | lexiconから生成したコード                                                   |
-| `app/i18n`       | 翻訳                                                                        |
-| `app/libs`       | 外部ライブラリの拡張                                                        |
-| `app/utils`      | 汎用の小さな関数                                                            |
-| `app/mocks`      | テスト用のmsw                                                               |
-| `app/server`     | サーバーだけで動くコード。`app/routes`以外からは`import type`でだけ参照する |
+| 場所             | 役割                                                                                                     |
+| ---------------- | -------------------------------------------------------------------------------------------------------- |
+| `app/routes`     | 入口。loader・actionでサービスを呼び、ページに値を渡す                                                   |
+| `app/pages`      | 画面1枚分のUI                                                                                            |
+| `app/features`   | 機能ごとのUI部品とhook                                                                                   |
+| `app/components` | 機能に依存しないUI部品                                                                                   |
+| `app/hooks`      | 機能に依存しないhook                                                                                     |
+| `app/schemas`    | レコードの値を検証するzodスキーマ。lexiconで表せない制約を補う                                           |
+| `app/generated`  | lexiconから生成したコード                                                                                |
+| `app/i18n`       | 翻訳                                                                                                     |
+| `app/libs`       | 外部ライブラリの拡張                                                                                     |
+| `app/utils`      | 汎用の小さな関数                                                                                         |
+| `app/mocks`      | テスト用のmsw                                                                                            |
+| `app/server`     | サーバーだけで動くコード。`app/pages`・`app/features`・`app/components`からは`import type`でだけ参照する |
 
 ## 方針
 
