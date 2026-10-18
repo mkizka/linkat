@@ -1,6 +1,5 @@
 import { asDid } from "@atproto/did";
 
-import { Board } from "~/models/board";
 import { BoardFactory, cardsFromFactory } from "~/server/factories/board";
 import { OwnerFactory } from "~/server/factories/owner";
 import { boardRepositoryFactory } from "~/server/infrastructure/board/boardRepository";
@@ -28,7 +27,10 @@ describe("boardService", () => {
       // act
       const actual = await boardService.findBoard(asDid(existing.ownerDid));
       // assert
-      expect(actual).toEqual(new Board(existing.ownerDid, cardsFromFactory));
+      expect(actual).toEqual({
+        ownerDid: asDid(existing.ownerDid),
+        cards: cardsFromFactory,
+      });
     });
     test("DBにボードが無ければnullを返す", async () => {
       // arrange
@@ -51,7 +53,7 @@ describe("boardService", () => {
       expect(actual).toEqual({
         type: "ok",
         owner: expect.objectContaining({ did: owner.did }),
-        board: new Board(owner.did, cardsFromFactory),
+        board: { ownerDid: asDid(owner.did), cards: cardsFromFactory },
       });
     });
     test("写しに無いDIDでもボードがあればokを返す", async () => {
@@ -64,7 +66,7 @@ describe("boardService", () => {
       expect(actual).toEqual({
         type: "ok",
         owner: expect.objectContaining({ did, handleOrDid: did }),
-        board: new Board(did, cardsFromFactory),
+        board: { ownerDid: did, cards: cardsFromFactory },
       });
     });
     test("写しに無いハンドルはnot-foundを返す", async () => {

@@ -1,6 +1,6 @@
 import { type Did, isDid } from "@atproto/did";
 
-import type { Board } from "~/models/board";
+import type { BoardDto } from "~/server/infrastructure/board/boardDto";
 import type { IBoardRepository } from "~/server/infrastructure/board/boardRepository";
 import type { IHandleIndex } from "~/server/infrastructure/owner/handleIndex";
 import type { IOwnerRepository } from "~/server/infrastructure/owner/ownerRepository";
@@ -13,10 +13,10 @@ import type {
 export type BoardView =
   | { type: "not-found" }
   | { type: "hidden"; status: string | null }
-  | { type: "ok"; owner: OwnerView; board: Board };
+  | { type: "ok"; owner: OwnerView; board: BoardDto };
 
 export interface IBoardService {
-  findBoard: (ownerDid: Did) => Promise<Board | null>;
+  findBoard: (ownerDid: Did) => Promise<BoardDto | null>;
   findBoardView: (handleOrDid: string) => Promise<BoardView>;
   findRecentOwnerViews: (
     limit: number,
@@ -48,7 +48,7 @@ export const boardServiceFactory = ({
       return { type: "not-found" };
     }
     const owner = await ownerRepository.findByDid(did);
-    if (owner?.isHidden()) {
+    if (owner && !owner.active) {
       return { type: "hidden", status: owner.status };
     }
     const board = await boardRepository.find(did);

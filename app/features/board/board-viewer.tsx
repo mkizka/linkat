@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import type { BoardCard } from "~/models/board";
+import type { BoardCard } from "~/schemas/board";
 import type { OwnerView } from "~/server/service/owner/ownerView";
 
 import { ProfileCard } from "./card/profile-card";

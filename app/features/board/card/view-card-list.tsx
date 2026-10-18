@@ -1,4 +1,4 @@
-import type { BoardCard } from "~/models/board";
+import type { BoardCard } from "~/schemas/board";
 
 import { ViewCard } from "./view-card";
 

@@ -5,7 +5,7 @@ import { Card } from "~/components/card";
 import { Footer, Main } from "~/components/layout";
 import { BoardActions } from "~/features/board/board-actions";
 import { BoardViewer } from "~/features/board/board-viewer";
-import type { BoardCard } from "~/models/board";
+import type { BoardCard } from "~/schemas/board";
 import type { OwnerView } from "~/server/service/owner/ownerView";
 
 type Props = {

@@ -1,4 +1,4 @@
-import type { BoardCard } from "~/models/board";
+import type { BoardCard } from "~/schemas/board";
 
 export type CardWithId = BoardCard & { id: string };
 

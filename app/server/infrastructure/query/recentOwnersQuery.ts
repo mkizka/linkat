@@ -1,15 +1,16 @@
 import { asDid, type Did } from "@atproto/did";
 import { and, desc, eq, isNull, ne, or } from "drizzle-orm";
 
-import { Owner } from "~/models/owner";
 import type { Db } from "~/server/infrastructure/db/drizzle";
 import { boardTable, ownerTable } from "~/server/infrastructure/db/schema";
+import type { OwnerDto } from "~/server/infrastructure/owner/ownerDto";
+import { toOwnerDto } from "~/server/infrastructure/owner/ownerRepository";
 
 export interface IRecentOwnersQuery {
   find: (
     limit: number,
     excludeDid?: Did,
-  ) => Promise<{ ownerDid: Did; owner: Owner | null }[]>;
+  ) => Promise<{ ownerDid: Did; owner: OwnerDto | null }[]>;
 }
 
 export const recentOwnersQueryFactory = ({
@@ -32,7 +33,7 @@ export const recentOwnersQueryFactory = ({
       .limit(limit);
     return rows.map((row) => ({
       ownerDid: asDid(row.ownerDid),
-      owner: row.owner && new Owner(row.owner),
+      owner: row.owner && toOwnerDto(row.owner),
     }));
   },
 });

@@ -1,5 +1,5 @@
 import { Card } from "~/components/card";
-import type { BoardCard } from "~/models/board";
+import type { BoardCard } from "~/schemas/board";
 
 import { CardContent } from "./card-content";
 import { parseCard } from "./parser";

@@ -6,7 +6,7 @@ import { BoardEditor } from "~/features/board/board-editor";
 import { withId } from "~/features/board/card/with-id";
 import { EditBar } from "~/features/edit/edit-bar";
 import { LeaveConfirmDialog } from "~/features/edit/leave-confirm-dialog";
-import type { BoardCard } from "~/models/board";
+import type { BoardCard } from "~/schemas/board";
 import type { OwnerView } from "~/server/service/owner/ownerView";
 
 type Props = {
