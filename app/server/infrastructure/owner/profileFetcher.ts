@@ -3,12 +3,12 @@ import { Client, XrpcResponseError } from "@atproto/lex";
 
 import profile from "~/generated/app/bsky/actor/profile";
 import type { ILogger } from "~/server/infrastructure/logger/logger";
-import type { Profile } from "~/server/infrastructure/owner/owner";
+import type { ProfileDto } from "~/server/infrastructure/owner/ownerDto";
 import type { IProfileRecordParser } from "~/server/infrastructure/owner/profileRecordParser";
 import { tryCatch } from "~/utils/tryCatch";
 
 export interface IProfileFetcher {
-  fetchProfile: (pds: string, did: Did) => Promise<Profile | null | Error>;
+  fetchProfile: (pds: string, did: Did) => Promise<ProfileDto | null | Error>;
 }
 
 const fetchProfileRecord = async (pds: string, did: Did) => {

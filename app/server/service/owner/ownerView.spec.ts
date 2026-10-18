@@ -1,6 +1,6 @@
 import { asDid } from "@atproto/did";
 
-import type { Owner } from "~/server/infrastructure/owner/owner";
+import type { OwnerDto } from "~/server/infrastructure/owner/ownerDto";
 
 import { ownerViewServiceFactory } from "./ownerView";
 
@@ -8,7 +8,7 @@ const ownerViewService = ownerViewServiceFactory();
 
 const did = asDid("did:plc:dummy");
 
-const createOwner = (props: Partial<Owner>): Owner => ({
+const createOwner = (props: Partial<OwnerDto>): OwnerDto => ({
   did,
   avatarCid: null,
   description: null,

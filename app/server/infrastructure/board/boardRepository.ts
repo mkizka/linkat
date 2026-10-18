@@ -2,13 +2,13 @@ import type { Did } from "@atproto/did";
 import { eq } from "drizzle-orm";
 
 import { boardSchema } from "~/schemas/board";
-import type { Board } from "~/server/infrastructure/board/board";
+import type { BoardDto } from "~/server/infrastructure/board/boardDto";
 import type { Db } from "~/server/infrastructure/db/drizzle";
 import { boardTable } from "~/server/infrastructure/db/schema";
 
 export interface IBoardRepository {
-  find: (ownerDid: Did) => Promise<Board | null>;
-  save: (board: Board) => Promise<void>;
+  find: (ownerDid: Did) => Promise<BoardDto | null>;
+  save: (board: BoardDto) => Promise<void>;
   delete: (ownerDid: Did) => Promise<void>;
 }
 

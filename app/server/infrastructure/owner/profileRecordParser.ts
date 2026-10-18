@@ -1,10 +1,10 @@
 import { getBlobCidString } from "@atproto/lex";
 
 import profile from "~/generated/app/bsky/actor/profile";
-import type { Profile } from "~/server/infrastructure/owner/owner";
+import type { ProfileDto } from "~/server/infrastructure/owner/ownerDto";
 
 export interface IProfileRecordParser {
-  parse: (record: unknown) => Profile | null;
+  parse: (record: unknown) => ProfileDto | null;
 }
 
 export const profileRecordParserFactory = (): IProfileRecordParser => ({
