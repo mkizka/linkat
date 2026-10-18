@@ -5,8 +5,8 @@ import { Footer, Main } from "~/components/layout";
 import { BoardViewer } from "~/features/board/board-viewer";
 import { ModerationPanel } from "~/features/board/moderation-panel";
 import { ShareModal } from "~/features/board/share-modal";
-import type { BoardCard } from "~/models/board";
-import type { ModerationLevel } from "~/models/moderation";
+import type { BoardCard } from "~/schemas/board";
+import type { ModerationLevelDto } from "~/server/infrastructure/moderation/moderationDto";
 import type { OwnerView } from "~/server/service/owner/ownerView";
 
 type Props = {
@@ -14,7 +14,7 @@ type Props = {
   board: { cards: BoardCard[] };
   url: string;
   isMine: boolean;
-  admin?: { moderationLevel: ModerationLevel | null };
+  admin?: { moderationLevel: ModerationLevelDto | null };
 };
 
 export function BoardPage({ owner, board, url, isMine, admin }: Props) {

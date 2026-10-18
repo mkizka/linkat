@@ -7,24 +7,21 @@ import { Form, useNavigation } from "react-router";
 import { z } from "zod";
 
 import { Button } from "~/components/button";
-import {
-  type ModerationLevel,
-  moderationLevelSchema,
-} from "~/models/moderation";
+import type { ModerationLevelDto } from "~/server/infrastructure/moderation/moderationDto";
 import { cn } from "~/utils/cn";
 
 export const moderationFormSchema = z.object({
   ownerDid: z.custom<Did>((val) => typeof val === "string" && isDid(val)),
   handle: z.string(),
   level: z
-    .enum(["none", ...moderationLevelSchema.options])
+    .enum(["none", "unlisted", "hidden"])
     .transform((val) => (val === "none" ? null : val)),
 });
 
 type Props = {
   ownerDid: string;
   handle: string;
-  level: ModerationLevel | null;
+  level: ModerationLevelDto | null;
   children: ReactNode;
 };
 
@@ -38,7 +35,7 @@ function ModerationBanner({
   level,
   onChange,
 }: {
-  level: ModerationLevel | null;
+  level: ModerationLevelDto | null;
   onChange: () => void;
 }) {
   const { t } = useTranslation();

@@ -1,8 +1,8 @@
 import { type Did, isDid } from "@atproto/did";
 
-import type { Board } from "~/models/board";
-import type { ModerationLevel } from "~/models/moderation";
+import type { BoardDto } from "~/server/infrastructure/board/boardDto";
 import type { IBoardRepository } from "~/server/infrastructure/board/boardRepository";
+import type { ModerationLevelDto } from "~/server/infrastructure/moderation/moderationDto";
 import type { IModerationRepository } from "~/server/infrastructure/moderation/moderationRepository";
 import type { IHandleIndex } from "~/server/infrastructure/owner/handleIndex";
 import type { IOwnerRepository } from "~/server/infrastructure/owner/ownerRepository";
@@ -18,12 +18,12 @@ export type BoardView =
   | {
       type: "ok";
       owner: OwnerView;
-      board: Board;
-      admin?: { moderationLevel: ModerationLevel | null };
+      board: BoardDto;
+      admin?: { moderationLevel: ModerationLevelDto | null };
     };
 
 export interface IBoardService {
-  findBoard: (ownerDid: Did) => Promise<Board | null>;
+  findBoard: (ownerDid: Did) => Promise<BoardDto | null>;
   findBoardView: (
     handleOrDid: string,
     viewerDid?: Did | null,
@@ -56,7 +56,7 @@ export const boardServiceFactory = ({
       return { type: "not-found" };
     }
     const owner = await ownerRepository.findByDid(did);
-    if (owner?.isHidden()) {
+    if (owner && !owner.active) {
       return { type: "hidden", status: owner.status };
     }
     const level = await moderationRepository.findLevel(did);

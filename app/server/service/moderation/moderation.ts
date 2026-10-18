@@ -1,6 +1,6 @@
 import type { Did } from "@atproto/did";
 
-import type { ModerationLevel } from "~/models/moderation";
+import type { ModerationLevelDto } from "~/server/infrastructure/moderation/moderationDto";
 import type { IModerationRepository } from "~/server/infrastructure/moderation/moderationRepository";
 
 export class NotAdminError extends Error {}
@@ -10,7 +10,7 @@ export interface IModerationService {
   updateLevel: (
     editorDid: Did | null,
     ownerDid: Did,
-    level: ModerationLevel | null,
+    level: ModerationLevelDto | null,
   ) => Promise<void>;
 }
 

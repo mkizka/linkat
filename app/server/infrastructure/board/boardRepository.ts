@@ -1,13 +1,14 @@
 import type { Did } from "@atproto/did";
 import { eq } from "drizzle-orm";
 
-import { Board } from "~/models/board";
+import { boardSchema } from "~/schemas/board";
+import type { BoardDto } from "~/server/infrastructure/board/boardDto";
 import type { Db } from "~/server/infrastructure/db/drizzle";
 import { boardTable } from "~/server/infrastructure/db/schema";
 
 export interface IBoardRepository {
-  find: (ownerDid: Did) => Promise<Board | null>;
-  save: (board: Board) => Promise<void>;
+  find: (ownerDid: Did) => Promise<BoardDto | null>;
+  save: (board: BoardDto) => Promise<void>;
   delete: (ownerDid: Did) => Promise<void>;
 }
 
@@ -24,12 +25,15 @@ export const boardRepositoryFactory = ({
     if (!row) {
       return null;
     }
-    return Board.fromRecord(ownerDid, JSON.parse(row.record));
+    return {
+      ownerDid,
+      cards: boardSchema.parse(JSON.parse(row.record)).cards,
+    };
   },
   async save(board) {
     const data = {
       ownerDid: board.ownerDid,
-      record: board.toRecordJSON(),
+      record: JSON.stringify({ cards: board.cards }),
       updatedAt: new Date(),
     };
     await db

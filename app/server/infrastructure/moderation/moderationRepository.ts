@@ -1,13 +1,13 @@
 import type { Did } from "@atproto/did";
 import { eq } from "drizzle-orm";
 
-import type { ModerationLevel } from "~/models/moderation";
 import type { Db } from "~/server/infrastructure/db/drizzle";
 import { moderationTable } from "~/server/infrastructure/db/schema";
+import type { ModerationLevelDto } from "~/server/infrastructure/moderation/moderationDto";
 
 export interface IModerationRepository {
-  findLevel: (did: Did) => Promise<ModerationLevel | null>;
-  save: (did: Did, level: ModerationLevel | null) => Promise<void>;
+  findLevel: (did: Did) => Promise<ModerationLevelDto | null>;
+  save: (did: Did, level: ModerationLevelDto | null) => Promise<void>;
 }
 
 export const moderationRepositoryFactory = ({
