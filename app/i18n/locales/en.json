@@ -11,9 +11,6 @@
     "reason-embed": "Embed posts\nand feeds",
     "reason-your-data": "Your data\nstays yours",
     "sample-owner-name": "You can make a board like this",
-    "sample-text": "Text-only is OK too",
-    "sample-feed-name": "Feeds work too",
-    "sample-feed-description": "This is how they look",
     "view-board-link": "View Board",
     "create-board-link": "Create Board",
     "export-link": "Export to Bluesky",
@@ -40,9 +37,9 @@
   },
   "sample": {
     "owner-name": "Sample",
-    "text-only": "Text-only card",
-    "text-and-url": "Card with text and a URL",
-    "emoji": "Card with an emoji icon"
+    "text": "Text-only is OK too",
+    "feed-name": "Feeds work too",
+    "feed-description": "This is how they look"
   },
   "edit": {
     "invalid-session-error-message": "The login information was invalid",

@@ -11,9 +11,6 @@
     "reason-embed": "投稿・フィード\n埋め込み対応",
     "reason-your-data": "データは\nあなたのもの",
     "sample-owner-name": "こんな感じでつくれます",
-    "sample-text": "テキストだけでもOK",
-    "sample-feed-name": "フィードも使えます",
-    "sample-feed-description": "こんな感じで表示されます",
     "view-board-link": "ボードを見る",
     "create-board-link": "ボードを作る",
     "export-link": "Blueskyに書き出す",
@@ -40,9 +37,9 @@
   },
   "sample": {
     "owner-name": "サンプル",
-    "text-only": "テキストのみのカード",
-    "text-and-url": "テキストとURLのカード",
-    "emoji": "絵文字アイコンのカード"
+    "text": "テキストだけでもOK",
+    "feed-name": "フィードも使えます",
+    "feed-description": "こんな感じで表示されます"
   },
   "edit": {
     "invalid-session-error-message": "ログイン情報が無効でした",
