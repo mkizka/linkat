@@ -12,6 +12,8 @@ body {
 
 html {
   @apply font-murecho;
+  /* TailwindのPreflightが消しているタップハイライトを戻す https://github.com/tailwindlabs/tailwindcss/pull/12299 */
+  -webkit-tap-highlight-color: revert;
 }
 
 .utils--center {
