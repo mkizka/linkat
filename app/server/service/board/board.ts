@@ -26,7 +26,7 @@ export interface IBoardService {
   findBoard: (ownerDid: Did) => Promise<BoardDto | null>;
   findBoardView: (
     handleOrDid: string,
-    viewerDid?: Did | null,
+    viewerDid: Did | null,
   ) => Promise<BoardView>;
 }
 
@@ -48,7 +48,7 @@ export const boardServiceFactory = ({
   async findBoard(ownerDid) {
     return await boardRepository.find(ownerDid);
   },
-  async findBoardView(handleOrDid, viewerDid = null) {
+  async findBoardView(handleOrDid, viewerDid) {
     const did = isDid(handleOrDid)
       ? handleOrDid
       : await handleIndex.findDid(handleOrDid);

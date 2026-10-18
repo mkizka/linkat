@@ -55,7 +55,7 @@ describe("boardService", () => {
       const owner = await OwnerFactory.create({ handle: "example.com" });
       await BoardFactory.create({ ownerDid: owner.did });
       // act
-      const actual = await boardService.findBoardView("example.com");
+      const actual = await boardService.findBoardView("example.com", null);
       // assert
       expect(actual).toEqual({
         type: "ok",
@@ -69,7 +69,7 @@ describe("boardService", () => {
       const did = asDid("did:plc:nocopy");
       await BoardFactory.create({ ownerDid: did });
       // act
-      const actual = await boardService.findBoardView(did);
+      const actual = await boardService.findBoardView(did, null);
       // assert
       expect(actual).toEqual({
         type: "ok",
@@ -82,7 +82,10 @@ describe("boardService", () => {
       // arrange
       await BoardFactory.create();
       // act
-      const actual = await boardService.findBoardView("unknown.example.com");
+      const actual = await boardService.findBoardView(
+        "unknown.example.com",
+        null,
+      );
       // assert
       expect(actual).toEqual({ type: "not-found" });
     });
@@ -94,7 +97,7 @@ describe("boardService", () => {
       });
       await BoardFactory.create({ ownerDid: owner.did });
       // act
-      const actual = await boardService.findBoardView(owner.did);
+      const actual = await boardService.findBoardView(owner.did, null);
       // assert
       expect(actual).toEqual({ type: "hidden", status: "takendown" });
     });
@@ -105,7 +108,7 @@ describe("boardService", () => {
         status: "deactivated",
       });
       // act
-      const actual = await boardService.findBoardView(owner.did);
+      const actual = await boardService.findBoardView(owner.did, null);
       // assert
       expect(actual).toEqual({ type: "hidden", status: "deactivated" });
     });
@@ -113,7 +116,7 @@ describe("boardService", () => {
       // arrange
       const owner = await OwnerFactory.create();
       // act
-      const actual = await boardService.findBoardView(owner.did);
+      const actual = await boardService.findBoardView(owner.did, null);
       // assert
       expect(actual).toEqual({ type: "not-found" });
     });
@@ -151,7 +154,7 @@ describe("boardService", () => {
       await BoardFactory.create({ ownerDid: owner.did });
       await moderationRepository.save(asDid(owner.did), "unlisted");
       // act
-      const actual = await boardService.findBoardView(owner.did);
+      const actual = await boardService.findBoardView(owner.did, null);
       // assert
       expect(actual).toEqual(
         expect.objectContaining({ type: "ok", admin: null }),

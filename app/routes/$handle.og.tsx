@@ -140,7 +140,7 @@ const createImage = async (owner: OwnerView) => {
 
 export async function loader({ params }: Route.LoaderArgs) {
   const logger = di.logger.child("$handle.og");
-  const result = await di.boardService.findBoardView(params.handle);
+  const result = await di.boardService.findBoardView(params.handle, null);
   if (result.type !== "ok") {
     throw new Response(null, { status: 404 });
   }
