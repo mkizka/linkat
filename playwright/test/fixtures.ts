@@ -7,7 +7,7 @@ export type TestSize = "medium" | "large";
 
 type Account = { handle: string; password: string };
 
-const authorize = async (page: Page, { handle, password }: Account) => {
+export const authorize = async (page: Page, { handle, password }: Account) => {
   await page.goto("/login");
   await page.getByTestId("login-form__handle").fill(handle);
   await page.getByTestId("login-form__submit").click();
