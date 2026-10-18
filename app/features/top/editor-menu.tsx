@@ -46,12 +46,12 @@ export function EditorMenu({ handle, hasBoard }: Props) {
     <div
       key="export"
       aria-disabled="true"
-      className={`${tileClassName} border border-dashed border-base-content/30 text-base-content/40`}
+      className={`${tileClassName} relative border border-dashed border-base-content/30 text-base-content/40`}
       data-testid="index__export-link"
     >
       <BlueskyIcon className="size-6" />
       {t("_index.export-link")}
-      <span className="badge badge-ghost badge-xs">
+      <span className="absolute top-1.5 right-1.5 badge badge-ghost badge-xs">
         {t("_index.coming-soon")}
       </span>
     </div>
