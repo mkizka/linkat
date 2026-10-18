@@ -18,7 +18,7 @@
     "settings-link": "設定"
   },
   "recent-boards": {
-    "title": "みんなのリンク集"
+    "title": "みんなのボード"
   },
   "login": {
     "unknown-error-message": "不明なエラーが発生しました",
@@ -69,7 +69,7 @@
   "share-modal": {
     "saved-title": "ボードを保存しました",
     "share-title": "ボードを共有",
-    "description": "リンク集をシェアしよう！",
+    "description": "ボードをシェアしよう！",
     "post-to-bluesky": "Blueskyにポストする",
     "copy-url": "URLをコピーする",
     "copied-message": "コピーしました！",
