@@ -19,7 +19,7 @@ export async function loader({ request, params, context }: Route.LoaderArgs) {
   if (result.type === "hidden") {
     return { hidden: true as const, status: result.status };
   }
-  const { owner, board, moderation } = result;
+  const { owner, board, admin } = result;
   const i18next = getInstance(context);
   const title = i18next.t("board.meta-title", {
     displayName: owner.displayName,
@@ -29,7 +29,7 @@ export async function loader({ request, params, context }: Route.LoaderArgs) {
     owner,
     board: { cards: board.cards },
     isMine: owner.did === viewerDid,
-    moderation,
+    ...(admin && { admin }),
     title: `${title} | Linkat`,
     url: `${env.PUBLIC_URL}/${owner.handleOrDid}`,
     ogImageUrl: `${env.PUBLIC_URL}/${owner.handleOrDid}/og`,
@@ -50,14 +50,14 @@ export default function Index({ loaderData }: Route.ComponentProps) {
   if (loaderData.hidden) {
     return <HiddenBoardPage status={loaderData.status} />;
   }
-  const { owner, board, url, isMine, moderation } = loaderData;
+  const { owner, board, url, isMine } = loaderData;
   return (
     <BoardPage
       owner={owner}
       board={board}
       url={url}
       isMine={isMine}
-      moderation={moderation}
+      admin={loaderData.admin}
     />
   );
 }

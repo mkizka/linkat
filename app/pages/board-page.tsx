@@ -14,21 +14,21 @@ type Props = {
   board: { cards: BoardCard[] };
   url: string;
   isMine: boolean;
-  moderation: { level: ModerationLevel | null } | null;
+  admin?: { moderationLevel: ModerationLevel | null };
 };
 
-export function BoardPage({ owner, board, url, isMine, moderation }: Props) {
+export function BoardPage({ owner, board, url, isMine, admin }: Props) {
   const viewer = (
     <BoardViewer owner={owner} board={board} url={url} isMine={isMine} />
   );
   return (
     <>
       <Main className="flex flex-col">
-        {moderation ? (
+        {admin ? (
           <ModerationPanel
             ownerDid={owner.did}
             handle={owner.handleOrDid}
-            level={moderation.level}
+            level={admin.moderationLevel}
           >
             {viewer}
           </ModerationPanel>
