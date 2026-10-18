@@ -15,7 +15,7 @@ type Props = {
 
 export function BoardViewer({ owner, board, profileActions }: Props) {
   return (
-    <div className="flex flex-col gap-2 py-4">
+    <div className="flex flex-col gap-2">
       <ProfileCard owner={owner} actions={profileActions} />
       <ViewCardList cards={board?.cards ?? []} />
     </div>

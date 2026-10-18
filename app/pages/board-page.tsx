@@ -36,7 +36,7 @@ export function BoardPage({
   const openModeration = () => moderationRef.current?.showModal();
   return (
     <>
-      <Main className="flex flex-col gap-4 pb-4">
+      <Main className="flex flex-col gap-4 py-4">
         {admin && (
           <ModerationBanner
             level={admin.moderationLevel}
