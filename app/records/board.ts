@@ -1,4 +1,4 @@
-import { asDid, type Did } from "@atproto/did";
+import type { Did } from "@atproto/did";
 import emojiRegex from "emoji-regex";
 import { z } from "zod";
 
@@ -45,24 +45,15 @@ export class BoardParseError extends Error {
   }
 }
 
-export class Board {
-  readonly ownerDid: Did;
-  readonly cards: BoardCard[];
+export type Board = {
+  ownerDid: Did;
+  cards: BoardCard[];
+};
 
-  constructor(ownerDid: string, cards: BoardCard[]) {
-    this.ownerDid = asDid(ownerDid);
-    this.cards = cards;
+export const parseBoardRecord = (ownerDid: Did, input: unknown): Board => {
+  const result = boardSchema.safeParse(input);
+  if (!result.success) {
+    throw new BoardParseError(result.error);
   }
-
-  static fromRecord(ownerDid: string, input: unknown): Board {
-    const result = boardSchema.safeParse(input);
-    if (!result.success) {
-      throw new BoardParseError(result.error);
-    }
-    return new Board(ownerDid, result.data.cards);
-  }
-
-  toRecordJSON(): string {
-    return JSON.stringify({ cards: this.cards });
-  }
-}
+  return { ownerDid, cards: result.data.cards };
+};

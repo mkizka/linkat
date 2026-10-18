@@ -1,7 +1,7 @@
 import type { Did } from "@atproto/did";
 import { eq } from "drizzle-orm";
 
-import { Board } from "~/models/board";
+import { type Board, parseBoardRecord } from "~/records/board";
 import type { Db } from "~/server/infrastructure/db/drizzle";
 import { boardTable } from "~/server/infrastructure/db/schema";
 
@@ -24,12 +24,12 @@ export const boardRepositoryFactory = ({
     if (!row) {
       return null;
     }
-    return Board.fromRecord(ownerDid, JSON.parse(row.record));
+    return parseBoardRecord(ownerDid, JSON.parse(row.record));
   },
   async save(board) {
     const data = {
       ownerDid: board.ownerDid,
-      record: board.toRecordJSON(),
+      record: JSON.stringify({ cards: board.cards }),
       updatedAt: new Date(),
     };
     await db

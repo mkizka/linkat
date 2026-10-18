@@ -7,7 +7,7 @@ import {
 import { Card } from "~/components/card";
 import { cardModal } from "~/features/board/form/card-form-modal";
 import type { CardFormPayload } from "~/features/board/form/card-form-provider";
-import type { BoardCard } from "~/models/board";
+import type { BoardCard } from "~/records/board";
 import { cn } from "~/utils/cn";
 
 import { BlueskyEmbed } from "./bluesky-embed";

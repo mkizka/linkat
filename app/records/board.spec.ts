@@ -1,8 +1,10 @@
-import { Board, BoardParseError, cardSchema } from "./board";
+import { asDid } from "@atproto/did";
 
-const ownerDid = "did:plc:dummy";
+import { BoardParseError, cardSchema, parseBoardRecord } from "./board";
 
-describe("Board.fromRecord", () => {
+const ownerDid = asDid("did:plc:dummy");
+
+describe("parseBoardRecord", () => {
   test.each`
     input                                                                                 | expected                            | description
     ${{ cards: [] }}                                                                      | ${[]}                               | ${"カードが0個"}
@@ -11,13 +13,13 @@ describe("Board.fromRecord", () => {
     ${{ cards: [{ url: "https://example.com" }, { url: "mailto:example@example.com" }] }} | ${[{ url: "https://example.com" }]} | ${"不正なカードがあればフィルタする"}
     ${{ cards: [{ url: "https://example.com" }, { emoji: "😀" }] }}                       | ${[{ url: "https://example.com" }]} | ${"URLもテキストも無いカードはフィルタする"}
   `("$description", ({ input, expected }) => {
-    expect(Board.fromRecord(ownerDid, input).cards).toEqual(expected);
+    expect(parseBoardRecord(ownerDid, input).cards).toEqual(expected);
   });
   test.each`
     input | description
     ${{}} | ${"配列でなければパース失敗"}
   `("$description", ({ input }) => {
-    expect(() => Board.fromRecord(ownerDid, input)).toThrow(BoardParseError);
+    expect(() => parseBoardRecord(ownerDid, input)).toThrow(BoardParseError);
   });
 });
 

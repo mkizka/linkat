@@ -1,7 +1,6 @@
 import { asDid } from "@atproto/did";
 import { Pool } from "pg";
 
-import { Board } from "~/models/board";
 import { BoardFactory, cardsFromFactory } from "~/server/factories/board";
 import { OwnerFactory } from "~/server/factories/owner";
 import { db } from "~/server/infrastructure/db/drizzle";
@@ -33,7 +32,10 @@ describe("boardRepository", () => {
       // act
       const actual = await boardRepository.find(asDid(board.ownerDid));
       // assert
-      expect(actual).toEqual(new Board(board.ownerDid, cardsFromFactory));
+      expect(actual).toEqual({
+        ownerDid: asDid(board.ownerDid),
+        cards: cardsFromFactory,
+      });
     });
   });
 
@@ -41,9 +43,10 @@ describe("boardRepository", () => {
     test("ボードが存在しない場合は新規作成する", async () => {
       // arrange
       const owner = await OwnerFactory.create();
-      const board = new Board(owner.did, [
-        { url: "https://example.com", text: "新規カード" },
-      ]);
+      const board = {
+        ownerDid: asDid(owner.did),
+        cards: [{ url: "https://example.com", text: "新規カード" }],
+      };
       // act
       await boardRepository.save(board);
       // assert
@@ -53,9 +56,10 @@ describe("boardRepository", () => {
     test("ボードが存在する場合は上書きする", async () => {
       // arrange
       const existing = await BoardFactory.create();
-      const updated = new Board(existing.ownerDid, [
-        { url: "https://example.com", text: "更新後のカード" },
-      ]);
+      const updated = {
+        ownerDid: asDid(existing.ownerDid),
+        cards: [{ url: "https://example.com", text: "更新後のカード" }],
+      };
       // act
       await boardRepository.save(updated);
       // assert

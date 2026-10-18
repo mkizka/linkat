@@ -1,8 +1,12 @@
 import type { Did } from "@atproto/did";
 
-import type { AccountState, Owner, Profile } from "~/models/owner";
 import type { IIdentityResolver } from "~/server/infrastructure/owner/identityResolver";
-import type { IOwnerRepository } from "~/server/infrastructure/owner/ownerRepository";
+import type {
+  AccountState,
+  IOwnerRepository,
+  Owner,
+  Profile,
+} from "~/server/infrastructure/owner/ownerRepository";
 import type { IProfileFetcher } from "~/server/infrastructure/owner/profileFetcher";
 
 import type { IOwnerViewService, OwnerView } from "./ownerView";

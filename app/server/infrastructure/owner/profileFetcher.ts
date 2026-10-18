@@ -2,8 +2,8 @@ import type { Did } from "@atproto/did";
 import { Client, XrpcResponseError } from "@atproto/lex";
 
 import profile from "~/generated/app/bsky/actor/profile";
-import type { Profile } from "~/models/owner";
 import type { ILogger } from "~/server/infrastructure/logger/logger";
+import type { Profile } from "~/server/infrastructure/owner/ownerRepository";
 import type { IProfileRecordParser } from "~/server/infrastructure/owner/profileRecordParser";
 import { tryCatch } from "~/utils/tryCatch";
 

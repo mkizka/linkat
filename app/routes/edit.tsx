@@ -4,8 +4,8 @@ import { setToast } from "remix-toast/middleware";
 import { SyncGate } from "~/features/sync/sync-gate";
 import { useSync } from "~/features/sync/use-sync";
 import { getInstance } from "~/i18n/i18n";
-import { Board } from "~/models/board";
 import { EditPage } from "~/pages/edit-page";
+import { parseBoardRecord } from "~/records/board";
 import { di } from "~/server/di";
 import {
   BoardDbSaveError,
@@ -43,7 +43,7 @@ export async function action({ request, context }: Route.ActionArgs) {
     return null;
   }
   const parsedBoard = await tryCatch(() =>
-    Board.fromRecord(editorDid, JSON.parse(rawBoard)),
+    parseBoardRecord(editorDid, JSON.parse(rawBoard)),
   )();
   if (parsedBoard instanceof Error) {
     logger.warn("boardの形式が不正でした", { error: parsedBoard });

@@ -2,7 +2,7 @@ import type { Did } from "@atproto/did";
 import { Client, XrpcResponseError } from "@atproto/lex";
 
 import boardLexicon from "~/generated/blue/linkat/board";
-import { Board } from "~/models/board";
+import { type Board, parseBoardRecord } from "~/records/board";
 import type { IOAuthClient } from "~/server/infrastructure/auth/oauthClient";
 
 export interface IBoardPdsRepository {
@@ -25,7 +25,7 @@ export const boardPdsRepositoryFactory = ({
         const { body } = await client.getRecord(boardLexicon.$type, "self", {
           repo: did,
         });
-        return Board.fromRecord(did, body.value);
+        return parseBoardRecord(did, body.value);
       } catch (error) {
         if (
           error instanceof XrpcResponseError &&

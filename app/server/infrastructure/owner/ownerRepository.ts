@@ -1,11 +1,20 @@
 import type { Did } from "@atproto/did";
 import { and, eq, ne } from "drizzle-orm";
 
-import { type AccountState, Owner, type Profile } from "~/models/owner";
 import type { Db } from "~/server/infrastructure/db/drizzle";
 import { ownerTable } from "~/server/infrastructure/db/schema";
 
 type Tx = Parameters<Parameters<Db["transaction"]>[0]>[0];
+
+export type Owner = typeof ownerTable.$inferSelect;
+
+export type AccountState = { active: boolean; status: string | null };
+
+export type Profile = {
+  avatarCid: string | null;
+  description: string | null;
+  displayName: string | null;
+};
 
 export interface IOwnerRepository {
   findByDid: (did: Did) => Promise<Owner | null>;
@@ -49,7 +58,7 @@ export const ownerRepositoryFactory = ({
       .from(ownerTable)
       .where(eq(ownerTable.did, did))
       .limit(1);
-    return row ? new Owner(row) : null;
+    return row ?? null;
   },
   async upsert(did, { handle, profile }) {
     const columns = {
@@ -67,7 +76,7 @@ export const ownerRepositoryFactory = ({
       if (!row) {
         throw new Error("持ち主の保存に失敗しました");
       }
-      return new Owner(row);
+      return row;
     });
   },
   async updateProfile(did, { handle, profile }) {
@@ -78,7 +87,7 @@ export const ownerRepositoryFactory = ({
         .set({ handle, ...profileColumns(profile), updatedAt: new Date() })
         .where(eq(ownerTable.did, did))
         .returning();
-      return row ? new Owner(row) : null;
+      return row ?? null;
     });
   },
   async updateHandle(did, handle) {
@@ -89,7 +98,7 @@ export const ownerRepositoryFactory = ({
         .set({ handle, updatedAt: new Date() })
         .where(eq(ownerTable.did, did))
         .returning();
-      return row ? new Owner(row) : null;
+      return row ?? null;
     });
   },
   async updateAccountState(did, state) {

@@ -1,6 +1,6 @@
 import { arrayMove, List } from "react-movable";
 
-import type { BoardCard } from "~/models/board";
+import type { BoardCard } from "~/records/board";
 
 import { SortableCard } from "./sortable-card";
 

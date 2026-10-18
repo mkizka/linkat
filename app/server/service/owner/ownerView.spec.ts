@@ -1,6 +1,6 @@
 import { asDid } from "@atproto/did";
 
-import { Owner } from "~/models/owner";
+import type { Owner } from "~/server/infrastructure/owner/ownerRepository";
 
 import { ownerViewServiceFactory } from "./ownerView";
 
@@ -8,19 +8,18 @@ const ownerViewService = ownerViewServiceFactory();
 
 const did = asDid("did:plc:dummy");
 
-const createOwner = (props: Partial<ConstructorParameters<typeof Owner>[0]>) =>
-  new Owner({
-    did,
-    avatarCid: null,
-    description: null,
-    displayName: null,
-    handle: "example.com",
-    active: true,
-    status: null,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    ...props,
-  });
+const createOwner = (props: Partial<Owner>): Owner => ({
+  did,
+  avatarCid: null,
+  description: null,
+  displayName: null,
+  handle: "example.com",
+  active: true,
+  status: null,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  ...props,
+});
 
 describe("ownerViewService.toOwnerView", () => {
   test("ハンドルがあればURLと表示にハンドルを使う", () => {
