@@ -1,7 +1,7 @@
-import { isDid } from "@atproto/did";
+import { parseWithZod } from "@conform-to/zod/v4";
 import { redirect } from "react-router";
 
-import { moderationLevelSchema } from "~/models/moderation";
+import { moderationFormSchema } from "~/models/moderation";
 import { di } from "~/server/di";
 import { NotAdminError } from "~/server/service/moderation/moderation";
 
@@ -9,22 +9,15 @@ import type { Route } from "./+types/moderation";
 
 export async function action({ request }: Route.ActionArgs) {
   const editorDid = await di.sessionService.getSessionDid(request);
-  const formData = await request.formData();
-  const ownerDid = formData.get("ownerDid");
-  const handle = formData.get("handle");
-  const level = moderationLevelSchema
-    .nullable()
-    .safeParse(formData.get("level") || null);
-  if (
-    typeof ownerDid !== "string" ||
-    !isDid(ownerDid) ||
-    typeof handle !== "string" ||
-    !level.success
-  ) {
+  const submission = parseWithZod(await request.formData(), {
+    schema: moderationFormSchema,
+  });
+  if (submission.status !== "success") {
     throw new Response("Bad Request", { status: 400 });
   }
+  const { ownerDid, handle, level } = submission.value;
   try {
-    await di.moderationService.updateLevel(editorDid, ownerDid, level.data);
+    await di.moderationService.updateLevel(editorDid, ownerDid, level);
   } catch (error) {
     if (error instanceof NotAdminError) {
       throw new Response("Forbidden", { status: 403 });

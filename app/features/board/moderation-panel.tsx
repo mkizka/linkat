@@ -1,9 +1,14 @@
+import { getFormProps, getInputProps, useForm } from "@conform-to/react";
+import { parseWithZod } from "@conform-to/zod/v4";
 import { type ReactNode, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Form, useNavigation } from "react-router";
 
 import { Button } from "~/components/button";
-import type { ModerationLevel } from "~/models/moderation";
+import {
+  moderationFormSchema,
+  type ModerationLevel,
+} from "~/models/moderation";
 import { cn } from "~/utils/cn";
 
 type Props = {
@@ -14,7 +19,7 @@ type Props = {
 };
 
 const options = [
-  { value: "", label: "moderation.level-none" },
+  { value: "none", label: "moderation.level-none" },
   { value: "unlisted", label: "moderation.level-unlisted" },
   { value: "hidden", label: "moderation.level-hidden" },
 ] as const;
@@ -52,6 +57,16 @@ export function ModerationPanel({ ownerDid, handle, level, children }: Props) {
   const { t } = useTranslation();
   const navigation = useNavigation();
   const open = () => dialogRef.current?.showModal();
+  const [form, fields] = useForm({
+    id: "moderation-form",
+    defaultValue: { ownerDid, handle, level: level ?? "none" },
+    onValidate({ formData }) {
+      return parseWithZod(formData, { schema: moderationFormSchema });
+    },
+    onSubmit() {
+      dialogRef.current?.close();
+    },
+  });
 
   return (
     <>
@@ -70,21 +85,21 @@ export function ModerationPanel({ ownerDid, handle, level, children }: Props) {
             method="post"
             action="/moderation"
             className="flex flex-col gap-2"
-            onSubmit={() => dialogRef.current?.close()}
+            {...getFormProps(form)}
           >
             <h3 className="text-lg font-bold">{t("moderation.title")}</h3>
-            <input type="hidden" name="ownerDid" value={ownerDid} />
-            <input type="hidden" name="handle" value={handle} />
+            <input {...getInputProps(fields.ownerDid, { type: "hidden" })} />
+            <input {...getInputProps(fields.handle, { type: "hidden" })} />
             {options.map((option) => (
               <label
                 key={option.value}
                 className="label cursor-pointer justify-start gap-2"
               >
                 <input
-                  type="radio"
-                  name="level"
-                  value={option.value}
-                  defaultChecked={(level ?? "") === option.value}
+                  {...getInputProps(fields.level, {
+                    type: "radio",
+                    value: option.value,
+                  })}
                   className="radio"
                 />
                 <span>{t(option.label)}</span>
