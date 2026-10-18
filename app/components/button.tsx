@@ -19,8 +19,7 @@ export function Button({
       {...buttonProps}
     >
       {loading && <div className="loading loading-spinner absolute h-1/2" />}
-      {loading && <span className="opacity-0">{children}</span>}
-      {!loading && children}
+      <span className={cn("contents", loading && "invisible")}>{children}</span>
     </button>
   );
 }
