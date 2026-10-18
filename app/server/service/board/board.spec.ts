@@ -126,12 +126,24 @@ describe("boardService", () => {
       await BoardFactory.create({ ownerDid: owner.did });
       await moderationRepository.save(asDid(owner.did), "hidden");
       // act
+      const actual = await boardService.findBoardView(owner.did, null);
+      // assert
+      expect(actual).toEqual({ type: "hidden", status: null });
+    });
+    test("管理者が非表示にしたボードも持ち主本人にはokを返す", async () => {
+      // arrange
+      const owner = await OwnerFactory.create();
+      await BoardFactory.create({ ownerDid: owner.did });
+      await moderationRepository.save(asDid(owner.did), "hidden");
+      // act
       const actual = await boardService.findBoardView(
         owner.did,
         asDid(owner.did),
       );
       // assert
-      expect(actual).toEqual({ type: "hidden", status: null });
+      expect(actual).toEqual(
+        expect.objectContaining({ type: "ok", admin: null }),
+      );
     });
     test("管理者が非表示にしたボードも管理者にはokと非表示レベルを返す", async () => {
       // arrange

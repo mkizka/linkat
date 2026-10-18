@@ -61,7 +61,7 @@ export const boardServiceFactory = ({
     }
     const level = await moderationRepository.findLevel(did);
     const isAdmin = moderationService.isAdmin(viewerDid);
-    if (level === "hidden" && !isAdmin) {
+    if (level === "hidden" && !isAdmin && did !== viewerDid) {
       return { type: "hidden", status: null };
     }
     const board = await boardRepository.find(did);
