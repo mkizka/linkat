@@ -1,15 +1,25 @@
+import { type Did, isDid } from "@atproto/did";
 import { getFormProps, getInputProps, useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod/v4";
 import { type ReactNode, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Form, useNavigation } from "react-router";
+import { z } from "zod";
 
 import { Button } from "~/components/button";
 import {
-  moderationFormSchema,
   type ModerationLevel,
+  moderationLevelSchema,
 } from "~/models/moderation";
 import { cn } from "~/utils/cn";
+
+export const moderationFormSchema = z.object({
+  ownerDid: z.custom<Did>((val) => typeof val === "string" && isDid(val)),
+  handle: z.string(),
+  level: z
+    .enum(["none", ...moderationLevelSchema.options])
+    .transform((val) => (val === "none" ? null : val)),
+});
 
 type Props = {
   ownerDid: string;

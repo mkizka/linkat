@@ -1,7 +1,7 @@
 import { parseWithZod } from "@conform-to/zod/v4";
 import { redirect } from "react-router";
 
-import { moderationFormSchema } from "~/models/moderation";
+import { moderationFormSchema } from "~/features/board/moderation-panel";
 import { di } from "~/server/di";
 import { NotAdminError } from "~/server/service/moderation/moderation";
 
