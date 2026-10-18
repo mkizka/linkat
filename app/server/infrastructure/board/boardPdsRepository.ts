@@ -2,8 +2,11 @@ import type { Did } from "@atproto/did";
 import { Client, XrpcResponseError } from "@atproto/lex";
 
 import boardLexicon from "~/generated/blue/linkat/board";
-import { type Board, parseBoardRecord } from "~/records/board";
 import type { IOAuthClient } from "~/server/infrastructure/auth/oauthClient";
+import {
+  type Board,
+  parseBoardRecord,
+} from "~/server/infrastructure/board/boardRepository";
 
 export interface IBoardPdsRepository {
   find: (did: Did) => Promise<Board | null>;

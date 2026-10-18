@@ -4,7 +4,7 @@ import type { ComponentProps, FC } from "react";
 import { BlueskyIcon } from "~/components/icons/bluesky";
 import { GitHubIcon } from "~/components/icons/github";
 import { TwitterIcon } from "~/components/icons/twitter";
-import type { BoardCard } from "~/records/board";
+import type { BoardCard } from "~/schemas/board";
 import {
   atUri,
   isBlueskyFeedUrl,

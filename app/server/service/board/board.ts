@@ -1,6 +1,6 @@
 import { type Did, isDid } from "@atproto/did";
 
-import type { Board } from "~/records/board";
+import type { Board } from "~/server/infrastructure/board/boardRepository";
 import type { IBoardRepository } from "~/server/infrastructure/board/boardRepository";
 import type { IHandleIndex } from "~/server/infrastructure/owner/handleIndex";
 import type { IOwnerRepository } from "~/server/infrastructure/owner/ownerRepository";

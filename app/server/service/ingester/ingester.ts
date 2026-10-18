@@ -1,6 +1,6 @@
 import { lexParse } from "@atproto/lex";
 
-import { parseBoardRecord } from "~/records/board";
+import { parseBoardRecord } from "~/server/infrastructure/board/boardRepository";
 import type { IIngesterHandler } from "~/server/infrastructure/ingester/ingesterClient";
 import type { ILogger } from "~/server/infrastructure/logger/logger";
 import type { IProfileRecordParser } from "~/server/infrastructure/owner/profileRecordParser";

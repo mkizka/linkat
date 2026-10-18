@@ -5,8 +5,8 @@ import { SyncGate } from "~/features/sync/sync-gate";
 import { useSync } from "~/features/sync/use-sync";
 import { getInstance } from "~/i18n/i18n";
 import { EditPage } from "~/pages/edit-page";
-import { parseBoardRecord } from "~/records/board";
 import { di } from "~/server/di";
+import { parseBoardRecord } from "~/server/infrastructure/board/boardRepository";
 import {
   BoardDbSaveError,
   BoardPdsSaveError,

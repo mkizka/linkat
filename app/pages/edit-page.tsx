@@ -5,7 +5,7 @@ import { useBeforeUnload, useBlocker } from "react-router";
 import { Main } from "~/components/layout";
 import { BoardViewer } from "~/features/board/board-viewer";
 import { useUmami } from "~/hooks/useUmami";
-import type { BoardCard } from "~/records/board";
+import type { BoardCard } from "~/schemas/board";
 import type { OwnerView } from "~/server/service/owner/ownerView";
 
 type Props = {

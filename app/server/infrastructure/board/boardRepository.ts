@@ -1,9 +1,28 @@
 import type { Did } from "@atproto/did";
 import { eq } from "drizzle-orm";
 
-import { type Board, parseBoardRecord } from "~/records/board";
+import { type BoardCard, boardSchema } from "~/schemas/board";
 import type { Db } from "~/server/infrastructure/db/drizzle";
 import { boardTable } from "~/server/infrastructure/db/schema";
+
+export type Board = {
+  ownerDid: Did;
+  cards: BoardCard[];
+};
+
+export class BoardParseError extends Error {
+  constructor(cause: unknown) {
+    super("Boardのパースに失敗しました", { cause });
+  }
+}
+
+export const parseBoardRecord = (ownerDid: Did, input: unknown): Board => {
+  const result = boardSchema.safeParse(input);
+  if (!result.success) {
+    throw new BoardParseError(result.error);
+  }
+  return { ownerDid, cards: result.data.cards };
+};
 
 export interface IBoardRepository {
   find: (ownerDid: Did) => Promise<Board | null>;
