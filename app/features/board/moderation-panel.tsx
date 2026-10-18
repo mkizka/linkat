@@ -13,15 +13,13 @@ import { cn } from "~/utils/cn";
 export const moderationFormSchema = z.object({
   ownerDid: z.custom<Did>((val) => typeof val === "string" && isDid(val)),
   handle: z.string(),
-  level: z
-    .enum(["none", "unlisted", "hidden"])
-    .transform((val) => (val === "none" ? null : val)),
+  level: z.enum(["none", "unlisted", "hidden"]),
 });
 
 type Props = {
   ownerDid: string;
   handle: string;
-  level: ModerationLevelDto | null;
+  level: ModerationLevelDto;
   children: ReactNode;
 };
 
@@ -35,11 +33,11 @@ function ModerationBanner({
   level,
   onChange,
 }: {
-  level: ModerationLevelDto | null;
+  level: ModerationLevelDto;
   onChange: () => void;
 }) {
   const { t } = useTranslation();
-  if (!level) {
+  if (level === "none") {
     return null;
   }
   return (
@@ -66,7 +64,7 @@ export function ModerationPanel({ ownerDid, handle, level, children }: Props) {
   const open = () => dialogRef.current?.showModal();
   const [form, fields] = useForm({
     id: "moderation-form",
-    defaultValue: { ownerDid, handle, level: level ?? "none" },
+    defaultValue: { ownerDid, handle, level },
     onValidate({ formData }) {
       return parseWithZod(formData, { schema: moderationFormSchema });
     },

@@ -1,1 +1,1 @@
-export type ModerationLevelDto = "unlisted" | "hidden";
+export type ModerationLevelDto = "none" | "unlisted" | "hidden";

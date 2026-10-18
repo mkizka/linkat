@@ -23,19 +23,23 @@ describe("moderationService", () => {
       // assert
       expect(await moderationRepository.findLevel(targetDid)).toBe("hidden");
     });
-    test("管理者はnullを渡すと非表示を解除できる", async () => {
+    test("管理者はnoneを渡すと非表示を解除できる", async () => {
       // arrange
       await moderationRepository.save(targetDid, "hidden");
       // act
-      await moderationService.updateLevel(adminDid, targetDid, null);
+      await moderationService.updateLevel(adminDid, targetDid, "none");
       // assert
-      expect(await moderationRepository.findLevel(targetDid)).toBeNull();
+      expect(await moderationRepository.findLevel(targetDid)).toBe("none");
     });
     test("管理者以外はNotAdminErrorになり変更されない", async () => {
       // arrange
       await moderationRepository.save(targetDid, "hidden");
       // act
-      const actual = moderationService.updateLevel(targetDid, targetDid, null);
+      const actual = moderationService.updateLevel(
+        targetDid,
+        targetDid,
+        "none",
+      );
       // assert
       await expect(actual).rejects.toThrow(NotAdminError);
       expect(await moderationRepository.findLevel(targetDid)).toBe("hidden");

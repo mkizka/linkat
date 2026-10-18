@@ -10,7 +10,7 @@ export interface IModerationService {
   updateLevel: (
     editorDid: Did | null,
     ownerDid: Did,
-    level: ModerationLevelDto | null,
+    level: ModerationLevelDto,
   ) => Promise<void>;
 }
 

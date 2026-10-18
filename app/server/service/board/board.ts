@@ -19,7 +19,7 @@ export type BoardView =
       type: "ok";
       owner: OwnerView;
       board: BoardDto;
-      admin?: { moderationLevel: ModerationLevelDto | null };
+      admin?: { moderationLevel: ModerationLevelDto };
     };
 
 export interface IBoardService {
