@@ -42,7 +42,10 @@ export function ModerationBanner({
       data-testid="moderation-banner"
     >
       <span>{t(`moderation.banner-${level}`)}</span>
-      <button className="btn btn-ghost btn-sm" onClick={onChange}>
+      <button
+        className="btn btn-ghost btn-sm hover:border-transparent hover:bg-black/10"
+        onClick={onChange}
+      >
         {t("moderation.change-button")}
       </button>
     </div>
