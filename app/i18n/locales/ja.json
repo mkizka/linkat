@@ -153,5 +153,16 @@
   },
   "owner": {
     "invalid-handle": "無効なハンドル"
+  },
+  "moderation": {
+    "title": "表示の管理",
+    "open-button": "表示の管理",
+    "level-none": "制限なし",
+    "level-unlisted": "一覧から除外",
+    "level-hidden": "非表示",
+    "save-button": "保存",
+    "change-button": "変更",
+    "banner-unlisted": "一覧から除外中",
+    "banner-hidden": "非表示中"
   }
 }

@@ -2,7 +2,11 @@ import { asDid, type Did } from "@atproto/did";
 import { and, desc, eq, isNull, ne, or } from "drizzle-orm";
 
 import type { Db } from "~/server/infrastructure/db/drizzle";
-import { boardTable, ownerTable } from "~/server/infrastructure/db/schema";
+import {
+  boardTable,
+  moderationTable,
+  ownerTable,
+} from "~/server/infrastructure/db/schema";
 import type { OwnerDto } from "~/server/infrastructure/owner/ownerDto";
 import { toOwnerDto } from "~/server/infrastructure/owner/ownerRepository";
 
@@ -23,9 +27,11 @@ export const recentOwnersQueryFactory = ({
       .select({ ownerDid: boardTable.ownerDid, owner: ownerTable })
       .from(boardTable)
       .leftJoin(ownerTable, eq(boardTable.ownerDid, ownerTable.did))
+      .leftJoin(moderationTable, eq(boardTable.ownerDid, moderationTable.did))
       .where(
         and(
           or(isNull(ownerTable.did), eq(ownerTable.active, true)),
+          isNull(moderationTable.did),
           excludeDid && ne(boardTable.ownerDid, excludeDid),
         ),
       )

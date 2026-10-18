@@ -3,10 +3,12 @@ import { asDid } from "@atproto/did";
 import { BoardFactory } from "~/server/factories/board";
 import { OwnerFactory } from "~/server/factories/owner";
 import { db } from "~/server/infrastructure/db/drizzle";
+import { moderationRepositoryFactory } from "~/server/infrastructure/moderation/moderationRepository";
 
 import { recentOwnersQueryFactory } from "./recentOwnersQuery";
 
 const recentOwnersQuery = recentOwnersQueryFactory({ db });
+const moderationRepository = moderationRepositoryFactory({ db });
 
 describe("recentOwnersQuery", () => {
   describe("find", () => {
@@ -49,6 +51,24 @@ describe("recentOwnersQuery", () => {
       });
       // act
       const actual = await recentOwnersQuery.find(2, asDid(excluded.ownerDid));
+      // assert
+      expect(actual.map(({ ownerDid }) => ownerDid)).toEqual([other.ownerDid]);
+    });
+    test("非表示レベルがunlistedかhiddenの持ち主は返さない", async () => {
+      // arrange
+      const unlisted = await BoardFactory.create({
+        updatedAt: new Date(2000, 0, 3),
+      });
+      const hidden = await BoardFactory.create({
+        updatedAt: new Date(2000, 0, 2),
+      });
+      const other = await BoardFactory.create({
+        updatedAt: new Date(2000, 0, 1),
+      });
+      await moderationRepository.save(asDid(unlisted.ownerDid), "unlisted");
+      await moderationRepository.save(asDid(hidden.ownerDid), "hidden");
+      // act
+      const actual = await recentOwnersQuery.find(3);
       // assert
       expect(actual.map(({ ownerDid }) => ownerDid)).toEqual([other.ownerDid]);
     });

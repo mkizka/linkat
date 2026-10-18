@@ -21,6 +21,7 @@ export function SamplePage({ url, isLogin }: Props) {
         isLogin={isLogin}
         owner={owner}
         board={{ cards }}
+        admin={null}
       />
     </FeedFetcherContext>
   );

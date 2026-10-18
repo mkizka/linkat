@@ -153,5 +153,16 @@
   },
   "owner": {
     "invalid-handle": "Invalid handle"
+  },
+  "moderation": {
+    "title": "Manage visibility",
+    "open-button": "Manage visibility",
+    "level-none": "No restriction",
+    "level-unlisted": "Unlisted",
+    "level-hidden": "Hidden",
+    "save-button": "Save",
+    "change-button": "Change",
+    "banner-unlisted": "Unlisted",
+    "banner-hidden": "Hidden"
   }
 }

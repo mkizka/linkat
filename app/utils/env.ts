@@ -1,3 +1,4 @@
+import { asDid } from "@atproto/did";
 import { createEnv } from "@t3-oss/env-core";
 import { z } from "zod";
 
@@ -34,6 +35,10 @@ const server = {
     .default("wss://jetstream1.us-west.bsky.network/subscribe"),
   // PR環境などJetstreamを使わない場合に無効化出来るようにする
   DISABLE_JETSTREAM: z.coerce.boolean().default(false),
+  ADMIN_DIDS: z
+    .string()
+    .default("")
+    .transform((val) => val.split(",").filter(Boolean).map(asDid)),
   ATPROTO_PLC_URL: z.url().default("https://plc.directory"),
   ATPROTO_HANDLE_RESOLVER_URL: z.url().optional(),
   UMAMI_SCRIPT_URL: z.string().optional(),

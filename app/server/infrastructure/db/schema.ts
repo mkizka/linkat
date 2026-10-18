@@ -37,6 +37,13 @@ export const boardTable = pgTable(
   (table) => [uniqueIndex("Board_ownerDid_key").on(table.ownerDid)],
 );
 
+export const moderationTable = pgTable("Moderation", {
+  did: text().primaryKey(),
+  level: text({ enum: ["unlisted", "hidden"] }).notNull(),
+  createdAt: timestamp({ precision: 3 }).notNull().defaultNow(),
+  updatedAt: timestamp({ precision: 3 }).notNull(),
+});
+
 export const authSessionTable = pgTable("AuthSession", {
   key: text().primaryKey(),
   session: text().notNull(),

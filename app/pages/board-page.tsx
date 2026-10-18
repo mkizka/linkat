@@ -5,7 +5,9 @@ import { Card } from "~/components/card";
 import { Footer, Main } from "~/components/layout";
 import { BoardActions } from "~/features/board/board-actions";
 import { BoardViewer } from "~/features/board/board-viewer";
+import { ModerationPanel } from "~/features/board/moderation-panel";
 import type { BoardCard } from "~/schemas/board";
+import type { ModerationLevelDto } from "~/server/infrastructure/moderation/moderationDto";
 import type { OwnerView } from "~/server/service/owner/ownerView";
 
 type Props = {
@@ -14,25 +16,42 @@ type Props = {
   url: string;
   isMine: boolean;
   isLogin: boolean;
+  admin: { moderationLevel: ModerationLevelDto } | null;
 };
 
-export function BoardPage({ owner, board, url, isMine, isLogin }: Props) {
+export function BoardPage({
+  owner,
+  board,
+  url,
+  isMine,
+  isLogin,
+  admin,
+}: Props) {
   const { t } = useTranslation();
+  const viewer = (
+    <BoardViewer
+      owner={owner}
+      board={board}
+      profileActions={
+        <BoardActions
+          owner={owner}
+          url={url}
+          isMine={isMine}
+          isLogin={isLogin}
+        />
+      }
+    />
+  );
   return (
     <>
       <Main className="flex flex-col gap-4 pb-4">
-        <BoardViewer
-          owner={owner}
-          board={board}
-          profileActions={
-            <BoardActions
-              owner={owner}
-              url={url}
-              isMine={isMine}
-              isLogin={isLogin}
-            />
-          }
-        />
+        {admin ? (
+          <ModerationPanel ownerDid={owner.did} level={admin.moderationLevel}>
+            {viewer}
+          </ModerationPanel>
+        ) : (
+          viewer
+        )}
         {!isLogin && !isMine && (
           <Link
             to="/"
