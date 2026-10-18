@@ -38,6 +38,7 @@
   "sample": {
     "owner-name": "サンプル",
     "text": "テキストだけでもOK",
+    "post-url": "https://bsky.app/profile/did:plc:4gow62pk3vqpuwiwaslcwisa/post/3mxm6rvnfns25",
     "feed-name": "フィードも使えます",
     "feed-description": "こんな感じで表示されます"
   },

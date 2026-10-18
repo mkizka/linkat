@@ -38,6 +38,7 @@
   "sample": {
     "owner-name": "Sample",
     "text": "Text-only is OK too",
+    "post-url": "https://bsky.app/profile/did:plc:4gow62pk3vqpuwiwaslcwisa/post/3my55oetfpc2d",
     "feed-name": "Feeds work too",
     "feed-description": "This is how they look"
   },

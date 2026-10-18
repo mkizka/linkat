@@ -14,9 +14,7 @@ export function useSampleBoard(displayName: string) {
   const cards = [
     { url: "https://example.com" },
     { text: t("sample.text") },
-    {
-      url: "https://bsky.app/profile/did:plc:4gow62pk3vqpuwiwaslcwisa/post/3mxm6rvnfns25",
-    },
+    { url: t("sample.post-url") },
     { url: "https://bsky.app/profile/example.com/feed/sample" },
   ];
   const fetchFeed = () =>
