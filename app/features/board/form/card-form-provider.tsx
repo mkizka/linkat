@@ -3,7 +3,7 @@ import { getZodConstraint, parseWithZod } from "@conform-to/zod/v4";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
 
-import { cardSchema } from "~/models/board";
+import { cardSchema } from "~/schemas/board";
 
 const schema = cardSchema.safeExtend({
   id: z.string().optional(),

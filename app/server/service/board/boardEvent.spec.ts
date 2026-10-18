@@ -4,7 +4,6 @@ import { http, HttpResponse } from "msw";
 import { mock, mockReset } from "vitest-mock-extended";
 
 import { server } from "~/mocks/server";
-import { Board } from "~/models/board";
 import { BoardFactory } from "~/server/factories/board";
 import { OwnerFactory } from "~/server/factories/owner";
 import type { IOAuthClient } from "~/server/infrastructure/auth/oauthClient";
@@ -60,7 +59,7 @@ describe("boardEventService", () => {
     test("PDSに保存してからボードの写しだけを保存する", async () => {
       // arrange
       const owner = await OwnerFactory.create();
-      const board = new Board(owner.did, dummyCards);
+      const board = { ownerDid: asDid(owner.did), cards: dummyCards };
       let putRecordBody: unknown;
       server.use(
         http.post(putRecordUrl, async ({ request }) => {
@@ -92,9 +91,10 @@ describe("boardEventService", () => {
         ),
       );
       // act
-      const actual = boardEventService.handleEditorSave(
-        new Board(owner.did, dummyCards),
-      );
+      const actual = boardEventService.handleEditorSave({
+        ownerDid: asDid(owner.did),
+        cards: dummyCards,
+      });
       // assert
       await expect(actual).rejects.toThrow(BoardPdsSaveError);
       expect(await boardRepository.find(asDid(owner.did))).toBeNull();
@@ -112,9 +112,10 @@ describe("boardEventService", () => {
       );
       vi.spyOn(boardRepository, "save").mockRejectedValueOnce(new Error());
       // act
-      const actual = boardEventService.handleEditorSave(
-        new Board(owner.did, dummyCards),
-      );
+      const actual = boardEventService.handleEditorSave({
+        ownerDid: asDid(owner.did),
+        cards: dummyCards,
+      });
       // assert
       await expect(actual).rejects.toThrow(BoardDbSaveError);
     });
@@ -140,9 +141,10 @@ describe("boardEventService", () => {
       // assert
       expect(actual).toEqual({ boardImported: true });
       expect(ownerService.syncOwner).toHaveBeenCalledWith(did);
-      expect(await boardRepository.find(did)).toEqual(
-        new Board(did, dummyCards),
-      );
+      expect(await boardRepository.find(did)).toEqual({
+        ownerDid: did,
+        cards: dummyCards,
+      });
     });
     test("PDSにボードが無ければボードの写しを作らない", async () => {
       // arrange

@@ -1,6 +1,6 @@
 import type { Did } from "@atproto/did";
 
-import type { Owner } from "~/models/owner";
+import type { OwnerDto } from "~/server/infrastructure/owner/ownerDto";
 
 export type OwnerView = {
   did: Did;
@@ -11,7 +11,7 @@ export type OwnerView = {
 };
 
 export interface IOwnerViewService {
-  toOwnerView: (did: Did, owner: Owner | null) => OwnerView;
+  toOwnerView: (did: Did, owner: OwnerDto | null) => OwnerView;
 }
 
 export const ownerViewServiceFactory = (): IOwnerViewService => ({

@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Form, useNavigation } from "react-router";
 
 import { Button } from "~/components/button";
-import type { BoardCard } from "~/models/board";
+import type { BoardCard } from "~/schemas/board";
 import type { OwnerView } from "~/server/service/owner/ownerView";
 import { resolveHandleIfNeeded } from "~/utils/url";
 

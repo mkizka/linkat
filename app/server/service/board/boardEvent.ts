@@ -1,6 +1,6 @@
 import type { Did } from "@atproto/did";
 
-import type { Board } from "~/models/board";
+import type { BoardDto } from "~/server/infrastructure/board/boardDto";
 import type { IBoardPdsRepository } from "~/server/infrastructure/board/boardPdsRepository";
 import type { IBoardRepository } from "~/server/infrastructure/board/boardRepository";
 import type { IOwnerRepository } from "~/server/infrastructure/owner/ownerRepository";
@@ -31,9 +31,9 @@ export class BoardDbDeleteError extends Error {
 }
 
 export interface IBoardEventService {
-  handleBoardCommit: (board: Board) => Promise<void>;
+  handleBoardCommit: (board: BoardDto) => Promise<void>;
   handleBoardDeleteCommit: (ownerDid: Did) => Promise<void>;
-  handleEditorSave: (board: Board) => Promise<void>;
+  handleEditorSave: (board: BoardDto) => Promise<void>;
   handleEditorSync: (editorDid: Did) => Promise<{ boardImported: boolean }>;
   handleEditorDelete: (ownerDid: Did) => Promise<void>;
 }

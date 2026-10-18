@@ -3,10 +3,10 @@ import { trace } from "@opentelemetry/api";
 import { Jetstream } from "@skyware/jetstream";
 import WebSocket from "ws";
 
-import type { AccountState } from "~/models/owner";
 import type { ICursorRepository } from "~/server/infrastructure/ingester/cursorRepository";
 import type { ILogger } from "~/server/infrastructure/logger/logger";
 import type { IMetrics } from "~/server/infrastructure/metrics/metrics";
+import type { AccountStateDto } from "~/server/infrastructure/owner/ownerDto";
 import { env } from "~/utils/env";
 
 const CURSOR_SAVE_INTERVAL_MS = 30_000;
@@ -23,7 +23,7 @@ export interface IIngesterHandler {
   }) => Promise<void>;
   handleProfileDelete: (event: { did: Did; rkey: string }) => Promise<void>;
   handleIdentity: (event: { did: Did }) => Promise<void>;
-  handleAccount: (event: { did: Did; state: AccountState }) => Promise<void>;
+  handleAccount: (event: { did: Did; state: AccountStateDto }) => Promise<void>;
 }
 
 export interface IIngesterClient {
