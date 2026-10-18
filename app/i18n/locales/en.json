@@ -16,6 +16,8 @@
     "sample-feed-description": "This is how they look",
     "view-board-link": "View Board",
     "create-board-link": "Create Board",
+    "export-link": "Export to Bluesky",
+    "coming-soon": "Coming soon",
     "settings-link": "Settings"
   },
   "recent-boards": {

@@ -7,6 +7,8 @@ import {
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 
+import { BlueskyIcon } from "~/components/icons/bluesky";
+
 type Props = {
   handle: string;
   hasBoard: boolean;
@@ -39,19 +41,35 @@ export function EditorMenu({ handle, hasBoard }: Props) {
         ]),
     { to: "/settings", icon: Cog6ToothIcon, label: t("_index.settings-link") },
   ];
+  const tileClassName = "card items-center gap-1 py-3 text-sm font-bold";
+  const exportTile = (
+    <div
+      key="export"
+      aria-disabled="true"
+      className={`${tileClassName} border border-dashed border-base-content/30 text-base-content/40`}
+      data-testid="index__export-link"
+    >
+      <BlueskyIcon className="size-6" />
+      {t("_index.export-link")}
+      <span className="badge badge-ghost badge-xs">
+        {t("_index.coming-soon")}
+      </span>
+    </div>
+  );
+  const links = tiles.map(({ to, icon: Icon, label, testId }) => (
+    <Link
+      key={to}
+      to={to}
+      className={`${tileClassName} bg-base-100 shadow-sm`}
+      data-testid={testId}
+    >
+      <Icon className="size-6" />
+      {label}
+    </Link>
+  ));
   return (
-    <nav className="flex justify-center gap-2">
-      {tiles.map(({ to, icon: Icon, label, testId }) => (
-        <Link
-          key={to}
-          to={to}
-          className="card w-[calc((100%-1rem)/3)] items-center gap-1 bg-base-100 py-3 text-sm font-bold shadow-sm"
-          data-testid={testId}
-        >
-          <Icon className="size-6" />
-          {label}
-        </Link>
-      ))}
+    <nav className="grid grid-cols-2 gap-2">
+      {hasBoard ? [...links.slice(0, 2), exportTile, links[2]] : links}
     </nav>
   );
 }
