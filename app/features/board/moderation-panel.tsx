@@ -3,7 +3,7 @@ import { getFormProps, getInputProps, useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod/v4";
 import { type ReactNode, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { Form, useNavigation } from "react-router";
+import { useFetcher } from "react-router";
 import { z } from "zod";
 
 import { Button } from "~/components/button";
@@ -12,13 +12,11 @@ import { cn } from "~/utils/cn";
 
 export const moderationFormSchema = z.object({
   ownerDid: z.custom<Did>((val) => typeof val === "string" && isDid(val)),
-  handle: z.string(),
   level: z.enum(["none", "unlisted", "hidden"]),
 });
 
 type Props = {
   ownerDid: string;
-  handle: string;
   level: ModerationLevelDto;
   children: ReactNode;
 };
@@ -57,14 +55,14 @@ function ModerationBanner({
   );
 }
 
-export function ModerationPanel({ ownerDid, handle, level, children }: Props) {
+export function ModerationPanel({ ownerDid, level, children }: Props) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const { t } = useTranslation();
-  const navigation = useNavigation();
+  const fetcher = useFetcher();
   const open = () => dialogRef.current?.showModal();
   const [form, fields] = useForm({
     id: "moderation-form",
-    defaultValue: { ownerDid, handle, level },
+    defaultValue: { ownerDid, level },
     onValidate({ formData }) {
       return parseWithZod(formData, { schema: moderationFormSchema });
     },
@@ -86,7 +84,7 @@ export function ModerationPanel({ ownerDid, handle, level, children }: Props) {
       </button>
       <dialog className="modal" ref={dialogRef}>
         <div className="modal-box">
-          <Form
+          <fetcher.Form
             method="post"
             action="/moderation"
             className="flex flex-col gap-2"
@@ -94,7 +92,6 @@ export function ModerationPanel({ ownerDid, handle, level, children }: Props) {
           >
             <h3 className="text-lg font-bold">{t("moderation.title")}</h3>
             <input {...getInputProps(fields.ownerDid, { type: "hidden" })} />
-            <input {...getInputProps(fields.handle, { type: "hidden" })} />
             {options.map((option) => (
               <label
                 key={option.value}
@@ -112,11 +109,11 @@ export function ModerationPanel({ ownerDid, handle, level, children }: Props) {
             ))}
             <Button
               className="btn-primary mt-2"
-              loading={navigation.state !== "idle"}
+              loading={fetcher.state !== "idle"}
             >
               {t("moderation.save-button")}
             </Button>
-          </Form>
+          </fetcher.Form>
           <form method="dialog">
             <button className="btn btn-circle btn-ghost btn-sm absolute right-2 top-2">
               ✕

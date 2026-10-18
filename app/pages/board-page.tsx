@@ -25,11 +25,7 @@ export function BoardPage({ owner, board, url, isMine, admin }: Props) {
     <>
       <Main className="flex flex-col">
         {admin ? (
-          <ModerationPanel
-            ownerDid={owner.did}
-            handle={owner.handleOrDid}
-            level={admin.moderationLevel}
-          >
+          <ModerationPanel ownerDid={owner.did} level={admin.moderationLevel}>
             {viewer}
           </ModerationPanel>
         ) : (

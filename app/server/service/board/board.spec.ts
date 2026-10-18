@@ -115,7 +115,7 @@ describe("boardService", () => {
       // assert
       expect(actual).toEqual({ type: "not-found" });
     });
-    test("管理者が全部非表示にしたボードは管理者以外にはhiddenを返す", async () => {
+    test("管理者が非表示にしたボードは管理者以外にはhiddenを返す", async () => {
       // arrange
       const owner = await OwnerFactory.create();
       await BoardFactory.create({ ownerDid: owner.did });
@@ -128,7 +128,7 @@ describe("boardService", () => {
       // assert
       expect(actual).toEqual({ type: "hidden", status: null });
     });
-    test("管理者が全部非表示にしたボードも管理者にはokと非表示レベルを返す", async () => {
+    test("管理者が非表示にしたボードも管理者にはokと非表示レベルを返す", async () => {
       // arrange
       const owner = await OwnerFactory.create();
       await BoardFactory.create({ ownerDid: owner.did });

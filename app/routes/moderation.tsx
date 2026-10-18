@@ -1,5 +1,4 @@
 import { parseWithZod } from "@conform-to/zod/v4";
-import { redirect } from "react-router";
 
 import { moderationFormSchema } from "~/features/board/moderation-panel";
 import { di } from "~/server/di";
@@ -15,7 +14,7 @@ export async function action({ request }: Route.ActionArgs) {
   if (submission.status !== "success") {
     throw new Response("Bad Request", { status: 400 });
   }
-  const { ownerDid, handle, level } = submission.value;
+  const { ownerDid, level } = submission.value;
   try {
     await di.moderationService.updateLevel(editorDid, ownerDid, level);
   } catch (error) {
@@ -24,5 +23,5 @@ export async function action({ request }: Route.ActionArgs) {
     }
     throw error;
   }
-  return redirect(`/${encodeURIComponent(handle)}`);
+  return null;
 }
