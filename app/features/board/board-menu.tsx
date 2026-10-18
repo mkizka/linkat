@@ -2,6 +2,7 @@ import {
   ArrowUpOnSquareIcon,
   Cog6ToothIcon,
   EllipsisHorizontalIcon,
+  EyeSlashIcon,
   HomeIcon,
 } from "@heroicons/react/24/outline";
 import { useRef } from "react";
@@ -11,9 +12,10 @@ import { Link } from "react-router";
 type Props = {
   isLogin: boolean;
   onShare: () => void;
+  onModerate: (() => void) | null;
 };
 
-export function BoardMenu({ isLogin, onShare }: Props) {
+export function BoardMenu({ isLogin, onShare, onModerate }: Props) {
   const ref = useRef<HTMLDialogElement>(null);
   const touchStartYRef = useRef(0);
   const { t } = useTranslation();
@@ -73,6 +75,22 @@ export function BoardMenu({ isLogin, onShare }: Props) {
                 {t("board-menu.share")}
               </button>
             </li>
+            {onModerate && (
+              <li>
+                <button
+                  type="button"
+                  className={itemClass}
+                  onClick={() => {
+                    close();
+                    onModerate();
+                  }}
+                  data-testid="board-menu__moderation"
+                >
+                  <EyeSlashIcon className="size-6" />
+                  {t("moderation.open-button")}
+                </button>
+              </li>
+            )}
             {links.map((link) => (
               <li key={link.to}>
                 <Link to={link.to} className={itemClass}>

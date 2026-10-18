@@ -14,9 +14,16 @@ type Props = {
   url: string;
   isMine: boolean;
   isLogin: boolean;
+  onModerate: (() => void) | null;
 };
 
-export function BoardActions({ owner, url, isMine, isLogin }: Props) {
+export function BoardActions({
+  owner,
+  url,
+  isMine,
+  isLogin,
+  onModerate,
+}: Props) {
   const { t } = useTranslation();
   const shareRef = useRef<HTMLDialogElement>(null);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -63,7 +70,11 @@ export function BoardActions({ owner, url, isMine, isLogin }: Props) {
           Bluesky
         </a>
       )}
-      <BoardMenu isLogin={isLogin} onShare={() => openShare(false)} />
+      <BoardMenu
+        isLogin={isLogin}
+        onShare={() => openShare(false)}
+        onModerate={onModerate}
+      />
       <ShareModal
         ref={shareRef}
         url={url}

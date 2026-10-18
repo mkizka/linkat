@@ -15,6 +15,7 @@ const meta = {
     url: "https://linkat.blue/example.bsky.social",
     isMine: false,
     isLogin: false,
+    onModerate: null,
   },
 } satisfies Meta<typeof BoardActions>;
 

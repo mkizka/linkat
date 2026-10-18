@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 
@@ -5,7 +6,10 @@ import { Card } from "~/components/card";
 import { Footer, Main } from "~/components/layout";
 import { BoardActions } from "~/features/board/board-actions";
 import { BoardViewer } from "~/features/board/board-viewer";
-import { ModerationPanel } from "~/features/board/moderation-panel";
+import {
+  ModerationBanner,
+  ModerationDialog,
+} from "~/features/board/moderation";
 import type { BoardCard } from "~/schemas/board";
 import type { ModerationLevelDto } from "~/server/infrastructure/moderation/moderationDto";
 import type { OwnerView } from "~/server/service/owner/ownerView";
@@ -28,29 +32,36 @@ export function BoardPage({
   admin,
 }: Props) {
   const { t } = useTranslation();
-  const viewer = (
-    <BoardViewer
-      owner={owner}
-      board={board}
-      profileActions={
-        <BoardActions
-          owner={owner}
-          url={url}
-          isMine={isMine}
-          isLogin={isLogin}
-        />
-      }
-    />
-  );
+  const moderationRef = useRef<HTMLDialogElement>(null);
+  const openModeration = () => moderationRef.current?.showModal();
   return (
     <>
       <Main className="flex flex-col gap-4 pb-4">
-        {admin ? (
-          <ModerationPanel ownerDid={owner.did} level={admin.moderationLevel}>
-            {viewer}
-          </ModerationPanel>
-        ) : (
-          viewer
+        {admin && (
+          <ModerationBanner
+            level={admin.moderationLevel}
+            onChange={openModeration}
+          />
+        )}
+        <BoardViewer
+          owner={owner}
+          board={board}
+          profileActions={
+            <BoardActions
+              owner={owner}
+              url={url}
+              isMine={isMine}
+              isLogin={isLogin}
+              onModerate={admin && openModeration}
+            />
+          }
+        />
+        {admin && (
+          <ModerationDialog
+            ref={moderationRef}
+            ownerDid={owner.did}
+            level={admin.moderationLevel}
+          />
         )}
         {!isLogin && !isMine && (
           <Link
