@@ -34,6 +34,16 @@ html {
   @apply font-murecho;
 }
 
+@layer base {
+  :where(a, button, [role="button"]) {
+    transition: opacity 0.1s;
+  }
+
+  :where(a, button, [role="button"]):not(:disabled):active {
+    opacity: 0.6;
+  }
+}
+
 .utils--center {
   @apply flex h-full w-full items-center justify-center;
 }
