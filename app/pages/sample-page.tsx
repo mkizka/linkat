@@ -15,9 +15,9 @@ export function SamplePage({ url, isLogin }: Props) {
       isMine={false}
       isLogin={isLogin}
       owner={{
-        did: "did:plc:z72i7hdynmk6r22z27h6tvur",
-        handleOrDid: "bsky.app",
-        displayHandle: "@bsky.app",
+        did: "did:plc:example",
+        handleOrDid: "example.bsky.social",
+        displayHandle: "@example.bsky.social",
         displayName: t("sample.owner-name"),
         avatarUrl: null,
       }}
