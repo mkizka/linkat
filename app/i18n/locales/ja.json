@@ -16,6 +16,8 @@
     "sample-feed-description": "こんな感じで表示されます",
     "view-board-link": "ボードを見る",
     "create-board-link": "ボードを作る",
+    "export-link": "Blueskyに書き出す",
+    "preparing": "準備中",
     "settings-link": "設定"
   },
   "recent-boards": {
