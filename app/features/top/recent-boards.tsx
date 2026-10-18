@@ -24,7 +24,7 @@ export function RecentBoards({ owners }: { owners: OwnerView[] }) {
     return null;
   }
   return (
-    <section className="flex flex-col gap-4">
+    <section className="@container flex flex-col gap-4">
       <h2 className="text-center text-sm font-bold text-base-content/70">
         {t("recent-boards.title")}
       </h2>
@@ -33,6 +33,7 @@ export function RecentBoards({ owners }: { owners: OwnerView[] }) {
           <Link
             key={owner.did}
             to={`/${owner.handleOrDid}`}
+            className="@max-[330px]:nth-[n+7]:hidden"
             title={owner.displayName ?? owner.displayHandle ?? ""}
             aria-label={owner.displayName ?? owner.displayHandle ?? ""}
             data-umami-event="click-recent-board"
