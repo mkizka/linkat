@@ -14,6 +14,7 @@ import { cursorRepositoryFactory } from "~/server/infrastructure/ingester/cursor
 import { ingesterClientFactory } from "~/server/infrastructure/ingester/ingesterClient";
 import { loggerFactory } from "~/server/infrastructure/logger/logger";
 import { metricsFactory } from "~/server/infrastructure/metrics/metrics";
+import { moderationRepositoryFactory } from "~/server/infrastructure/moderation/moderationRepository";
 import { handleIndexFactory } from "~/server/infrastructure/owner/handleIndex";
 import { identityResolverFactory } from "~/server/infrastructure/owner/identityResolver";
 import { ownerRepositoryFactory } from "~/server/infrastructure/owner/ownerRepository";
@@ -25,17 +26,21 @@ import { sessionServiceFactory } from "~/server/service/auth/session";
 import { boardServiceFactory } from "~/server/service/board/board";
 import { boardEventServiceFactory } from "~/server/service/board/boardEvent";
 import { ingesterServiceFactory } from "~/server/service/ingester/ingester";
+import { moderationServiceFactory } from "~/server/service/moderation/moderation";
 import { ownerServiceFactory } from "~/server/service/owner/owner";
 import { ownerViewServiceFactory } from "~/server/service/owner/ownerView";
+import { env } from "~/utils/env";
 
 export const di = await createRegistry()
   .value("db", db)
+  .value("adminDids", env.ADMIN_DIDS)
   .service("logger", loggerFactory)
   .service("metrics", metricsFactory)
   .service("boardRepository", ["db"], boardRepositoryFactory)
   .service("cursorRepository", ["db"], cursorRepositoryFactory)
   .service("ownerRepository", ["db"], ownerRepositoryFactory)
   .service("handleIndex", ["db"], handleIndexFactory)
+  .service("moderationRepository", ["db"], moderationRepositoryFactory)
   .service("oauthStateStore", ["db"], stateStoreFactory)
   .service("oauthSessionStore", ["db"], sessionStoreFactory)
   .service("identityResolver", ["logger"], identityResolverFactory)
@@ -65,8 +70,20 @@ export const di = await createRegistry()
     ownerServiceFactory,
   )
   .service(
+    "moderationService",
+    ["moderationRepository", "adminDids"],
+    moderationServiceFactory,
+  )
+  .service(
     "boardService",
-    ["boardRepository", "handleIndex", "ownerRepository", "ownerViewService"],
+    [
+      "boardRepository",
+      "handleIndex",
+      "ownerRepository",
+      "ownerViewService",
+      "moderationRepository",
+      "moderationService",
+    ],
     boardServiceFactory,
   )
   .service(
