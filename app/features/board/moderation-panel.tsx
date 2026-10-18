@@ -8,6 +8,7 @@ import { cn } from "~/utils/cn";
 
 type Props = {
   did: string;
+  handle: string;
   level: ModerationLevel | null;
   children: ReactNode;
 };
@@ -46,7 +47,7 @@ function ModerationBanner({
   );
 }
 
-export function ModerationPanel({ did, level, children }: Props) {
+export function ModerationPanel({ did, handle, level, children }: Props) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const { t } = useTranslation();
   const navigation = useNavigation();
@@ -67,11 +68,13 @@ export function ModerationPanel({ did, level, children }: Props) {
         <div className="modal-box">
           <Form
             method="post"
+            action="/moderation"
             className="flex flex-col gap-2"
             onSubmit={() => dialogRef.current?.close()}
           >
             <h3 className="text-lg font-bold">{t("moderation.title")}</h3>
             <input type="hidden" name="did" value={did} />
+            <input type="hidden" name="handle" value={handle} />
             {options.map((option) => (
               <label
                 key={option.value}

@@ -1,11 +1,6 @@
-import { isDid } from "@atproto/did";
-import { redirect } from "react-router";
-
 import { getInstance } from "~/i18n/i18n";
-import { moderationLevelSchema } from "~/models/moderation";
 import { BoardPage, HiddenBoardPage } from "~/pages/board-page";
 import { di } from "~/server/di";
-import { NotAdminError } from "~/server/service/moderation/moderation";
 import { env } from "~/utils/env";
 import { createMeta } from "~/utils/meta";
 
@@ -41,27 +36,6 @@ export async function loader({ request, params, context }: Route.LoaderArgs) {
     atUri: `at://${owner.did}/blue.linkat.board/self`,
     hidden: false as const,
   };
-}
-
-export async function action({ request, params }: Route.ActionArgs) {
-  const adminDid = await di.sessionService.getSessionDid(request);
-  const formData = await request.formData();
-  const did = formData.get("did");
-  const level = moderationLevelSchema
-    .nullable()
-    .safeParse(formData.get("level") || null);
-  if (typeof did !== "string" || !isDid(did) || !level.success) {
-    throw new Response("Bad Request", { status: 400 });
-  }
-  try {
-    await di.moderationService.updateLevel(adminDid, did, level.data);
-  } catch (error) {
-    if (error instanceof NotAdminError) {
-      throw new Response("Forbidden", { status: 403 });
-    }
-    throw error;
-  }
-  return redirect(`/${params.handle}`);
 }
 
 export const meta: Route.MetaFunction = ({ loaderData }) => {
