@@ -11,7 +11,7 @@ export function SampleBoardPreview() {
     t("_index.sample-owner-name"),
   );
   return (
-    <div className="relative -rotate-2 px-4 [zoom:0.8]">
+    <div className="relative -rotate-2 p-4 [zoom:0.8]">
       <FeedFetcherContext value={fetchFeed}>
         <BoardViewer owner={owner} board={{ cards }} />
       </FeedFetcherContext>
