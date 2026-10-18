@@ -24,10 +24,11 @@ test.describe("モデレーション", () => {
       await page.waitForURL((url) => url.pathname === `/${account.handle}`);
     });
 
-    await test.step("管理者以外には表示の管理ボタンが出ない", async () => {
+    await test.step("管理者以外にはメニューに表示の管理が出ない", async () => {
       await page.goto(boardPath);
-      await expect(page.getByTestId("profile-card__edit")).toBeVisible();
-      await expect(page.getByTestId("moderation-panel__open")).toBeHidden();
+      await page.getByTestId("board-menu__menu").click();
+      await expect(page.getByTestId("board-menu__share")).toBeVisible();
+      await expect(page.getByTestId("board-menu__moderation")).toBeHidden();
     });
 
     await test.step("管理者でログイン", async () => {
@@ -36,7 +37,8 @@ test.describe("モデレーション", () => {
 
     const setLevel = async (label: string) => {
       await adminPage.goto(boardPath);
-      await adminPage.getByTestId("moderation-panel__open").click();
+      await adminPage.getByTestId("board-menu__menu").click();
+      await adminPage.getByTestId("board-menu__moderation").click();
       await adminPage.getByLabel(label).check();
       await adminPage.getByRole("button", { name: "保存" }).click();
     };
