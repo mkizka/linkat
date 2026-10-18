@@ -121,12 +121,12 @@
   "moderation": {
     "title": "表示の管理",
     "open-button": "表示の管理",
-    "level-none": "通常",
-    "level-unlisted": "みんなのリンク集から除外",
-    "level-hidden": "全部非表示",
+    "level-none": "制限なし",
+    "level-unlisted": "一覧から除外",
+    "level-hidden": "非表示",
     "save-button": "保存",
     "change-button": "変更",
-    "banner-unlisted": "みんなのリンク集から除外中",
+    "banner-unlisted": "一覧から除外中",
     "banner-hidden": "非表示中"
   }
 }

@@ -121,12 +121,12 @@
   "moderation": {
     "title": "Manage visibility",
     "open-button": "Manage visibility",
-    "level-none": "Normal",
-    "level-unlisted": "Exclude from everyone's links",
-    "level-hidden": "Hide everywhere",
+    "level-none": "No restriction",
+    "level-unlisted": "Unlisted",
+    "level-hidden": "Hidden",
     "save-button": "Save",
     "change-button": "Change",
-    "banner-unlisted": "Excluded from everyone's links",
+    "banner-unlisted": "Unlisted",
     "banner-hidden": "Hidden"
   }
 }
