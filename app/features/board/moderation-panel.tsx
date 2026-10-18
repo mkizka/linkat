@@ -33,7 +33,7 @@ function ModerationBanner({
     <div
       role="alert"
       className={cn(
-        "alert mt-4",
+        "alert mt-4 flex justify-between text-start",
         level === "hidden" ? "alert-error" : "alert-warning",
       )}
       data-testid="moderation-banner"
