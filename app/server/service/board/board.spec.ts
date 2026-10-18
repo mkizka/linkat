@@ -4,17 +4,26 @@ import { BoardFactory, cardsFromFactory } from "~/server/factories/board";
 import { OwnerFactory } from "~/server/factories/owner";
 import { boardRepositoryFactory } from "~/server/infrastructure/board/boardRepository";
 import { db } from "~/server/infrastructure/db/drizzle";
+import { moderationRepositoryFactory } from "~/server/infrastructure/moderation/moderationRepository";
 import { handleIndexFactory } from "~/server/infrastructure/owner/handleIndex";
 import { ownerRepositoryFactory } from "~/server/infrastructure/owner/ownerRepository";
+import { moderationServiceFactory } from "~/server/service/moderation/moderation";
 import { ownerViewServiceFactory } from "~/server/service/owner/ownerView";
 
 import { boardServiceFactory } from "./board";
 
+const adminDid = asDid("did:plc:admin");
+const moderationRepository = moderationRepositoryFactory({ db });
 const boardService = boardServiceFactory({
   boardRepository: boardRepositoryFactory({ db }),
   handleIndex: handleIndexFactory({ db }),
   ownerRepository: ownerRepositoryFactory({ db }),
   ownerViewService: ownerViewServiceFactory(),
+  moderationRepository,
+  moderationService: moderationServiceFactory({
+    moderationRepository,
+    adminDids: [adminDid],
+  }),
 });
 
 describe("boardService", () => {
@@ -46,12 +55,13 @@ describe("boardService", () => {
       const owner = await OwnerFactory.create({ handle: "example.com" });
       await BoardFactory.create({ ownerDid: owner.did });
       // act
-      const actual = await boardService.findBoardView("example.com");
+      const actual = await boardService.findBoardView("example.com", null);
       // assert
       expect(actual).toEqual({
         type: "ok",
         owner: expect.objectContaining({ did: owner.did }),
         board: { ownerDid: asDid(owner.did), cards: cardsFromFactory },
+        admin: null,
       });
     });
     test("写しに無いDIDでもボードがあればokを返す", async () => {
@@ -59,19 +69,23 @@ describe("boardService", () => {
       const did = asDid("did:plc:nocopy");
       await BoardFactory.create({ ownerDid: did });
       // act
-      const actual = await boardService.findBoardView(did);
+      const actual = await boardService.findBoardView(did, null);
       // assert
       expect(actual).toEqual({
         type: "ok",
         owner: expect.objectContaining({ did, handleOrDid: did }),
         board: { ownerDid: did, cards: cardsFromFactory },
+        admin: null,
       });
     });
     test("写しに無いハンドルはnot-foundを返す", async () => {
       // arrange
       await BoardFactory.create();
       // act
-      const actual = await boardService.findBoardView("unknown.example.com");
+      const actual = await boardService.findBoardView(
+        "unknown.example.com",
+        null,
+      );
       // assert
       expect(actual).toEqual({ type: "not-found" });
     });
@@ -83,7 +97,7 @@ describe("boardService", () => {
       });
       await BoardFactory.create({ ownerDid: owner.did });
       // act
-      const actual = await boardService.findBoardView(owner.did);
+      const actual = await boardService.findBoardView(owner.did, null);
       // assert
       expect(actual).toEqual({ type: "hidden", status: "takendown" });
     });
@@ -94,7 +108,7 @@ describe("boardService", () => {
         status: "deactivated",
       });
       // act
-      const actual = await boardService.findBoardView(owner.did);
+      const actual = await boardService.findBoardView(owner.did, null);
       // assert
       expect(actual).toEqual({ type: "hidden", status: "deactivated" });
     });
@@ -102,9 +116,49 @@ describe("boardService", () => {
       // arrange
       const owner = await OwnerFactory.create();
       // act
-      const actual = await boardService.findBoardView(owner.did);
+      const actual = await boardService.findBoardView(owner.did, null);
       // assert
       expect(actual).toEqual({ type: "not-found" });
+    });
+    test("管理者が非表示にしたボードは管理者以外にはhiddenを返す", async () => {
+      // arrange
+      const owner = await OwnerFactory.create();
+      await BoardFactory.create({ ownerDid: owner.did });
+      await moderationRepository.save(asDid(owner.did), "hidden");
+      // act
+      const actual = await boardService.findBoardView(
+        owner.did,
+        asDid(owner.did),
+      );
+      // assert
+      expect(actual).toEqual({ type: "hidden", status: null });
+    });
+    test("管理者が非表示にしたボードも管理者にはokと非表示レベルを返す", async () => {
+      // arrange
+      const owner = await OwnerFactory.create();
+      await BoardFactory.create({ ownerDid: owner.did });
+      await moderationRepository.save(asDid(owner.did), "hidden");
+      // act
+      const actual = await boardService.findBoardView(owner.did, adminDid);
+      // assert
+      expect(actual).toEqual(
+        expect.objectContaining({
+          type: "ok",
+          admin: { moderationLevel: "hidden" },
+        }),
+      );
+    });
+    test("一覧から除外したボードは管理者以外にはadminをnullにしてokを返す", async () => {
+      // arrange
+      const owner = await OwnerFactory.create();
+      await BoardFactory.create({ ownerDid: owner.did });
+      await moderationRepository.save(asDid(owner.did), "unlisted");
+      // act
+      const actual = await boardService.findBoardView(owner.did, null);
+      // assert
+      expect(actual).toEqual(
+        expect.objectContaining({ type: "ok", admin: null }),
+      );
     });
   });
 });

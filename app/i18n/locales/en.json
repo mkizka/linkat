@@ -117,5 +117,16 @@
     "header-account": "Account",
     "header-board": "Board",
     "delete-board-warning": "Delete your board saved in PDS. This action cannot be undone."
+  },
+  "moderation": {
+    "title": "Manage visibility",
+    "open-button": "Manage visibility",
+    "level-none": "No restriction",
+    "level-unlisted": "Unlisted",
+    "level-hidden": "Hidden",
+    "save-button": "Save",
+    "change-button": "Change",
+    "banner-unlisted": "Unlisted",
+    "banner-hidden": "Hidden"
   }
 }

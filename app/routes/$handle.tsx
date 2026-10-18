@@ -11,24 +11,25 @@ const notFound = () => {
 };
 
 export async function loader({ request, params, context }: Route.LoaderArgs) {
-  const result = await di.boardService.findBoardView(params.handle);
+  const viewerDid = await di.sessionService.getSessionDid(request);
+  const result = await di.boardService.findBoardView(params.handle, viewerDid);
   if (result.type === "not-found") {
     return notFound();
   }
   if (result.type === "hidden") {
     return { hidden: true as const, status: result.status };
   }
-  const { owner, board } = result;
+  const { owner, board, admin } = result;
   const i18next = getInstance(context);
   const title = i18next.t("board.meta-title", {
     displayName: owner.displayName,
     handle: owner.handleOrDid,
   });
-  const viewerDid = await di.sessionService.getSessionDid(request);
   return {
     owner,
     board: { cards: board.cards },
     isMine: owner.did === viewerDid,
+    admin,
     title: `${title} | Linkat`,
     url: `${env.PUBLIC_URL}/${owner.handleOrDid}`,
     ogImageUrl: `${env.PUBLIC_URL}/${owner.handleOrDid}/og`,
@@ -50,5 +51,13 @@ export default function Index({ loaderData }: Route.ComponentProps) {
     return <HiddenBoardPage status={loaderData.status} />;
   }
   const { owner, board, url, isMine } = loaderData;
-  return <BoardPage owner={owner} board={board} url={url} isMine={isMine} />;
+  return (
+    <BoardPage
+      owner={owner}
+      board={board}
+      url={url}
+      isMine={isMine}
+      admin={loaderData.admin}
+    />
+  );
 }

@@ -22,6 +22,7 @@ const meta = {
     },
     url: "https://linkat.blue/example.bsky.social",
     isMine: false,
+    admin: null,
   },
 } satisfies Meta<typeof BoardPage>;
 
@@ -38,6 +39,14 @@ export const Mine: Story = {
 export const Saved: Story = {
   args: { isMine: true },
   parameters: { path: "/?success" },
+};
+
+export const AdminUnlisted: Story = {
+  args: { admin: { moderationLevel: "unlisted" } },
+};
+
+export const AdminHidden: Story = {
+  args: { admin: { moderationLevel: "hidden" } },
 };
 
 export const Hidden: Story = {
