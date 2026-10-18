@@ -12,6 +12,7 @@ body {
 
 html {
   @apply font-murecho;
+  -webkit-tap-highlight-color: revert;
 }
 
 .utils--center {
