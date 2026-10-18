@@ -30,9 +30,9 @@ const server = {
   PRIVATE_KEY_ES256_B64: isProduction
     ? z.string()
     : z.string().default(DEVELOPMENT_PRIVATE_KEY),
-  JETSTREAM_URL: z
+  JETSTREAM_SERVICE_URL: z
     .url()
-    .default("wss://jetstream1.us-west.bsky.network/subscribe"),
+    .default("https://jetstream.us-west.bsky.network"),
   // PR環境などJetstreamを使わない場合に無効化出来るようにする
   DISABLE_JETSTREAM: z.coerce.boolean().default(false),
   ADMIN_DIDS: z

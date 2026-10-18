@@ -190,6 +190,9 @@ importers:
       '@atproto/syntax':
         specifier: 0.7.6
         version: 0.7.6
+      '@bsky/jetstream':
+        specifier: 1.0.0
+        version: 1.0.0(@atproto/lex@0.3.14)
       '@conform-to/react':
         specifier: 1.21.2
         version: 1.21.2(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
@@ -232,9 +235,6 @@ importers:
       '@sentry/react-router':
         specifier: 11.7.0
         version: 11.7.0(@babel/core@7.29.7(supports-color@8.1.1))(@react-router/node@8.4.0(react-router@8.4.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(typescript@6.0.3))(react-router@8.4.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(react@19.3.0)
-      '@skyware/jetstream':
-        specifier: 0.2.5
-        version: 0.2.5(react@19.3.0)
       '@t3-oss/env-core':
         specifier: 0.13.11
         version: 0.13.11(typescript@6.0.3)(valibot@1.5.0(typescript@6.0.3))(zod@4.6.7)
@@ -316,9 +316,6 @@ importers:
       tailwind-merge:
         specifier: 3.7.0
         version: 3.7.0
-      ws:
-        specifier: 8.22.0
-        version: 8.22.0
       zod:
         specifier: 4.6.7
         version: 4.6.7
@@ -368,9 +365,6 @@ importers:
       '@types/umami':
         specifier: 2.10.1
         version: 2.10.1
-      '@types/ws':
-        specifier: 8.18.2
-        version: 8.18.2
       '@vitest/coverage-v8':
         specifier: 5.0.4
         version: 5.0.4(vitest@5.0.4)
@@ -446,25 +440,6 @@ packages:
   '@alloc/quick-lru@5.3.0':
     resolution: {integrity: sha512-U4+70Pc5ZS9osnCBCE5Jha/ciHM+Yp+CNMNC/7HvYbNRk1Ldd+f7qO65W5qfhu/TCv+/ozljlXXe9Nj8419DMA==}
     engines: {node: '>=10'}
-
-  '@atcute/atproto@3.1.12':
-    resolution: {integrity: sha512-SaHY0vV5+VfS2ViOcbYtxPmmh82vbxoK5ccHTGn5+ciHNY2arEVcBUFbIQKtsQP4PPZ+lNAVooH+Wh62flvCzg==}
-    peerDependencies:
-      '@atcute/lexicons': ^1.0.0
-
-  '@atcute/bluesky@3.3.5':
-    resolution: {integrity: sha512-DmzdCQ1VkPRBsIMr79EDxLWLpg0UNWVahFjMelfzau717r+I3ceJm9SxfOK/of+biLOUj4rlr00tNZT+BRe6Ww==}
-    peerDependencies:
-      '@atcute/lexicons': ^1.0.0
-
-  '@atcute/lexicons@1.3.1':
-    resolution: {integrity: sha512-2JVxDmHt+QwsUoPyVYWIN7ZLRLfLx4GeJxKFjA9ofStuby9hCMv7Q4GAPIXuJD8wPv8vrnhr1yRNQhiJX+bthw==}
-
-  '@atcute/uint8array@1.1.5':
-    resolution: {integrity: sha512-1SFCXOtjE3ismP92CqzbOfYSwJmPPPFbj798wLXSpLv2hSd5OIaUrTh6EqRVR1VZ3ZhR+vaBmd3kxAN0wkw+gQ==}
-
-  '@atcute/util-text@1.3.4':
-    resolution: {integrity: sha512-u2UAM7iSM09sQaSG9jtxWFSPgB8boVj50/BoyMvYnhVgGBu+nXIuAcdDUQCsZA44YZgTPPhN/b86JX+jH7SPzQ==}
 
   '@atpassport/client@0.2.3':
     resolution: {integrity: sha512-JwFm5qZb0fOxRVNBxcR3uD9H59z0XhS8PURvcsVIHNP2dE7iyA3QtC9nXhIQbfnwyOFAISnRnwSwC4CINTKljA==}
@@ -865,6 +840,12 @@ packages:
 
   '@borewit/text-codec@0.2.2':
     resolution: {integrity: sha512-DDaRehssg1aNrH4+2hnj1B7vnUGEjU6OIlyRdkMd0aUdIUvKXrJfXsy8LVtXAy7DRvYVluWbMspsRhz2lcW0mQ==}
+
+  '@bsky/jetstream@1.0.0':
+    resolution: {integrity: sha512-YtQYhG6NEo7GevmVhRAUp8koyjoj+zf7u+Mo5/Of8xmHFVGLhHyQ57jck8JTPjizFW59G3fqM1fifMCuHFzL0w==}
+    engines: {node: '>=22.15.0'}
+    peerDependencies:
+      '@atproto/lex': ^0.3.0
 
   '@bufbuild/protobuf@1.10.1':
     resolution: {integrity: sha512-wJ8ReQbHxsAfXhrf9ixl0aYbZorRuOWpBNzm8pL8ftmSxQx/wnJD5Eg861NwJU/czy2VXFIebCeZnZrI9rktIQ==}
@@ -3493,9 +3474,6 @@ packages:
     engines: {node: '>= 8.0.0'}
     hasBin: true
 
-  '@skyware/jetstream@0.2.5':
-    resolution: {integrity: sha512-fM/zs03DLwqRyzZZJFWN20e76KrdqIp97Tlm8Cek+vxn96+tu5d/fx79V6H85L0QN6HvGiX2l9A8hWFqHvYlOA==}
-
   '@smithy/abort-controller@4.4.2':
     resolution: {integrity: sha512-IINJV4TQAvI1+upIy3YaDtlFcLsWQ5Uw6Nos7CNwiJtpRFw98L1XOn38467Pw54pcYuDi8HGnc2CNbkZBEZq6Q==}
     engines: {node: '>=18.0.0'}
@@ -3780,9 +3758,6 @@ packages:
 
   '@types/umami@2.10.1':
     resolution: {integrity: sha512-CvOEMq+BFOUXj8yciq4hPsdOt0o9KBg5jQXnF1FrdOMKZMxJiwryyZNLa9Ud2NVO6nXSwU22YMKR3E+Xhbo+DA==}
-
-  '@types/ws@8.18.2':
-    resolution: {integrity: sha512-67MQl+fpWKVTT1NYdnmo3U4sc/xPo/zQBncVnI74qmQa0z/b+1g6iYqNmGCPbxO+zz2aklb08a0oHfegiVd0/w==}
 
   '@typescript-eslint/eslint-plugin@8.70.0':
     resolution: {integrity: sha512-/v8HZt6RlyIZxB3ntehELOcUcfxKPVGWXnQdJuHRmzrqgF8nQypcC/oxGW+Ot4VGKDq81XugPKxx0n5PBtf9PA==}
@@ -4829,9 +4804,6 @@ packages:
       jiti:
         optional: true
 
-  esm-env@1.2.2:
-    resolution: {integrity: sha512-Epxrv+Nr/CaL4ZcFGPJIYLWFom+YeV1DqMLHJoEd9SYRxNbaFruBwfEX/kkHUJf55j2+TUbmDcmuilbP1TmXHA==}
-
   espree@11.2.0:
     resolution: {integrity: sha512-7p3DrVEIopW1B1avAGLuCSh1jubc01H2JHc8B4qqGblmg5gI9yumBgACjWo4JlIc04ufug4xJ3SQI8HkS/Rgzw==}
     engines: {node: ^20.19.0 || ^22.13.0 || >=24}
@@ -4870,9 +4842,6 @@ packages:
   etcd3@1.1.2:
     resolution: {integrity: sha512-YIampCz1/OmrVo/tR3QltAVUtYCQQOSFoqmHKKeoHbalm+WdXe3l4rhLIylklu8EzR/I3PBiOF4dC847dDskKg==}
     engines: {node: '>=16'}
-
-  event-target-polyfill@0.0.4:
-    resolution: {integrity: sha512-Gs6RLjzlLRdT8X9ZipJdIZI/Y6/HhRLyq9RdDlCsnpxr/+Nn6bU2EFGuC94GjxqhM+Nmij2Vcq98yoHrU8uNFQ==}
 
   event-target-shim@5.0.1:
     resolution: {integrity: sha512-i/2XbnSz/uxRCU6+NdVJgKWDTM427+MqYbkQzD321DuCQJUqOuJKIA0IM2+W2xtYHdKOmZ4dR6fExsd4SXL+WQ==}
@@ -5873,14 +5842,6 @@ packages:
     resolution: {integrity: sha512-CiyeOxFT/JZyN5m0z9PfXw4SCBJ6Sygz1Dpl0wqjlhDEGGBP1GnsUVEL0p63hoG1fcj3fHynXi9NYO4nWOL+qQ==}
     engines: {node: '>= 0.8'}
 
-  partysocket@1.3.0:
-    resolution: {integrity: sha512-1zToNyolZFK/7nuAw/K2bZrNzFqaZyRoCEkS+9vG6WSC5ikrN6qWRe96q6ImU51uptz2r+dAwSkwhJVdQi4LiA==}
-    peerDependencies:
-      react: '>=17'
-    peerDependenciesMeta:
-      react:
-        optional: true
-
   path-browserify@1.0.1:
     resolution: {integrity: sha512-b7uo2UCUOYZcnF/3ID0lulOJi/bafxa1xPe7ZPsammBSpjSWQkjNxlt635YGS2MiR9GjvuXCtz2emr3jbsz98g==}
 
@@ -6752,9 +6713,6 @@ packages:
     resolution: {integrity: sha512-e2zZ96wSChazBsbENf/Pcm/4swHt2cEKQ92rhUjkL9GCKiTDJIaTBenjE/m9DXi0QBmTMDkFDdOomUy20A1tDQ==}
     engines: {node: '>=20'}
 
-  tiny-emitter@2.1.0:
-    resolution: {integrity: sha512-NB6Dk1A9xgQPMoGqC5CVXn123gWyte215ONT5Pp5a0yt4nlEoO1ZWeCwpncaekPHXO60i47ihFnZPiRPjRMq4Q==}
-
   tiny-inflate@1.0.3:
     resolution: {integrity: sha512-pkY1fj1cKHb2seWDy0B16HeWyczlJA9/WW3u3c4z/NiWDsO3DOU5D7nhTLE9CF0yXv/QZFY7sEJmj24dK+Rrqw==}
 
@@ -6950,9 +6908,6 @@ packages:
 
   unicode-segmenter@0.14.5:
     resolution: {integrity: sha512-jHGmj2LUuqDcX3hqY12Ql+uhUTn8huuxNZGq7GvtF6bSybzH3aFgedYu/KTzQStEgt1Ra2F3HxadNXsNjb3m3g==}
-
-  unicode-segmenter@0.17.3:
-    resolution: {integrity: sha512-hKZwqBjJDmqNrq1+LjDxck1qLzJFcLLJM2Xq92ORRHOuau6GSHeELmn+uyk6zNH1CK9mogrUJGP9WJCJUQXMAw==}
 
   unicode-trie@2.0.0:
     resolution: {integrity: sha512-x7bc76x0bm4prf1VLg79uhAzKw8DVboClSN5VxJuQ+LKDOVEW9CdH+VY7SP+vX7xCYQqzzgQpFqz15zeLvAtZQ==}
@@ -7204,28 +7159,6 @@ snapshots:
   '@adobe/css-tools@4.5.0': {}
 
   '@alloc/quick-lru@5.3.0': {}
-
-  '@atcute/atproto@3.1.12(@atcute/lexicons@1.3.1)':
-    dependencies:
-      '@atcute/lexicons': 1.3.1
-
-  '@atcute/bluesky@3.3.5(@atcute/lexicons@1.3.1)':
-    dependencies:
-      '@atcute/atproto': 3.1.12(@atcute/lexicons@1.3.1)
-      '@atcute/lexicons': 1.3.1
-
-  '@atcute/lexicons@1.3.1':
-    dependencies:
-      '@atcute/uint8array': 1.1.5
-      '@atcute/util-text': 1.3.4
-      '@standard-schema/spec': 1.1.0
-      esm-env: 1.2.2
-
-  '@atcute/uint8array@1.1.5': {}
-
-  '@atcute/util-text@1.3.4':
-    dependencies:
-      unicode-segmenter: 0.17.3
 
   '@atpassport/client@0.2.3(react@19.3.0)':
     optionalDependencies:
@@ -8161,6 +8094,15 @@ snapshots:
   '@bcoe/v8-coverage@1.0.2': {}
 
   '@borewit/text-codec@0.2.2': {}
+
+  '@bsky/jetstream@1.0.0(@atproto/lex@0.3.14)':
+    dependencies:
+      '@atproto/lex': 0.3.14
+      '@atproto/lex-cbor': 0.1.7
+      '@atproto/ws-client': 0.2.1
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
 
   '@bufbuild/protobuf@1.10.1': {}
 
@@ -10830,16 +10772,6 @@ snapshots:
       fflate: 0.7.3
       string.prototype.codepointat: 0.2.1
 
-  '@skyware/jetstream@0.2.5(react@19.3.0)':
-    dependencies:
-      '@atcute/atproto': 3.1.12(@atcute/lexicons@1.3.1)
-      '@atcute/bluesky': 3.3.5(@atcute/lexicons@1.3.1)
-      '@atcute/lexicons': 1.3.1
-      partysocket: 1.3.0(react@19.3.0)
-      tiny-emitter: 2.1.0
-    transitivePeerDependencies:
-      - react
-
   '@smithy/abort-controller@4.4.2':
     dependencies:
       '@smithy/types': 4.19.0
@@ -11189,10 +11121,6 @@ snapshots:
       '@types/node': 24.19.1
 
   '@types/umami@2.10.1': {}
-
-  '@types/ws@8.18.2':
-    dependencies:
-      '@types/node': 24.19.2
 
   '@typescript-eslint/eslint-plugin@8.70.0(@typescript-eslint/parser@8.70.0(eslint@10.12.0(jiti@1.21.7)(supports-color@8.1.1))(supports-color@8.1.1)(typescript@6.0.3))(eslint@10.12.0(jiti@1.21.7)(supports-color@8.1.1))(supports-color@8.1.1)(typescript@6.0.3)':
     dependencies:
@@ -12301,8 +12229,6 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  esm-env@1.2.2: {}
-
   espree@11.2.0:
     dependencies:
       acorn: 8.18.0
@@ -12337,8 +12263,6 @@ snapshots:
       '@grpc/proto-loader': 0.7.15
       bignumber.js: 9.3.1
       cockatiel: 3.2.1
-
-  event-target-polyfill@0.0.4: {}
 
   event-target-shim@5.0.1: {}
 
@@ -13350,12 +13274,6 @@ snapshots:
       hex-rgb: 4.3.0
 
   parseurl@1.3.3: {}
-
-  partysocket@1.3.0(react@19.3.0):
-    dependencies:
-      event-target-polyfill: 0.0.4
-    optionalDependencies:
-      react: 19.3.0
 
   path-browserify@1.0.1: {}
 
@@ -14399,8 +14317,6 @@ snapshots:
     dependencies:
       real-require: 1.0.0
 
-  tiny-emitter@2.1.0: {}
-
   tiny-inflate@1.0.3: {}
 
   tiny-invariant@1.3.3: {}
@@ -14561,8 +14477,6 @@ snapshots:
   undici@8.12.1: {}
 
   unicode-segmenter@0.14.5: {}
-
-  unicode-segmenter@0.17.3: {}
 
   unicode-trie@2.0.0:
     dependencies:

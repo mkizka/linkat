@@ -1,7 +1,6 @@
 import type { Did } from "@atproto/did";
+import { Jetstream, type RawEvent, websocketTransport } from "@bsky/jetstream";
 import { trace } from "@opentelemetry/api";
-import { Jetstream } from "@skyware/jetstream";
-import WebSocket from "ws";
 
 import type { ICursorRepository } from "~/server/infrastructure/ingester/cursorRepository";
 import type { ILogger } from "~/server/infrastructure/logger/logger";
@@ -43,141 +42,127 @@ export const ingesterClientFactory = ({
 }): IIngesterClient => {
   const log = logger.child("jetstream");
 
-  const jetstream = new Jetstream({
-    ws: WebSocket,
-    endpoint: env.JETSTREAM_URL,
-    wantedCollections: ["blue.linkat.board", "app.bsky.actor.profile"],
-  });
-
-  const logError = (message: string) => (error: unknown) => {
-    log.error(message, { error });
-  };
-  const logBoardError = logError("ボードの更新に失敗しました");
-  const logProfileError = logError("プロフィールの更新に失敗しました");
-
   const tracer = trace.getTracer("jetstream");
 
-  const handle =
-    <E extends { kind: string }>(
-      task: (event: E) => Promise<void>,
-      onError: (error: unknown) => void,
-    ) =>
-    (event: E) => {
-      void tracer.startActiveSpan(
-        `jetstream ${event.kind}`,
-        { root: true },
-        (span) =>
-          task(event)
-            .catch(onError)
-            .finally(() => span.end()),
-      );
-    };
+  const handle = (
+    event: RawEvent,
+    task: () => Promise<void>,
+    errorMessage: string,
+  ) => {
+    void tracer.startActiveSpan(
+      `jetstream ${event.kind}`,
+      { root: true },
+      (span) =>
+        task()
+          .catch((error: unknown) => log.error(errorMessage, { error }))
+          .finally(() => span.end()),
+    );
+  };
 
-  jetstream.on("open", () => {
-    log.info(`Jetstream subscription started to ${env.JETSTREAM_URL}`);
-  });
-  jetstream.on("close", () => {
-    log.info(`Jetstream subscription closed`);
-  });
-  jetstream.on("error", (error) => {
-    log.error("Jetstreamでエラーが発生しました", { error });
-  });
-  jetstream.on(
-    "identity",
-    handle(
-      ({ did }) => ingesterService.handleIdentity({ did }),
-      logError("ハンドルの更新に失敗しました"),
-    ),
-  );
-  jetstream.on(
-    "account",
-    handle(
-      ({ did, account }) =>
-        ingesterService.handleAccount({
-          did,
-          state: { active: account.active, status: account.status ?? null },
-        }),
-      logError("アカウントの状態の更新に失敗しました"),
-    ),
-  );
-  jetstream.onCreate(
-    "blue.linkat.board",
-    handle(
-      ({ did, commit }) =>
-        ingesterService.handleBoardCommit({ did, record: commit.record }),
-      logBoardError,
-    ),
-  );
-  jetstream.onUpdate(
-    "blue.linkat.board",
-    handle(
-      ({ did, commit }) =>
-        ingesterService.handleBoardCommit({ did, record: commit.record }),
-      logBoardError,
-    ),
-  );
-  jetstream.onDelete(
-    "blue.linkat.board",
-    handle(
-      ({ did }) => ingesterService.handleBoardDelete({ did }),
-      logBoardError,
-    ),
-  );
-  jetstream.onCreate(
-    "app.bsky.actor.profile",
-    handle(
-      ({ did, commit }) =>
-        ingesterService.handleProfileCommit({
-          did,
-          rkey: commit.rkey,
-          record: commit.record,
-        }),
-      logProfileError,
-    ),
-  );
-  jetstream.onUpdate(
-    "app.bsky.actor.profile",
-    handle(
-      ({ did, commit }) =>
-        ingesterService.handleProfileCommit({
-          did,
-          rkey: commit.rkey,
-          record: commit.record,
-        }),
-      logProfileError,
-    ),
-  );
-  jetstream.onDelete(
-    "app.bsky.actor.profile",
-    handle(
-      ({ did, commit }) =>
-        ingesterService.handleProfileDelete({ did, rkey: commit.rkey }),
-      logProfileError,
-    ),
-  );
+  const dispatch = (event: RawEvent) => {
+    const { did } = event;
+    switch (event.kind) {
+      case "commit": {
+        const { commit } = event;
+        if (commit.collection === "blue.linkat.board") {
+          handle(
+            event,
+            () =>
+              commit.operation === "delete"
+                ? ingesterService.handleBoardDelete({ did })
+                : ingesterService.handleBoardCommit({
+                    did,
+                    record: commit.record,
+                  }),
+            "ボードの更新に失敗しました",
+          );
+        }
+        if (commit.collection === "app.bsky.actor.profile") {
+          handle(
+            event,
+            () =>
+              commit.operation === "delete"
+                ? ingesterService.handleProfileDelete({
+                    did,
+                    rkey: commit.rkey,
+                  })
+                : ingesterService.handleProfileCommit({
+                    did,
+                    rkey: commit.rkey,
+                    record: commit.record,
+                  }),
+            "プロフィールの更新に失敗しました",
+          );
+        }
+        return;
+      }
+      case "identity":
+        handle(
+          event,
+          () => ingesterService.handleIdentity({ did }),
+          "ハンドルの更新に失敗しました",
+        );
+        return;
+      case "account":
+        handle(
+          event,
+          () =>
+            ingesterService.handleAccount({
+              did,
+              state: {
+                active: event.account.active,
+                status: event.account.status ?? null,
+              },
+            }),
+          "アカウントの状態の更新に失敗しました",
+        );
+        return;
+    }
+  };
 
   return {
     async start() {
-      const savedCursor = await cursorRepository.load();
-      if (savedCursor !== undefined) {
-        jetstream.cursor = savedCursor;
-      }
-      jetstream.start();
+      let last: { seq: number; time: string } | undefined;
       setInterval(() => {
-        if (jetstream.cursor !== undefined) {
+        if (last) {
           cursorRepository
-            .save(jetstream.cursor)
-            .catch(logError("cursorの保存に失敗しました"));
+            .save(last.seq)
+            .catch((error: unknown) =>
+              log.error("cursorの保存に失敗しました", { error }),
+            );
         }
       }, CURSOR_SAVE_INTERVAL_MS).unref();
       setInterval(() => {
-        if (jetstream.cursor !== undefined) {
+        if (last) {
           metrics.setGauge(
             "jetstream_lag_seconds",
-            (Date.now() * 1000 - jetstream.cursor) / 1_000_000,
+            (Date.now() - Date.parse(last.time)) / 1000,
           );
         }
       }, LAG_REPORT_INTERVAL_MS).unref();
+
+      const jetstream = new Jetstream(env.JETSTREAM_SERVICE_URL);
+      const events = jetstream.live({
+        raw: true,
+        collections: ["blue.linkat.board", "app.bsky.actor.profile"],
+        kinds: ["commit", "identity", "account"],
+        cursor: cursorRepository,
+        onError: (error) =>
+          log.warn("Jetstreamのイベントを読み飛ばしました", { error }),
+        onInfo: (info) => log.warn("Jetstreamから通知を受け取りました", info),
+        liveTransport: websocketTransport({
+          onReconnect: (error, { attempt }) =>
+            log.warn("Jetstreamに再接続します", { error, attempt }),
+        }),
+      });
+      log.info(
+        `Jetstream subscription started to ${env.JETSTREAM_SERVICE_URL}`,
+      );
+      for await (const event of events) {
+        last = { seq: event.seq, time: event.time };
+        dispatch(event);
+      }
+      throw new Error("Jetstream subscription ended");
     },
   };
 };
