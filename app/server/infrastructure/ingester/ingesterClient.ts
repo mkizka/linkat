@@ -6,7 +6,7 @@ import WebSocket from "ws";
 import type { ICursorRepository } from "~/server/infrastructure/ingester/cursorRepository";
 import type { ILogger } from "~/server/infrastructure/logger/logger";
 import type { IMetrics } from "~/server/infrastructure/metrics/metrics";
-import type { AccountState } from "~/server/infrastructure/owner/ownerRepository";
+import type { AccountState } from "~/server/infrastructure/owner/owner";
 import { env } from "~/utils/env";
 
 const CURSOR_SAVE_INTERVAL_MS = 30_000;

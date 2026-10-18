@@ -3,18 +3,13 @@ import { and, eq, ne } from "drizzle-orm";
 
 import type { Db } from "~/server/infrastructure/db/drizzle";
 import { ownerTable } from "~/server/infrastructure/db/schema";
+import type {
+  AccountState,
+  Owner,
+  Profile,
+} from "~/server/infrastructure/owner/owner";
 
 type Tx = Parameters<Parameters<Db["transaction"]>[0]>[0];
-
-export type Owner = typeof ownerTable.$inferSelect;
-
-export type AccountState = { active: boolean; status: string | null };
-
-export type Profile = {
-  avatarCid: string | null;
-  description: string | null;
-  displayName: string | null;
-};
 
 export interface IOwnerRepository {
   findByDid: (did: Did) => Promise<Owner | null>;

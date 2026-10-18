@@ -1,6 +1,6 @@
 import type { Did } from "@atproto/did";
 
-import type { Owner } from "~/server/infrastructure/owner/ownerRepository";
+import type { Owner } from "~/server/infrastructure/owner/owner";
 
 export type OwnerView = {
   did: Did;

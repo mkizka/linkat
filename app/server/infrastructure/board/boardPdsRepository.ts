@@ -4,7 +4,7 @@ import { Client, XrpcResponseError } from "@atproto/lex";
 import boardLexicon from "~/generated/blue/linkat/board";
 import { boardSchema } from "~/schemas/board";
 import type { IOAuthClient } from "~/server/infrastructure/auth/oauthClient";
-import type { Board } from "~/server/infrastructure/board/boardRepository";
+import type { Board } from "~/server/infrastructure/board/board";
 
 export interface IBoardPdsRepository {
   find: (did: Did) => Promise<Board | null>;

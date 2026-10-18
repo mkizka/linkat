@@ -1,7 +1,7 @@
 import type { Did } from "@atproto/did";
 
+import type { Board } from "~/server/infrastructure/board/board";
 import type { IBoardPdsRepository } from "~/server/infrastructure/board/boardPdsRepository";
-import type { Board } from "~/server/infrastructure/board/boardRepository";
 import type { IBoardRepository } from "~/server/infrastructure/board/boardRepository";
 import type { IOwnerRepository } from "~/server/infrastructure/owner/ownerRepository";
 import type { IOwnerService } from "~/server/service/owner/owner";

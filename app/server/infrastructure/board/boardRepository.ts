@@ -1,14 +1,10 @@
 import type { Did } from "@atproto/did";
 import { eq } from "drizzle-orm";
 
-import { type BoardCard, boardSchema } from "~/schemas/board";
+import { boardSchema } from "~/schemas/board";
+import type { Board } from "~/server/infrastructure/board/board";
 import type { Db } from "~/server/infrastructure/db/drizzle";
 import { boardTable } from "~/server/infrastructure/db/schema";
-
-export type Board = {
-  ownerDid: Did;
-  cards: BoardCard[];
-};
 
 export interface IBoardRepository {
   find: (ownerDid: Did) => Promise<Board | null>;

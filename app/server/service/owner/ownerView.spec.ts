@@ -1,6 +1,6 @@
 import { asDid } from "@atproto/did";
 
-import type { Owner } from "~/server/infrastructure/owner/ownerRepository";
+import type { Owner } from "~/server/infrastructure/owner/owner";
 
 import { ownerViewServiceFactory } from "./ownerView";
 
