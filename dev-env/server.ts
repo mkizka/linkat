@@ -58,7 +58,7 @@ await agent.com.atproto.repo.createRecord({
   },
 });
 
-await network.pds.getAgent().createAccount({
+const alice = await network.pds.getAgent().createAccount({
   handle: "alice.test",
   email: "alice@example.com",
   password: "password",
@@ -78,7 +78,7 @@ const jetstream = await new GenericContainer(
   .withWaitStrategy(Wait.forLogMessage(/steady-state consumer running/))
   .start();
 
-process.stdout.write("Test account: alice.test / password\n");
+process.stdout.write("Test account (admin): alice.test / password\n");
 
 const app = spawn(process.argv.slice(2).join(" "), {
   shell: true,
@@ -90,6 +90,7 @@ const app = spawn(process.argv.slice(2).join(" "), {
     ATPROTO_PLC_URL: `http://localhost:${PORTS.plc}`,
     ATPROTO_HANDLE_RESOLVER_URL: `http://localhost:${PORTS.pds}`,
     JETSTREAM_URL: `ws://localhost:${PORTS.jetstream}/subscribe`,
+    ADMIN_DIDS: alice.data.did,
   },
 });
 
