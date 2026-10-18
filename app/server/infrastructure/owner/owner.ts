@@ -1,6 +1,4 @@
-import type { ownerTable } from "~/server/infrastructure/db/schema";
-
-export type Owner = typeof ownerTable.$inferSelect;
+import type { Did } from "@atproto/did";
 
 export type AccountState = { active: boolean; status: string | null };
 
@@ -9,3 +7,11 @@ export type Profile = {
   description: string | null;
   displayName: string | null;
 };
+
+export type Owner = Profile &
+  AccountState & {
+    did: Did;
+    handle: string | null;
+    createdAt: Date;
+    updatedAt: Date;
+  };

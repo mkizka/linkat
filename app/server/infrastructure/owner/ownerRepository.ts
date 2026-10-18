@@ -1,4 +1,4 @@
-import type { Did } from "@atproto/did";
+import { asDid, type Did } from "@atproto/did";
 import { and, eq, ne } from "drizzle-orm";
 
 import type { Db } from "~/server/infrastructure/db/drizzle";
@@ -10,6 +10,18 @@ import type {
 } from "~/server/infrastructure/owner/owner";
 
 type Tx = Parameters<Parameters<Db["transaction"]>[0]>[0];
+
+const toOwner = (row: typeof ownerTable.$inferSelect): Owner => ({
+  did: asDid(row.did),
+  handle: row.handle,
+  avatarCid: row.avatarCid,
+  description: row.description,
+  displayName: row.displayName,
+  active: row.active,
+  status: row.status,
+  createdAt: row.createdAt,
+  updatedAt: row.updatedAt,
+});
 
 export interface IOwnerRepository {
   findByDid: (did: Did) => Promise<Owner | null>;
@@ -53,7 +65,7 @@ export const ownerRepositoryFactory = ({
       .from(ownerTable)
       .where(eq(ownerTable.did, did))
       .limit(1);
-    return row ?? null;
+    return row ? toOwner(row) : null;
   },
   async upsert(did, { handle, profile }) {
     const columns = {
@@ -71,7 +83,7 @@ export const ownerRepositoryFactory = ({
       if (!row) {
         throw new Error("持ち主の保存に失敗しました");
       }
-      return row;
+      return toOwner(row);
     });
   },
   async updateProfile(did, { handle, profile }) {
@@ -82,7 +94,7 @@ export const ownerRepositoryFactory = ({
         .set({ handle, ...profileColumns(profile), updatedAt: new Date() })
         .where(eq(ownerTable.did, did))
         .returning();
-      return row ?? null;
+      return row ? toOwner(row) : null;
     });
   },
   async updateHandle(did, handle) {
@@ -93,7 +105,7 @@ export const ownerRepositoryFactory = ({
         .set({ handle, updatedAt: new Date() })
         .where(eq(ownerTable.did, did))
         .returning();
-      return row ?? null;
+      return row ? toOwner(row) : null;
     });
   },
   async updateAccountState(did, state) {
