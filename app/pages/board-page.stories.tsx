@@ -22,6 +22,7 @@ const meta = {
     },
     url: "https://linkat.blue/example.bsky.social",
     isMine: false,
+    admin: null,
   },
 } satisfies Meta<typeof BoardPage>;
 

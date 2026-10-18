@@ -29,7 +29,7 @@ export async function loader({ request, params, context }: Route.LoaderArgs) {
     owner,
     board: { cards: board.cards },
     isMine: owner.did === viewerDid,
-    ...(admin && { admin }),
+    admin,
     title: `${title} | Linkat`,
     url: `${env.PUBLIC_URL}/${owner.handleOrDid}`,
     ogImageUrl: `${env.PUBLIC_URL}/${owner.handleOrDid}/og`,

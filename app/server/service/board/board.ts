@@ -19,7 +19,7 @@ export type BoardView =
       type: "ok";
       owner: OwnerView;
       board: BoardDto;
-      admin?: { moderationLevel: ModerationLevelDto };
+      admin: { moderationLevel: ModerationLevelDto } | null;
     };
 
 export interface IBoardService {
@@ -72,7 +72,7 @@ export const boardServiceFactory = ({
       type: "ok",
       owner: ownerViewService.toOwnerView(did, owner),
       board,
-      ...(isAdmin && { admin: { moderationLevel: level } }),
+      admin: isAdmin ? { moderationLevel: level } : null,
     };
   },
 });

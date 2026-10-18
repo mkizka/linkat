@@ -14,7 +14,7 @@ type Props = {
   board: { cards: BoardCard[] };
   url: string;
   isMine: boolean;
-  admin?: { moderationLevel: ModerationLevelDto };
+  admin: { moderationLevel: ModerationLevelDto } | null;
 };
 
 export function BoardPage({ owner, board, url, isMine, admin }: Props) {

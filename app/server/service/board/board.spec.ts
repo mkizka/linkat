@@ -61,6 +61,7 @@ describe("boardService", () => {
         type: "ok",
         owner: expect.objectContaining({ did: owner.did }),
         board: { ownerDid: asDid(owner.did), cards: cardsFromFactory },
+        admin: null,
       });
     });
     test("写しに無いDIDでもボードがあればokを返す", async () => {
@@ -74,6 +75,7 @@ describe("boardService", () => {
         type: "ok",
         owner: expect.objectContaining({ did, handleOrDid: did }),
         board: { ownerDid: did, cards: cardsFromFactory },
+        admin: null,
       });
     });
     test("写しに無いハンドルはnot-foundを返す", async () => {
@@ -143,7 +145,7 @@ describe("boardService", () => {
         }),
       );
     });
-    test("一覧から除外したボードは管理者以外にもadminを含めずにokを返す", async () => {
+    test("一覧から除外したボードは管理者以外にはadminをnullにしてokを返す", async () => {
       // arrange
       const owner = await OwnerFactory.create();
       await BoardFactory.create({ ownerDid: owner.did });
@@ -151,8 +153,9 @@ describe("boardService", () => {
       // act
       const actual = await boardService.findBoardView(owner.did);
       // assert
-      expect(actual).toEqual(expect.objectContaining({ type: "ok" }));
-      expect(actual).not.toHaveProperty("admin");
+      expect(actual).toEqual(
+        expect.objectContaining({ type: "ok", admin: null }),
+      );
     });
   });
 });
