@@ -7,7 +7,7 @@ import type { ModerationLevel } from "~/models/moderation";
 import { cn } from "~/utils/cn";
 
 type Props = {
-  did: string;
+  ownerDid: string;
   handle: string;
   level: ModerationLevel | null;
   children: ReactNode;
@@ -47,7 +47,7 @@ function ModerationBanner({
   );
 }
 
-export function ModerationPanel({ did, handle, level, children }: Props) {
+export function ModerationPanel({ ownerDid, handle, level, children }: Props) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const { t } = useTranslation();
   const navigation = useNavigation();
@@ -73,7 +73,7 @@ export function ModerationPanel({ did, handle, level, children }: Props) {
             onSubmit={() => dialogRef.current?.close()}
           >
             <h3 className="text-lg font-bold">{t("moderation.title")}</h3>
-            <input type="hidden" name="did" value={did} />
+            <input type="hidden" name="ownerDid" value={ownerDid} />
             <input type="hidden" name="handle" value={handle} />
             {options.map((option) => (
               <label

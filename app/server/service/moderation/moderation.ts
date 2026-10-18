@@ -8,8 +8,8 @@ export class NotAdminError extends Error {}
 export interface IModerationService {
   isAdmin: (did: Did | null) => boolean;
   updateLevel: (
-    adminDid: Did | null,
-    did: Did,
+    editorDid: Did | null,
+    ownerDid: Did,
     level: ModerationLevel | null,
   ) => Promise<void>;
 }
@@ -24,11 +24,11 @@ export const moderationServiceFactory = ({
   const isAdmin = (did: Did | null) => !!did && adminDids.includes(did);
   return {
     isAdmin,
-    async updateLevel(adminDid, did, level) {
-      if (!isAdmin(adminDid)) {
+    async updateLevel(editorDid, ownerDid, level) {
+      if (!isAdmin(editorDid)) {
         throw new NotAdminError("管理者ではありません");
       }
-      await moderationRepository.save(did, level);
+      await moderationRepository.save(ownerDid, level);
     },
   };
 };
