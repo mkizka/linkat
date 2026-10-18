@@ -5,8 +5,8 @@ import { SyncGate } from "~/features/sync/sync-gate";
 import { useSync } from "~/features/sync/use-sync";
 import { getInstance } from "~/i18n/i18n";
 import { EditPage } from "~/pages/edit-page";
+import { boardSchema } from "~/schemas/board";
 import { di } from "~/server/di";
-import { parseBoardRecord } from "~/server/infrastructure/board/boardRepository";
 import {
   BoardDbSaveError,
   BoardPdsSaveError,
@@ -42,19 +42,20 @@ export async function action({ request, context }: Route.ActionArgs) {
     });
     return null;
   }
-  const parsedBoard = await tryCatch(() =>
-    parseBoardRecord(editorDid, JSON.parse(rawBoard)),
+  const parsed = await tryCatch(() =>
+    boardSchema.parse(JSON.parse(rawBoard)),
   )();
-  if (parsedBoard instanceof Error) {
-    logger.warn("boardの形式が不正でした", { error: parsedBoard });
+  if (parsed instanceof Error) {
+    logger.warn("boardの形式が不正でした", { error: parsed });
     setToast(context, {
       message: i18next.t("edit.invalid-form-error-message"),
       type: "error",
     });
     return null;
   }
+  const board = { ownerDid: editorDid, cards: parsed.cards };
   try {
-    await di.boardEventService.handleEditorSave(parsedBoard);
+    await di.boardEventService.handleEditorSave(board);
   } catch (error) {
     if (error instanceof BoardPdsSaveError) {
       logger.error(error.message, { error });
@@ -77,7 +78,7 @@ export async function action({ request, context }: Route.ActionArgs) {
   }
   logger.info("ボードを保存しました", {
     ownerDid: editorDid,
-    cardCount: parsedBoard.cards.length,
+    cardCount: board.cards.length,
   });
   const editor = await di.ownerService.findOwnerView(editorDid);
   return redirect(`/${editor.handleOrDid}?success`);

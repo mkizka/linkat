@@ -10,20 +10,6 @@ export type Board = {
   cards: BoardCard[];
 };
 
-export class BoardParseError extends Error {
-  constructor(cause: unknown) {
-    super("Boardのパースに失敗しました", { cause });
-  }
-}
-
-export const parseBoardRecord = (ownerDid: Did, input: unknown): Board => {
-  const result = boardSchema.safeParse(input);
-  if (!result.success) {
-    throw new BoardParseError(result.error);
-  }
-  return { ownerDid, cards: result.data.cards };
-};
-
 export interface IBoardRepository {
   find: (ownerDid: Did) => Promise<Board | null>;
   save: (board: Board) => Promise<void>;
@@ -43,7 +29,10 @@ export const boardRepositoryFactory = ({
     if (!row) {
       return null;
     }
-    return parseBoardRecord(ownerDid, JSON.parse(row.record));
+    return {
+      ownerDid,
+      cards: boardSchema.parse(JSON.parse(row.record)).cards,
+    };
   },
   async save(board) {
     const data = {

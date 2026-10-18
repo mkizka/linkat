@@ -1,6 +1,6 @@
 import { lexParse } from "@atproto/lex";
 
-import { parseBoardRecord } from "~/server/infrastructure/board/boardRepository";
+import { boardSchema } from "~/schemas/board";
 import type { IIngesterHandler } from "~/server/infrastructure/ingester/ingesterClient";
 import type { ILogger } from "~/server/infrastructure/logger/logger";
 import type { IProfileRecordParser } from "~/server/infrastructure/owner/profileRecordParser";
@@ -41,11 +41,12 @@ export const ingesterServiceFactory = ({
 
   return {
     async handleBoardCommit({ did, record }) {
-      const board = await tryCatch(() => parseBoardRecord(did, record))();
-      if (board instanceof Error) {
+      const parsed = boardSchema.safeParse(record);
+      if (!parsed.success) {
         log.warn("ボードのパースに失敗しました", { record });
         return;
       }
+      const board = { ownerDid: did, cards: parsed.data.cards };
       await boardEventService.handleBoardCommit(board);
       log.info("ボードを更新しました", {
         ownerDid: board.ownerDid,
