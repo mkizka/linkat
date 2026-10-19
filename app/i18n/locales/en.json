@@ -42,8 +42,10 @@
     "feed-name": "Feeds work too",
     "feed-description": "This is how they look"
   },
+  "require-login": {
+    "invalid-session-error-message": "The login information was invalid"
+  },
   "edit": {
-    "invalid-session-error-message": "The login information was invalid",
     "invalid-form-error-message": "The form is invalid",
     "title": "Edit Board",
     "cancel-button": "Cancel",
@@ -131,7 +133,6 @@
     "cancel": "Cancel"
   },
   "delete": {
-    "invalid-session-error-message": "The login information was invalid",
     "delete-board-error-message": "Failed to delete the board",
     "delete-delayed-warning-message": "The deletion is taking a while to appear. Please check again after a while."
   },

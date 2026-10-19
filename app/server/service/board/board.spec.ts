@@ -22,10 +22,7 @@ const boardService = boardServiceFactory({
   ownerViewService: ownerViewServiceFactory(),
   recentOwnersQuery: recentOwnersQueryFactory({ db }),
   moderationRepository,
-  moderationService: moderationServiceFactory({
-    moderationRepository,
-    adminDids: [adminDid],
-  }),
+  moderationService: moderationServiceFactory({ adminDids: [adminDid] }),
 });
 
 describe("boardService", () => {
