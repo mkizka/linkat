@@ -10,26 +10,27 @@ import type { IOAuthClient } from "~/server/infrastructure/auth/oauthClient";
 import { boardPdsRepositoryFactory } from "~/server/infrastructure/board/boardPdsRepository";
 import { boardRepositoryFactory } from "~/server/infrastructure/board/boardRepository";
 import { db } from "~/server/infrastructure/db/drizzle";
+import type {
+  IChildLogger,
+  ILogger,
+} from "~/server/infrastructure/logger/logger";
 import { ownerRepositoryFactory } from "~/server/infrastructure/owner/ownerRepository";
 import type { IOwnerService } from "~/server/service/owner/owner";
 
-import {
-  BoardDbDeleteError,
-  BoardDbSaveError,
-  boardEventServiceFactory,
-  BoardPdsDeleteError,
-  BoardPdsSaveError,
-} from "./boardEvent";
+import { boardEventServiceFactory } from "./boardEvent";
 
 const boardRepository = boardRepositoryFactory({ db });
 const ownerRepository = ownerRepositoryFactory({ db });
 const ownerService = mock<IOwnerService>();
 const oauthClient = mock<IOAuthClient>();
+const logger = mock<ILogger>();
+logger.child.mockReturnValue(mock<IChildLogger>());
 const boardEventService = boardEventServiceFactory({
   boardRepository,
   boardPdsRepository: boardPdsRepositoryFactory({ oauthClient }),
   ownerRepository,
   ownerService,
+  logger,
 });
 
 beforeEach(() => {
@@ -56,10 +57,30 @@ describe("boardEventService", () => {
     const putRecordUrl =
       "https://pds.example.com/xrpc/com.atproto.repo.putRecord";
 
+    const editorOf = (did: string, synced = true) => ({
+      did: asDid(did),
+      handleOrDid: did,
+      displayHandle: null,
+      displayName: null,
+      avatarUrl: null,
+      synced,
+    });
+
+    test("持ち主の写しが無ければ何も保存しない", async () => {
+      // arrange
+      const did = asDid("did:plc:notsynced");
+      ownerService.findEditorView.mockResolvedValue(editorOf(did, false));
+      // act
+      const actual = await boardEventService.handleEditorSave(did, dummyCards);
+      // assert
+      expect(actual).toEqual({ type: "not-synced" });
+      expect(await boardRepository.find(did)).toBeNull();
+    });
     test("PDSに保存してからボードの写しだけを保存する", async () => {
       // arrange
       const owner = await OwnerFactory.create();
-      const board = { ownerDid: asDid(owner.did), cards: dummyCards };
+      const editor = editorOf(owner.did);
+      ownerService.findEditorView.mockResolvedValue(editor);
       let putRecordBody: unknown;
       server.use(
         http.post(putRecordUrl, async ({ request }) => {
@@ -71,8 +92,12 @@ describe("boardEventService", () => {
         }),
       );
       // act
-      await boardEventService.handleEditorSave(board);
+      const actual = await boardEventService.handleEditorSave(
+        asDid(owner.did),
+        dummyCards,
+      );
       // assert
+      expect(actual).toEqual({ type: "saved", editor });
       expect(ownerService.syncOwner).not.toHaveBeenCalled();
       expect(putRecordBody).toMatchObject({
         repo: owner.did,
@@ -80,28 +105,34 @@ describe("boardEventService", () => {
         rkey: "self",
         record: { cards: dummyCards },
       });
-      expect(await boardRepository.find(asDid(owner.did))).toEqual(board);
+      expect(await boardRepository.find(asDid(owner.did))).toEqual({
+        ownerDid: owner.did,
+        cards: dummyCards,
+      });
     });
-    test("PDSへの保存に失敗したら写しを保存せずBoardPdsSaveErrorを投げる", async () => {
+    test("PDSへの保存に失敗したら写しを保存せずpds-failedを返す", async () => {
       // arrange
       const owner = await OwnerFactory.create();
+      ownerService.findEditorView.mockResolvedValue(editorOf(owner.did));
       server.use(
         http.post(putRecordUrl, () =>
           HttpResponse.json({ error: "InternalServerError" }, { status: 500 }),
         ),
       );
       // act
-      const actual = boardEventService.handleEditorSave({
-        ownerDid: asDid(owner.did),
-        cards: dummyCards,
-      });
+      const actual = await boardEventService.handleEditorSave(
+        asDid(owner.did),
+        dummyCards,
+      );
       // assert
-      await expect(actual).rejects.toThrow(BoardPdsSaveError);
+      expect(actual).toEqual({ type: "pds-failed" });
       expect(await boardRepository.find(asDid(owner.did))).toBeNull();
     });
-    test("DBへの保存に失敗したらBoardDbSaveErrorを投げる", async () => {
+    test("DBへの保存に失敗したらdb-failedを返す", async () => {
       // arrange
       const owner = await OwnerFactory.create();
+      const editor = editorOf(owner.did);
+      ownerService.findEditorView.mockResolvedValue(editor);
       server.use(
         http.post(putRecordUrl, () =>
           HttpResponse.json({
@@ -112,12 +143,12 @@ describe("boardEventService", () => {
       );
       vi.spyOn(boardRepository, "save").mockRejectedValueOnce(new Error());
       // act
-      const actual = boardEventService.handleEditorSave({
-        ownerDid: asDid(owner.did),
-        cards: dummyCards,
-      });
+      const actual = await boardEventService.handleEditorSave(
+        asDid(owner.did),
+        dummyCards,
+      );
       // assert
-      await expect(actual).rejects.toThrow(BoardDbSaveError);
+      expect(actual).toEqual({ type: "db-failed", editor });
     });
   });
 
@@ -207,8 +238,11 @@ describe("boardEventService", () => {
         }),
       );
       // act
-      await boardEventService.handleEditorDelete(asDid(board.ownerDid));
+      const actual = await boardEventService.handleEditorDelete(
+        asDid(board.ownerDid),
+      );
       // assert
+      expect(actual).toEqual({ type: "deleted" });
       expect(deleteRecordBody).toMatchObject({
         repo: board.ownerDid,
         collection: "blue.linkat.board",
@@ -217,7 +251,7 @@ describe("boardEventService", () => {
       expect(await boardRepository.find(asDid(board.ownerDid))).toBeNull();
       expect(await ownerRepository.findByDid(asDid(board.ownerDid))).toBeNull();
     });
-    test("PDSからの削除に失敗したらDBから削除せずBoardPdsDeleteErrorを投げる", async () => {
+    test("PDSからの削除に失敗したらDBから削除せずpds-failedを返す", async () => {
       // arrange
       const board = await BoardFactory.create();
       server.use(
@@ -226,27 +260,27 @@ describe("boardEventService", () => {
         ),
       );
       // act
-      const actual = boardEventService.handleEditorDelete(
+      const actual = await boardEventService.handleEditorDelete(
         asDid(board.ownerDid),
       );
       // assert
-      await expect(actual).rejects.toThrow(BoardPdsDeleteError);
+      expect(actual).toEqual({ type: "pds-failed" });
       expect(await boardRepository.find(asDid(board.ownerDid))).not.toBeNull();
       expect(
         await ownerRepository.findByDid(asDid(board.ownerDid)),
       ).not.toBeNull();
     });
-    test("DBからの削除に失敗したらBoardDbDeleteErrorを投げる", async () => {
+    test("DBからの削除に失敗したらdb-failedを返す", async () => {
       // arrange
       const board = await BoardFactory.create();
       server.use(http.post(deleteRecordUrl, () => HttpResponse.json({})));
       vi.spyOn(boardRepository, "delete").mockRejectedValueOnce(new Error());
       // act
-      const actual = boardEventService.handleEditorDelete(
+      const actual = await boardEventService.handleEditorDelete(
         asDid(board.ownerDid),
       );
       // assert
-      await expect(actual).rejects.toThrow(BoardDbDeleteError);
+      expect(actual).toEqual({ type: "db-failed" });
     });
   });
 });

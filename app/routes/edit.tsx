@@ -7,10 +7,6 @@ import { getInstance } from "~/i18n/i18n";
 import { EditPage } from "~/pages/edit-page";
 import { boardSchema } from "~/schemas/board";
 import { di } from "~/server/di";
-import {
-  BoardDbSaveError,
-  BoardPdsSaveError,
-} from "~/server/service/board/boardEvent";
 import { tryCatch } from "~/utils/tryCatch";
 
 import type { Route } from "./+types/edit";
@@ -29,10 +25,6 @@ export async function action({ request, context }: Route.ActionArgs) {
         "Set-Cookie": await di.sessionService.destroySession(request),
       },
     });
-  }
-  const editor = await di.ownerService.findEditorView(editorDid);
-  if (!editor.synced) {
-    return redirect("/");
   }
   const form = await request.formData().catch(() => {
     throw data(null, { status: 400 });
@@ -56,33 +48,28 @@ export async function action({ request, context }: Route.ActionArgs) {
     });
     return null;
   }
-  const board = { ownerDid: editorDid, cards: parsed.cards };
-  try {
-    await di.boardEventService.handleEditorSave(board);
-  } catch (error) {
-    if (error instanceof BoardPdsSaveError) {
-      logger.error(error.message, { error });
+  const result = await di.boardEventService.handleEditorSave(
+    editorDid,
+    parsed.cards,
+  );
+  switch (result.type) {
+    case "not-synced":
+      return redirect("/");
+    case "pds-failed":
       setToast(context, {
         message: i18next.t("edit.save-board-error-message"),
         type: "error",
       });
       return null;
-    }
-    if (error instanceof BoardDbSaveError) {
-      logger.error(error.message, { error });
+    case "db-failed":
       setToast(context, {
         message: i18next.t("edit.save-delayed-warning-message"),
         type: "warning",
       });
-      return redirect(`/${editor.handleOrDid}`);
-    }
-    throw error;
+      return redirect(`/${result.editor.handleOrDid}`);
+    case "saved":
+      return redirect(`/${result.editor.handleOrDid}?success`);
   }
-  logger.info("ボードを保存しました", {
-    ownerDid: editorDid,
-    cardCount: board.cards.length,
-  });
-  return redirect(`/${editor.handleOrDid}?success`);
 }
 
 export async function loader({ request }: Route.LoaderArgs) {

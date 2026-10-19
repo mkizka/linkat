@@ -43,6 +43,7 @@ const ingesterService = ingesterServiceFactory({
     boardPdsRepository: mock<IBoardPdsRepository>(),
     ownerRepository,
     ownerService,
+    logger,
   }),
   ownerService,
   profileRecordParser,

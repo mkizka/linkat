@@ -3,15 +3,10 @@ import { setToast } from "remix-toast/middleware";
 
 import { getInstance } from "~/i18n/i18n";
 import { di } from "~/server/di";
-import {
-  BoardDbDeleteError,
-  BoardPdsDeleteError,
-} from "~/server/service/board/boardEvent";
 
 import type { Route } from "./+types/delete";
 
 export async function action({ request, context }: Route.ActionArgs) {
-  const logger = di.logger.child("delete");
   const i18next = getInstance(context);
   const editorDid = await di.sessionService.getSessionDid(request);
   if (!editorDid) {
@@ -25,27 +20,21 @@ export async function action({ request, context }: Route.ActionArgs) {
       },
     });
   }
-  try {
-    await di.boardEventService.handleEditorDelete(editorDid);
-  } catch (error) {
-    if (error instanceof BoardPdsDeleteError) {
-      logger.error(error.message, { error });
+  const result = await di.boardEventService.handleEditorDelete(editorDid);
+  switch (result.type) {
+    case "pds-failed":
       setToast(context, {
         message: i18next.t("delete.delete-board-error-message"),
         type: "error",
       });
       return redirect("/settings");
-    }
-    if (error instanceof BoardDbDeleteError) {
-      logger.error(error.message, { error });
+    case "db-failed":
       setToast(context, {
         message: i18next.t("delete.delete-delayed-warning-message"),
         type: "warning",
       });
       return redirect("/");
-    }
-    throw error;
+    case "deleted":
+      return redirect("/");
   }
-  logger.info("ボードを削除しました", { ownerDid: editorDid });
-  return redirect("/");
 }

@@ -103,6 +103,7 @@ export const di = await createRegistry()
       "boardPdsRepository",
       "ownerRepository",
       "ownerService",
+      "logger",
     ],
     boardEventServiceFactory,
   )
