@@ -9,6 +9,7 @@ import {
 } from "~/server/infrastructure/auth/oauthStorage";
 import { boardPdsRepositoryFactory } from "~/server/infrastructure/board/boardPdsRepository";
 import { boardRepositoryFactory } from "~/server/infrastructure/board/boardRepository";
+import { bskyLinkPdsRepositoryFactory } from "~/server/infrastructure/bskyLink/bskyLinkPdsRepository";
 import { db } from "~/server/infrastructure/db/drizzle";
 import { cursorRepositoryFactory } from "~/server/infrastructure/ingester/cursorRepository";
 import { ingesterClientFactory } from "~/server/infrastructure/ingester/ingesterClient";
@@ -26,6 +27,7 @@ import { authServiceFactory } from "~/server/service/auth/auth";
 import { sessionServiceFactory } from "~/server/service/auth/session";
 import { boardServiceFactory } from "~/server/service/board/board";
 import { boardEventServiceFactory } from "~/server/service/board/boardEvent";
+import { bskyLinkServiceFactory } from "~/server/service/bskyLink/bskyLink";
 import { ingesterServiceFactory } from "~/server/service/ingester/ingester";
 import { moderationServiceFactory } from "~/server/service/moderation/moderation";
 import { ownerServiceFactory } from "~/server/service/owner/owner";
@@ -53,6 +55,11 @@ export const di = await createRegistry()
     oauthClientFactory,
   )
   .service("boardPdsRepository", ["oauthClient"], boardPdsRepositoryFactory)
+  .service(
+    "bskyLinkPdsRepository",
+    ["oauthClient"],
+    bskyLinkPdsRepositoryFactory,
+  )
   .service(
     "profileFetcher",
     ["profileRecordParser", "logger"],
@@ -98,6 +105,11 @@ export const di = await createRegistry()
       "ownerService",
     ],
     boardEventServiceFactory,
+  )
+  .service(
+    "bskyLinkService",
+    ["boardRepository", "bskyLinkPdsRepository"],
+    bskyLinkServiceFactory,
   )
   .service("atpassportService", ["atpassportClient"], atpassportServiceFactory)
   .service("authService", ["oauthClient"], authServiceFactory)
