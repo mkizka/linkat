@@ -166,6 +166,62 @@ describe("boardEventService", () => {
     });
   });
 
+  describe("handleBoardSync", () => {
+    const getRecordUrl =
+      "https://pds.example.com/xrpc/com.atproto.repo.getRecord";
+
+    test("持ち主の写しが無ければ何もしない", async () => {
+      // arrange
+      const did = asDid("did:plc:syncunknown");
+      // act
+      const actual = await boardEventService.handleBoardSync(did);
+      // assert
+      expect(actual).toBe(false);
+      expect(ownerService.syncOwner).not.toHaveBeenCalled();
+    });
+    test("持ち主の写しがあり、PDSにボードがあれば持ち主とボードの写しを書く", async () => {
+      // arrange
+      const owner = await OwnerFactory.create();
+      const did = asDid(owner.did);
+      server.use(
+        http.get(getRecordUrl, () =>
+          HttpResponse.json({
+            uri: `at://${did}/blue.linkat.board/self`,
+            value: { $type: "blue.linkat.board", cards: dummyCards },
+          }),
+        ),
+      );
+      // act
+      const actual = await boardEventService.handleBoardSync(did);
+      // assert
+      expect(actual).toBe(true);
+      expect(ownerService.syncOwner).toHaveBeenCalledWith(did);
+      expect(await boardRepository.find(did)).toEqual({
+        ownerDid: did,
+        cards: dummyCards,
+      });
+    });
+    test("ボードの写しがあり、PDSにボードが無ければボードと持ち主の写しを削除する", async () => {
+      // arrange
+      const board = await BoardFactory.create();
+      const did = asDid(board.ownerDid);
+      server.use(
+        http.get(getRecordUrl, () =>
+          HttpResponse.json(
+            { error: "RecordNotFound", message: "Could not locate record" },
+            { status: 400 },
+          ),
+        ),
+      );
+      // act
+      const actual = await boardEventService.handleBoardSync(did);
+      // assert
+      expect(actual).toBe(true);
+      expect(await boardRepository.find(did)).toBeNull();
+      expect(await ownerRepository.findByDid(did)).toBeNull();
+    });
+  });
+
   describe("handleBoardDeleteCommit", () => {
     test("ボードと持ち主の写しを削除する", async () => {
       // arrange
