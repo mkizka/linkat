@@ -1,6 +1,6 @@
 import type { Did } from "@atproto/did";
 
-import { isExportableCard, MAX_EXPORT_CARDS } from "~/schemas/board";
+import { bskyLinkUrlSchema, MAX_BSKY_LINKS } from "~/schemas/bskyLink";
 import type { IBoardRepository } from "~/server/infrastructure/board/boardRepository";
 import type { IBskyLinkPdsRepository } from "~/server/infrastructure/bskyLink/bskyLinkPdsRepository";
 
@@ -28,8 +28,8 @@ export const bskyLinkServiceFactory = ({
     if (
       cards.length === 0 ||
       cards.length !== indexes.size ||
-      cards.length > MAX_EXPORT_CARDS ||
-      !cards.every(isExportableCard)
+      cards.length > MAX_BSKY_LINKS ||
+      !cards.every((card) => bskyLinkUrlSchema.safeParse(card.url).success)
     ) {
       throw new BskyLinkSelectionError();
     }
