@@ -34,4 +34,4 @@ COPY --from=build /app/package.json /app/
 COPY --from=build /app/instrument.server.mjs /app/otel-hook.mjs /app/
 
 EXPOSE 3000
-CMD [ "node", "--import", "./otel-hook.mjs", "--import", "@opentelemetry/auto-instrumentations-node/register", "--import", "./instrument.server.mjs", "./dist/server.js" ]
+CMD [ "node", "--import", "./otel-hook.mjs", "--import", "./instrument.server.mjs", "./dist/server.js" ]

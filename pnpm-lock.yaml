@@ -262,6 +262,9 @@ importers:
       i18next-browser-languagedetector:
         specifier: 8.2.1
         version: 8.2.1
+      import-in-the-middle:
+        specifier: 3.5.1
+        version: 3.5.1
       isbot:
         specifier: 5.2.2
         version: 5.2.2
