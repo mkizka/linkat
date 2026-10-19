@@ -9,6 +9,7 @@ import {
 } from "~/server/infrastructure/auth/oauthStorage";
 import { boardPdsRepositoryFactory } from "~/server/infrastructure/board/boardPdsRepository";
 import { boardRepositoryFactory } from "~/server/infrastructure/board/boardRepository";
+import { bskyLinkPdsRepositoryFactory } from "~/server/infrastructure/bskyLink/bskyLinkPdsRepository";
 import { db } from "~/server/infrastructure/db/drizzle";
 import { cursorRepositoryFactory } from "~/server/infrastructure/ingester/cursorRepository";
 import { ingesterClientFactory } from "~/server/infrastructure/ingester/ingesterClient";
@@ -20,11 +21,13 @@ import { identityResolverFactory } from "~/server/infrastructure/owner/identityR
 import { ownerRepositoryFactory } from "~/server/infrastructure/owner/ownerRepository";
 import { profileFetcherFactory } from "~/server/infrastructure/owner/profileFetcher";
 import { profileRecordParserFactory } from "~/server/infrastructure/owner/profileRecordParser";
+import { recentOwnersQueryFactory } from "~/server/infrastructure/query/recentOwnersQuery";
 import { atpassportServiceFactory } from "~/server/service/auth/atpassport";
 import { authServiceFactory } from "~/server/service/auth/auth";
 import { sessionServiceFactory } from "~/server/service/auth/session";
 import { boardServiceFactory } from "~/server/service/board/board";
 import { boardEventServiceFactory } from "~/server/service/board/boardEvent";
+import { bskyLinkServiceFactory } from "~/server/service/bskyLink/bskyLink";
 import { ingesterServiceFactory } from "~/server/service/ingester/ingester";
 import { moderationServiceFactory } from "~/server/service/moderation/moderation";
 import { ownerServiceFactory } from "~/server/service/owner/owner";
@@ -39,6 +42,7 @@ export const di = await createRegistry()
   .service("boardRepository", ["db"], boardRepositoryFactory)
   .service("cursorRepository", ["db"], cursorRepositoryFactory)
   .service("ownerRepository", ["db"], ownerRepositoryFactory)
+  .service("recentOwnersQuery", ["db"], recentOwnersQueryFactory)
   .service("handleIndex", ["db"], handleIndexFactory)
   .service("moderationRepository", ["db"], moderationRepositoryFactory)
   .service("oauthStateStore", ["db"], stateStoreFactory)
@@ -51,6 +55,11 @@ export const di = await createRegistry()
     oauthClientFactory,
   )
   .service("boardPdsRepository", ["oauthClient"], boardPdsRepositoryFactory)
+  .service(
+    "bskyLinkPdsRepository",
+    ["oauthClient"],
+    bskyLinkPdsRepositoryFactory,
+  )
   .service(
     "profileFetcher",
     ["profileRecordParser", "logger"],
@@ -69,11 +78,7 @@ export const di = await createRegistry()
     ],
     ownerServiceFactory,
   )
-  .service(
-    "moderationService",
-    ["moderationRepository", "adminDids"],
-    moderationServiceFactory,
-  )
+  .service("moderationService", ["adminDids"], moderationServiceFactory)
   .service(
     "boardService",
     [
@@ -81,6 +86,7 @@ export const di = await createRegistry()
       "handleIndex",
       "ownerRepository",
       "ownerViewService",
+      "recentOwnersQuery",
       "moderationRepository",
       "moderationService",
     ],
@@ -95,6 +101,11 @@ export const di = await createRegistry()
       "ownerService",
     ],
     boardEventServiceFactory,
+  )
+  .service(
+    "bskyLinkService",
+    ["boardRepository", "bskyLinkPdsRepository"],
+    bskyLinkServiceFactory,
   )
   .service("atpassportService", ["atpassportClient"], atpassportServiceFactory)
   .service("authService", ["oauthClient"], authServiceFactory)

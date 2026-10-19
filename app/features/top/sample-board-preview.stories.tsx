@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import { BackButton } from "./back-button";
+import { SampleBoardPreview } from "./sample-board-preview";
 
 const meta = {
-  component: BackButton,
-} satisfies Meta<typeof BackButton>;
+  component: SampleBoardPreview,
+} satisfies Meta<typeof SampleBoardPreview>;
 
 export default meta;
 

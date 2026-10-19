@@ -1,6 +1,5 @@
-import { BackButton } from "~/components/back-button";
 import { Card } from "~/components/card";
-import { Footer, Main } from "~/components/layout";
+import { Main, RootLayout } from "~/components/layout";
 
 type Props = {
   about: {
@@ -11,11 +10,10 @@ type Props = {
 
 export function AboutPage({ about }: Props) {
   return (
-    <>
+    <RootLayout>
       <Main>
         <Card className="my-4">
           <div className="card-body">
-            <BackButton />
             <article className="prose">
               <h1 className="text-3xl">{about.title}</h1>
               <div dangerouslySetInnerHTML={{ __html: about.content }} />
@@ -23,7 +21,6 @@ export function AboutPage({ about }: Props) {
           </div>
         </Card>
       </Main>
-      <Footer />
-    </>
+    </RootLayout>
   );
 }

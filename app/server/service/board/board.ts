@@ -6,6 +6,7 @@ import type { ModerationLevelDto } from "~/server/infrastructure/moderation/mode
 import type { IModerationRepository } from "~/server/infrastructure/moderation/moderationRepository";
 import type { IHandleIndex } from "~/server/infrastructure/owner/handleIndex";
 import type { IOwnerRepository } from "~/server/infrastructure/owner/ownerRepository";
+import type { IRecentOwnersQuery } from "~/server/infrastructure/query/recentOwnersQuery";
 import type { IModerationService } from "~/server/service/moderation/moderation";
 import type {
   IOwnerViewService,
@@ -28,6 +29,10 @@ export interface IBoardService {
     handleOrDid: string,
     viewerDid: Did | null,
   ) => Promise<BoardView>;
+  findRecentOwnerViews: (
+    limit: number,
+    excludeDid?: Did,
+  ) => Promise<OwnerView[]>;
 }
 
 export const boardServiceFactory = ({
@@ -35,6 +40,7 @@ export const boardServiceFactory = ({
   handleIndex,
   ownerRepository,
   ownerViewService,
+  recentOwnersQuery,
   moderationRepository,
   moderationService,
 }: {
@@ -42,6 +48,7 @@ export const boardServiceFactory = ({
   handleIndex: IHandleIndex;
   ownerRepository: IOwnerRepository;
   ownerViewService: IOwnerViewService;
+  recentOwnersQuery: IRecentOwnersQuery;
   moderationRepository: IModerationRepository;
   moderationService: IModerationService;
 }): IBoardService => ({
@@ -74,5 +81,11 @@ export const boardServiceFactory = ({
       board,
       admin: isAdmin ? { moderationLevel: level } : null,
     };
+  },
+  async findRecentOwnerViews(limit, excludeDid) {
+    const owners = await recentOwnersQuery.find(limit, excludeDid);
+    return owners.map(({ ownerDid, owner }) =>
+      ownerViewService.toOwnerView(ownerDid, owner),
+    );
   },
 });

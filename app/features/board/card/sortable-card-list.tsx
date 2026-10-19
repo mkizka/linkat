@@ -1,25 +1,20 @@
 import { arrayMove, List } from "react-movable";
 
-import type { BoardCard } from "~/schemas/board";
-
 import { SortableCard } from "./sortable-card";
-
-type CardStateValue = (BoardCard & { id: string })[];
+import type { CardWithId } from "./with-id";
 
 type Props = {
-  cards: CardStateValue;
-  setCards: (cards: CardStateValue) => void;
-  sortable?: boolean;
+  cards: CardWithId[];
+  onChange: (cards: CardWithId[]) => void;
 };
 
-export function SortableCardList({ cards, setCards, sortable }: Props) {
+export function SortableCardList({ cards, onChange }: Props) {
   return (
     <List
       values={cards}
       lockVertically
-      disabled={!sortable}
       onChange={({ oldIndex, newIndex }) =>
-        setCards(arrayMove(cards, oldIndex, newIndex))
+        onChange(arrayMove(cards, oldIndex, newIndex))
       }
       renderList={({ children, props }) => (
         <ul {...props} className="flex flex-col gap-2">
@@ -33,13 +28,9 @@ export function SortableCardList({ cards, setCards, sortable }: Props) {
             key={key}
             {...rest}
             className="list-none"
-            data-testid={`sortable-card`}
+            data-testid="board-card"
           >
-            <SortableCard
-              card={value}
-              isDragging={isDragged}
-              sortable={sortable}
-            />
+            <SortableCard card={value} isDragging={isDragged} />
           </li>
         );
       }}

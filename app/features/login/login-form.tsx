@@ -75,22 +75,20 @@ export function LoginForm() {
             {form.errors}
           </div>
         )}
-        <div className="form-control">
-          <div className="join">
-            <div className="join-item flex w-12 items-center justify-center rounded-r-full bg-neutral text-neutral-content">
-              <AtSymbolIcon className="size-5" />
-            </div>
-            <input
-              ref={handleInputRef}
-              className="input join-item input-bordered w-full"
-              placeholder="example.bsky.social"
-              autoComplete="username"
-              data-testid="login-form__handle"
-              {...getInputProps(fields.handle, { type: "text" })}
-              // @passportブラウザ拡張機能がhandle入力欄を認識するための属性
-              id="handle"
-            />
+        <div className="join">
+          <div className="join-item flex w-12 items-center justify-center bg-neutral text-neutral-content">
+            <AtSymbolIcon className="size-5" />
           </div>
+          <input
+            ref={handleInputRef}
+            className="input join-item w-full"
+            placeholder="example.bsky.social"
+            autoComplete="username"
+            data-testid="login-form__handle"
+            {...getInputProps(fields.handle, { type: "text" })}
+            // @passportブラウザ拡張機能がhandle入力欄を認識するための属性
+            id="handle"
+          />
         </div>
         {fields.handle.errors && (
           <p className="whitespace-pre-line p-1 text-sm text-error">

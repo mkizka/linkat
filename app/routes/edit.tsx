@@ -8,28 +8,26 @@ import { EditPage } from "~/pages/edit-page";
 import { boardSchema } from "~/schemas/board";
 import { di } from "~/server/di";
 import {
+  editorDidContext,
+  requireLogin,
+} from "~/server/middleware/requireLogin";
+import {
   BoardDbSaveError,
   BoardPdsSaveError,
 } from "~/server/service/board/boardEvent";
-import { env } from "~/utils/env";
 import { tryCatch } from "~/utils/tryCatch";
 
 import type { Route } from "./+types/edit";
 
+export const middleware: Route.MiddlewareFunction[] = [requireLogin];
+
 export async function action({ request, context }: Route.ActionArgs) {
   const logger = di.logger.child("edit");
   const i18next = getInstance(context);
-  const editorDid = await di.sessionService.getSessionDid(request);
-  if (!editorDid) {
-    setToast(context, {
-      message: i18next.t("edit.invalid-session-error-message"),
-      type: "error",
-    });
-    return redirect("/login", {
-      headers: {
-        "Set-Cookie": await di.sessionService.destroySession(request),
-      },
-    });
+  const editorDid = context.get(editorDidContext);
+  const editor = await di.ownerService.findEditorView(editorDid);
+  if (!editor.synced) {
+    return redirect("/");
   }
   const form = await request.formData().catch(() => {
     throw data(null, { status: 400 });
@@ -71,7 +69,6 @@ export async function action({ request, context }: Route.ActionArgs) {
         message: i18next.t("edit.save-delayed-warning-message"),
         type: "warning",
       });
-      const editor = await di.ownerService.findOwnerView(editorDid);
       return redirect(`/${editor.handleOrDid}`);
     }
     throw error;
@@ -80,23 +77,21 @@ export async function action({ request, context }: Route.ActionArgs) {
     ownerDid: editorDid,
     cardCount: board.cards.length,
   });
-  const editor = await di.ownerService.findOwnerView(editorDid);
   return redirect(`/${editor.handleOrDid}?success`);
 }
 
-export async function loader({ request }: Route.LoaderArgs) {
-  const editorDid = await di.sessionService.getSessionDid(request);
-  if (!editorDid) {
-    throw redirect("/login");
-  }
-  const [editorView, board] = await Promise.all([
-    di.ownerService.findOwnerView(editorDid),
+export async function loader({ context }: Route.LoaderArgs) {
+  const editorDid = context.get(editorDidContext);
+  const [editor, board] = await Promise.all([
+    di.ownerService.findEditorView(editorDid),
     di.boardService.findBoard(editorDid),
   ]);
+  if (!editor.synced) {
+    throw redirect("/");
+  }
   return {
-    editor: editorView,
+    editor,
     board: board && { cards: board.cards },
-    url: `${env.PUBLIC_URL}/${editorView.handleOrDid}`,
   };
 }
 

@@ -1,6 +1,7 @@
 import { Client } from "@atproto/lex";
 import { asAtUriString } from "@atproto/syntax";
-import { useEffect, useState } from "react";
+import { HashtagIcon } from "@heroicons/react/24/solid";
+import { createContext, use, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import getFeedGenerator from "~/generated/app/bsky/feed/getFeedGenerator";
@@ -12,20 +13,30 @@ type Feed = {
   creatorHandle: string;
 };
 
+const fetchFeed = async (feedUri: string): Promise<Feed> => {
+  const agent = new Client("https://public.api.bsky.app");
+  const { view } = await agent.call(getFeedGenerator, {
+    feed: asAtUriString(feedUri),
+  });
+  return {
+    avatar: view.avatar,
+    displayName: view.displayName,
+    description: view.description,
+    creatorHandle: view.creator.handle,
+  };
+};
+
+export const FeedFetcherContext = createContext(fetchFeed);
+
 type BlueskyFeedViewProps = {
   feed: Feed | null;
   error: boolean;
-  url: string;
 };
 
-export function BlueskyFeedView({ feed, error, url }: BlueskyFeedViewProps) {
+export function BlueskyFeedView({ feed, error }: BlueskyFeedViewProps) {
   const { t } = useTranslation();
   if (error) {
-    return (
-      <div className="card-body">
-        <p>{t("bluesky-feed.error-message")}</p>
-      </div>
-    );
+    return <p>{t("bluesky-feed.error-message")}</p>;
   }
   if (!feed) {
     return (
@@ -35,60 +46,51 @@ export function BlueskyFeedView({ feed, error, url }: BlueskyFeedViewProps) {
     );
   }
   return (
-    <a href={url} target="_blank" rel="noreferrer">
-      <div className="card-body gap-2">
-        <div className="flex items-center gap-2">
-          <div className="avatar">
-            <div className="w-10 rounded-full">
+    <div className="flex flex-col gap-2">
+      <div className="flex items-center gap-2">
+        <div className="avatar avatar-placeholder">
+          <div className="w-10 rounded-full bg-neutral text-neutral-content">
+            {feed.avatar ? (
               <img src={feed.avatar} />
-            </div>
-          </div>
-          <div className="flex-1 overflow-hidden">
-            <p className="truncate font-bold leading-snug">
-              {feed.displayName}
-            </p>
-            <p className="truncate leading-snug text-gray-500">
-              {t("bluesky-feed.creator-text", {
-                handle: feed.creatorHandle,
-              })}
-            </p>
+            ) : (
+              <HashtagIcon className="w-6" />
+            )}
           </div>
         </div>
-        <p className="whitespace-pre-line [overflow-wrap:break-word]">
-          {feed.description}
-        </p>
+        <div className="flex-1 overflow-hidden">
+          <p className="truncate font-bold leading-snug">{feed.displayName}</p>
+          <p className="truncate leading-snug text-gray-500">
+            {t("bluesky-feed.creator-text", {
+              handle: feed.creatorHandle,
+            })}
+          </p>
+        </div>
       </div>
-    </a>
+      <p className="whitespace-pre-line [overflow-wrap:break-word]">
+        {feed.description}
+      </p>
+    </div>
   );
 }
 
 type Props = {
   feedUri: string;
-  url: string;
 };
 
-export function BlueskyFeed({ feedUri, url }: Props) {
+export function BlueskyFeed({ feedUri }: Props) {
   const [feed, setFeed] = useState<Feed | null>(null);
   const [showError, setShowError] = useState(false);
+  const fetchFeed = use(FeedFetcherContext);
 
   useEffect(() => {
-    const agent = new Client("https://public.api.bsky.app");
-    agent
-      .call(getFeedGenerator, { feed: asAtUriString(feedUri) })
-      .then(({ view }) => {
-        setFeed({
-          avatar: view.avatar,
-          displayName: view.displayName,
-          description: view.description,
-          creatorHandle: view.creator.handle,
-        });
-      })
+    fetchFeed(feedUri)
+      .then(setFeed)
       .catch((error: unknown) => {
         // eslint-disable-next-line no-console
         console.error(error);
         setShowError(true);
       });
-  }, [feedUri]);
+  }, [fetchFeed, feedUri]);
 
-  return <BlueskyFeedView feed={feed} error={showError} url={url} />;
+  return <BlueskyFeedView feed={feed} error={showError} />;
 }

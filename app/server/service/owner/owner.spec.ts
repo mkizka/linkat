@@ -46,25 +46,32 @@ beforeEach(() => {
 });
 
 describe("ownerService", () => {
-  describe("findOwnerView", () => {
+  describe("findEditorView", () => {
     test("写しが古くても、ハンドルを解決せずに写しの表示用データを返す", async () => {
       // arrange
       const owner = await OwnerFactory.create({
         updatedAt: new Date("2000-01-01T00:00:00Z"),
       });
       // act
-      const actual = await ownerService.findOwnerView(asDid(owner.did));
+      const actual = await ownerService.findEditorView(asDid(owner.did));
       // assert
-      expect(actual).toMatchObject({ handleOrDid: owner.handle });
+      expect(actual).toMatchObject({ handleOrDid: owner.handle, synced: true });
       expect(identityResolver.resolve).not.toHaveBeenCalled();
     });
-    test("写しに無いDIDはDIDだけの表示用データを返し、写しを作らない", async () => {
+    test("写しに無いDIDは同期前としてDIDだけの表示用データを返し、写しを作らない", async () => {
       // arrange
       const did = asDid("did:plc:notowner0000000000000000");
       // act
-      const actual = await ownerService.findOwnerView(did);
+      const actual = await ownerService.findEditorView(did);
       // assert
-      expect(actual).toEqual(ownerViewService.toOwnerView(did, null));
+      expect(actual).toEqual({
+        did: "did:plc:notowner0000000000000000",
+        handleOrDid: "did:plc:notowner0000000000000000",
+        displayHandle: null,
+        displayName: null,
+        avatarUrl: null,
+        synced: false,
+      });
       expect(identityResolver.resolve).not.toHaveBeenCalled();
       expect(await ownerRepository.findByDid(did)).toBeNull();
     });

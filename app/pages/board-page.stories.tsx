@@ -15,13 +15,25 @@ const meta = {
     },
     board: {
       cards: [
-        { url: "https://example.com", text: "Example" },
-        { url: "https://bsky.app/profile/example.bsky.social" },
-        { text: "テキストのみのカード", emoji: "📝" },
+        { url: "https://example.com" },
+        { text: "テキストのみのカード" },
+        { url: "https://example.com", text: "テキストとURLのカード" },
+        {
+          url: "https://example.com",
+          text: "絵文字アイコンのカード",
+          emoji: "📝",
+        },
+        {
+          url: "https://bsky.app/profile/did:plc:z72i7hdynmk6r22z27h6tvur/post/3l6oveex3ii2l",
+        },
+        {
+          url: "https://bsky.app/profile/did:plc:z72i7hdynmk6r22z27h6tvur/feed/whats-hot",
+        },
       ],
     },
     url: "https://linkat.blue/example.bsky.social",
     isMine: false,
+    isLogin: false,
     admin: null,
   },
 } satisfies Meta<typeof BoardPage>;
@@ -32,12 +44,20 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {};
 
+export const Empty: Story = {
+  args: { board: { cards: [] } },
+};
+
+export const LoggedIn: Story = {
+  args: { isLogin: true },
+};
+
 export const Mine: Story = {
-  args: { isMine: true },
+  args: { isMine: true, isLogin: true },
 };
 
 export const Saved: Story = {
-  args: { isMine: true },
+  args: { isMine: true, isLogin: true },
   parameters: { path: "/?success" },
 };
 

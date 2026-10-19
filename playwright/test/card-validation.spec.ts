@@ -38,19 +38,20 @@ test.describe("カードの検証", () => {
 
     await test.step("ルールを満たすカードだけを取り込む", async () => {
       await login();
+      await page.goto("/edit");
       await expect(
-        page.locator('[data-testid="sortable-card"]', {
+        page.locator('[data-testid="board-card"]', {
           hasText: textCard.text,
         }),
       ).toBeVisible();
-      await expect(page.getByTestId("sortable-card")).toHaveText([
+      await expect(page.getByTestId("board-card")).toHaveText([
         urlCard.text,
         textCard.text,
       ]);
     });
 
     await test.step("保存するとPDSにはルールを満たすカードだけが残る", async () => {
-      await page.getByTestId("board-viewer__submit").click();
+      await page.getByTestId("edit-bar__submit").click();
       await page.waitForURL((url) => url.pathname === `/${account.handle}`);
       const params = new URLSearchParams({
         repo: session.did,
@@ -69,11 +70,12 @@ test.describe("カードの検証", () => {
 
   test("URLもテキストも無いカードは追加できない", async ({ page, login }) => {
     await login();
+    await page.goto("/edit");
     await page.getByTestId("card-form-modal__button").click();
     await page.getByTestId("card-form__submit").click();
     await expect(
       page.getByText("Please enter one of the fields"),
     ).toBeVisible();
-    await expect(page.getByTestId("sortable-card")).toHaveCount(0);
+    await expect(page.getByTestId("board-card")).toHaveCount(0);
   });
 });

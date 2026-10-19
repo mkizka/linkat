@@ -11,7 +11,7 @@ import type {
 
 type Tx = Parameters<Parameters<Db["transaction"]>[0]>[0];
 
-const toOwnerDto = (row: typeof ownerTable.$inferSelect): OwnerDto => ({
+export const toOwnerDto = (row: typeof ownerTable.$inferSelect): OwnerDto => ({
   did: asDid(row.did),
   handle: row.handle,
   avatarCid: row.avatarCid,

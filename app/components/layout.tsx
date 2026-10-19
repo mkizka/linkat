@@ -1,92 +1,65 @@
-import { Cog8ToothIcon, LanguageIcon } from "@heroicons/react/24/outline";
-import { type ReactNode, useRef } from "react";
+import { LanguageIcon } from "@heroicons/react/24/outline";
+import { type ReactNode } from "react";
 import GitHubButton from "react-github-btn";
 import { useTranslation } from "react-i18next";
 import { Form, Link } from "react-router";
 
-import { useUmami } from "~/hooks/useUmami";
 import { cn } from "~/utils/cn";
 
 import { BlueskyIcon } from "./icons/bluesky";
 import { GitHubIcon } from "./icons/github";
 
-type HeaderProps = {
-  isLogin?: boolean;
-};
-
-export function Header({ isLogin }: HeaderProps) {
-  const detailsRef = useRef<HTMLDetailsElement>(null);
-  const umami = useUmami();
-  const handleClick = () => {
-    if (detailsRef.current) {
-      detailsRef.current.removeAttribute("open");
-    }
-  };
+export function Header() {
   return (
-    <header className="relative mx-auto w-full max-w-screen-sm">
-      <div className="absolute left-4 top-4">
-        <Link to="/" className="text-3xl font-bold">
-          Linkat
-        </Link>
-      </div>
-      <div className="absolute right-2 top-2 flex gap-1">
-        <details
-          className="dropdown dropdown-end"
-          ref={detailsRef}
-          onClick={(event) => {
-            if (
-              event.target instanceof HTMLElement &&
-              event.target.tagName === "BUTTON"
-            ) {
-              return;
-            }
-            umami.track("click-header-lang", {
-              action: "open",
-            });
-          }}
-        >
-          <summary className="btn btn-square m-1 shadow dark:btn-neutral light:bg-white">
-            <LanguageIcon className="size-6" />
-          </summary>
-          <Form>
-            <ul className="menu dropdown-content z-[1] w-52 rounded-box p-2 shadow light:bg-white dark:bg-neutral">
-              <li>
-                <button
-                  type="submit"
-                  name="lng"
-                  value="ja"
-                  onClick={handleClick}
-                  data-umami-event="click-header-lang"
-                  data-umami-event-action="select-ja"
-                >
-                  日本語
-                </button>
-              </li>
-              <li>
-                <button
-                  type="submit"
-                  name="lng"
-                  value="en"
-                  onClick={handleClick}
-                  data-umami-event="click-header-lang"
-                  data-umami-event-action="select-en"
-                >
-                  English
-                </button>
-              </li>
-            </ul>
-          </Form>
-        </details>
-        {isLogin && (
-          <Link
-            to="/settings"
-            className="btn btn-square m-1 shadow dark:btn-neutral light:bg-white"
-          >
-            <Cog8ToothIcon className="size-6" />
-          </Link>
-        )}
-      </div>
+    <header className="mx-auto flex w-full max-w-screen-sm items-center bg-base-200 px-4 pt-2">
+      <Link to="/" className="text-xl font-bold">
+        Linkat
+      </Link>
     </header>
+  );
+}
+
+const languages = [
+  { value: "ja", label: "日本語" },
+  { value: "en", label: "English" },
+];
+
+function LanguageMenu() {
+  const { i18n } = useTranslation();
+  return (
+    <div className="dropdown dropdown-top dropdown-end">
+      <div
+        tabIndex={0}
+        role="button"
+        className="btn btn-outline btn-xs gap-1 border-base-content/30 text-sm font-normal text-base-content/70"
+        data-umami-event="click-footer-lang"
+        data-umami-event-action="open"
+      >
+        <LanguageIcon className="size-4" aria-hidden />
+        {i18n.language === "en" ? "English" : "日本語"}
+      </div>
+      <Form>
+        <ul
+          tabIndex={0}
+          className="menu dropdown-content z-[1] mb-2 w-40 rounded-box p-2 shadow light:bg-white dark:bg-neutral"
+        >
+          {languages.map(({ value, label }) => (
+            <li key={value}>
+              <button
+                type="submit"
+                name="lng"
+                value={value}
+                onClick={(event) => event.currentTarget.blur()}
+                data-umami-event="click-footer-lang"
+                data-umami-event-action={`select-${value}`}
+              >
+                {label}
+              </button>
+            </li>
+          ))}
+        </ul>
+      </Form>
+    </div>
   );
 }
 
@@ -108,53 +81,54 @@ export function Main({ className, children }: MainProps) {
   );
 }
 
-type FooterProps = {
-  withNavigation?: boolean;
-};
-
-export function Footer({ withNavigation }: FooterProps) {
+export function Footer() {
   const { t } = useTranslation();
   return (
-    <footer className="mx-auto flex w-full max-w-screen-sm flex-col gap-6 bg-neutral py-4 text-center text-neutral-content">
-      {withNavigation && (
-        <nav>
-          <Link
-            to="/"
-            className="hover:underline"
-            data-umami-event="click-footer-top-link"
+    <footer className="mx-auto w-full max-w-screen-sm bg-base-200 px-4">
+      <nav className="flex flex-col items-center gap-2 border-t border-base-300 pb-8 pt-4 text-sm text-base-content/70">
+        <div className="flex items-center gap-4">
+          <a
+            href="https://bsky.app/profile/linkat.blue"
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-1 underline"
+            data-umami-event="click-footer-bsky-link"
           >
-            {t("layout.footer-message")}
-          </Link>
-        </nav>
-      )}
-      <nav className="flex h-10 items-center justify-center gap-4">
-        <a
-          href="https://bsky.app/profile/linkat.blue"
-          target="_blank"
-          rel="noreferrer"
-          data-umami-event="click-footer-bsky-link"
-        >
-          <BlueskyIcon className="size-7 text-white" />
-        </a>
-        <a
-          href="https://github.com/mkizka/linkat"
-          target="_blank"
-          rel="noreferrer"
-          data-umami-event="click-footer-github-link"
-        >
-          <GitHubIcon className="size-7 text-white" />
-        </a>
-        <div className="relative size-7">
-          <div className="loading loading-spinner absolute top-1.5 size-4"></div>
-          <div className="absolute top-1">
-            <GitHubButton
-              href="https://github.com/mkizka/linkat"
-              data-color-scheme="no-preference: light; light: light; dark: dark;"
-              data-icon="octicon-star"
-              data-show-count="true"
-              aria-label="Star mkizka/linkat on GitHub"
-            />
+            <BlueskyIcon className="size-4" aria-hidden />
+            Bluesky
+          </a>
+          <a
+            href="https://github.com/mkizka/linkat"
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-1 underline"
+            data-umami-event="click-footer-github-link"
+          >
+            <GitHubIcon className="size-4" aria-hidden />
+            GitHub
+          </a>
+          <div className="relative h-5 w-14">
+            <div className="loading loading-spinner absolute size-4"></div>
+            <div className="absolute">
+              <GitHubButton
+                href="https://github.com/mkizka/linkat"
+                data-color-scheme="no-preference: light; light: light; dark: dark;"
+                data-icon="octicon-star"
+                data-show-count="true"
+                aria-label="Star mkizka/linkat on GitHub"
+              />
+            </div>
           </div>
+        </div>
+        <div className="flex items-center gap-4">
+          <Link
+            to="/about"
+            className="underline"
+            data-umami-event="click-footer-about-link"
+          >
+            {t("layout.about-link")}
+          </Link>
+          <LanguageMenu />
         </div>
       </nav>
     </footer>
@@ -162,14 +136,13 @@ export function Footer({ withNavigation }: FooterProps) {
 }
 
 type RootLayoutProps = {
-  isLogin?: boolean;
   children: ReactNode;
 };
 
-export function RootLayout({ isLogin, children }: RootLayoutProps) {
+export function RootLayout({ children }: RootLayoutProps) {
   return (
     <>
-      <Header isLogin={isLogin} />
+      <Header />
       {children}
       <Footer />
     </>

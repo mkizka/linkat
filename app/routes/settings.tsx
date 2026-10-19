@@ -2,15 +2,21 @@ import { redirect } from "react-router";
 
 import { SettingsPage } from "~/pages/settings-page";
 import { di } from "~/server/di";
+import {
+  editorDidContext,
+  requireLogin,
+} from "~/server/middleware/requireLogin";
 
 import type { Route } from "./+types/settings";
 
-export const loader = async ({ request }: Route.LoaderArgs) => {
-  const editorDid = await di.sessionService.getSessionDid(request);
-  if (!editorDid) {
-    throw redirect("/login");
+export const middleware: Route.MiddlewareFunction[] = [requireLogin];
+
+export const loader = async ({ context }: Route.LoaderArgs) => {
+  const editorDid = context.get(editorDidContext);
+  const editor = await di.ownerService.findEditorView(editorDid);
+  if (!editor.synced) {
+    throw redirect("/");
   }
-  const editor = await di.ownerService.findOwnerView(editorDid);
   return { editor };
 };
 

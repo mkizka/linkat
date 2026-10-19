@@ -29,6 +29,7 @@ export async function loader({ request, params, context }: Route.LoaderArgs) {
     owner,
     board: { cards: board.cards },
     isMine: owner.did === viewerDid,
+    isLogin: viewerDid !== null,
     admin,
     title: `${title} | Linkat`,
     url: `${env.PUBLIC_URL}/${owner.handleOrDid}`,
@@ -50,14 +51,15 @@ export default function Index({ loaderData }: Route.ComponentProps) {
   if (loaderData.hidden) {
     return <HiddenBoardPage status={loaderData.status} />;
   }
-  const { owner, board, url, isMine } = loaderData;
+  const { owner, board, url, isMine, isLogin, admin } = loaderData;
   return (
     <BoardPage
       owner={owner}
       board={board}
       url={url}
       isMine={isMine}
-      admin={loaderData.admin}
+      isLogin={isLogin}
+      admin={admin}
     />
   );
 }

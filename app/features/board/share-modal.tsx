@@ -2,46 +2,26 @@ import {
   ClipboardDocumentCheckIcon,
   ClipboardIcon,
 } from "@heroicons/react/24/outline";
-import { useEffect, useRef, useState } from "react";
+import { type Ref, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useSearchParams } from "react-router";
 
 import { Button } from "~/components/button";
 import { BlueskyIcon } from "~/components/icons/bluesky";
 import { useUmami } from "~/hooks/useUmami";
 
-const SHARE_MODAL_ID = "share-modal";
-
 type Props = {
+  ref: Ref<HTMLDialogElement>;
   url: string;
+  title: string;
+  shareText: string;
 };
 
-export function ShareModal({ url }: Props) {
-  const dialogRef = useRef<HTMLDialogElement>(null);
+export function ShareModal({ ref, url, title, shareText }: Props) {
   const handledRef = useRef(false);
   const { t } = useTranslation();
-  const [searchParams, setSearchParams] = useSearchParams();
   const [copied, setCopied] = useState(false);
   const [loading, setLoading] = useState(false);
-  const shareText = t("share-modal.share-text", { url });
   const umami = useUmami();
-
-  useEffect(() => {
-    if (searchParams.has("success")) {
-      if (dialogRef.current) {
-        dialogRef.current.showModal();
-      }
-      setSearchParams(
-        (prev) => {
-          prev.delete("success");
-          return prev;
-        },
-        {
-          replace: true,
-        },
-      );
-    }
-  }, [searchParams, setSearchParams]);
 
   const trackShareModal = (action: string) => {
     if (!handledRef.current) {
@@ -78,21 +58,21 @@ export function ShareModal({ url }: Props) {
   };
 
   return (
-    <dialog id={SHARE_MODAL_ID} className="modal" ref={dialogRef}>
+    <dialog className="modal" ref={ref}>
       <div className="modal-box">
         <div className="flex flex-col gap-2">
-          <h3 className="text-lg font-bold">{t("share-modal.title")}</h3>
+          <h3 className="text-lg font-bold">{title}</h3>
           <p>{t("share-modal.description")}</p>
           <div className="flex flex-col gap-4 py-4 sm:flex-row">
             <Button
-              className="btn-bluesky btn flex-1 text-white"
+              className="btn-bluesky btn h-auto flex-1 py-3 text-white"
               loading={loading}
               onClick={handlePost}
             >
               <BlueskyIcon className="size-6" />
               {t("share-modal.post-to-bluesky")}
             </Button>
-            <Button className="flex-1" onClick={handleCopy}>
+            <Button className="h-auto flex-1 py-3" onClick={handleCopy}>
               {copied ? (
                 <ClipboardDocumentCheckIcon className="size-6" />
               ) : (

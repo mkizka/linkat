@@ -33,7 +33,7 @@ describe("ownerViewService.toOwnerView", () => {
       displayHandle: "@example.com",
     });
   });
-  test("ハンドルがnullならURLと表示にDIDを使う", () => {
+  test("ハンドルがnullのとき", () => {
     // arrange
     const owner = createOwner({ handle: null });
     // act
@@ -41,7 +41,7 @@ describe("ownerViewService.toOwnerView", () => {
     // assert
     expect(actual).toMatchObject({
       handleOrDid: "did:plc:dummy",
-      displayHandle: "@did:plc:dummy",
+      displayHandle: null,
     });
   });
   test("アバターのCIDからBlueskyのCDNのURLを返す", () => {
@@ -54,7 +54,7 @@ describe("ownerViewService.toOwnerView", () => {
       "https://cdn.bsky.app/img/avatar/plain/did:plc:dummy/bafkreiavatar@jpeg",
     );
   });
-  test("写しが無ければURLと表示にDIDを使い、表示名とアバターはnullにする", () => {
+  test("写しが無いとき", () => {
     // arrange
     const owner = null;
     // act
@@ -63,7 +63,7 @@ describe("ownerViewService.toOwnerView", () => {
     expect(actual).toEqual({
       did: "did:plc:dummy",
       handleOrDid: "did:plc:dummy",
-      displayHandle: "@did:plc:dummy",
+      displayHandle: null,
       displayName: null,
       avatarUrl: null,
     });
