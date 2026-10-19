@@ -5,7 +5,7 @@ import { SamplePage } from "./sample-page";
 const meta = {
   component: SamplePage,
   parameters: { layout: "fullscreen" },
-  args: { url: "https://linkat.blue/sample" },
+  args: { url: "https://linkat.blue/sample", isLogin: false },
 } satisfies Meta<typeof SamplePage>;
 
 export default meta;

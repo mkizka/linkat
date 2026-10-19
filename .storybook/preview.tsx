@@ -11,6 +11,20 @@ import { i18nConfig } from "../app/i18n/config";
 void i18next.use(initReactI18next).init({ ...i18nConfig, lng: "ja" });
 
 const preview: Preview = {
+  parameters: {
+    viewport: {
+      options: {
+        mobile: {
+          name: "Mobile",
+          styles: { width: "375px", height: "812px" },
+          type: "mobile",
+        },
+      },
+    },
+  },
+  initialGlobals: {
+    viewport: { value: "mobile", isRotated: false },
+  },
   decorators: [
     (Story, { parameters }) => {
       const Stub = createRoutesStub([

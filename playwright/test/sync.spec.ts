@@ -9,7 +9,7 @@ const patterns = [
 
 test.describe("同期", () => {
   for (const { hasProfile, hasBoard } of patterns) {
-    test(`PDSのプロフィールが${hasProfile ? "あり" : "なし"}、ボードが${hasBoard ? "あり" : "なし"}なら、/editを開いたときにその状態で取り込む`, async ({
+    test(`PDSのプロフィールが${hasProfile ? "あり" : "なし"}、ボードが${hasBoard ? "あり" : "なし"}なら、ログイン後のトップでその状態で取り込む`, async ({
       page,
       login,
       account,
@@ -50,7 +50,7 @@ test.describe("同期", () => {
         }
       });
 
-      await test.step("ログインすると取り込んだ状態で編集できる", async () => {
+      await test.step("ログインするとトップでプロフィールを表示する", async () => {
         await login();
         await expect(
           page.getByText(`@${account.handle}`, { exact: true }),
@@ -60,15 +60,16 @@ test.describe("同期", () => {
             page.getByRole("heading", { name: displayName }),
           ).toBeVisible();
         }
+      });
+
+      await test.step("/editで取り込んだボードを表示する", async () => {
+        await page.goto("/edit");
         if (hasBoard) {
           await expect(
-            page.getByTestId("toaster").locator(".alert-success"),
-          ).toBeVisible();
-          await expect(
-            page.locator('[data-testid="sortable-card"]', { hasText: text }),
+            page.locator('[data-testid="board-card"]', { hasText: text }),
           ).toBeVisible();
         } else {
-          await expect(page.getByTestId("sortable-card")).toHaveCount(0);
+          await expect(page.getByTestId("board-card")).toHaveCount(0);
         }
       });
     });
@@ -82,7 +83,7 @@ test.describe("同期", () => {
   }) => {
     test.skip(size === "large", "dev-envのPDSを操作するため");
     const text = `PDS. ${crypto.randomUUID()}`;
-    const card = page.locator('[data-testid="sortable-card"]', {
+    const card = page.locator('[data-testid="board-card"]', {
       hasText: text,
     });
 
@@ -105,11 +106,12 @@ test.describe("同期", () => {
 
     await test.step("ログインすると取り込んだボードを編集できる", async () => {
       await login();
+      await page.goto("/edit");
       await expect(card).toBeVisible();
     });
 
     await test.step("保存するとハンドルのURLに移る", async () => {
-      await page.getByTestId("board-viewer__submit").click();
+      await page.getByTestId("edit-bar__submit").click();
       await page.waitForURL((url) => url.pathname === `/${account.handle}`);
       await page.getByTestId("show-modal__close").click();
       await expect(card).toBeVisible();

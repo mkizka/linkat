@@ -10,19 +10,30 @@ import { useTranslation } from "react-i18next";
 import { Form } from "react-router";
 
 import { Button } from "~/components/button";
+import { ConfirmDialog } from "~/components/confirm-dialog";
 import { Input } from "~/components/input";
 import { cn } from "~/utils/cn";
 
 import type { CardFormPayload } from "./card-form-provider";
 
-export function CardForm() {
+type Props = {
+  onDelete: (id: string) => void;
+};
+
+export function CardForm({ onDelete }: Props) {
   const { t } = useTranslation();
   const form = useFormMetadata<CardFormPayload>();
   const fields = form.getFieldset();
   const [isEmojipickerOpen, setIsEmojiPickerOpen] = useState(false);
+  const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
 
   const handleResetEmoji = () => {
     form.update({ name: "emoji", value: "" });
+  };
+
+  const handleDelete = () => {
+    setIsConfirmingDelete(false);
+    if (fields.id.value) onDelete(fields.id.value);
   };
 
   return (
@@ -54,10 +65,8 @@ export function CardForm() {
         {t("card-form.help-input-message")}
       </p>
       <div>
-        <label className="form-control">
-          <div className="label">
-            <span className="label-text">{t("card-form.emoji-label")}</span>
-          </div>
+        <label className="fieldset">
+          <span className="label">{t("card-form.emoji-label")}</span>
           <input {...getInputProps(fields.emoji, { type: "hidden" })} />
         </label>
         <div className="flex gap-2">
@@ -104,9 +113,7 @@ export function CardForm() {
       <div className="mt-2 flex flex-col gap-2">
         <Button
           type="submit"
-          name="action"
-          value="save"
-          className="btn-neutral"
+          className="btn-primary"
           data-testid="card-form__submit"
         >
           {fields.id.value
@@ -115,16 +122,24 @@ export function CardForm() {
         </Button>
         {fields.id.value && (
           <Button
-            type="submit"
-            name="action"
-            value="delete"
-            className="btn-error"
+            type="button"
+            className="btn-ghost text-error"
+            onClick={() => setIsConfirmingDelete(true)}
             data-testid="card-form__delete"
           >
             {t("card-form.delete-button")}
           </Button>
         )}
       </div>
+      <ConfirmDialog
+        open={isConfirmingDelete}
+        title={t("card-form.confirm-delete-title")}
+        description={t("card-form.confirm-delete-description")}
+        cancelLabel={t("card-form.confirm-delete-cancel")}
+        confirmLabel={t("card-form.confirm-delete-confirm")}
+        onCancel={() => setIsConfirmingDelete(false)}
+        onConfirm={handleDelete}
+      />
     </Form>
   );
 }

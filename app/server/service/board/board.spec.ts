@@ -7,6 +7,7 @@ import { db } from "~/server/infrastructure/db/drizzle";
 import { moderationRepositoryFactory } from "~/server/infrastructure/moderation/moderationRepository";
 import { handleIndexFactory } from "~/server/infrastructure/owner/handleIndex";
 import { ownerRepositoryFactory } from "~/server/infrastructure/owner/ownerRepository";
+import { recentOwnersQueryFactory } from "~/server/infrastructure/query/recentOwnersQuery";
 import { moderationServiceFactory } from "~/server/service/moderation/moderation";
 import { ownerViewServiceFactory } from "~/server/service/owner/ownerView";
 
@@ -19,6 +20,7 @@ const boardService = boardServiceFactory({
   handleIndex: handleIndexFactory({ db }),
   ownerRepository: ownerRepositoryFactory({ db }),
   ownerViewService: ownerViewServiceFactory(),
+  recentOwnersQuery: recentOwnersQueryFactory({ db }),
   moderationRepository,
   moderationService: moderationServiceFactory({
     moderationRepository,

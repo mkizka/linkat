@@ -1,3 +1,6 @@
+import { Main } from "~/components/layout";
+import { SyncLoading } from "~/features/sync/sync-loading";
+import { useSync } from "~/features/sync/use-sync";
 import { getInstance } from "~/i18n/i18n";
 import { TopPage } from "~/pages/top-page";
 import { di } from "~/server/di";
@@ -9,8 +12,16 @@ import type { Route } from "./+types/_index";
 export const loader = async ({ request, context }: Route.LoaderArgs) => {
   const editorDid = await di.sessionService.getSessionDid(request);
   const i18next = getInstance(context);
+  const [editor, board, recentOwners] = await Promise.all([
+    editorDid ? di.ownerService.findEditorView(editorDid) : null,
+    editorDid ? di.boardService.findBoard(editorDid) : null,
+    di.boardService.findRecentOwnerViews(8, editorDid ?? undefined),
+  ]);
   return {
-    isLogin: !!editorDid,
+    editor,
+    needsSync: !!editor && !editor.synced,
+    hasBoard: !!board,
+    recentOwners,
     title: i18next.t("_index.meta-title"),
     description: i18next.t("_index.meta-description"),
     url: env.PUBLIC_URL,
@@ -23,5 +34,19 @@ export const meta = ({ loaderData }: Route.MetaArgs) => {
 };
 
 export default function Index({ loaderData }: Route.ComponentProps) {
-  return <TopPage isLogin={loaderData.isLogin} />;
+  const sync = useSync(loaderData.needsSync);
+  if (sync.state === "loading") {
+    return (
+      <Main className="utils--center">
+        <SyncLoading />
+      </Main>
+    );
+  }
+  return (
+    <TopPage
+      editor={loaderData.editor}
+      hasBoard={loaderData.hasBoard}
+      recentOwners={loaderData.recentOwners}
+    />
+  );
 }

@@ -10,7 +10,8 @@ test.describe("Jetstream", () => {
   }) => {
     await test.step("ボードを保存", async () => {
       await login();
-      await page.getByTestId("board-viewer__submit").click();
+      await page.goto("/edit");
+      await page.getByTestId("edit-bar__submit").click();
       await page.waitForURL((url) => url.pathname === `/${account.handle}`);
     });
 

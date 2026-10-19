@@ -16,14 +16,10 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {};
 
-export const Login: Story = {
-  args: { isLogin: true },
-};
-
 export const HeaderOnly: Story = {
-  render: () => <Header isLogin />,
+  render: () => <Header />,
 };
 
-export const FooterWithNavigation: Story = {
-  render: () => <Footer withNavigation />,
+export const FooterOnly: Story = {
+  render: () => <Footer />,
 };

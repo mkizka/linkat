@@ -1,6 +1,6 @@
 import { parseWithZod } from "@conform-to/zod/v4";
 
-import { moderationFormSchema } from "~/features/board/moderation-panel";
+import { moderationFormSchema } from "~/features/board/moderation";
 import { di } from "~/server/di";
 import { NotAdminError } from "~/server/service/moderation/moderation";
 
