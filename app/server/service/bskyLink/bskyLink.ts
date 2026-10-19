@@ -1,8 +1,9 @@
 import type { Did } from "@atproto/did";
 
-import { bskyLinkUrlSchema, MAX_BSKY_LINKS } from "~/schemas/bskyLink";
 import type { IBoardRepository } from "~/server/infrastructure/board/boardRepository";
 import type { IBskyLinkPdsRepository } from "~/server/infrastructure/bskyLink/bskyLinkPdsRepository";
+
+const MAX_BSKY_LINKS = 10;
 
 export class BskyLinkSelectionError extends Error {
   constructor() {
@@ -29,7 +30,7 @@ export const bskyLinkServiceFactory = ({
       cards.length === 0 ||
       cards.length !== indexes.size ||
       cards.length > MAX_BSKY_LINKS ||
-      !cards.every((card) => bskyLinkUrlSchema.safeParse(card.url).success)
+      !cards.every((card) => card.url)
     ) {
       throw new BskyLinkSelectionError();
     }

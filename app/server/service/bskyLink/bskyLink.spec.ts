@@ -36,13 +36,14 @@ describe("bskyLinkService", () => {
       const expected = [
         { url: "https://example.com/a", text: "A" },
         { url: "https://example.com/b" },
+        { url: "http://example.com/c", text: "http" },
       ];
       // act
-      await bskyLinkService.exportCards(did, [2, 0]);
+      await bskyLinkService.exportCards(did, [3, 2, 0]);
       // assert
       expect(bskyLinkPdsRepository.replace).toHaveBeenCalledWith(did, expected);
     });
-    test.each([[[]], [[1]], [[3]], [[0, 5]]])(
+    test.each([[[]], [[1]], [[0, 5]]])(
       "書き出せないカードを選んだらBskyLinkSelectionErrorを投げる(%j)",
       async (cardIndexes) => {
         // act
