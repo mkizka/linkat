@@ -78,11 +78,7 @@ export const di = await createRegistry()
     ],
     ownerServiceFactory,
   )
-  .service(
-    "moderationService",
-    ["moderationRepository", "adminDids"],
-    moderationServiceFactory,
-  )
+  .service("moderationService", ["adminDids"], moderationServiceFactory)
   .service(
     "boardService",
     [

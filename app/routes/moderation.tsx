@@ -20,6 +20,6 @@ export async function action({ request }: Route.ActionArgs) {
     throw new Response("Bad Request", { status: 400 });
   }
   const { ownerDid, level } = submission.value;
-  await di.moderationService.updateLevel(ownerDid, level);
+  await di.moderationRepository.save(ownerDid, level);
   return null;
 }
