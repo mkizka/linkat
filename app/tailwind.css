@@ -26,6 +26,10 @@ html {
   margin-bottom: 0 !important;
 }
 
+.bluesky-embed iframe {
+  color-scheme: light;
+}
+
 .btn-bluesky {
   --btn-color: 62.58% 0.205 254.95;
 }
