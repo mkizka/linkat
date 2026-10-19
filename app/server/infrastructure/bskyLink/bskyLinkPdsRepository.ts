@@ -1,36 +1,24 @@
 import type { Did } from "@atproto/did";
 import { Client, XrpcResponseError } from "@atproto/lex";
-import { z } from "zod";
 
+import link from "~/generated/app/bsky/actor/link";
+import profile from "~/generated/app/bsky/actor/profile";
 import type { BoardCard } from "~/schemas/board";
 import type { IOAuthClient } from "~/server/infrastructure/auth/oauthClient";
 
-const linkCollection = "app.bsky.actor.link";
-const profileCollection = "app.bsky.actor.profile";
-
-const profileLinksSchema = z.object({
-  links: z.object({ uri: z.string() }).array(),
-});
-
-const truncateTitle = (text: string) => {
-  const graphemes = Array.from(
-    new Intl.Segmenter().segment(text),
-    ({ segment }) => segment,
-  ).slice(0, 40);
-  while (new TextEncoder().encode(graphemes.join("")).length > 320) {
-    graphemes.pop();
-  }
-  return graphemes.join("");
-};
-
-const toLinkRecord = ({ url = "", text }: BoardCard) => {
-  const record = {
-    $type: linkCollection,
+const toLinkRecord = ({ url, text }: BoardCard) =>
+  link.parse({
+    $type: link.$type,
     url,
+    title: text || undefined,
     createdAt: new Date().toISOString(),
-  } as const;
-  return text ? { ...record, title: truncateTitle(text) } : record;
-};
+  });
+
+export class BskyLinkInvalidError extends Error {
+  constructor(cause: unknown) {
+    super("Blueskyのリンクにできないカードが含まれています", { cause });
+  }
+}
 
 export class BskyLinkExportError extends Error {
   constructor(cause: unknown) {
@@ -63,10 +51,18 @@ export const bskyLinkPdsRepositoryFactory = ({
   oauthClient: IOAuthClient;
 }): IBskyLinkPdsRepository => ({
   async replace(did, cards) {
+    const linkRecords = (() => {
+      try {
+        return cards.map(toLinkRecord);
+      } catch (error) {
+        throw new BskyLinkInvalidError(error);
+      }
+    })();
+
     const client = new Client(await oauthClient.restore(did));
 
-    const profile = await client
-      .getRecord(profileCollection, "self", { repo: did })
+    const current = await client
+      .getRecord(profile.$type, "self", { repo: did })
       .then(
         ({ body }) => body,
         (error: unknown) => {
@@ -78,21 +74,29 @@ export const bskyLinkPdsRepositoryFactory = ({
       );
 
     const refs = [];
-    for (const card of cards) {
+    for (const record of linkRecords) {
       const { body } = await client
-        .createRecord(toLinkRecord(card), undefined, { repo: did })
+        .createRecord(record, undefined, { repo: did })
         .catch((error: unknown) => {
           throw new BskyLinkExportError(error);
         });
       refs.push({ uri: body.uri, cid: body.cid });
     }
 
+    const nextProfile = profile.safeParse({
+      ...current?.value,
+      $type: profile.$type,
+      links: refs,
+    });
+    if (!nextProfile.success) {
+      throw new BskyLinkInvalidError(nextProfile.reason);
+    }
+
     await client
-      .putRecord(
-        { ...profile?.value, $type: profileCollection, links: refs },
-        "self",
-        { repo: did, swapRecord: profile?.cid },
-      )
+      .putRecord(nextProfile.value, "self", {
+        repo: did,
+        swapRecord: current?.cid,
+      })
       .catch((error: unknown) => {
         if (isXrpcError(error, "InvalidSwap")) {
           throw new BskyLinkConflictError(error);
@@ -100,15 +104,13 @@ export const bskyLinkPdsRepositoryFactory = ({
         throw new BskyLinkExportError(error);
       });
 
-    const oldLinkPrefix = `at://${did}/${linkCollection}/`;
-    const oldRkeys = (
-      profileLinksSchema.safeParse(profile?.value).data?.links ?? []
-    )
+    const oldLinkPrefix = `at://${did}/${link.$type}/`;
+    const oldRkeys = (profile.$ifMatches(current?.value)?.links ?? [])
       .filter(({ uri }) => uri.startsWith(oldLinkPrefix))
       .map(({ uri }) => uri.slice(oldLinkPrefix.length));
     try {
       for (const rkey of oldRkeys) {
-        await client.deleteRecord(linkCollection, rkey, { repo: did });
+        await client.deleteRecord(link.$type, rkey, { repo: did });
       }
     } catch (error) {
       throw new BskyLinkCleanupError(error);

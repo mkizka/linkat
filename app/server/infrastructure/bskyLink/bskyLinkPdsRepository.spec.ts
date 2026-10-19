@@ -10,6 +10,7 @@ import {
   BskyLinkCleanupError,
   BskyLinkConflictError,
   BskyLinkExportError,
+  BskyLinkInvalidError,
   bskyLinkPdsRepositoryFactory,
 } from "./bskyLinkPdsRepository";
 
@@ -106,45 +107,54 @@ describe("bskyLinkPdsRepository", () => {
       ]);
     });
     test.each([
-      { text: "あ".repeat(50), title: "あ".repeat(40) },
-      { text: "👨‍👩‍👧".repeat(50), title: "👨‍👩‍👧".repeat(17) },
-    ])(
-      "リンクのタイトルを40書記素かつ320バイト以内に切る($title)",
-      async ({ text, title }) => {
-        // arrange
-        const created: unknown[] = [];
-        server.use(
-          http.get(xrpcUrl("com.atproto.repo.getRecord"), () =>
-            HttpResponse.json(
-              { error: "RecordNotFound", message: "Could not locate record" },
-              { status: 400 },
-            ),
-          ),
-          http.post(
-            xrpcUrl("com.atproto.repo.createRecord"),
-            async ({ request }) => {
-              created.push(await request.json());
-              return HttpResponse.json({
-                uri: `at://${did}/app.bsky.actor.link/new`,
-                cid,
-              });
-            },
-          ),
-          http.post(xrpcUrl("com.atproto.repo.putRecord"), () =>
-            HttpResponse.json({
-              uri: `at://${did}/app.bsky.actor.profile/self`,
-              cid,
-            }),
-          ),
-        );
-        // act
-        await bskyLinkPdsRepository.replace(did, [
-          { url: "https://example.com", text },
-        ]);
-        // assert
-        expect(created).toMatchObject([{ record: { title } }]);
+      { name: "URLが無い", cards: [{ text: "A" }] },
+      { name: "URLの形式でない", cards: [{ url: "example" }] },
+      {
+        name: "タイトルが40書記素を超える",
+        cards: [{ url: "https://example.com", text: "あ".repeat(41) }],
       },
-    );
+      {
+        name: "タイトルが320バイトを超える",
+        cards: [{ url: "https://example.com", text: "👨‍👩‍👧".repeat(18) }],
+      },
+    ])("$nameカードはBskyLinkInvalidErrorになる", async ({ cards }) => {
+      // arrange
+      const requested = vi.fn();
+      server.use(http.all("https://pds.example.com/*", requested));
+      // act
+      const actual = bskyLinkPdsRepository.replace(did, cards);
+      // assert
+      await expect(actual).rejects.toThrow(BskyLinkInvalidError);
+      expect(requested).not.toHaveBeenCalled();
+    });
+
+    test("11枚以上ならプロフィールを更新せずBskyLinkInvalidErrorになる", async () => {
+      // arrange
+      const put = vi.fn();
+      server.use(
+        http.get(xrpcUrl("com.atproto.repo.getRecord"), () =>
+          HttpResponse.json(
+            { error: "RecordNotFound", message: "Could not locate record" },
+            { status: 400 },
+          ),
+        ),
+        http.post(xrpcUrl("com.atproto.repo.createRecord"), () =>
+          HttpResponse.json({
+            uri: `at://${did}/app.bsky.actor.link/new`,
+            cid,
+          }),
+        ),
+        http.post(xrpcUrl("com.atproto.repo.putRecord"), put),
+      );
+      // act
+      const actual = bskyLinkPdsRepository.replace(
+        did,
+        Array.from({ length: 11 }, () => ({ url: "https://example.com" })),
+      );
+      // assert
+      await expect(actual).rejects.toThrow(BskyLinkInvalidError);
+      expect(put).not.toHaveBeenCalled();
+    });
 
     describe("PDSとの通信に失敗したとき", () => {
       const xrpcError = (error: string, status = 400) =>

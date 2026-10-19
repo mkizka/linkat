@@ -3,8 +3,6 @@ import type { Did } from "@atproto/did";
 import type { IBoardRepository } from "~/server/infrastructure/board/boardRepository";
 import type { IBskyLinkPdsRepository } from "~/server/infrastructure/bskyLink/bskyLinkPdsRepository";
 
-const MAX_BSKY_LINKS = 10;
-
 export class BskyLinkSelectionError extends Error {
   constructor() {
     super("書き出すカードの選択が不正です");
@@ -26,12 +24,7 @@ export const bskyLinkServiceFactory = ({
     const board = await boardRepository.find(editorDid);
     const indexes = new Set(cardIndexes);
     const cards = board?.cards.filter((_, index) => indexes.has(index)) ?? [];
-    if (
-      cards.length === 0 ||
-      cards.length !== indexes.size ||
-      cards.length > MAX_BSKY_LINKS ||
-      !cards.every((card) => card.url)
-    ) {
+    if (cards.length === 0 || cards.length !== indexes.size) {
       throw new BskyLinkSelectionError();
     }
     await bskyLinkPdsRepository.replace(editorDid, cards);

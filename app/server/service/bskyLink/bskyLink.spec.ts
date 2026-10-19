@@ -22,9 +22,8 @@ beforeEach(() => {
     ownerDid: did,
     cards: [
       { url: "https://example.com/a", text: "A" },
-      { text: "テキストだけ" },
       { url: "https://example.com/b" },
-      { url: "http://example.com/c", text: "http" },
+      { url: "http://example.com/c" },
     ],
   });
 });
@@ -36,14 +35,14 @@ describe("bskyLinkService", () => {
       const expected = [
         { url: "https://example.com/a", text: "A" },
         { url: "https://example.com/b" },
-        { url: "http://example.com/c", text: "http" },
+        { url: "http://example.com/c" },
       ];
       // act
-      await bskyLinkService.exportCards(did, [3, 2, 0]);
+      await bskyLinkService.exportCards(did, [2, 1, 0]);
       // assert
       expect(bskyLinkPdsRepository.replace).toHaveBeenCalledWith(did, expected);
     });
-    test.each([[[]], [[1]], [[0, 5]]])(
+    test.each([[[]], [[0, 5]]])(
       "書き出せないカードを選んだらBskyLinkSelectionErrorを投げる(%j)",
       async (cardIndexes) => {
         // act
@@ -53,22 +52,6 @@ describe("bskyLinkService", () => {
         expect(bskyLinkPdsRepository.replace).not.toHaveBeenCalled();
       },
     );
-    test("11枚以上選んだらBskyLinkSelectionErrorを投げる", async () => {
-      // arrange
-      boardRepository.find.mockResolvedValue({
-        ownerDid: did,
-        cards: Array.from({ length: 11 }, (_, i) => ({
-          url: `https://example.com/${i}`,
-        })),
-      });
-      // act
-      const actual = bskyLinkService.exportCards(
-        did,
-        Array.from({ length: 11 }, (_, i) => i),
-      );
-      // assert
-      await expect(actual).rejects.toThrow(BskyLinkSelectionError);
-    });
     test("ボードが無ければBskyLinkSelectionErrorを投げる", async () => {
       // arrange
       boardRepository.find.mockResolvedValue(null);
