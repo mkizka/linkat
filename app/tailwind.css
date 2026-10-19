@@ -26,6 +26,10 @@ html {
   margin-bottom: 0 !important;
 }
 
+/* iframe要素とiframe内ドキュメントのルートでcolor-schemeが食い違うと、ブラウザがiframeを不透明にして
+   iframe内のcanvas色(白)で塗るため、ダークモード時に埋め込みの周囲が白くなる
+   https://drafts.csswg.org/css-color-adjust-1/#color-scheme-effect
+   embed.bsky.appはルートにcolor-schemeを指定していない(=light)ので、親から継承するdarkを上書きしてlightに揃える */
 .bluesky-embed iframe {
   color-scheme: light;
 }
