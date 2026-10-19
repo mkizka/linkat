@@ -2,12 +2,18 @@ import { parseWithZod } from "@conform-to/zod/v4";
 
 import { moderationFormSchema } from "~/features/board/moderation";
 import { di } from "~/server/di";
+import {
+  editorDidContext,
+  requireLogin,
+} from "~/server/middleware/requireLogin";
 import { NotAdminError } from "~/server/service/moderation/moderation";
 
 import type { Route } from "./+types/moderation";
 
-export async function action({ request }: Route.ActionArgs) {
-  const editorDid = await di.sessionService.getSessionDid(request);
+export const middleware: Route.MiddlewareFunction[] = [requireLogin];
+
+export async function action({ request, context }: Route.ActionArgs) {
+  const editorDid = context.get(editorDidContext);
   const submission = parseWithZod(await request.formData(), {
     schema: moderationFormSchema,
   });

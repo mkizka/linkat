@@ -42,8 +42,10 @@
     "feed-name": "フィードも使えます",
     "feed-description": "こんな感じで表示されます"
   },
+  "require-login": {
+    "invalid-session-error-message": "ログイン情報が無効でした"
+  },
   "edit": {
-    "invalid-session-error-message": "ログイン情報が無効でした",
     "invalid-form-error-message": "フォームが無効です",
     "title": "ボードを編集",
     "cancel-button": "キャンセル",
@@ -131,7 +133,6 @@
     "cancel": "キャンセル"
   },
   "delete": {
-    "invalid-session-error-message": "ログイン情報が無効でした",
     "delete-board-error-message": "ボードの削除に失敗しました",
     "delete-delayed-warning-message": "削除の反映に時間がかかっています。少し時間を空けてからご確認ください"
   },

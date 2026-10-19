@@ -1,17 +1,20 @@
-import { data, redirect } from "react-router";
+import { data } from "react-router";
 import { setToast } from "remix-toast/middleware";
 
 import { getInstance } from "~/i18n/i18n";
 import { di } from "~/server/di";
+import {
+  editorDidContext,
+  requireLogin,
+} from "~/server/middleware/requireLogin";
 
 import type { Route } from "./+types/sync";
 
-export async function action({ request, context }: Route.ActionArgs) {
+export const middleware: Route.MiddlewareFunction[] = [requireLogin];
+
+export async function action({ context }: Route.ActionArgs) {
   const logger = di.logger.child("sync");
-  const editorDid = await di.sessionService.getSessionDid(request);
-  if (!editorDid) {
-    throw redirect("/login");
-  }
+  const editorDid = context.get(editorDidContext);
   let result;
   try {
     result = await di.boardEventService.handleEditorSync(editorDid);

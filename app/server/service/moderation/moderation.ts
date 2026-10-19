@@ -8,7 +8,7 @@ export class NotAdminError extends Error {}
 export interface IModerationService {
   isAdmin: (did: Did | null) => boolean;
   updateLevel: (
-    editorDid: Did | null,
+    editorDid: Did,
     ownerDid: Did,
     level: ModerationLevelDto,
   ) => Promise<void>;

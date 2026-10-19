@@ -4,27 +4,22 @@ import { setToast } from "remix-toast/middleware";
 import { getInstance } from "~/i18n/i18n";
 import { di } from "~/server/di";
 import {
+  editorDidContext,
+  requireLogin,
+} from "~/server/middleware/requireLogin";
+import {
   BoardDbDeleteError,
   BoardPdsDeleteError,
 } from "~/server/service/board/boardEvent";
 
 import type { Route } from "./+types/delete";
 
-export async function action({ request, context }: Route.ActionArgs) {
+export const middleware: Route.MiddlewareFunction[] = [requireLogin];
+
+export async function action({ context }: Route.ActionArgs) {
   const logger = di.logger.child("delete");
   const i18next = getInstance(context);
-  const editorDid = await di.sessionService.getSessionDid(request);
-  if (!editorDid) {
-    setToast(context, {
-      message: i18next.t("delete.invalid-session-error-message"),
-      type: "error",
-    });
-    return redirect("/login", {
-      headers: {
-        "Set-Cookie": await di.sessionService.destroySession(request),
-      },
-    });
-  }
+  const editorDid = context.get(editorDidContext);
   try {
     await di.boardEventService.handleEditorDelete(editorDid);
   } catch (error) {
