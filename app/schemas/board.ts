@@ -37,3 +37,8 @@ export const boardSchema = z.object({
       }),
     ),
 });
+
+export const MAX_EXPORT_CARDS = 10;
+
+export const isExportableCard = (card: BoardCard) =>
+  !!card.url?.startsWith("https://");

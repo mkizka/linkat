@@ -1,4 +1,4 @@
-import { boardSchema, cardSchema } from "./board";
+import { boardSchema, cardSchema, isExportableCard } from "./board";
 
 describe("boardSchema", () => {
   test.each`
@@ -51,5 +51,16 @@ describe("cardSchema", () => {
     ${[]}                                    | ${"オブジェクトでない"}
   `("$description", ({ card }) => {
     expect(() => cardSchema.parse(card)).toThrow();
+  });
+});
+
+describe("isExportableCard", () => {
+  test.each([
+    { card: { url: "https://example.com" }, expected: true },
+    { card: { url: "http://example.com" }, expected: false },
+    { card: { url: "", text: "テキスト" }, expected: false },
+    { card: { text: "テキスト" }, expected: false },
+  ])("$card.url は書き出せるか: $expected", ({ card, expected }) => {
+    expect(isExportableCard(card)).toBe(expected);
   });
 });
