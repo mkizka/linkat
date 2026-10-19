@@ -36,7 +36,10 @@ function ClientBlueskyEmbed({ blueskyUri }: Props) {
       {/* カードの並べ替え時にReactがエラーを出すのを防ぐためにdivで囲む
           おそらくblockquoteがscan()によって消えることが原因 */}
       <div className="[grid-area:1/1]">
-        <blockquote data-bluesky-uri={blueskyUri} />
+        <blockquote
+          data-bluesky-uri={blueskyUri}
+          data-bluesky-embed-color-mode="system"
+        />
       </div>
     </div>
   );
