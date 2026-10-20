@@ -7,14 +7,21 @@ export type TestSize = "medium" | "large";
 
 type Account = { handle: string; password: string };
 
-export const authorize = async (page: Page, { handle, password }: Account) => {
-  await page.goto("/login");
+export const submitLoginForm = async (
+  page: Page,
+  { handle, password }: Account,
+) => {
   await page.getByTestId("login-form__handle").fill(handle);
   await page.getByTestId("login-form__submit").click();
   await page.waitForURL((url) => url.pathname === "/oauth/authorize");
   await page.locator("[name='password']").fill(password);
   await page.locator("button", { hasText: "Sign in" }).click();
   await page.locator("button", { hasText: "Authorize" }).click();
+};
+
+export const authorize = async (page: Page, account: Account) => {
+  await page.goto("/login");
+  await submitLoginForm(page, account);
   await page.waitForURL((url) => url.pathname === "/");
   await page.getByTestId("index__edit-link").waitFor();
 };

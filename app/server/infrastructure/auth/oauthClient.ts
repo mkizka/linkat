@@ -51,8 +51,10 @@ export class OAuthSessionInvalidError extends Error {
 }
 
 export interface IOAuthClient {
-  authorize: (handle: string) => Promise<URL>;
-  callback: (params: URLSearchParams) => Promise<Did>;
+  authorize: (handle: string, state?: string) => Promise<URL>;
+  callback: (
+    params: URLSearchParams,
+  ) => Promise<{ did: Did; state: string | null }>;
   restore: (did: Did) => Promise<Agent>;
   revoke: (did: Did) => Promise<void>;
   clientMetadata: NodeOAuthClient["clientMetadata"];
@@ -77,10 +79,10 @@ export const oauthClientFactory = ({
   });
 
   return {
-    authorize: (handle) => client.authorize(handle, { scope }),
+    authorize: (handle, state) => client.authorize(handle, { scope, state }),
     async callback(params) {
-      const { session } = await client.callback(params);
-      return session.did;
+      const { session, state } = await client.callback(params);
+      return { did: session.did, state };
     },
     async restore(did) {
       try {

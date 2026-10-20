@@ -8,7 +8,7 @@ import { di } from "~/server/di";
 export const editorDidContext = createContext<Did>();
 
 export const requireLogin: MiddlewareFunction<Response> = async (
-  { request, context },
+  { request, context, url },
   next,
 ) => {
   const editorDid = await di.sessionService.getSessionDid(request);
@@ -21,7 +21,11 @@ export const requireLogin: MiddlewareFunction<Response> = async (
         type: "error",
       });
     }
-    throw redirect("/login", {
+    const loginUrl = new URL("/login", url);
+    if (request.method === "GET") {
+      loginUrl.searchParams.set("redirect", url.pathname + url.search);
+    }
+    throw redirect(loginUrl.pathname + loginUrl.search, {
       headers: {
         "Set-Cookie": await di.sessionService.destroySession(request),
       },
