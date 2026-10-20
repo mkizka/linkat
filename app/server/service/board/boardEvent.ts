@@ -49,10 +49,6 @@ export const boardEventServiceFactory = ({
   ownerRepository: IOwnerRepository;
   ownerService: IOwnerService;
 }): IBoardEventService => {
-  const deleteBoard = async (ownerDid: Did) => {
-    await ownerRepository.delete(ownerDid);
-    await boardRepository.delete(ownerDid);
-  };
   return {
     async handleBoardCommit(board) {
       await ownerService.syncOwner(board.ownerDid);
@@ -78,7 +74,11 @@ export const boardEventServiceFactory = ({
       }
       return { boardImported: !!board };
     },
-    handleBoardDeleteCommit: deleteBoard,
+    async handleBoardDeleteCommit(ownerDid) {
+      if (await boardRepository.delete(ownerDid)) {
+        await ownerRepository.delete(ownerDid);
+      }
+    },
     async handleEditorDelete(ownerDid) {
       try {
         await boardPdsRepository.delete(ownerDid);
@@ -86,7 +86,7 @@ export const boardEventServiceFactory = ({
         throw new BoardPdsDeleteError(error);
       }
       try {
-        await deleteBoard(ownerDid);
+        await boardRepository.delete(ownerDid);
       } catch (error) {
         throw new BoardDbDeleteError(error);
       }

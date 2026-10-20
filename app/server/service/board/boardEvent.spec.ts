@@ -190,13 +190,21 @@ describe("boardEventService", () => {
       // assert
       expect(await boardRepository.find(asDid(did))).toBeNull();
     });
+    test("ボードの写しが無ければ、持ち主の写しは残す", async () => {
+      // arrange
+      const owner = await OwnerFactory.create();
+      // act
+      await boardEventService.handleBoardDeleteCommit(asDid(owner.did));
+      // assert
+      expect(await ownerRepository.findByDid(asDid(owner.did))).not.toBeNull();
+    });
   });
 
   describe("handleEditorDelete", () => {
     const deleteRecordUrl =
       "https://pds.example.com/xrpc/com.atproto.repo.deleteRecord";
 
-    test("PDSから削除してからDBから削除する", async () => {
+    test("PDSから削除してからDBのボードの写しだけ削除する", async () => {
       // arrange
       const board = await BoardFactory.create();
       let deleteRecordBody: unknown;
@@ -215,7 +223,9 @@ describe("boardEventService", () => {
         rkey: "self",
       });
       expect(await boardRepository.find(asDid(board.ownerDid))).toBeNull();
-      expect(await ownerRepository.findByDid(asDid(board.ownerDid))).toBeNull();
+      expect(
+        await ownerRepository.findByDid(asDid(board.ownerDid)),
+      ).not.toBeNull();
     });
     test("PDSからの削除に失敗したらDBから削除せずBoardPdsDeleteErrorを投げる", async () => {
       // arrange
