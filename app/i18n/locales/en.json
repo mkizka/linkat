@@ -165,5 +165,9 @@
     "change-button": "Change",
     "banner-unlisted": "Unlisted",
     "banner-hidden": "Hidden"
+  },
+  "experimental": {
+    "enabled-message": "Experimental features enabled",
+    "disabled-message": "Experimental features disabled"
   }
 }
