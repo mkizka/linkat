@@ -16,13 +16,7 @@ import { env, isProduction } from "~/utils/env";
 
 const privateKey = Buffer.from(env.PRIVATE_KEY_ES256_B64, "base64").toString();
 
-const loginScope = "atproto include:blue.linkat.permissionSet";
-
-const scope = [
-  loginScope,
-  "repo:app.bsky.actor.link?action=create&action=delete",
-  "repo:app.bsky.actor.profile?action=create&action=update",
-].join(" ");
+const scope = "atproto include:blue.linkat.permissionSet";
 
 const clientMetadata: OAuthClientMetadataInput = isProduction
   ? {
@@ -83,7 +77,7 @@ export const oauthClientFactory = ({
   });
 
   return {
-    authorize: (handle) => client.authorize(handle, { scope: loginScope }),
+    authorize: (handle) => client.authorize(handle, { scope }),
     async callback(params) {
       const { session } = await client.callback(params);
       return session.did;
