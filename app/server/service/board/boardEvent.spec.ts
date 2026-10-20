@@ -28,7 +28,6 @@ const oauthClient = mock<IOAuthClient>();
 const boardEventService = boardEventServiceFactory({
   boardRepository,
   boardPdsRepository: boardPdsRepositoryFactory({ oauthClient }),
-  ownerRepository,
   ownerService,
 });
 
@@ -167,7 +166,7 @@ describe("boardEventService", () => {
   });
 
   describe("handleBoardDeleteCommit", () => {
-    test("ボードと持ち主の写しを削除する", async () => {
+    test("ボードの写しだけ削除し、持ち主の写しは残す", async () => {
       // arrange
       const board = await BoardFactory.create();
       const other = await BoardFactory.create();
@@ -175,11 +174,10 @@ describe("boardEventService", () => {
       await boardEventService.handleBoardDeleteCommit(asDid(board.ownerDid));
       // assert
       expect(await boardRepository.find(asDid(board.ownerDid))).toBeNull();
-      expect(await ownerRepository.findByDid(asDid(board.ownerDid))).toBeNull();
-      expect(await boardRepository.find(asDid(other.ownerDid))).not.toBeNull();
       expect(
-        await ownerRepository.findByDid(asDid(other.ownerDid)),
+        await ownerRepository.findByDid(asDid(board.ownerDid)),
       ).not.toBeNull();
+      expect(await boardRepository.find(asDid(other.ownerDid))).not.toBeNull();
     });
     test("持ち主の写しが無くても、ボードを削除する", async () => {
       // arrange
@@ -196,7 +194,7 @@ describe("boardEventService", () => {
     const deleteRecordUrl =
       "https://pds.example.com/xrpc/com.atproto.repo.deleteRecord";
 
-    test("PDSから削除してからDBから削除する", async () => {
+    test("PDSから削除してからDBのボードの写しだけ削除する", async () => {
       // arrange
       const board = await BoardFactory.create();
       let deleteRecordBody: unknown;
@@ -215,7 +213,9 @@ describe("boardEventService", () => {
         rkey: "self",
       });
       expect(await boardRepository.find(asDid(board.ownerDid))).toBeNull();
-      expect(await ownerRepository.findByDid(asDid(board.ownerDid))).toBeNull();
+      expect(
+        await ownerRepository.findByDid(asDid(board.ownerDid)),
+      ).not.toBeNull();
     });
     test("PDSからの削除に失敗したらDBから削除せずBoardPdsDeleteErrorを投げる", async () => {
       // arrange
