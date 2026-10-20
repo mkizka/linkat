@@ -3,7 +3,6 @@ import type { Did } from "@atproto/did";
 import type { BoardDto } from "~/server/infrastructure/board/boardDto";
 import type { IBoardPdsRepository } from "~/server/infrastructure/board/boardPdsRepository";
 import type { IBoardRepository } from "~/server/infrastructure/board/boardRepository";
-import type { IOwnerRepository } from "~/server/infrastructure/owner/ownerRepository";
 import type { IOwnerService } from "~/server/service/owner/owner";
 
 export class BoardPdsSaveError extends Error {
@@ -41,12 +40,10 @@ export interface IBoardEventService {
 export const boardEventServiceFactory = ({
   boardRepository,
   boardPdsRepository,
-  ownerRepository,
   ownerService,
 }: {
   boardRepository: IBoardRepository;
   boardPdsRepository: IBoardPdsRepository;
-  ownerRepository: IOwnerRepository;
   ownerService: IOwnerService;
 }): IBoardEventService => {
   return {
@@ -75,9 +72,7 @@ export const boardEventServiceFactory = ({
       return { boardImported: !!board };
     },
     async handleBoardDeleteCommit(ownerDid) {
-      if (await boardRepository.delete(ownerDid)) {
-        await ownerRepository.delete(ownerDid);
-      }
+      await boardRepository.delete(ownerDid);
     },
     async handleEditorDelete(ownerDid) {
       try {

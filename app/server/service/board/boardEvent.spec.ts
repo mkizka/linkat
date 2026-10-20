@@ -28,7 +28,6 @@ const oauthClient = mock<IOAuthClient>();
 const boardEventService = boardEventServiceFactory({
   boardRepository,
   boardPdsRepository: boardPdsRepositoryFactory({ oauthClient }),
-  ownerRepository,
   ownerService,
 });
 
@@ -167,7 +166,7 @@ describe("boardEventService", () => {
   });
 
   describe("handleBoardDeleteCommit", () => {
-    test("ボードと持ち主の写しを削除する", async () => {
+    test("ボードの写しだけ削除し、持ち主の写しは残す", async () => {
       // arrange
       const board = await BoardFactory.create();
       const other = await BoardFactory.create();
@@ -175,11 +174,10 @@ describe("boardEventService", () => {
       await boardEventService.handleBoardDeleteCommit(asDid(board.ownerDid));
       // assert
       expect(await boardRepository.find(asDid(board.ownerDid))).toBeNull();
-      expect(await ownerRepository.findByDid(asDid(board.ownerDid))).toBeNull();
-      expect(await boardRepository.find(asDid(other.ownerDid))).not.toBeNull();
       expect(
-        await ownerRepository.findByDid(asDid(other.ownerDid)),
+        await ownerRepository.findByDid(asDid(board.ownerDid)),
       ).not.toBeNull();
+      expect(await boardRepository.find(asDid(other.ownerDid))).not.toBeNull();
     });
     test("持ち主の写しが無くても、ボードを削除する", async () => {
       // arrange
@@ -189,14 +187,6 @@ describe("boardEventService", () => {
       await boardEventService.handleBoardDeleteCommit(asDid(did));
       // assert
       expect(await boardRepository.find(asDid(did))).toBeNull();
-    });
-    test("ボードの写しが無ければ、持ち主の写しは残す", async () => {
-      // arrange
-      const owner = await OwnerFactory.create();
-      // act
-      await boardEventService.handleBoardDeleteCommit(asDid(owner.did));
-      // assert
-      expect(await ownerRepository.findByDid(asDid(owner.did))).not.toBeNull();
     });
   });
 

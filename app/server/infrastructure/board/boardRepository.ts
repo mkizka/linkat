@@ -9,7 +9,7 @@ import { boardTable } from "~/server/infrastructure/db/schema";
 export interface IBoardRepository {
   find: (ownerDid: Did) => Promise<BoardDto | null>;
   save: (board: BoardDto) => Promise<void>;
-  delete: (ownerDid: Did) => Promise<number>;
+  delete: (ownerDid: Did) => Promise<void>;
 }
 
 export const boardRepositoryFactory = ({
@@ -42,10 +42,6 @@ export const boardRepositoryFactory = ({
       .onConflictDoUpdate({ target: boardTable.ownerDid, set: data });
   },
   async delete(ownerDid) {
-    const deleted = await db
-      .delete(boardTable)
-      .where(eq(boardTable.ownerDid, ownerDid))
-      .returning({ ownerDid: boardTable.ownerDid });
-    return deleted.length;
+    await db.delete(boardTable).where(eq(boardTable.ownerDid, ownerDid));
   },
 });
