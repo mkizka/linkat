@@ -165,5 +165,9 @@
     "change-button": "変更",
     "banner-unlisted": "一覧から除外中",
     "banner-hidden": "非表示中"
+  },
+  "experimental": {
+    "enabled-message": "試験機能を有効にしました",
+    "disabled-message": "試験機能を無効にしました"
   }
 }
