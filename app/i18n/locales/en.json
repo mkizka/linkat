@@ -23,7 +23,8 @@
   "login": {
     "unknown-error-message": "An unknown error occurred",
     "oauth-resolve-error-message": "Failed to log in (maybe the handle is incorrect)",
-    "default-error-message": "Failed to log in"
+    "default-error-message": "Failed to log in",
+    "access-denied-message": "Login was canceled"
   },
   "login-form": {
     "required-error-message": "Please enter a value",
