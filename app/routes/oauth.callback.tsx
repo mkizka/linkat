@@ -7,9 +7,11 @@ import type { Route } from "./+types/oauth.callback";
 export async function loader({ request }: Route.LoaderArgs) {
   const logger = di.logger.child("oauth.callback");
   try {
-    const did = await di.authService.handleCallback(request.url);
+    const { did, redirectTo } = await di.authService.handleCallback(
+      request.url,
+    );
     logger.info("ログインに成功しました", { did });
-    return redirect("/", {
+    return redirect(redirectTo, {
       headers: {
         "Set-Cookie": await di.sessionService.createSession(request, did),
       },
