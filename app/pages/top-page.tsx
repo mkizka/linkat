@@ -10,10 +10,16 @@ import type { OwnerView } from "~/server/service/owner/ownerView";
 type Props = {
   editor: OwnerView | null;
   hasBoard: boolean;
+  experimental: boolean;
   recentOwners: OwnerView[];
 };
 
-export function TopPage({ editor, hasBoard, recentOwners }: Props) {
+export function TopPage({
+  editor,
+  hasBoard,
+  experimental,
+  recentOwners,
+}: Props) {
   if (!editor) {
     return (
       <RootLayout>
@@ -30,7 +36,11 @@ export function TopPage({ editor, hasBoard, recentOwners }: Props) {
     <RootLayout>
       <Main className="flex flex-col gap-8 py-8">
         <EditorProfile editor={editor} />
-        <EditorMenu handle={editor.handleOrDid} hasBoard={hasBoard} />
+        <EditorMenu
+          handle={editor.handleOrDid}
+          hasBoard={hasBoard}
+          experimental={experimental}
+        />
         <div className="px-8">
           <RecentBoards owners={recentOwners} />
         </div>

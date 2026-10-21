@@ -8,6 +8,7 @@ const meta = {
   args: {
     editor: null,
     hasBoard: false,
+    experimental: false,
     recentOwners: Array.from({ length: 8 }, (_, i) => ({
       did: `did:plc:${i}`,
       handleOrDid: `user${i}.bsky.social`,
