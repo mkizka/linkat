@@ -8,8 +8,9 @@ import type {
 } from "@atproto/oauth-client-node";
 import {
   atprotoLoopbackClientMetadata,
+  isExpectedSessionError,
   NodeOAuthClient,
-  TokenRefreshError,
+  OAuthResponseError,
 } from "@atproto/oauth-client-node";
 
 import { env, isProduction } from "~/utils/env";
@@ -50,6 +51,13 @@ export class OAuthSessionInvalidError extends Error {
   }
 }
 
+const isSessionInvalidError = (error: unknown) =>
+  isExpectedSessionError(error) ||
+  (error instanceof OAuthResponseError &&
+    error.status >= 400 &&
+    error.status < 500 &&
+    (error.error === "invalid_client" || error.error === "invalid_grant"));
+
 export interface IOAuthClient {
   authorize: (handle: string, state?: string) => Promise<URL>;
   callback: (
@@ -88,7 +96,7 @@ export const oauthClientFactory = ({
       try {
         return await client.restore(did);
       } catch (error) {
-        if (error instanceof TokenRefreshError) {
+        if (isSessionInvalidError(error)) {
           throw new OAuthSessionInvalidError(error);
         }
         throw error;
