@@ -37,6 +37,7 @@ test.describe("編集(離脱確認)", () => {
 
     await test.step("編集を続けると留まる", async () => {
       await leaveDialog.getByTestId("confirm-dialog__cancel").click();
+      await expect(leaveDialog).toBeHidden();
       await expect(page).toHaveURL((url) => url.pathname === "/edit");
       await expect(submit).toBeVisible();
     });
