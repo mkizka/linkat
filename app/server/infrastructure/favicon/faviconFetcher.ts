@@ -1,4 +1,4 @@
-import { icoToPng } from "~/utils/icoToPng";
+import { icoToPng } from "~/server/infrastructure/favicon/icoToPng";
 
 const maxIconSize = 100000;
 
