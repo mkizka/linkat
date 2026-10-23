@@ -1,24 +1,46 @@
 import type { Did } from "@atproto/did";
 import { Client, XrpcResponseError } from "@atproto/lex";
 
-import link from "~/generated/app/bsky/actor/link";
+import link, { type Main as LinkRecord } from "~/generated/app/bsky/actor/link";
 import profile from "~/generated/app/bsky/actor/profile";
-import type { BoardCard } from "~/schemas/board";
 import type { IOAuthClient } from "~/server/infrastructure/auth/oauthClient";
 
-const toLinkRecord = ({ url, text }: BoardCard) =>
-  link.parse({
-    $type: link.$type,
-    url,
-    title: text || undefined,
-    createdAt: new Date().toISOString(),
+import type { BskyLinkDto } from "./bskyLinkDto";
+
+const createLinkRecord = async (
+  client: Client,
+  did: Did,
+  record: LinkRecord,
+  icon: Buffer | null,
+) => {
+  const blob = icon
+    ? (await client.uploadBlob(icon, { encoding: "image/png" })).body.blob
+    : undefined;
+  return client.createRecord({ ...record, icon: blob }, undefined, {
+    repo: did,
   });
+};
+
+const MAX_LINKS = 10;
 
 export class BskyLinkInvalidError extends Error {
   constructor(cause: unknown) {
-    super("Blueskyのリンクにできないカードが含まれています", { cause });
+    super("Blueskyのリンクとして書き出せない値です", { cause });
   }
 }
+
+const toLinkRecord = ({ url, title }: BskyLinkDto) => {
+  const result = link.safeParse({
+    $type: link.$type,
+    url,
+    title,
+    createdAt: new Date().toISOString(),
+  });
+  if (!result.success) {
+    throw new BskyLinkInvalidError(result.reason);
+  }
+  return result.value;
+};
 
 export class BskyLinkExportError extends Error {
   constructor(cause: unknown) {
@@ -42,7 +64,7 @@ const isXrpcError = (error: unknown, name: string) =>
   error instanceof XrpcResponseError && error.error === name;
 
 export interface IBskyLinkPdsRepository {
-  replace: (did: Did, cards: BoardCard[]) => Promise<void>;
+  replace: (did: Did, links: BskyLinkDto[]) => Promise<void>;
 }
 
 export const bskyLinkPdsRepositoryFactory = ({
@@ -50,15 +72,14 @@ export const bskyLinkPdsRepositoryFactory = ({
 }: {
   oauthClient: IOAuthClient;
 }): IBskyLinkPdsRepository => ({
-  async replace(did, cards) {
-    const linkRecords = (() => {
-      try {
-        return cards.map(toLinkRecord);
-      } catch (error) {
-        throw new BskyLinkInvalidError(error);
-      }
-    })();
-
+  async replace(did, links) {
+    if (links.length > MAX_LINKS) {
+      throw new BskyLinkInvalidError(links.length);
+    }
+    const records = links.map((dto) => ({
+      record: toLinkRecord(dto),
+      icon: dto.icon,
+    }));
     const client = new Client(await oauthClient.restore(did));
 
     const current = await client
@@ -74,12 +95,12 @@ export const bskyLinkPdsRepositoryFactory = ({
       );
 
     const refs = [];
-    for (const record of linkRecords) {
-      const { body } = await client
-        .createRecord(record, undefined, { repo: did })
-        .catch((error: unknown) => {
+    for (const { record, icon } of records) {
+      const { body } = await createLinkRecord(client, did, record, icon).catch(
+        (error: unknown) => {
           throw new BskyLinkExportError(error);
-        });
+        },
+      );
       refs.push({ uri: body.uri, cid: body.cid });
     }
 
@@ -89,7 +110,7 @@ export const bskyLinkPdsRepositoryFactory = ({
       links: refs,
     });
     if (!nextProfile.success) {
-      throw new BskyLinkInvalidError(nextProfile.reason);
+      throw new BskyLinkExportError(nextProfile.reason);
     }
 
     await client

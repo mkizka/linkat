@@ -8,6 +8,7 @@ import {
   BskyLinkCleanupError,
   BskyLinkConflictError,
   BskyLinkExportError,
+  BskyLinkInvalidError,
 } from "~/server/infrastructure/bskyLink/bskyLinkPdsRepository";
 import { requireExperimental } from "~/server/middleware/requireExperimental";
 import {
@@ -39,7 +40,10 @@ export async function action({ request, context }: Route.ActionArgs) {
     });
     return { exported: true };
   } catch (error) {
-    if (error instanceof BskyLinkSelectionError) {
+    if (
+      error instanceof BskyLinkSelectionError ||
+      error instanceof BskyLinkInvalidError
+    ) {
       setToast(context, {
         message: i18next.t("export.invalid-form-error-message"),
         type: "error",

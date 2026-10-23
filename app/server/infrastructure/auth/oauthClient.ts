@@ -13,6 +13,7 @@ import {
   TokenRefreshError,
 } from "@atproto/oauth-client-node";
 import {
+  BlobPermission,
   RepoPermission,
   ScopePermissionsTransition,
 } from "@atproto/oauth-scopes";
@@ -31,11 +32,14 @@ const bskyLinkPermissions = [
   { collection: "app.bsky.actor.profile", action: "update" },
 ] as const;
 
+const bskyLinkIconPermission = { mime: "image/png" };
+
 const scope = [
   loginScope,
   ...bskyLinkPermissions.map((permission) =>
     RepoPermission.scopeNeededFor(permission),
   ),
+  BlobPermission.scopeNeededFor(bskyLinkIconPermission),
 ].join(" ");
 
 const clientMetadata: OAuthClientMetadataInput = isProduction
@@ -165,8 +169,10 @@ export const oauthClientFactory = ({
       const permissions = new ScopePermissionsTransition(
         (await session.getTokenInfo()).scope,
       );
-      return bskyLinkPermissions.every((permission) =>
-        permissions.allowsRepo(permission),
+      return (
+        bskyLinkPermissions.every((permission) =>
+          permissions.allowsRepo(permission),
+        ) && permissions.allowsBlob(bskyLinkIconPermission)
       );
     },
     revoke: (did) => client.revoke(did),
