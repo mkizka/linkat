@@ -38,7 +38,7 @@ export function ExportPage({ handle, cards, needsReauth, exported }: Props) {
     return (
       <>
         <ExportBar cancelable />
-        <Main className="flex flex-col justify-center py-6">
+        <Main className="flex flex-col justify-center pt-6 pb-20">
           <ExportReauth />
         </Main>
       </>
@@ -48,7 +48,7 @@ export function ExportPage({ handle, cards, needsReauth, exported }: Props) {
     return (
       <>
         <ExportBar />
-        <Main className="flex flex-col justify-center py-6">
+        <Main className="flex flex-col justify-center pt-6 pb-20">
           <ExportDone handle={handle} />
         </Main>
       </>
@@ -64,7 +64,7 @@ export function ExportPage({ handle, cards, needsReauth, exported }: Props) {
         submitButton={
           <Button
             type="button"
-            className="btn-primary"
+            className="btn-primary whitespace-nowrap"
             disabled={selected.length === 0 || isExporting}
             loading={isExporting}
             onClick={() => setConfirming(true)}
