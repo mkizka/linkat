@@ -40,6 +40,7 @@ export async function action({ request, context }: Route.ActionArgs) {
       error instanceof BskyLinkSelectionError ||
       error instanceof BskyLinkInvalidError
     ) {
+      logger.warn(error.message, { error });
       setToast(context, {
         message: i18next.t("export.invalid-form-error-message"),
         type: "error",
@@ -55,7 +56,7 @@ export async function action({ request, context }: Route.ActionArgs) {
       return null;
     }
     if (error instanceof BskyLinkConflictError) {
-      logger.error(error.message, { error });
+      logger.warn(error.message, { error });
       setToast(context, {
         message: i18next.t("export.conflict-error-message"),
         type: "error",
@@ -63,7 +64,7 @@ export async function action({ request, context }: Route.ActionArgs) {
       return null;
     }
     if (error instanceof BskyLinkCleanupError) {
-      logger.error(error.message, { error });
+      logger.warn(error.message, { error });
       setToast(context, {
         message: i18next.t("export.cleanup-warning-message"),
         type: "warning",
