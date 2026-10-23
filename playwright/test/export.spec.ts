@@ -13,14 +13,43 @@ test.describe("Blueskyへの書き出し", () => {
     test.skip(size === "large", "dev-envのPDSを操作するため");
     const { did, accessJwt } = await createSession(account);
 
+    const getRecord = (collection: string, rkey: string) =>
+      fetch(
+        `http://localhost:${PORTS.pds}/xrpc/com.atproto.repo.getRecord?${new URLSearchParams(
+          { repo: did, collection, rkey },
+        )}`,
+      );
+    let oldLinkUri = "";
+
     await test.step("Linkatを通さずPDSにレコードを書く", async () => {
+      const response = await xrpc(
+        "com.atproto.repo.createRecord",
+        {
+          repo: did,
+          collection: "app.bsky.actor.link",
+          record: {
+            $type: "app.bsky.actor.link",
+            url: "https://example.com/old",
+            createdAt: new Date().toISOString(),
+          },
+        },
+        accessJwt,
+      );
+      const oldLinkRef = z
+        .object({ uri: z.string(), cid: z.string() })
+        .parse(await response.json());
+      oldLinkUri = oldLinkRef.uri;
       await xrpc(
         "com.atproto.repo.putRecord",
         {
           repo: did,
           collection: "app.bsky.actor.profile",
           rkey: "self",
-          record: { $type: "app.bsky.actor.profile", displayName: "名前" },
+          record: {
+            $type: "app.bsky.actor.profile",
+            displayName: "名前",
+            links: [oldLinkRef],
+          },
         },
         accessJwt,
       );
@@ -84,22 +113,15 @@ test.describe("Blueskyへの書き出し", () => {
     });
 
     await test.step("カードを選んで書き出す", async () => {
+      await expect(page.getByTestId("export__replace-warning")).toBeVisible();
       await expect(page.getByTestId("export__count")).toHaveText("2 / 10");
       await page.getByTestId("select-card").filter({ hasText: "B" }).click();
       await page.getByTestId("export__submit").click();
       await expect(page.getByTestId("export-done__title")).toBeVisible();
     });
 
-    await test.step("PDSのプロフィールにリンクが書かれている", async () => {
-      const response = await fetch(
-        `http://localhost:${PORTS.pds}/xrpc/com.atproto.repo.getRecord?${new URLSearchParams(
-          {
-            repo: did,
-            collection: "app.bsky.actor.profile",
-            rkey: "self",
-          },
-        )}`,
-      );
+    await test.step("PDSのプロフィールのリンクが置き換わっている", async () => {
+      const response = await getRecord("app.bsky.actor.profile", "self");
       const { value } = z
         .object({
           value: z.object({
@@ -110,6 +132,15 @@ test.describe("Blueskyへの書き出し", () => {
         .parse(await response.json());
       expect(value.displayName).toBe("名前");
       expect(value.links).toHaveLength(1);
+      expect(value.links[0]?.uri).not.toBe(oldLinkUri);
+    });
+
+    await test.step("既存のリンクのレコードが削除されている", async () => {
+      const response = await getRecord(
+        "app.bsky.actor.link",
+        oldLinkUri.split("/").at(-1) ?? "",
+      );
+      expect(response.status).toBe(400);
     });
   });
 });

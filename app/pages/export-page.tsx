@@ -77,6 +77,12 @@ export function ExportPage({ handle, cards, needsReauth, exported }: Props) {
             {selected.length} / {MAX_LINKS}
           </b>
         </div>
+        <p
+          className="alert alert-warning text-start text-sm"
+          data-testid="export__replace-warning"
+        >
+          {t("export.replace-warning")}
+        </p>
         <SelectCardList
           cards={cards}
           selected={selected}

@@ -63,6 +63,7 @@
     "cancel-button": "キャンセル",
     "submit-button": "書き出す",
     "select-description": "プロフィールに出すカードを選んでください",
+    "replace-warning": "書き出すと、Blueskyのプロフィールに今あるリンクは全て削除され、選んだカードに置き換わります。",
     "no-url-badge": "URLなし",
     "invalid-badge": "書き出し不可",
     "unselectable-note": "テキストだけのカードは、Blueskyのリンクにできないので選べません。",

@@ -63,6 +63,7 @@
     "cancel-button": "Cancel",
     "submit-button": "Export",
     "select-description": "Choose the cards to show on your profile",
+    "replace-warning": "Exporting deletes all links currently on your Bluesky profile and replaces them with the selected cards.",
     "no-url-badge": "No URL",
     "invalid-badge": "Not exportable",
     "unselectable-note": "Text-only cards can't become Bluesky links, so they can't be selected.",
