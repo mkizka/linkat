@@ -1,8 +1,11 @@
 import type { Did } from "@atproto/did";
 
-import type { IOAuthClient } from "~/server/infrastructure/auth/oauthClient";
+import {
+  type IOAuthClient,
+  OAuthCallbackFailedError,
+} from "~/server/infrastructure/auth/oauthClient";
 
-const toSafeRedirectPath = (value: string | null) => {
+const toSafeRedirectPath = (value: string | undefined) => {
   if (!value?.startsWith("/")) return "/";
   const base = "http://localhost";
   const url = new URL(value, base);
@@ -10,9 +13,23 @@ const toSafeRedirectPath = (value: string | null) => {
   return url.pathname + url.search + url.hash;
 };
 
+export class AuthCallbackError extends Error {
+  constructor(
+    readonly returnTo: string,
+    readonly denied: boolean,
+    cause: unknown,
+  ) {
+    super("ログインのコールバックに失敗しました", { cause });
+  }
+}
+
 export interface IAuthService {
-  authorize: (handle: string, redirectTo?: string) => Promise<URL>;
+  authorize: (
+    handleOrDid: string,
+    options: Parameters<IOAuthClient["authorize"]>[1],
+  ) => Promise<URL>;
   handleCallback: (url: string) => Promise<{ did: Did; redirectTo: string }>;
+  canExport: (did: Did) => Promise<boolean>;
   getClientMetadata: () => IOAuthClient["clientMetadata"];
   getJwks: () => IOAuthClient["jwks"];
 }
@@ -22,12 +39,25 @@ export const authServiceFactory = ({
 }: {
   oauthClient: IOAuthClient;
 }): IAuthService => ({
-  authorize: (handle, redirectTo) => oauthClient.authorize(handle, redirectTo),
+  authorize: (handleOrDid, options) =>
+    oauthClient.authorize(handleOrDid, options),
   async handleCallback(url) {
     const params = new URL(url).searchParams;
-    const { did, state } = await oauthClient.callback(params);
-    return { did, redirectTo: toSafeRedirectPath(state) };
+    try {
+      const { did, redirect } = await oauthClient.callback(params);
+      return { did, redirectTo: toSafeRedirectPath(redirect) };
+    } catch (error) {
+      if (error instanceof OAuthCallbackFailedError) {
+        throw new AuthCallbackError(
+          toSafeRedirectPath(error.from),
+          error.denied,
+          error,
+        );
+      }
+      throw error;
+    }
   },
+  canExport: (did) => oauthClient.canWriteBskyLinks(did),
   getClientMetadata: () => oauthClient.clientMetadata,
   getJwks: () => oauthClient.jwks,
 });
