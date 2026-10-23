@@ -113,10 +113,10 @@ test.describe("Blueskyへの書き出し", () => {
     });
 
     await test.step("カードを選んで書き出す", async () => {
-      await expect(page.getByTestId("export__replace-warning")).toBeVisible();
       await expect(page.getByTestId("export__count")).toHaveText("2 / 10");
       await page.getByTestId("select-card").filter({ hasText: "B" }).click();
       await page.getByTestId("export__submit").click();
+      await page.getByTestId("confirm-dialog__confirm").click();
       await expect(page.getByTestId("export-done__title")).toBeVisible();
     });
 
