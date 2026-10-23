@@ -4,8 +4,11 @@ import { http, HttpResponse } from "msw";
 import { server } from "~/mocks/server";
 
 import { faviconFetcherFactory } from "./faviconFetcher";
+import { icoConverterFactory } from "./icoConverter";
 
-const faviconFetcher = faviconFetcherFactory();
+const faviconFetcher = faviconFetcherFactory({
+  icoConverter: icoConverterFactory(),
+});
 
 const faviconUrl = "https://icons.duckduckgo.com/ip3/example.com.ico";
 const png = Buffer.from(
