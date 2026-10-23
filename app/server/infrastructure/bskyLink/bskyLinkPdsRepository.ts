@@ -5,6 +5,8 @@ import link, { type Main as LinkRecord } from "~/generated/app/bsky/actor/link";
 import profile from "~/generated/app/bsky/actor/profile";
 import type { IOAuthClient } from "~/server/infrastructure/auth/oauthClient";
 
+import type { BskyLinkDto } from "./bskyLinkDto";
+
 const createLinkRecord = async (
   client: Client,
   did: Did,
@@ -17,6 +19,25 @@ const createLinkRecord = async (
   return client.createRecord({ ...record, icon: blob }, undefined, {
     repo: did,
   });
+};
+
+export class BskyLinkInvalidError extends Error {
+  constructor(cause: unknown) {
+    super("Blueskyのリンクとして書き出せない値です", { cause });
+  }
+}
+
+const toLinkRecord = ({ url, title }: BskyLinkDto) => {
+  const result = link.safeParse({
+    $type: link.$type,
+    url,
+    title,
+    createdAt: new Date().toISOString(),
+  });
+  if (!result.success) {
+    throw new BskyLinkInvalidError(result.reason);
+  }
+  return result.value;
 };
 
 export class BskyLinkExportError extends Error {
@@ -40,13 +61,8 @@ export class BskyLinkCleanupError extends Error {
 const isXrpcError = (error: unknown, name: string) =>
   error instanceof XrpcResponseError && error.error === name;
 
-type BskyLinkInput = {
-  record: LinkRecord;
-  icon: Buffer | null;
-};
-
 export interface IBskyLinkPdsRepository {
-  replace: (did: Did, links: BskyLinkInput[]) => Promise<void>;
+  replace: (did: Did, links: BskyLinkDto[]) => Promise<void>;
 }
 
 export const bskyLinkPdsRepositoryFactory = ({
@@ -55,6 +71,10 @@ export const bskyLinkPdsRepositoryFactory = ({
   oauthClient: IOAuthClient;
 }): IBskyLinkPdsRepository => ({
   async replace(did, links) {
+    const records = links.map((dto) => ({
+      record: toLinkRecord(dto),
+      icon: dto.icon,
+    }));
     const client = new Client(await oauthClient.restore(did));
 
     const current = await client
@@ -70,7 +90,7 @@ export const bskyLinkPdsRepositoryFactory = ({
       );
 
     const refs = [];
-    for (const { record, icon } of links) {
+    for (const { record, icon } of records) {
       const { body } = await createLinkRecord(client, did, record, icon).catch(
         (error: unknown) => {
           throw new BskyLinkExportError(error);

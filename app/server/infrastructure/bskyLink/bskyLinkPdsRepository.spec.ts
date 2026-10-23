@@ -3,7 +3,6 @@ import { buildAgent } from "@atproto/lex";
 import { http, HttpResponse } from "msw";
 import { mock } from "vitest-mock-extended";
 
-import link from "~/generated/app/bsky/actor/link";
 import { server } from "~/mocks/server";
 import type { IOAuthClient } from "~/server/infrastructure/auth/oauthClient";
 
@@ -11,6 +10,7 @@ import {
   BskyLinkCleanupError,
   BskyLinkConflictError,
   BskyLinkExportError,
+  BskyLinkInvalidError,
   bskyLinkPdsRepositoryFactory,
 } from "./bskyLinkPdsRepository";
 
@@ -24,13 +24,6 @@ const did = asDid("did:plc:dummy");
 const xrpcUrl = (nsid: string) => `https://pds.example.com/xrpc/${nsid}`;
 const cid = "bafyreiflxe3gz7tg4jje5w4wypqjvz5d4zntrols22gwp7btg2nh2t7wxm";
 const icon = Buffer.from([1, 2, 3]);
-const record = (url: string, title?: string) =>
-  link.parse({
-    $type: link.$type,
-    url,
-    title,
-    createdAt: new Date().toISOString(),
-  });
 const blob = {
   $type: "blob",
   ref: { $link: "bafkreiflxe3gz7tg4jje5w4wypqjvz5d4zntrols22gwp7btg2nh2t7wxm" },
@@ -98,8 +91,8 @@ describe("bskyLinkPdsRepository", () => {
       );
       // act
       await bskyLinkPdsRepository.replace(did, [
-        { record: record("https://a.example.com", "A"), icon },
-        { record: record("https://b.example.com"), icon: null },
+        { url: "https://a.example.com", title: "A", icon },
+        { url: "https://b.example.com", icon: null },
       ]);
       // assert
       expect(created).toMatchObject([
@@ -134,6 +127,32 @@ describe("bskyLinkPdsRepository", () => {
         { collection: "app.bsky.actor.link", rkey: "old" },
       ]);
     });
+    test.each([
+      { name: "URLが不正", dto: { url: "invalid", icon: null } },
+      {
+        name: "タイトルが40書記素を超える",
+        dto: { url: "https://example.com", title: "あ".repeat(41), icon: null },
+      },
+      {
+        name: "タイトルが320バイトを超える",
+        dto: {
+          url: "https://example.com",
+          title: "👨‍👩‍👧".repeat(18),
+          icon: null,
+        },
+      },
+    ])(
+      "$nameときはPDSに触れずBskyLinkInvalidErrorを投げる",
+      async ({ dto }) => {
+        // arrange
+        oauthClient.restore.mockClear();
+        // act
+        const actual = bskyLinkPdsRepository.replace(did, [dto]);
+        // assert
+        await expect(actual).rejects.toThrow(BskyLinkInvalidError);
+        expect(oauthClient.restore).not.toHaveBeenCalled();
+      },
+    );
     describe("PDSとの通信に失敗したとき", () => {
       const xrpcError = (error: string, status = 400) =>
         HttpResponse.json({ error, message: error }, { status });
@@ -215,7 +234,7 @@ describe("bskyLinkPdsRepository", () => {
           server.use(method(xrpcUrl(nsid), response));
           // act
           const actual = bskyLinkPdsRepository.replace(did, [
-            { record: record("https://example.com"), icon },
+            { url: "https://example.com", icon },
           ]);
           // assert
           await expect(actual).rejects.toThrow(expected);
