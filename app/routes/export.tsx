@@ -40,6 +40,7 @@ export async function action({ request, context }: Route.ActionArgs) {
       .parse(JSON.parse(typeof rawCards === "string" ? rawCards : "")),
   )();
   if (cards instanceof Error) {
+    logger.warn("書き出すカードの形式が不正でした", { error: cards });
     setToast(context, {
       message: i18next.t("export.invalid-form-error-message"),
       type: "error",
