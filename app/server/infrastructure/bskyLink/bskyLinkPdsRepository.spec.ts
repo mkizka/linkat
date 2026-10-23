@@ -127,27 +127,25 @@ describe("bskyLinkPdsRepository", () => {
         { collection: "app.bsky.actor.link", rkey: "old" },
       ]);
     });
+    const dto = { url: "https://example.com", icon: null };
     test.each([
-      { name: "URLが不正", dto: { url: "invalid", icon: null } },
+      { name: "URLが不正", dtos: [{ ...dto, url: "invalid" }] },
       {
         name: "タイトルが40書記素を超える",
-        dto: { url: "https://example.com", title: "あ".repeat(41), icon: null },
+        dtos: [{ ...dto, title: "あ".repeat(41) }],
       },
       {
         name: "タイトルが320バイトを超える",
-        dto: {
-          url: "https://example.com",
-          title: "👨‍👩‍👧".repeat(18),
-          icon: null,
-        },
+        dtos: [{ ...dto, title: "👨‍👩‍👧".repeat(18) }],
       },
+      { name: "11件以上", dtos: Array.from({ length: 11 }, () => dto) },
     ])(
       "$nameときはPDSに触れずBskyLinkInvalidErrorを投げる",
-      async ({ dto }) => {
+      async ({ dtos }) => {
         // arrange
         oauthClient.restore.mockClear();
         // act
-        const actual = bskyLinkPdsRepository.replace(did, [dto]);
+        const actual = bskyLinkPdsRepository.replace(did, dtos);
         // assert
         await expect(actual).rejects.toThrow(BskyLinkInvalidError);
         expect(oauthClient.restore).not.toHaveBeenCalled();

@@ -21,6 +21,8 @@ const createLinkRecord = async (
   });
 };
 
+const MAX_LINKS = 10;
+
 export class BskyLinkInvalidError extends Error {
   constructor(cause: unknown) {
     super("Blueskyのリンクとして書き出せない値です", { cause });
@@ -71,6 +73,9 @@ export const bskyLinkPdsRepositoryFactory = ({
   oauthClient: IOAuthClient;
 }): IBskyLinkPdsRepository => ({
   async replace(did, links) {
+    if (links.length > MAX_LINKS) {
+      throw new BskyLinkInvalidError(links.length);
+    }
     const records = links.map((dto) => ({
       record: toLinkRecord(dto),
       icon: dto.icon,

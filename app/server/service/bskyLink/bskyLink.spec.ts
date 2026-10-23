@@ -72,23 +72,6 @@ describe("bskyLinkService", () => {
       await expect(actual).rejects.toThrow(BskyLinkSelectionError);
       expect(faviconFetcher.fetchPng).not.toHaveBeenCalled();
     });
-    test("11枚以上選んだらBskyLinkSelectionErrorを投げる", async () => {
-      // arrange
-      boardRepository.find.mockResolvedValue({
-        ownerDid: did,
-        cards: Array.from({ length: 11 }, () => ({
-          url: "https://example.com",
-        })),
-      });
-      // act
-      const actual = bskyLinkService.exportCards(
-        did,
-        Array.from({ length: 11 }, (_, index) => index),
-      );
-      // assert
-      await expect(actual).rejects.toThrow(BskyLinkSelectionError);
-      expect(bskyLinkPdsRepository.replace).not.toHaveBeenCalled();
-    });
     test("ボードが無ければBskyLinkSelectionErrorを投げる", async () => {
       // arrange
       boardRepository.find.mockResolvedValue(null);
