@@ -63,7 +63,7 @@ export const di = await createRegistry()
     bskyLinkPdsRepositoryFactory,
   )
   .service("icoConverter", icoConverterFactory)
-  .service("faviconFetcher", ["icoConverter"], faviconFetcherFactory)
+  .service("faviconFetcher", ["icoConverter", "logger"], faviconFetcherFactory)
   .service(
     "profileFetcher",
     ["profileRecordParser", "logger"],
