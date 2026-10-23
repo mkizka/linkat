@@ -7,6 +7,7 @@ const meta = {
   args: {
     handle: "me.bsky.social",
     hasBoard: true,
+    experimental: false,
   },
 } satisfies Meta<typeof EditorMenu>;
 
