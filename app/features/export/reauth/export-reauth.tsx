@@ -4,14 +4,16 @@ import { Form, useNavigation } from "react-router";
 
 import { Button } from "~/components/button";
 
-const reauthAction = "/login?redirect=/export&bskyLinks=1";
-
 export function ExportReauth() {
   const { t } = useTranslation();
   const navigation = useNavigation();
-  const isSubmitting = navigation.formAction === reauthAction;
+  const isSubmitting = navigation.formData !== undefined;
   return (
-    <Form method="post" action={reauthAction} className="flex flex-col gap-4">
+    <Form
+      method="post"
+      action="/login?redirect=/export&bskyLinks=1"
+      className="flex flex-col gap-4"
+    >
       <input type="hidden" name="from" value="/export" />
       <div className="card items-center gap-3 bg-base-100 px-5 py-7 text-center">
         <span className="grid size-14 place-items-center rounded-full bg-primary/10 text-primary">
