@@ -5,6 +5,8 @@ import type { IBoardRepository } from "~/server/infrastructure/board/boardReposi
 import type { IBskyLinkPdsRepository } from "~/server/infrastructure/bskyLink/bskyLinkPdsRepository";
 import type { IFaviconFetcher } from "~/server/infrastructure/favicon/faviconFetcher";
 
+const MAX_LINKS = 10;
+
 const hasUrl = (card: BoardCard): card is BoardCard & { url: string } =>
   !!card.url;
 
@@ -28,8 +30,11 @@ export const bskyLinkServiceFactory = ({
   faviconFetcher: IFaviconFetcher;
 }): IBskyLinkService => ({
   async exportCards(editorDid, cardIndexes) {
-    const board = await boardRepository.find(editorDid);
     const indexes = new Set(cardIndexes);
+    if (indexes.size > MAX_LINKS) {
+      throw new BskyLinkSelectionError();
+    }
+    const board = await boardRepository.find(editorDid);
     const cards = board?.cards.filter((_, index) => indexes.has(index)) ?? [];
     if (cards.length === 0 || cards.length !== indexes.size) {
       throw new BskyLinkSelectionError();

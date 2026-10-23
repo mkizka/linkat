@@ -60,6 +60,16 @@ describe("bskyLinkService", () => {
         expect(bskyLinkPdsRepository.replace).not.toHaveBeenCalled();
       },
     );
+    test("11枚以上選んだらボードを読まずBskyLinkSelectionErrorを投げる", async () => {
+      // arrange
+      const cardIndexes = Array.from({ length: 11 }, (_, i) => i);
+      // act
+      const actual = bskyLinkService.exportCards(did, cardIndexes);
+      // assert
+      await expect(actual).rejects.toThrow(BskyLinkSelectionError);
+      expect(boardRepository.find).not.toHaveBeenCalled();
+      expect(faviconFetcher.fetchPng).not.toHaveBeenCalled();
+    });
     test("URLが無いカードを選んだらファビコンを取らずBskyLinkSelectionErrorを投げる", async () => {
       // arrange
       boardRepository.find.mockResolvedValue({
