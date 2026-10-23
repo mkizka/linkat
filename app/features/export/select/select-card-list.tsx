@@ -2,15 +2,16 @@ import type { BoardCard } from "~/schemas/board";
 
 import { SelectCard } from "./select-card";
 
+const MAX_LINKS = 10;
+
 type Props = {
   cards: BoardCard[];
-  maxLinks: number;
   selected: number[];
   onChange: (selected: number[]) => void;
 };
 
-export function SelectCardList({ cards, maxLinks, selected, onChange }: Props) {
-  const isFull = selected.length >= maxLinks;
+export function SelectCardList({ cards, selected, onChange }: Props) {
+  const isFull = selected.length >= MAX_LINKS;
   return (
     <ul className="flex flex-col gap-2">
       {cards.map((card, index) => {

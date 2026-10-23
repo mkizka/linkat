@@ -13,27 +13,22 @@ import { ExportBar } from "~/features/export/select/export-bar";
 import { SelectCardList } from "~/features/export/select/select-card-list";
 import type { BoardCard } from "~/schemas/board";
 
+const MAX_LINKS = 10;
+
 type Props = {
   handle: string;
   cards: BoardCard[];
-  maxLinks: number;
   needsReauth?: boolean;
   exported?: boolean;
 };
 
-export function ExportPage({
-  handle,
-  cards,
-  maxLinks,
-  needsReauth,
-  exported,
-}: Props) {
+export function ExportPage({ handle, cards, needsReauth, exported }: Props) {
   const { t } = useTranslation();
   const navigation = useNavigation();
   const [selected, setSelected] = useState(() =>
     cards
       .flatMap((card, index) => (isBskyLinkCard(card) ? [index] : []))
-      .slice(0, maxLinks),
+      .slice(0, MAX_LINKS),
   );
   const [confirming, setConfirming] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
@@ -87,12 +82,11 @@ export function ExportPage({
             {t("export.select-description")}
           </p>
           <b className="text-primary" data-testid="export__count">
-            {selected.length} / {maxLinks}
+            {selected.length} / {MAX_LINKS}
           </b>
         </div>
         <SelectCardList
           cards={cards}
-          maxLinks={maxLinks}
           selected={selected}
           onChange={setSelected}
         />

@@ -4,7 +4,7 @@ import type { BoardCard } from "~/schemas/board";
 import type { IBskyLinkPdsRepository } from "~/server/infrastructure/bskyLink/bskyLinkPdsRepository";
 import type { IFaviconFetcher } from "~/server/infrastructure/favicon/faviconFetcher";
 
-export const MAX_BSKY_LINKS = 10;
+const MAX_LINKS = 10;
 
 const hasUrl = (card: BoardCard): card is BoardCard & { url: string } =>
   !!card.url;
@@ -29,7 +29,7 @@ export const bskyLinkServiceFactory = ({
   async exportCards(editorDid, cards) {
     if (
       cards.length === 0 ||
-      cards.length > MAX_BSKY_LINKS ||
+      cards.length > MAX_LINKS ||
       !cards.every(hasUrl)
     ) {
       throw new BskyLinkSelectionError();

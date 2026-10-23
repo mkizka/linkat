@@ -6,7 +6,6 @@ import { SelectCardList } from "./select-card-list";
 const meta = {
   component: SelectCardList,
   args: {
-    maxLinks: 10,
     cards: [
       { url: "https://example.com", text: "Example" },
       { url: "https://bsky.app/profile/example.bsky.social" },

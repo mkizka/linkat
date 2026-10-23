@@ -16,10 +16,7 @@ import {
   editorDidContext,
   requireLogin,
 } from "~/server/middleware/requireLogin";
-import {
-  BskyLinkSelectionError,
-  MAX_BSKY_LINKS,
-} from "~/server/service/bskyLink/bskyLink";
+import { BskyLinkSelectionError } from "~/server/service/bskyLink/bskyLink";
 import { tryCatch } from "~/utils/tryCatch";
 
 import type { Route } from "./+types/export";
@@ -109,7 +106,6 @@ export async function loader({ context }: Route.LoaderArgs) {
   return {
     handle: editor.handleOrDid,
     cards: board.cards,
-    maxLinks: MAX_BSKY_LINKS,
     needsReauth: !(await di.authService.canExport(editorDid)),
   };
 }
@@ -122,7 +118,6 @@ export default function Export({
     <ExportPage
       handle={loaderData.handle}
       cards={loaderData.cards}
-      maxLinks={loaderData.maxLinks}
       needsReauth={loaderData.needsReauth}
       exported={actionData?.exported}
     />
