@@ -1,5 +1,6 @@
 import type { Did } from "@atproto/did";
 import { Client, XrpcResponseError } from "@atproto/lex";
+import { decodeIco, isIco } from "icojs";
 
 import link from "~/generated/app/bsky/actor/link";
 import profile from "~/generated/app/bsky/actor/profile";
@@ -14,18 +15,33 @@ const toLinkRecord = ({ url, text }: BoardCard) =>
     createdAt: new Date().toISOString(),
   });
 
+const maxIconSize = 100000;
+
+const toPngIcon = async (response: Response) => {
+  const bytes = Buffer.from(await response.arrayBuffer());
+  if (!isIco(bytes)) {
+    return response.headers.get("content-type") === "image/png"
+      ? bytes
+      : undefined;
+  }
+  const images = await decodeIco(bytes, "image/png");
+  const image = images
+    .sort((a, b) => b.width - a.width)
+    .find(({ buffer }) => buffer.byteLength <= maxIconSize);
+  return image && Buffer.from(image.buffer);
+};
+
 const uploadIcon = async (client: Client, url: string) => {
   try {
     const response = await fetch(
-      `https://www.google.com/s2/favicons?sz=64&domain=${new URL(url).hostname}`,
+      `https://icons.duckduckgo.com/ip3/${new URL(url).hostname}.ico`,
       { signal: AbortSignal.timeout(5000) },
     );
-    if (!response.ok || response.headers.get("content-type") !== "image/png") {
+    const icon = response.ok ? await toPngIcon(response) : undefined;
+    if (!icon || icon.byteLength > maxIconSize) {
       return undefined;
     }
-    const { body } = await client.uploadBlob(await response.bytes(), {
-      encoding: "image/png",
-    });
+    const { body } = await client.uploadBlob(icon, { encoding: "image/png" });
     return body.blob;
   } catch {
     return undefined;

@@ -1,5 +1,6 @@
 import { asDid } from "@atproto/did";
 import { buildAgent } from "@atproto/lex";
+import { encodeIco } from "icojs";
 import { http, HttpResponse } from "msw";
 import { mock } from "vitest-mock-extended";
 
@@ -23,7 +24,11 @@ const bskyLinkPdsRepository = bskyLinkPdsRepositoryFactory({ oauthClient });
 const did = asDid("did:plc:dummy");
 const xrpcUrl = (nsid: string) => `https://pds.example.com/xrpc/${nsid}`;
 const cid = "bafyreiflxe3gz7tg4jje5w4wypqjvz5d4zntrols22gwp7btg2nh2t7wxm";
-const faviconUrl = "https://www.google.com/s2/favicons";
+const faviconUrl = "https://icons.duckduckgo.com/ip3/:file";
+const png = Buffer.from(
+  "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==",
+  "base64",
+);
 const blob = {
   $type: "blob",
   ref: { $link: "bafkreiflxe3gz7tg4jje5w4wypqjvz5d4zntrols22gwp7btg2nh2t7wxm" },
@@ -44,16 +49,22 @@ describe("bskyLinkPdsRepository", () => {
       const created: unknown[] = [];
       const deleted: unknown[] = [];
       let putBody: unknown;
+      let uploaded: Buffer | undefined;
+      const ico = await encodeIco([{ buffer: png }]);
       server.use(
-        http.get(faviconUrl, ({ request }) =>
-          new URL(request.url).searchParams.get("domain") === "a.example.com"
-            ? HttpResponse.arrayBuffer(new Uint8Array([1, 2, 3]).buffer, {
-                headers: { "content-type": "image/png" },
+        http.get(faviconUrl, ({ params }) =>
+          params.file === "a.example.com.ico"
+            ? HttpResponse.arrayBuffer(ico, {
+                headers: { "content-type": "image/x-icon" },
               })
             : new HttpResponse(null, { status: 404 }),
         ),
-        http.post(xrpcUrl("com.atproto.repo.uploadBlob"), () =>
-          HttpResponse.json({ blob }),
+        http.post(
+          xrpcUrl("com.atproto.repo.uploadBlob"),
+          async ({ request }) => {
+            uploaded = Buffer.from(await request.arrayBuffer());
+            return HttpResponse.json({ blob });
+          },
         ),
         http.get(xrpcUrl("com.atproto.repo.getRecord"), () =>
           HttpResponse.json({
@@ -118,6 +129,7 @@ describe("bskyLinkPdsRepository", () => {
         },
       ]);
       expect(created[1]).not.toHaveProperty("record.icon");
+      expect(uploaded?.subarray(0, 8)).toEqual(png.subarray(0, 8));
       expect(putBody).toMatchObject({
         collection: "app.bsky.actor.profile",
         rkey: "self",
