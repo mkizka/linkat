@@ -21,7 +21,7 @@ const createLinkRecord = async (
   });
 };
 
-const MAX_LINKS = 10;
+export const MAX_LINKS = 10;
 
 export class BskyLinkInvalidError extends Error {
   constructor(cause: unknown) {

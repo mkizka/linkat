@@ -56,9 +56,11 @@ export function ExportPage({ handle, cards, needsReauth, exported }: Props) {
   }
   return (
     <Form ref={formRef} method="post" className="contents">
-      {selected.map((index) => (
-        <input key={index} type="hidden" name="index" value={index} />
-      ))}
+      <input
+        type="hidden"
+        name="cards"
+        value={JSON.stringify(selected.map((index) => cards[index]))}
+      />
       <ExportBar
         cancelable
         submitButton={

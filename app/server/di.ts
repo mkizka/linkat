@@ -103,7 +103,7 @@ export const di = await createRegistry()
   )
   .service(
     "bskyLinkService",
-    ["boardRepository", "bskyLinkPdsRepository", "faviconFetcher"],
+    ["bskyLinkPdsRepository", "faviconFetcher"],
     bskyLinkServiceFactory,
   )
   .service("atpassportService", ["atpassportClient"], atpassportServiceFactory)

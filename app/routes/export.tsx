@@ -3,6 +3,7 @@ import { setToast } from "remix-toast/middleware";
 
 import { getInstance } from "~/i18n/i18n";
 import { ExportPage } from "~/pages/export-page";
+import { cardSchema } from "~/schemas/board";
 import { di } from "~/server/di";
 import {
   BskyLinkCleanupError,
@@ -16,6 +17,7 @@ import {
   requireLogin,
 } from "~/server/middleware/requireLogin";
 import { BskyLinkSelectionError } from "~/server/service/bskyLink/bskyLink";
+import { tryCatch } from "~/utils/tryCatch";
 
 import type { Route } from "./+types/export";
 
@@ -31,12 +33,24 @@ export async function action({ request, context }: Route.ActionArgs) {
   const form = await request.formData().catch(() => {
     throw data(null, { status: 400 });
   });
-  const cardIndexes = form.getAll("index").map(Number);
+  const rawCards = form.get("cards");
+  const cards = await tryCatch(() =>
+    cardSchema
+      .array()
+      .parse(JSON.parse(typeof rawCards === "string" ? rawCards : "")),
+  )();
+  if (cards instanceof Error) {
+    setToast(context, {
+      message: i18next.t("export.invalid-form-error-message"),
+      type: "error",
+    });
+    return null;
+  }
   try {
-    await di.bskyLinkService.exportCards(editorDid, cardIndexes);
+    await di.bskyLinkService.exportCards(editorDid, cards);
     logger.info("Blueskyにリンクを書き出しました", {
       ownerDid: editorDid,
-      cardCount: cardIndexes.length,
+      cardCount: cards.length,
     });
     return { exported: true };
   } catch (error) {
