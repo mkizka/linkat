@@ -1,4 +1,5 @@
 import type { IIcoConverter } from "~/server/infrastructure/favicon/icoConverter";
+import type { ILogger } from "~/server/infrastructure/logger/logger";
 
 const maxIconSize = 100000;
 
@@ -8,9 +9,12 @@ export interface IFaviconFetcher {
 
 export const faviconFetcherFactory = ({
   icoConverter,
+  logger,
 }: {
   icoConverter: IIcoConverter;
+  logger: ILogger;
 }): IFaviconFetcher => {
+  const log = logger.child("faviconFetcher");
   const toPng = async (response: Response) => {
     const bytes = Buffer.from(await response.arrayBuffer());
     const isPng = response.headers.get("content-type") === "image/png";
@@ -27,7 +31,8 @@ export const faviconFetcherFactory = ({
           { signal: AbortSignal.timeout(5000) },
         );
         return response.ok ? await toPng(response) : null;
-      } catch {
+      } catch (error) {
+        log.warn("ファビコンの取得に失敗しました", { url, error });
         return null;
       }
     },

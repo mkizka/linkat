@@ -3,11 +3,15 @@ import { mock, mockReset } from "vitest-mock-extended";
 
 import { server } from "~/mocks/server";
 import type { IIcoConverter } from "~/server/infrastructure/favicon/icoConverter";
+import { loggerFactory } from "~/server/infrastructure/logger/logger";
 
 import { faviconFetcherFactory } from "./faviconFetcher";
 
 const icoConverter = mock<IIcoConverter>();
-const faviconFetcher = faviconFetcherFactory({ icoConverter });
+const faviconFetcher = faviconFetcherFactory({
+  icoConverter,
+  logger: loggerFactory(),
+});
 
 const faviconUrl = "https://icons.duckduckgo.com/ip3/example.com.ico";
 const png = Buffer.from([1, 2, 3]);
