@@ -1,6 +1,5 @@
 import type { Did } from "@atproto/did";
 import { Client, XrpcResponseError } from "@atproto/lex";
-import { decodeIco, isIco } from "icojs";
 
 import link from "~/generated/app/bsky/actor/link";
 import profile from "~/generated/app/bsky/actor/profile";
@@ -15,37 +14,18 @@ const toLinkRecord = ({ url, text }: BoardCard) =>
     createdAt: new Date().toISOString(),
   });
 
-const maxIconSize = 100000;
-
-const toPngIcon = async (response: Response) => {
-  const bytes = Buffer.from(await response.arrayBuffer());
-  if (!isIco(bytes)) {
-    return response.headers.get("content-type") === "image/png"
-      ? bytes
-      : undefined;
-  }
-  const images = await decodeIco(bytes, "image/png");
-  const image = images
-    .sort((a, b) => b.width - a.width)
-    .find(({ buffer }) => buffer.byteLength <= maxIconSize);
-  return image && Buffer.from(image.buffer);
-};
-
-const uploadIcon = async (client: Client, url: string) => {
-  try {
-    const response = await fetch(
-      `https://icons.duckduckgo.com/ip3/${new URL(url).hostname}.ico`,
-      { signal: AbortSignal.timeout(5000) },
-    );
-    const icon = response.ok ? await toPngIcon(response) : undefined;
-    if (!icon || icon.byteLength > maxIconSize) {
-      return undefined;
-    }
-    const { body } = await client.uploadBlob(icon, { encoding: "image/png" });
-    return body.blob;
-  } catch {
-    return undefined;
-  }
+const createLinkRecord = async (
+  client: Client,
+  did: Did,
+  record: ReturnType<typeof toLinkRecord>,
+  icon: Buffer | null,
+) => {
+  const blob = icon
+    ? (await client.uploadBlob(icon, { encoding: "image/png" })).body.blob
+    : undefined;
+  return client.createRecord({ ...record, icon: blob }, undefined, {
+    repo: did,
+  });
 };
 
 export class BskyLinkInvalidError extends Error {
@@ -75,8 +55,13 @@ export class BskyLinkCleanupError extends Error {
 const isXrpcError = (error: unknown, name: string) =>
   error instanceof XrpcResponseError && error.error === name;
 
+export type BskyLinkInput = {
+  card: BoardCard;
+  icon: Buffer | null;
+};
+
 export interface IBskyLinkPdsRepository {
-  replace: (did: Did, cards: BoardCard[]) => Promise<void>;
+  replace: (did: Did, links: BskyLinkInput[]) => Promise<void>;
 }
 
 export const bskyLinkPdsRepositoryFactory = ({
@@ -84,10 +69,13 @@ export const bskyLinkPdsRepositoryFactory = ({
 }: {
   oauthClient: IOAuthClient;
 }): IBskyLinkPdsRepository => ({
-  async replace(did, cards) {
+  async replace(did, links) {
     const linkRecords = (() => {
       try {
-        return cards.map(toLinkRecord);
+        return links.map(({ card, icon }) => ({
+          record: toLinkRecord(card),
+          icon,
+        }));
       } catch (error) {
         throw new BskyLinkInvalidError(error);
       }
@@ -108,13 +96,12 @@ export const bskyLinkPdsRepositoryFactory = ({
       );
 
     const refs = [];
-    for (const record of linkRecords) {
-      const icon = await uploadIcon(client, record.url);
-      const { body } = await client
-        .createRecord({ ...record, icon }, undefined, { repo: did })
-        .catch((error: unknown) => {
+    for (const { record, icon } of linkRecords) {
+      const { body } = await createLinkRecord(client, did, record, icon).catch(
+        (error: unknown) => {
           throw new BskyLinkExportError(error);
-        });
+        },
+      );
       refs.push({ uri: body.uri, cid: body.cid });
     }
 

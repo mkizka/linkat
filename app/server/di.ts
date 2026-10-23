@@ -11,6 +11,7 @@ import { boardPdsRepositoryFactory } from "~/server/infrastructure/board/boardPd
 import { boardRepositoryFactory } from "~/server/infrastructure/board/boardRepository";
 import { bskyLinkPdsRepositoryFactory } from "~/server/infrastructure/bskyLink/bskyLinkPdsRepository";
 import { db } from "~/server/infrastructure/db/drizzle";
+import { faviconFetcherFactory } from "~/server/infrastructure/favicon/faviconFetcher";
 import { cursorRepositoryFactory } from "~/server/infrastructure/ingester/cursorRepository";
 import { ingesterClientFactory } from "~/server/infrastructure/ingester/ingesterClient";
 import { loggerFactory } from "~/server/infrastructure/logger/logger";
@@ -60,6 +61,7 @@ export const di = await createRegistry()
     ["oauthClient"],
     bskyLinkPdsRepositoryFactory,
   )
+  .service("faviconFetcher", faviconFetcherFactory)
   .service(
     "profileFetcher",
     ["profileRecordParser", "logger"],
@@ -99,7 +101,7 @@ export const di = await createRegistry()
   )
   .service(
     "bskyLinkService",
-    ["boardRepository", "bskyLinkPdsRepository"],
+    ["boardRepository", "bskyLinkPdsRepository", "faviconFetcher"],
     bskyLinkServiceFactory,
   )
   .service("atpassportService", ["atpassportClient"], atpassportServiceFactory)

@@ -2,6 +2,7 @@ import type { Did } from "@atproto/did";
 
 import type { IBoardRepository } from "~/server/infrastructure/board/boardRepository";
 import type { IBskyLinkPdsRepository } from "~/server/infrastructure/bskyLink/bskyLinkPdsRepository";
+import type { IFaviconFetcher } from "~/server/infrastructure/favicon/faviconFetcher";
 
 export class BskyLinkSelectionError extends Error {
   constructor() {
@@ -16,9 +17,11 @@ export interface IBskyLinkService {
 export const bskyLinkServiceFactory = ({
   boardRepository,
   bskyLinkPdsRepository,
+  faviconFetcher,
 }: {
   boardRepository: IBoardRepository;
   bskyLinkPdsRepository: IBskyLinkPdsRepository;
+  faviconFetcher: IFaviconFetcher;
 }): IBskyLinkService => ({
   async exportCards(editorDid, cardIndexes) {
     const board = await boardRepository.find(editorDid);
@@ -27,6 +30,12 @@ export const bskyLinkServiceFactory = ({
     if (cards.length === 0 || cards.length !== indexes.size) {
       throw new BskyLinkSelectionError();
     }
-    await bskyLinkPdsRepository.replace(editorDid, cards);
+    const links = await Promise.all(
+      cards.map(async (card) => ({
+        card,
+        icon: card.url ? await faviconFetcher.fetchPng(card.url) : null,
+      })),
+    );
+    await bskyLinkPdsRepository.replace(editorDid, links);
   },
 });

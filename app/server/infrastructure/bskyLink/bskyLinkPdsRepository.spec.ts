@@ -1,6 +1,5 @@
 import { asDid } from "@atproto/did";
 import { buildAgent } from "@atproto/lex";
-import { encodeIco } from "icojs";
 import { http, HttpResponse } from "msw";
 import { mock } from "vitest-mock-extended";
 
@@ -24,11 +23,7 @@ const bskyLinkPdsRepository = bskyLinkPdsRepositoryFactory({ oauthClient });
 const did = asDid("did:plc:dummy");
 const xrpcUrl = (nsid: string) => `https://pds.example.com/xrpc/${nsid}`;
 const cid = "bafyreiflxe3gz7tg4jje5w4wypqjvz5d4zntrols22gwp7btg2nh2t7wxm";
-const faviconUrl = "https://icons.duckduckgo.com/ip3/:file";
-const png = Buffer.from(
-  "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==",
-  "base64",
-);
+const icon = Buffer.from([1, 2, 3]);
 const blob = {
   $type: "blob",
   ref: { $link: "bafkreiflxe3gz7tg4jje5w4wypqjvz5d4zntrols22gwp7btg2nh2t7wxm" },
@@ -37,12 +32,6 @@ const blob = {
 };
 
 describe("bskyLinkPdsRepository", () => {
-  beforeEach(() => {
-    server.use(
-      http.get(faviconUrl, () => new HttpResponse(null, { status: 404 })),
-    );
-  });
-
   describe("replace", () => {
     test("カードのリンクを作り、プロフィールのリンクを置き換えて古いリンクを消す", async () => {
       // arrange
@@ -50,15 +39,7 @@ describe("bskyLinkPdsRepository", () => {
       const deleted: unknown[] = [];
       let putBody: unknown;
       let uploaded: Buffer | undefined;
-      const ico = await encodeIco([{ buffer: png }]);
       server.use(
-        http.get(faviconUrl, ({ params }) =>
-          params.file === "a.example.com.ico"
-            ? HttpResponse.arrayBuffer(ico, {
-                headers: { "content-type": "image/x-icon" },
-              })
-            : new HttpResponse(null, { status: 404 }),
-        ),
         http.post(
           xrpcUrl("com.atproto.repo.uploadBlob"),
           async ({ request }) => {
@@ -110,8 +91,8 @@ describe("bskyLinkPdsRepository", () => {
       );
       // act
       await bskyLinkPdsRepository.replace(did, [
-        { url: "https://a.example.com", text: "A" },
-        { url: "https://b.example.com" },
+        { card: { url: "https://a.example.com", text: "A" }, icon },
+        { card: { url: "https://b.example.com" }, icon: null },
       ]);
       // assert
       expect(created).toMatchObject([
@@ -129,7 +110,7 @@ describe("bskyLinkPdsRepository", () => {
         },
       ]);
       expect(created[1]).not.toHaveProperty("record.icon");
-      expect(uploaded?.subarray(0, 8)).toEqual(png.subarray(0, 8));
+      expect(uploaded).toEqual(icon);
       expect(putBody).toMatchObject({
         collection: "app.bsky.actor.profile",
         rkey: "self",
@@ -162,7 +143,10 @@ describe("bskyLinkPdsRepository", () => {
       const requested = vi.fn();
       server.use(http.all("https://pds.example.com/*", requested));
       // act
-      const actual = bskyLinkPdsRepository.replace(did, cards);
+      const actual = bskyLinkPdsRepository.replace(
+        did,
+        cards.map((card) => ({ card, icon: null })),
+      );
       // assert
       await expect(actual).rejects.toThrow(BskyLinkInvalidError);
       expect(requested).not.toHaveBeenCalled();
@@ -189,7 +173,10 @@ describe("bskyLinkPdsRepository", () => {
       // act
       const actual = bskyLinkPdsRepository.replace(
         did,
-        Array.from({ length: 11 }, () => ({ url: "https://example.com" })),
+        Array.from({ length: 11 }, () => ({
+          card: { url: "https://example.com" },
+          icon: null,
+        })),
       );
       // assert
       await expect(actual).rejects.toThrow(BskyLinkInvalidError);
@@ -227,6 +214,9 @@ describe("bskyLinkPdsRepository", () => {
           http.post(xrpcUrl("com.atproto.repo.deleteRecord"), () =>
             HttpResponse.json({}),
           ),
+          http.post(xrpcUrl("com.atproto.repo.uploadBlob"), () =>
+            HttpResponse.json({ blob }),
+          ),
         );
       });
 
@@ -234,6 +224,12 @@ describe("bskyLinkPdsRepository", () => {
         {
           method: http.get,
           nsid: "com.atproto.repo.getRecord",
+          response: () => xrpcError("InternalServerError", 500),
+          expected: BskyLinkExportError,
+        },
+        {
+          method: http.post,
+          nsid: "com.atproto.repo.uploadBlob",
           response: () => xrpcError("InternalServerError", 500),
           expected: BskyLinkExportError,
         },
@@ -268,7 +264,7 @@ describe("bskyLinkPdsRepository", () => {
           server.use(method(xrpcUrl(nsid), response));
           // act
           const actual = bskyLinkPdsRepository.replace(did, [
-            { url: "https://example.com" },
+            { card: { url: "https://example.com" }, icon },
           ]);
           // assert
           await expect(actual).rejects.toThrow(expected);
