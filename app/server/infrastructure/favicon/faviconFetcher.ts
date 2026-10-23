@@ -13,9 +13,10 @@ export const faviconFetcherFactory = ({
 }): IFaviconFetcher => {
   const toPng = async (response: Response) => {
     const bytes = Buffer.from(await response.arrayBuffer());
+    const isPng = response.headers.get("content-type") === "image/png";
     return (
       (await icoConverter.toPng(bytes, maxIconSize)) ??
-      (response.headers.get("content-type") === "image/png" ? bytes : null)
+      (isPng && bytes.byteLength <= maxIconSize ? bytes : null)
     );
   };
   return {
@@ -25,8 +26,7 @@ export const faviconFetcherFactory = ({
           `https://icons.duckduckgo.com/ip3/${new URL(url).hostname}.ico`,
           { signal: AbortSignal.timeout(5000) },
         );
-        const png = response.ok ? await toPng(response) : null;
-        return png && png.byteLength <= maxIconSize ? png : null;
+        return response.ok ? await toPng(response) : null;
       } catch {
         return null;
       }
