@@ -25,7 +25,7 @@ export function ViewCard({ card }: Props) {
       <a
         href={card.url}
         target="_blank"
-        rel="noreferrer"
+        rel="noreferrer nofollow ugc"
         className="relative block"
         data-umami-event="click-card-link"
       >
