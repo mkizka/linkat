@@ -34,7 +34,7 @@ export function ExportPage({ handle, cards, needsReauth, exported }: Props) {
     return (
       <>
         <ExportBar cancelable />
-        <Main className="flex flex-col justify-center py-6">
+        <Main className="flex flex-col justify-center pt-6 pb-20">
           <ExportReauth />
         </Main>
       </>
@@ -44,7 +44,7 @@ export function ExportPage({ handle, cards, needsReauth, exported }: Props) {
     return (
       <>
         <ExportBar />
-        <Main className="flex flex-col justify-center py-6">
+        <Main className="flex flex-col justify-center pt-6 pb-20">
           <ExportDone handle={handle} />
         </Main>
       </>
