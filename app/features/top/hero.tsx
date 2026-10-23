@@ -18,7 +18,7 @@ export function Hero() {
       </h2>
       <Link
         to="/login"
-        className="btn-bluesky btn w-64 rounded-full text-blue-100"
+        className="btn-bluesky btn w-64 rounded-full"
         data-testid="index__login-link"
       >
         <AtSymbolIcon className="size-6" />
