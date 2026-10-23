@@ -5,7 +5,7 @@ import { getZodConstraint, parseWithZod } from "@conform-to/zod/v4";
 import { AtSymbolIcon } from "@heroicons/react/24/outline";
 import { useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { Form, useNavigation, useSubmit } from "react-router";
+import { Form, useLocation, useNavigation, useSubmit } from "react-router";
 import { z } from "zod";
 
 import { Button } from "~/components/button";
@@ -24,6 +24,8 @@ export function LoginForm() {
   const { t, i18n } = useTranslation();
   const navigation = useNavigation();
   const submit = useSubmit();
+  const location = useLocation();
+  const from = location.pathname + location.search;
   const handleInputRef = useRef<HTMLInputElement>(null);
   const atpassportLang = i18n.language === "ja" ? "ja" : "en";
 
@@ -57,7 +59,7 @@ export function LoginForm() {
       },
     });
     if (result) {
-      void submit({ handle: result.username }, { method: "post" });
+      void submit({ handle: result.username, from }, { method: "post" });
     }
   };
 
@@ -70,6 +72,7 @@ export function LoginForm() {
       >
         <h1 className="text-2xl font-bold">{t("login-form.login-title")}</h1>
         <p>{t("login-form.login-description")}</p>
+        <input type="hidden" name="from" value={from} />
         {form.errors && (
           <div id={form.errorId} className="text-error">
             {form.errors}

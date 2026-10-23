@@ -1,9 +1,12 @@
 import { asDid } from "@atproto/did";
 import { mock } from "vitest-mock-extended";
 
-import type { IOAuthClient } from "~/server/infrastructure/auth/oauthClient";
+import {
+  type IOAuthClient,
+  OAuthCallbackFailedError,
+} from "~/server/infrastructure/auth/oauthClient";
 
-import { authServiceFactory } from "./auth";
+import { AuthCallbackError, authServiceFactory } from "./auth";
 
 const oauthClient = mock<IOAuthClient>();
 
@@ -19,7 +22,7 @@ describe("authService", () => {
     test.each([
       ["/edit", "/edit"],
       ["/board/foo?a=1#b", "/board/foo?a=1#b"],
-      [null, "/"],
+      [undefined, "/"],
       ["", "/"],
       ["edit", "/"],
       ["//evil.example", "/"],
@@ -28,15 +31,36 @@ describe("authService", () => {
       ["http://[", "/"],
       ["https://evil.example/", "/"],
       ["javascript:alert(1)", "/"],
-    ])("stateが%sなら%sに戻す", async (state, expected) => {
+    ])("redirectが%sなら%sに戻す", async (redirect, expected) => {
       // arrange
-      oauthClient.callback.mockResolvedValue({ did, state });
+      oauthClient.callback.mockResolvedValue({ did, redirect });
       // act
       const actual = await authService.handleCallback(
         "http://localhost/oauth/callback",
       );
       // assert
       expect(actual).toEqual({ did, redirectTo: expected });
+    });
+    test.each([
+      ["/export", "/export", true],
+      ["/login?redirect=/edit", "/login?redirect=/edit", false],
+      ["https://evil.example/", "/", true],
+      [undefined, "/", false],
+    ])("失敗したときはfromが%sなら%sに戻す", async (from, expected, denied) => {
+      // arrange
+      oauthClient.callback.mockRejectedValue(
+        new OAuthCallbackFailedError(from, denied, null),
+      );
+      // act
+      const actual = authService.handleCallback(
+        "http://localhost/oauth/callback",
+      );
+      // assert
+      await expect(actual).rejects.toThrow(AuthCallbackError);
+      await expect(actual).rejects.toMatchObject({
+        returnTo: expected,
+        denied,
+      });
     });
   });
 });

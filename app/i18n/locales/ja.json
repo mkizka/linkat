@@ -23,7 +23,8 @@
   "login": {
     "unknown-error-message": "不明なエラーが発生しました",
     "oauth-resolve-error-message": "ログインに失敗しました(ハンドルを間違えてるかも)",
-    "default-error-message": "ログインに失敗しました"
+    "default-error-message": "ログインに失敗しました",
+    "access-denied-message": "ログインをキャンセルしました"
   },
   "login-form": {
     "required-error-message": "入力してください",
