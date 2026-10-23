@@ -1,9 +1,8 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Form, useNavigation } from "react-router";
 
 import { Button } from "~/components/button";
-import { ConfirmDialog } from "~/components/confirm-dialog";
 import { Main } from "~/components/layout";
 import { ExportDone } from "~/features/export/done/export-done";
 import { ExportReauth } from "~/features/export/reauth/export-reauth";
@@ -29,8 +28,6 @@ export function ExportPage({ handle, cards, needsReauth, exported }: Props) {
       .flatMap((card, index) => (isBskyLinkCard(card) ? [index] : []))
       .slice(0, MAX_LINKS),
   );
-  const [confirming, setConfirming] = useState(false);
-  const formRef = useRef<HTMLFormElement>(null);
   const isExporting = navigation.formData !== undefined;
 
   if (needsReauth) {
@@ -54,7 +51,7 @@ export function ExportPage({ handle, cards, needsReauth, exported }: Props) {
     );
   }
   return (
-    <Form ref={formRef} method="post" className="contents">
+    <Form method="post" className="contents">
       {selected.map((index) => (
         <input key={index} type="hidden" name="index" value={index} />
       ))}
@@ -62,11 +59,9 @@ export function ExportPage({ handle, cards, needsReauth, exported }: Props) {
         cancelable
         submitButton={
           <Button
-            type="button"
             className="btn-primary"
             disabled={selected.length === 0 || isExporting}
             loading={isExporting}
-            onClick={() => setConfirming(true)}
             data-testid="export__submit"
           >
             {t("export.submit-button")}
@@ -82,6 +77,12 @@ export function ExportPage({ handle, cards, needsReauth, exported }: Props) {
             {selected.length} / {MAX_LINKS}
           </b>
         </div>
+        <p
+          className="alert alert-warning text-start text-sm"
+          data-testid="export__replace-warning"
+        >
+          {t("export.replace-warning")}
+        </p>
         <SelectCardList
           cards={cards}
           selected={selected}
@@ -91,21 +92,6 @@ export function ExportPage({ handle, cards, needsReauth, exported }: Props) {
           {t("export.unselectable-note")}
         </p>
       </Main>
-      <ConfirmDialog
-        open={confirming}
-        title={t("export.confirm-title")}
-        description={t("export.confirm-description", {
-          count: selected.length,
-        })}
-        cancelLabel={t("export.confirm-cancel")}
-        confirmLabel={t("export.confirm-confirm")}
-        confirmClassName="btn-primary"
-        onCancel={() => setConfirming(false)}
-        onConfirm={() => {
-          setConfirming(false);
-          formRef.current?.requestSubmit();
-        }}
-      />
     </Form>
   );
 }
