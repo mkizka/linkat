@@ -3,6 +3,7 @@ import { buildAgent } from "@atproto/lex";
 import { http, HttpResponse } from "msw";
 import { mock } from "vitest-mock-extended";
 
+import link from "~/generated/app/bsky/actor/link";
 import { server } from "~/mocks/server";
 import type { IOAuthClient } from "~/server/infrastructure/auth/oauthClient";
 
@@ -10,7 +11,6 @@ import {
   BskyLinkCleanupError,
   BskyLinkConflictError,
   BskyLinkExportError,
-  BskyLinkInvalidError,
   bskyLinkPdsRepositoryFactory,
 } from "./bskyLinkPdsRepository";
 
@@ -24,6 +24,13 @@ const did = asDid("did:plc:dummy");
 const xrpcUrl = (nsid: string) => `https://pds.example.com/xrpc/${nsid}`;
 const cid = "bafyreiflxe3gz7tg4jje5w4wypqjvz5d4zntrols22gwp7btg2nh2t7wxm";
 const icon = Buffer.from([1, 2, 3]);
+const record = (url: string, title?: string) =>
+  link.parse({
+    $type: link.$type,
+    url,
+    title,
+    createdAt: new Date().toISOString(),
+  });
 const blob = {
   $type: "blob",
   ref: { $link: "bafkreiflxe3gz7tg4jje5w4wypqjvz5d4zntrols22gwp7btg2nh2t7wxm" },
@@ -91,8 +98,8 @@ describe("bskyLinkPdsRepository", () => {
       );
       // act
       await bskyLinkPdsRepository.replace(did, [
-        { card: { url: "https://a.example.com", text: "A" }, icon },
-        { card: { url: "https://b.example.com" }, icon: null },
+        { record: record("https://a.example.com", "A"), icon },
+        { record: record("https://b.example.com"), icon: null },
       ]);
       // assert
       expect(created).toMatchObject([
@@ -127,62 +134,6 @@ describe("bskyLinkPdsRepository", () => {
         { collection: "app.bsky.actor.link", rkey: "old" },
       ]);
     });
-    test.each([
-      { name: "URLが無い", cards: [{ text: "A" }] },
-      { name: "URLの形式でない", cards: [{ url: "example" }] },
-      {
-        name: "タイトルが40書記素を超える",
-        cards: [{ url: "https://example.com", text: "あ".repeat(41) }],
-      },
-      {
-        name: "タイトルが320バイトを超える",
-        cards: [{ url: "https://example.com", text: "👨‍👩‍👧".repeat(18) }],
-      },
-    ])("$nameカードはBskyLinkInvalidErrorになる", async ({ cards }) => {
-      // arrange
-      const requested = vi.fn();
-      server.use(http.all("https://pds.example.com/*", requested));
-      // act
-      const actual = bskyLinkPdsRepository.replace(
-        did,
-        cards.map((card) => ({ card, icon: null })),
-      );
-      // assert
-      await expect(actual).rejects.toThrow(BskyLinkInvalidError);
-      expect(requested).not.toHaveBeenCalled();
-    });
-
-    test("11枚以上ならプロフィールを更新せずBskyLinkInvalidErrorになる", async () => {
-      // arrange
-      const put = vi.fn();
-      server.use(
-        http.get(xrpcUrl("com.atproto.repo.getRecord"), () =>
-          HttpResponse.json(
-            { error: "RecordNotFound", message: "Could not locate record" },
-            { status: 400 },
-          ),
-        ),
-        http.post(xrpcUrl("com.atproto.repo.createRecord"), () =>
-          HttpResponse.json({
-            uri: `at://${did}/app.bsky.actor.link/new`,
-            cid,
-          }),
-        ),
-        http.post(xrpcUrl("com.atproto.repo.putRecord"), put),
-      );
-      // act
-      const actual = bskyLinkPdsRepository.replace(
-        did,
-        Array.from({ length: 11 }, () => ({
-          card: { url: "https://example.com" },
-          icon: null,
-        })),
-      );
-      // assert
-      await expect(actual).rejects.toThrow(BskyLinkInvalidError);
-      expect(put).not.toHaveBeenCalled();
-    });
-
     describe("PDSとの通信に失敗したとき", () => {
       const xrpcError = (error: string, status = 400) =>
         HttpResponse.json({ error, message: error }, { status });
@@ -264,7 +215,7 @@ describe("bskyLinkPdsRepository", () => {
           server.use(method(xrpcUrl(nsid), response));
           // act
           const actual = bskyLinkPdsRepository.replace(did, [
-            { card: { url: "https://example.com" }, icon },
+            { record: record("https://example.com"), icon },
           ]);
           // assert
           await expect(actual).rejects.toThrow(expected);

@@ -41,9 +41,21 @@ describe("bskyLinkService", () => {
     test("選んだカードをボードの順にファビコンと合わせて書き出す", async () => {
       // arrange
       const expected = [
-        { card: { url: "https://example.com/a", text: "A" }, icon },
-        { card: { url: "https://example.com/b" }, icon: null },
-        { card: { url: "http://example.com/c" }, icon: null },
+        {
+          record: expect.objectContaining({
+            url: "https://example.com/a",
+            title: "A",
+          }),
+          icon,
+        },
+        {
+          record: expect.objectContaining({ url: "https://example.com/b" }),
+          icon: null,
+        },
+        {
+          record: expect.objectContaining({ url: "http://example.com/c" }),
+          icon: null,
+        },
       ];
       // act
       await bskyLinkService.exportCards(did, [2, 1, 0]);
@@ -60,6 +72,48 @@ describe("bskyLinkService", () => {
         expect(bskyLinkPdsRepository.replace).not.toHaveBeenCalled();
       },
     );
+    test.each([
+      { name: "URLが無い", card: { text: "A" } },
+      {
+        name: "タイトルが40書記素を超える",
+        card: { url: "https://example.com", text: "あ".repeat(41) },
+      },
+      {
+        name: "タイトルが320バイトを超える",
+        card: { url: "https://example.com", text: "👨‍👩‍👧".repeat(18) },
+      },
+    ])(
+      "$nameカードを選んだらファビコンを取らずBskyLinkSelectionErrorを投げる",
+      async ({ card }) => {
+        // arrange
+        boardRepository.find.mockResolvedValue({
+          ownerDid: did,
+          cards: [card],
+        });
+        // act
+        const actual = bskyLinkService.exportCards(did, [0]);
+        // assert
+        await expect(actual).rejects.toThrow(BskyLinkSelectionError);
+        expect(faviconFetcher.fetchPng).not.toHaveBeenCalled();
+      },
+    );
+    test("11枚以上選んだらBskyLinkSelectionErrorを投げる", async () => {
+      // arrange
+      boardRepository.find.mockResolvedValue({
+        ownerDid: did,
+        cards: Array.from({ length: 11 }, () => ({
+          url: "https://example.com",
+        })),
+      });
+      // act
+      const actual = bskyLinkService.exportCards(
+        did,
+        Array.from({ length: 11 }, (_, index) => index),
+      );
+      // assert
+      await expect(actual).rejects.toThrow(BskyLinkSelectionError);
+      expect(bskyLinkPdsRepository.replace).not.toHaveBeenCalled();
+    });
     test("ボードが無ければBskyLinkSelectionErrorを投げる", async () => {
       // arrange
       boardRepository.find.mockResolvedValue(null);

@@ -1,23 +1,14 @@
 import type { Did } from "@atproto/did";
 import { Client, XrpcResponseError } from "@atproto/lex";
 
-import link from "~/generated/app/bsky/actor/link";
+import link, { type Main as LinkRecord } from "~/generated/app/bsky/actor/link";
 import profile from "~/generated/app/bsky/actor/profile";
-import type { BoardCard } from "~/schemas/board";
 import type { IOAuthClient } from "~/server/infrastructure/auth/oauthClient";
-
-const toLinkRecord = ({ url, text }: BoardCard) =>
-  link.parse({
-    $type: link.$type,
-    url,
-    title: text || undefined,
-    createdAt: new Date().toISOString(),
-  });
 
 const createLinkRecord = async (
   client: Client,
   did: Did,
-  record: ReturnType<typeof toLinkRecord>,
+  record: LinkRecord,
   icon: Buffer | null,
 ) => {
   const blob = icon
@@ -27,12 +18,6 @@ const createLinkRecord = async (
     repo: did,
   });
 };
-
-export class BskyLinkInvalidError extends Error {
-  constructor(cause: unknown) {
-    super("Blueskyのリンクにできないカードが含まれています", { cause });
-  }
-}
 
 export class BskyLinkExportError extends Error {
   constructor(cause: unknown) {
@@ -56,7 +41,7 @@ const isXrpcError = (error: unknown, name: string) =>
   error instanceof XrpcResponseError && error.error === name;
 
 export type BskyLinkInput = {
-  card: BoardCard;
+  record: LinkRecord;
   icon: Buffer | null;
 };
 
@@ -70,17 +55,6 @@ export const bskyLinkPdsRepositoryFactory = ({
   oauthClient: IOAuthClient;
 }): IBskyLinkPdsRepository => ({
   async replace(did, links) {
-    const linkRecords = (() => {
-      try {
-        return links.map(({ card, icon }) => ({
-          record: toLinkRecord(card),
-          icon,
-        }));
-      } catch (error) {
-        throw new BskyLinkInvalidError(error);
-      }
-    })();
-
     const client = new Client(await oauthClient.restore(did));
 
     const current = await client
@@ -96,7 +70,7 @@ export const bskyLinkPdsRepositoryFactory = ({
       );
 
     const refs = [];
-    for (const { record, icon } of linkRecords) {
+    for (const { record, icon } of links) {
       const { body } = await createLinkRecord(client, did, record, icon).catch(
         (error: unknown) => {
           throw new BskyLinkExportError(error);
@@ -111,7 +85,7 @@ export const bskyLinkPdsRepositoryFactory = ({
       links: refs,
     });
     if (!nextProfile.success) {
-      throw new BskyLinkInvalidError(nextProfile.reason);
+      throw new BskyLinkExportError(nextProfile.reason);
     }
 
     await client

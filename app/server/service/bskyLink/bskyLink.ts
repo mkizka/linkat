@@ -1,5 +1,6 @@
 import type { Did } from "@atproto/did";
 
+import { MAX_BSKY_LINKS, toBskyLink } from "~/schemas/bskyLink";
 import type { IBoardRepository } from "~/server/infrastructure/board/boardRepository";
 import type { IBskyLinkPdsRepository } from "~/server/infrastructure/bskyLink/bskyLinkPdsRepository";
 import type { IFaviconFetcher } from "~/server/infrastructure/favicon/faviconFetcher";
@@ -27,13 +28,18 @@ export const bskyLinkServiceFactory = ({
     const board = await boardRepository.find(editorDid);
     const indexes = new Set(cardIndexes);
     const cards = board?.cards.filter((_, index) => indexes.has(index)) ?? [];
-    if (cards.length === 0 || cards.length !== indexes.size) {
+    const records = cards.flatMap((card) => toBskyLink(card) ?? []);
+    if (
+      records.length === 0 ||
+      records.length !== indexes.size ||
+      records.length > MAX_BSKY_LINKS
+    ) {
       throw new BskyLinkSelectionError();
     }
     const links = await Promise.all(
-      cards.map(async (card) => ({
-        card,
-        icon: card.url ? await faviconFetcher.fetchPng(card.url) : null,
+      records.map(async (record) => ({
+        record,
+        icon: await faviconFetcher.fetchPng(record.url),
       })),
     );
     await bskyLinkPdsRepository.replace(editorDid, links);

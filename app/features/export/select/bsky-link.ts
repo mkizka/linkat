@@ -1,10 +1,4 @@
-import link from "~/generated/app/bsky/actor/link";
 import type { BoardCard } from "~/schemas/board";
+import { toBskyLink } from "~/schemas/bskyLink";
 
-export const isBskyLinkCard = ({ url, text }: BoardCard) =>
-  link.safeParse({
-    $type: link.$type,
-    url,
-    title: text || undefined,
-    createdAt: new Date().toISOString(),
-  }).success;
+export const isBskyLinkCard = (card: BoardCard) => toBskyLink(card) !== null;

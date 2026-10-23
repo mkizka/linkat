@@ -1,8 +1,7 @@
 import type { BoardCard } from "~/schemas/board";
+import { MAX_BSKY_LINKS } from "~/schemas/bskyLink";
 
 import { SelectCard } from "./select-card";
-
-const MAX_LINKS = 10;
 
 type Props = {
   cards: BoardCard[];
@@ -11,7 +10,7 @@ type Props = {
 };
 
 export function SelectCardList({ cards, selected, onChange }: Props) {
-  const isFull = selected.length >= MAX_LINKS;
+  const isFull = selected.length >= MAX_BSKY_LINKS;
   return (
     <ul className="flex flex-col gap-2">
       {cards.map((card, index) => {
