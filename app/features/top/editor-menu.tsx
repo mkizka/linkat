@@ -12,9 +12,10 @@ import { BlueskyIcon } from "~/components/icons/bluesky";
 type Props = {
   handle: string;
   hasBoard: boolean;
+  experimental: boolean;
 };
 
-export function EditorMenu({ handle, hasBoard }: Props) {
+export function EditorMenu({ handle, hasBoard, experimental }: Props) {
   const { t } = useTranslation();
   const tiles = [
     ...(hasBoard
@@ -35,7 +36,7 @@ export function EditorMenu({ handle, hasBoard }: Props) {
             icon: BlueskyIcon,
             label: t("_index.export-link"),
             testId: "index__export-link",
-            disabled: true,
+            disabled: !experimental,
           },
         ]
       : [

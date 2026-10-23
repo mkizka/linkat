@@ -5,6 +5,7 @@ import { getInstance } from "~/i18n/i18n";
 import { TopPage } from "~/pages/top-page";
 import { di } from "~/server/di";
 import { env } from "~/utils/env";
+import { isExperimental } from "~/utils/experimental";
 import { createMeta } from "~/utils/meta";
 
 import type { Route } from "./+types/_index";
@@ -21,6 +22,7 @@ export const loader = async ({ request, context }: Route.LoaderArgs) => {
     editor,
     needsSync: !!editor && !editor.synced,
     hasBoard: !!board,
+    experimental: await isExperimental(request),
     recentOwners,
     title: i18next.t("_index.meta-title"),
     description: i18next.t("_index.meta-description"),
@@ -46,6 +48,7 @@ export default function Index({ loaderData }: Route.ComponentProps) {
     <TopPage
       editor={loaderData.editor}
       hasBoard={loaderData.hasBoard}
+      experimental={loaderData.experimental}
       recentOwners={loaderData.recentOwners}
     />
   );
