@@ -1,10 +1,11 @@
+import type { ReactNode } from "react";
 import { useEffect, useRef } from "react";
 
 import { cn } from "~/utils/cn";
 
 type Props = {
   open: boolean;
-  title: string;
+  title: ReactNode;
   description?: string;
   cancelLabel: string;
   confirmLabel: string;

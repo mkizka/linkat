@@ -1,9 +1,10 @@
 import { ExclamationTriangleIcon } from "@heroicons/react/24/solid";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Form, useNavigation } from "react-router";
 
 import { Button } from "~/components/button";
+import { ConfirmDialog } from "~/components/confirm-dialog";
 import { Main } from "~/components/layout";
 import { ExportDone } from "~/features/export/done/export-done";
 import { ExportReauth } from "~/features/export/reauth/export-reauth";
@@ -29,6 +30,8 @@ export function ExportPage({ handle, cards, needsReauth, exported }: Props) {
       .flatMap((card, index) => (isBskyLinkCard(card) ? [index] : []))
       .slice(0, MAX_LINKS),
   );
+  const [confirming, setConfirming] = useState(false);
+  const formRef = useRef<HTMLFormElement>(null);
   const isExporting = navigation.formData !== undefined;
 
   if (needsReauth) {
@@ -52,7 +55,7 @@ export function ExportPage({ handle, cards, needsReauth, exported }: Props) {
     );
   }
   return (
-    <Form method="post" className="contents">
+    <Form ref={formRef} method="post" className="contents">
       {selected.map((index) => (
         <input key={index} type="hidden" name="index" value={index} />
       ))}
@@ -60,9 +63,11 @@ export function ExportPage({ handle, cards, needsReauth, exported }: Props) {
         cancelable
         submitButton={
           <Button
+            type="button"
             className="btn-primary"
             disabled={selected.length === 0 || isExporting}
             loading={isExporting}
+            onClick={() => setConfirming(true)}
             data-testid="export__submit"
           >
             {t("export.submit-button")}
@@ -78,17 +83,6 @@ export function ExportPage({ handle, cards, needsReauth, exported }: Props) {
             {selected.length} / {MAX_LINKS}
           </b>
         </div>
-        <div
-          role="note"
-          className="alert alert-warning my-2 flex flex-col items-start gap-1 text-start text-sm"
-          data-testid="export__replace-warning"
-        >
-          <p className="flex items-center gap-1 font-bold">
-            <ExclamationTriangleIcon className="size-5" />
-            {t("export.replace-warning-title")}
-          </p>
-          <p>{t("export.replace-warning")}</p>
-        </div>
         <SelectCardList
           cards={cards}
           selected={selected}
@@ -98,6 +92,26 @@ export function ExportPage({ handle, cards, needsReauth, exported }: Props) {
           {t("export.unselectable-note")}
         </p>
       </Main>
+      <ConfirmDialog
+        open={confirming}
+        title={
+          <span className="flex items-center gap-2">
+            <ExclamationTriangleIcon className="size-6 text-warning" />
+            {t("export.confirm-title")}
+          </span>
+        }
+        description={t("export.confirm-description", {
+          count: selected.length,
+        })}
+        cancelLabel={t("export.confirm-cancel")}
+        confirmLabel={t("export.confirm-confirm")}
+        confirmClassName="btn-primary"
+        onCancel={() => setConfirming(false)}
+        onConfirm={() => {
+          setConfirming(false);
+          formRef.current?.requestSubmit();
+        }}
+      />
     </Form>
   );
 }
