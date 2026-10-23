@@ -38,6 +38,22 @@ describe("faviconFetcher", () => {
       // assert
       expect(actual).toEqual(png);
     });
+    test("1MBを超えるICOは変換せずnullを返す", async () => {
+      // arrange
+      icoConverter.toPng.mockResolvedValue(png);
+      server.use(
+        http.get(faviconUrl, () =>
+          HttpResponse.arrayBuffer(new ArrayBuffer(1000001), {
+            headers: { "content-type": "image/x-icon" },
+          }),
+        ),
+      );
+      // act
+      const actual = await faviconFetcher.fetchPng("https://example.com/a");
+      // assert
+      expect(actual).toBeNull();
+      expect(icoConverter.toPng).not.toHaveBeenCalled();
+    });
     test("PNGはそのまま返す", async () => {
       // arrange
       server.use(
