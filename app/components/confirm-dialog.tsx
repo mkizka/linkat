@@ -7,7 +7,6 @@ type Props = {
   open: boolean;
   title: ReactNode;
   description?: string;
-  descriptionClassName?: string;
   cancelLabel: string;
   confirmLabel: string;
   confirmClassName?: string;
@@ -19,7 +18,6 @@ export function ConfirmDialog({
   open,
   title,
   description,
-  descriptionClassName,
   cancelLabel,
   confirmLabel,
   confirmClassName = "btn-error",
@@ -45,9 +43,7 @@ export function ConfirmDialog({
     >
       <div className="modal-box">
         <h3 className="text-lg font-bold">{title}</h3>
-        {description && (
-          <p className={cn("pt-4", descriptionClassName)}>{description}</p>
-        )}
+        {description && <p className="pt-2">{description}</p>}
         <div className="mt-4 flex gap-2">
           <button
             type="button"

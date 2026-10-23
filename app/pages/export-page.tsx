@@ -103,7 +103,6 @@ export function ExportPage({ handle, cards, needsReauth, exported }: Props) {
         description={t("export.confirm-description", {
           count: selected.length,
         })}
-        descriptionClassName="pt-2"
         cancelLabel={t("export.confirm-cancel")}
         confirmLabel={t("export.confirm-confirm")}
         confirmClassName="btn-primary"
