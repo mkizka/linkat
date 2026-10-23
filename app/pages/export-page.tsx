@@ -12,8 +12,7 @@ import { isBskyLinkCard } from "~/features/export/select/bsky-link";
 import { ExportBar } from "~/features/export/select/export-bar";
 import { SelectCardList } from "~/features/export/select/select-card-list";
 import type { BoardCard } from "~/schemas/board";
-
-const MAX_LINKS = 10;
+import { MAX_BSKY_LINKS } from "~/schemas/bskyLink";
 
 type Props = {
   handle: string;
@@ -28,7 +27,7 @@ export function ExportPage({ handle, cards, needsReauth, exported }: Props) {
   const [selected, setSelected] = useState(() =>
     cards
       .flatMap((card, index) => (isBskyLinkCard(card) ? [index] : []))
-      .slice(0, MAX_LINKS),
+      .slice(0, MAX_BSKY_LINKS),
   );
   const [confirming, setConfirming] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
@@ -82,7 +81,7 @@ export function ExportPage({ handle, cards, needsReauth, exported }: Props) {
             {t("export.select-description")}
           </p>
           <b className="text-primary" data-testid="export__count">
-            {selected.length} / {MAX_LINKS}
+            {selected.length} / {MAX_BSKY_LINKS}
           </b>
         </div>
         <SelectCardList

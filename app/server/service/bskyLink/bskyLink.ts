@@ -1,10 +1,8 @@
 import type { Did } from "@atproto/did";
 
 import type { BoardCard } from "~/schemas/board";
-import {
-  type IBskyLinkPdsRepository,
-  MAX_LINKS,
-} from "~/server/infrastructure/bskyLink/bskyLinkPdsRepository";
+import { MAX_BSKY_LINKS } from "~/schemas/bskyLink";
+import type { IBskyLinkPdsRepository } from "~/server/infrastructure/bskyLink/bskyLinkPdsRepository";
 import type { IFaviconFetcher } from "~/server/infrastructure/favicon/faviconFetcher";
 
 const hasUrl = (card: BoardCard): card is BoardCard & { url: string } =>
@@ -30,7 +28,7 @@ export const bskyLinkServiceFactory = ({
   async exportCards(editorDid, cards) {
     if (
       cards.length === 0 ||
-      cards.length > MAX_LINKS ||
+      cards.length > MAX_BSKY_LINKS ||
       !cards.every(hasUrl)
     ) {
       throw new BskyLinkSelectionError();
