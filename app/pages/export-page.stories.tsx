@@ -15,6 +15,7 @@ const meta = {
       { url: "http://example.com", text: "httpのカード" },
       { url: "https://example.com/portfolio" },
     ],
+    maxLinks: 10,
   },
 } satisfies Meta<typeof ExportPage>;
 

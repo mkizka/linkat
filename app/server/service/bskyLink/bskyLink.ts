@@ -1,9 +1,10 @@
 import type { Did } from "@atproto/did";
 
 import type { BoardCard } from "~/schemas/board";
-import { MAX_BSKY_LINKS } from "~/schemas/bskyLink";
 import type { IBskyLinkPdsRepository } from "~/server/infrastructure/bskyLink/bskyLinkPdsRepository";
 import type { IFaviconFetcher } from "~/server/infrastructure/favicon/faviconFetcher";
+
+export const MAX_BSKY_LINKS = 10;
 
 const hasUrl = (card: BoardCard): card is BoardCard & { url: string } =>
   !!card.url;
