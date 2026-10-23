@@ -6,11 +6,10 @@ import { Button } from "~/components/button";
 import { Main } from "~/components/layout";
 import { ExportDone } from "~/features/export/done/export-done";
 import { ExportReauth } from "~/features/export/reauth/export-reauth";
-import { isBskyLinkCard } from "~/features/export/select/bsky-link";
 import { ExportBar } from "~/features/export/select/export-bar";
 import { SelectCardList } from "~/features/export/select/select-card-list";
 import type { BoardCard } from "~/schemas/board";
-import { MAX_BSKY_LINKS } from "~/schemas/bskyLink";
+import { isBskyLinkCard, MAX_BSKY_LINKS } from "~/schemas/bskyLink";
 
 type Props = {
   handle: string;

@@ -40,7 +40,7 @@ export class BskyLinkCleanupError extends Error {
 const isXrpcError = (error: unknown, name: string) =>
   error instanceof XrpcResponseError && error.error === name;
 
-export type BskyLinkInput = {
+type BskyLinkInput = {
   record: LinkRecord;
   icon: Buffer | null;
 };

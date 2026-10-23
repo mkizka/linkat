@@ -5,9 +5,8 @@ import { Card } from "~/components/card";
 import { CardContent } from "~/features/board/card/card-content";
 import { parseCard } from "~/features/board/card/parser";
 import type { BoardCard } from "~/schemas/board";
+import { isBskyLinkCard } from "~/schemas/bskyLink";
 import { cn } from "~/utils/cn";
-
-import { isBskyLinkCard } from "./bsky-link";
 
 type Props = {
   card: BoardCard;

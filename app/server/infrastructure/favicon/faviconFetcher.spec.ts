@@ -1,30 +1,30 @@
-import { encodeIco } from "icojs";
 import { http, HttpResponse } from "msw";
+import { mock, mockReset } from "vitest-mock-extended";
 
 import { server } from "~/mocks/server";
+import type { IIcoConverter } from "~/server/infrastructure/favicon/icoConverter";
 
 import { faviconFetcherFactory } from "./faviconFetcher";
-import { icoConverterFactory } from "./icoConverter";
 
-const faviconFetcher = faviconFetcherFactory({
-  icoConverter: icoConverterFactory(),
-});
+const icoConverter = mock<IIcoConverter>();
+const faviconFetcher = faviconFetcherFactory({ icoConverter });
 
 const faviconUrl = "https://icons.duckduckgo.com/ip3/example.com.ico";
-const png = Buffer.from(
-  "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==",
-  "base64",
-);
-const pngSignature = png.subarray(0, 8);
+const png = Buffer.from([1, 2, 3]);
+
+beforeEach(() => {
+  mockReset(icoConverter);
+  icoConverter.toPng.mockResolvedValue(null);
+});
 
 describe("faviconFetcher", () => {
   describe("fetchPng", () => {
-    test("ICOをPNGに変換して返す", async () => {
+    test("ICOはPNGに変換して返す", async () => {
       // arrange
-      const ico = await encodeIco([{ buffer: png }]);
+      icoConverter.toPng.mockResolvedValue(png);
       server.use(
         http.get(faviconUrl, () =>
-          HttpResponse.arrayBuffer(ico, {
+          HttpResponse.arrayBuffer(new ArrayBuffer(3), {
             headers: { "content-type": "image/x-icon" },
           }),
         ),
@@ -32,7 +32,7 @@ describe("faviconFetcher", () => {
       // act
       const actual = await faviconFetcher.fetchPng("https://example.com/a");
       // assert
-      expect(actual?.subarray(0, 8)).toEqual(pngSignature);
+      expect(actual).toEqual(png);
     });
     test("PNGはそのまま返す", async () => {
       // arrange

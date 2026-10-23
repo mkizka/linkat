@@ -12,3 +12,5 @@ export const toBskyLink = ({ url, text }: BoardCard) => {
   });
   return result.success ? result.value : null;
 };
+
+export const isBskyLinkCard = (card: BoardCard) => toBskyLink(card) !== null;
