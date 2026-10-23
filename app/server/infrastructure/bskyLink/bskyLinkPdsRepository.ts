@@ -14,22 +14,17 @@ const toLinkRecord = ({ url, text }: BoardCard) =>
     createdAt: new Date().toISOString(),
   });
 
-const iconTypes = ["image/png", "image/jpeg", "image/webp"] as const;
-
 const uploadIcon = async (client: Client, url: string) => {
   try {
     const response = await fetch(
-      `https://www.google.com/s2/favicons?sz=64&domain=${new URL(url).hostname}`,
+      `https://cardyb.bsky.app/v1/favicon?url=${encodeURIComponent(url)}`,
       { signal: AbortSignal.timeout(5000) },
     );
-    const type = iconTypes.find(
-      (iconType) => iconType === response.headers.get("content-type"),
-    );
-    if (!response.ok || !type) {
+    if (!response.ok || response.headers.get("content-type") !== "image/png") {
       return undefined;
     }
     const { body } = await client.uploadBlob(await response.bytes(), {
-      encoding: type,
+      encoding: "image/png",
     });
     return body.blob;
   } catch {
