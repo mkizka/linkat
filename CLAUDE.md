@@ -9,6 +9,7 @@ LinkatはBlueskyアカウントを使用してリンク集を整理・共有で�
 ## ドキュメント
 
 - `docs/spec.md`: アカウントとボードのデータの扱いの仕様
+- `docs/export.md`: Blueskyへの書き出しの仕様
 - `docs/architecture.md`: アーキテクチャの方針
 
 ## 開発ルール
