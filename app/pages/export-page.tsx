@@ -64,7 +64,7 @@ export function ExportPage({ handle, cards, needsReauth, exported }: Props) {
         submitButton={
           <Button
             type="button"
-            className="btn-primary"
+            className="btn-primary whitespace-nowrap"
             disabled={selected.length === 0 || isExporting}
             loading={isExporting}
             onClick={() => setConfirming(true)}

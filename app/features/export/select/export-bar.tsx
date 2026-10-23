@@ -22,7 +22,7 @@ export function ExportBar({ cancelable, submitButton }: Props) {
         ) : (
           <span />
         )}
-        <h1 className="font-bold">{t("export.title")}</h1>
+        <h1 className="text-sm font-bold">{t("export.title")}</h1>
         <div className="justify-self-end">{submitButton}</div>
       </div>
     </header>
