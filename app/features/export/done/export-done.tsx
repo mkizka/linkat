@@ -1,4 +1,4 @@
-import { CheckIcon } from "@heroicons/react/24/outline";
+import { CheckIcon, InformationCircleIcon } from "@heroicons/react/24/outline";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 
@@ -17,8 +17,9 @@ export function ExportDone({ handle }: Props) {
         <h2 className="text-lg font-bold" data-testid="export-done__title">
           {t("export.done-title")}
         </h2>
-        <p className="text-sm text-base-content/70">
-          {t("export.done-description")}
+        <p className="flex gap-2 rounded-lg bg-base-200 p-3 text-start text-xs text-base-content/70">
+          <InformationCircleIcon className="size-4 shrink-0" />
+          {t("export.done-note")}
         </p>
       </div>
       <div className="flex flex-col gap-2">
@@ -34,9 +35,6 @@ export function ExportDone({ handle }: Props) {
           {t("export.back-to-top-link")}
         </Link>
       </div>
-      <p className="text-center text-xs text-base-content/70">
-        {t("export.done-note")}
-      </p>
     </div>
   );
 }
