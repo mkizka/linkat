@@ -17,7 +17,7 @@ const toLinkRecord = ({ url, text }: BoardCard) =>
 const uploadIcon = async (client: Client, url: string) => {
   try {
     const response = await fetch(
-      `https://cardyb.bsky.app/v1/favicon?url=${encodeURIComponent(url)}`,
+      `https://www.google.com/s2/favicons?sz=64&domain=${new URL(url).hostname}`,
       { signal: AbortSignal.timeout(5000) },
     );
     if (!response.ok || response.headers.get("content-type") !== "image/png") {

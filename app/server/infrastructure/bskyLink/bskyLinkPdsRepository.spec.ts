@@ -23,7 +23,7 @@ const bskyLinkPdsRepository = bskyLinkPdsRepositoryFactory({ oauthClient });
 const did = asDid("did:plc:dummy");
 const xrpcUrl = (nsid: string) => `https://pds.example.com/xrpc/${nsid}`;
 const cid = "bafyreiflxe3gz7tg4jje5w4wypqjvz5d4zntrols22gwp7btg2nh2t7wxm";
-const faviconUrl = "https://cardyb.bsky.app/v1/favicon";
+const faviconUrl = "https://www.google.com/s2/favicons";
 const blob = {
   $type: "blob",
   ref: { $link: "bafkreiflxe3gz7tg4jje5w4wypqjvz5d4zntrols22gwp7btg2nh2t7wxm" },
@@ -46,8 +46,7 @@ describe("bskyLinkPdsRepository", () => {
       let putBody: unknown;
       server.use(
         http.get(faviconUrl, ({ request }) =>
-          new URL(request.url).searchParams.get("url") ===
-          "https://a.example.com"
+          new URL(request.url).searchParams.get("domain") === "a.example.com"
             ? HttpResponse.arrayBuffer(new Uint8Array([1, 2, 3]).buffer, {
                 headers: { "content-type": "image/png" },
               })
