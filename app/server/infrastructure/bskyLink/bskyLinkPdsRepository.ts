@@ -14,6 +14,29 @@ const toLinkRecord = ({ url, text }: BoardCard) =>
     createdAt: new Date().toISOString(),
   });
 
+const iconTypes = ["image/png", "image/jpeg", "image/webp"] as const;
+
+const uploadIcon = async (client: Client, url: string) => {
+  try {
+    const response = await fetch(
+      `https://www.google.com/s2/favicons?sz=64&domain=${new URL(url).hostname}`,
+      { signal: AbortSignal.timeout(5000) },
+    );
+    const type = iconTypes.find(
+      (iconType) => iconType === response.headers.get("content-type"),
+    );
+    if (!response.ok || !type) {
+      return undefined;
+    }
+    const { body } = await client.uploadBlob(await response.bytes(), {
+      encoding: type,
+    });
+    return body.blob;
+  } catch {
+    return undefined;
+  }
+};
+
 export class BskyLinkInvalidError extends Error {
   constructor(cause: unknown) {
     super("Blueskyのリンクにできないカードが含まれています", { cause });
@@ -75,8 +98,9 @@ export const bskyLinkPdsRepositoryFactory = ({
 
     const refs = [];
     for (const record of linkRecords) {
+      const icon = await uploadIcon(client, record.url);
       const { body } = await client
-        .createRecord(record, undefined, { repo: did })
+        .createRecord({ ...record, icon }, undefined, { repo: did })
         .catch((error: unknown) => {
           throw new BskyLinkExportError(error);
         });

@@ -23,8 +23,21 @@ const bskyLinkPdsRepository = bskyLinkPdsRepositoryFactory({ oauthClient });
 const did = asDid("did:plc:dummy");
 const xrpcUrl = (nsid: string) => `https://pds.example.com/xrpc/${nsid}`;
 const cid = "bafyreiflxe3gz7tg4jje5w4wypqjvz5d4zntrols22gwp7btg2nh2t7wxm";
+const faviconUrl = "https://www.google.com/s2/favicons";
+const blob = {
+  $type: "blob",
+  ref: { $link: "bafkreiflxe3gz7tg4jje5w4wypqjvz5d4zntrols22gwp7btg2nh2t7wxm" },
+  mimeType: "image/png",
+  size: 3,
+};
 
 describe("bskyLinkPdsRepository", () => {
+  beforeEach(() => {
+    server.use(
+      http.get(faviconUrl, () => new HttpResponse(null, { status: 404 })),
+    );
+  });
+
   describe("replace", () => {
     test("カードのリンクを作り、プロフィールのリンクを置き換えて古いリンクを消す", async () => {
       // arrange
@@ -32,6 +45,16 @@ describe("bskyLinkPdsRepository", () => {
       const deleted: unknown[] = [];
       let putBody: unknown;
       server.use(
+        http.get(faviconUrl, ({ request }) =>
+          new URL(request.url).searchParams.get("domain") === "a.example.com"
+            ? HttpResponse.arrayBuffer(new Uint8Array([1, 2, 3]).buffer, {
+                headers: { "content-type": "image/png" },
+              })
+            : new HttpResponse(null, { status: 404 }),
+        ),
+        http.post(xrpcUrl("com.atproto.repo.uploadBlob"), () =>
+          HttpResponse.json({ blob }),
+        ),
         http.get(xrpcUrl("com.atproto.repo.getRecord"), () =>
           HttpResponse.json({
             uri: `at://${did}/app.bsky.actor.profile/self`,
@@ -76,20 +99,25 @@ describe("bskyLinkPdsRepository", () => {
       );
       // act
       await bskyLinkPdsRepository.replace(did, [
-        { url: "https://example.com/a", text: "A" },
-        { url: "https://example.com/b" },
+        { url: "https://a.example.com", text: "A" },
+        { url: "https://b.example.com" },
       ]);
       // assert
       expect(created).toMatchObject([
         {
           collection: "app.bsky.actor.link",
-          record: { url: "https://example.com/a", title: "A" },
+          record: {
+            url: "https://a.example.com",
+            title: "A",
+            icon: { ref: blob.ref, mimeType: "image/png" },
+          },
         },
         {
           collection: "app.bsky.actor.link",
-          record: { url: "https://example.com/b" },
+          record: { url: "https://b.example.com" },
         },
       ]);
+      expect(created[1]).not.toHaveProperty("record.icon");
       expect(putBody).toMatchObject({
         collection: "app.bsky.actor.profile",
         rkey: "self",
