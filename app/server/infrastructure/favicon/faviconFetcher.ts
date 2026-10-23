@@ -1,4 +1,4 @@
-import { decodeIco, isIco } from "icojs";
+import { icoToPng } from "~/utils/icoToPng";
 
 const maxIconSize = 100000;
 
@@ -8,14 +8,10 @@ export interface IFaviconFetcher {
 
 const toPng = async (response: Response) => {
   const bytes = Buffer.from(await response.arrayBuffer());
-  if (!isIco(bytes)) {
-    return response.headers.get("content-type") === "image/png" ? bytes : null;
-  }
-  const images = await decodeIco(bytes, "image/png");
-  const image = images
-    .sort((a, b) => b.width - a.width)
-    .find(({ buffer }) => buffer.byteLength <= maxIconSize);
-  return image ? Buffer.from(image.buffer) : null;
+  return (
+    (await icoToPng(bytes, maxIconSize)) ??
+    (response.headers.get("content-type") === "image/png" ? bytes : null)
+  );
 };
 
 export const faviconFetcherFactory = (): IFaviconFetcher => ({
