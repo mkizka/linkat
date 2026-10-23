@@ -1,10 +1,11 @@
+import type { ReactNode } from "react";
 import { useEffect, useRef } from "react";
 
 import { cn } from "~/utils/cn";
 
 type Props = {
   open: boolean;
-  title: string;
+  title: ReactNode;
   description?: string;
   cancelLabel: string;
   confirmLabel: string;
@@ -42,7 +43,7 @@ export function ConfirmDialog({
     >
       <div className="modal-box">
         <h3 className="text-lg font-bold">{title}</h3>
-        {description && <p className="pt-4">{description}</p>}
+        {description && <p className="pt-2">{description}</p>}
         <div className="mt-4 flex gap-2">
           <button
             type="button"
