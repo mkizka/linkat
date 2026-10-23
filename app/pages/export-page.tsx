@@ -1,3 +1,4 @@
+import { ExclamationTriangleIcon } from "@heroicons/react/24/solid";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Form, useNavigation } from "react-router";
@@ -77,12 +78,17 @@ export function ExportPage({ handle, cards, needsReauth, exported }: Props) {
             {selected.length} / {MAX_LINKS}
           </b>
         </div>
-        <p
-          className="alert alert-warning text-start text-sm"
+        <div
+          role="note"
+          className="alert alert-warning my-2 flex flex-col items-start gap-1 text-start text-sm"
           data-testid="export__replace-warning"
         >
-          {t("export.replace-warning")}
-        </p>
+          <p className="flex items-center gap-1 font-bold">
+            <ExclamationTriangleIcon className="size-5" />
+            {t("export.replace-warning-title")}
+          </p>
+          <p>{t("export.replace-warning")}</p>
+        </div>
         <SelectCardList
           cards={cards}
           selected={selected}
