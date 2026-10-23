@@ -1,4 +1,4 @@
-# Blueskyのリンクへの書き出し
+# Blueskyへの書き出し
 
 編集者は、ボードのカードを選んで、本人のPDSの`app.bsky.actor.link`とプロフィールの`links`に書き出せる。用語は`docs/spec.md`に従う。
 
