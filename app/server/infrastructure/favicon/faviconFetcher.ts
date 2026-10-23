@@ -39,7 +39,8 @@ export const faviconFetcherFactory = ({
           { signal: AbortSignal.timeout(5000) },
         );
         return response.ok ? await toPng(response) : null;
-      } catch {
+      } catch (error) {
+        log.warn("ファビコンの取得に失敗しました", { url, error });
         return null;
       }
     },
