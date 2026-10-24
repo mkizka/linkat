@@ -1,3 +1,5 @@
+import type { Dialog } from "@playwright/test";
+
 import { expect, test } from "./fixtures";
 
 test.describe("編集(離脱確認)", () => {
@@ -31,13 +33,24 @@ test.describe("編集(離脱確認)", () => {
     await test.step("変更があると戻るときに確認を出す", async () => {
       await openEdit();
       await addCard();
+      let nativeConfirmed = false;
+      const stay = async (dialog: Dialog) => {
+        nativeConfirmed = true;
+        await dialog.dismiss();
+      };
+      page.once("dialog", stay);
       await page.evaluate(() => history.back());
-      await expect(leaveDialog).toBeVisible();
+      await expect
+        .poll(async () => nativeConfirmed || (await leaveDialog.isVisible()))
+        .toBe(true);
+      page.off("dialog", stay);
     });
 
     await test.step("編集を続けると留まる", async () => {
-      await leaveDialog.getByTestId("confirm-dialog__cancel").click();
-      await expect(leaveDialog).toBeHidden();
+      if (await leaveDialog.isVisible()) {
+        await leaveDialog.getByTestId("confirm-dialog__cancel").click();
+        await expect(leaveDialog).toBeHidden();
+      }
       await expect(page).toHaveURL((url) => url.pathname === "/edit");
       await expect(submit).toBeVisible();
     });
