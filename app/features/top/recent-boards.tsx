@@ -2,6 +2,7 @@ import { UserIcon } from "@heroicons/react/24/solid";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 
+import { useUmami } from "~/hooks/useUmami";
 import type { OwnerView } from "~/server/service/owner/ownerView";
 
 function OwnerAvatar({ owner }: { owner: OwnerView }) {
@@ -20,6 +21,7 @@ function OwnerAvatar({ owner }: { owner: OwnerView }) {
 
 export function RecentBoards({ owners }: { owners: OwnerView[] }) {
   const { t } = useTranslation();
+  const umami = useUmami();
   if (owners.length === 0) {
     return null;
   }
@@ -36,6 +38,7 @@ export function RecentBoards({ owners }: { owners: OwnerView[] }) {
             className="@max-[330px]:nth-[n+7]:hidden"
             title={owner.displayName ?? owner.displayHandle ?? ""}
             aria-label={owner.displayName ?? owner.displayHandle ?? ""}
+            onClick={() => umami.track("click-recent-board")}
           >
             <OwnerAvatar owner={owner} />
           </Link>
