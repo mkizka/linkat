@@ -31,3 +31,12 @@ export const NeedsReauth: Story = {
 export const Done: Story = {
   args: { exported: true },
 };
+
+export const ManyCards: Story = {
+  args: {
+    cards: Array.from({ length: 11 }, (_, i) => ({
+      url: `https://example.com/${i + 1}`,
+      text: `リンク${i + 1}`,
+    })),
+  },
+};
