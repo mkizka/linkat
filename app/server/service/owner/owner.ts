@@ -16,7 +16,6 @@ export type EditorView = OwnerView & { synced: boolean };
 export interface IOwnerService {
   findEditorView: (did: Did) => Promise<EditorView>;
   syncOwner: (did: Did) => Promise<OwnerDto>;
-  resyncOwner: (did: Did) => Promise<OwnerDto | null>;
   updateProfile: (
     did: Did,
     profile: ProfileDto | null,
@@ -35,8 +34,12 @@ export const ownerServiceFactory = ({
   profileFetcher: IProfileFetcher;
   identityResolver: IIdentityResolver;
   ownerViewService: IOwnerViewService;
-}): IOwnerService => {
-  const syncOwner = async (did: Did) => {
+}): IOwnerService => ({
+  async findEditorView(did) {
+    const owner = await ownerRepository.findByDid(did);
+    return { ...ownerViewService.toOwnerView(did, owner), synced: !!owner };
+  },
+  async syncOwner(did) {
     const identity = await identityResolver.resolve(did);
     if (!identity) {
       return await ownerRepository.upsert(did, { handle: null });
@@ -49,38 +52,25 @@ export const ownerServiceFactory = ({
       handle: identity.handle,
       profile,
     });
-  };
-  return {
-    async findEditorView(did) {
-      const owner = await ownerRepository.findByDid(did);
-      return { ...ownerViewService.toOwnerView(did, owner), synced: !!owner };
-    },
-    syncOwner,
-    async resyncOwner(did) {
-      if (!(await ownerRepository.findByDid(did))) {
-        return null;
-      }
-      return await syncOwner(did);
-    },
-    async updateProfile(did, profile) {
-      if (!(await ownerRepository.findByDid(did))) {
-        return null;
-      }
-      const identity = await identityResolver.resolve(did);
-      return await ownerRepository.updateProfile(did, {
-        handle: identity?.handle ?? null,
-        profile,
-      });
-    },
-    async refreshHandle(did) {
-      if (!(await ownerRepository.findByDid(did))) {
-        return null;
-      }
-      const identity = await identityResolver.resolve(did, { fresh: true });
-      return await ownerRepository.updateHandle(did, identity?.handle ?? null);
-    },
-    async updateAccountState(did, state) {
-      await ownerRepository.updateAccountState(did, state);
-    },
-  };
-};
+  },
+  async updateProfile(did, profile) {
+    if (!(await ownerRepository.findByDid(did))) {
+      return null;
+    }
+    const identity = await identityResolver.resolve(did);
+    return await ownerRepository.updateProfile(did, {
+      handle: identity?.handle ?? null,
+      profile,
+    });
+  },
+  async refreshHandle(did) {
+    if (!(await ownerRepository.findByDid(did))) {
+      return null;
+    }
+    const identity = await identityResolver.resolve(did, { fresh: true });
+    return await ownerRepository.updateHandle(did, identity?.handle ?? null);
+  },
+  async updateAccountState(did, state) {
+    await ownerRepository.updateAccountState(did, state);
+  },
+});

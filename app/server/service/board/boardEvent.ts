@@ -35,7 +35,6 @@ export interface IBoardEventService {
   handleEditorSave: (board: BoardDto) => Promise<void>;
   handleEditorSync: (editorDid: Did) => Promise<{ boardImported: boolean }>;
   handleEditorDelete: (ownerDid: Did) => Promise<void>;
-  handleBoardSync: (ownerDid: Did) => Promise<boolean>;
 }
 
 export const boardEventServiceFactory = ({
@@ -74,18 +73,6 @@ export const boardEventServiceFactory = ({
     },
     async handleBoardDeleteCommit(ownerDid) {
       await boardRepository.delete(ownerDid);
-    },
-    async handleBoardSync(ownerDid) {
-      if (!(await ownerService.resyncOwner(ownerDid))) {
-        return false;
-      }
-      const board = await boardPdsRepository.find(ownerDid);
-      if (board) {
-        await boardRepository.save(board);
-      } else {
-        await boardRepository.delete(ownerDid);
-      }
-      return true;
     },
     async handleEditorDelete(ownerDid) {
       try {

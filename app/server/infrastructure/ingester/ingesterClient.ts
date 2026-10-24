@@ -23,7 +23,6 @@ export interface IIngesterHandler {
   handleProfileDelete: (event: { did: Did; rkey: string }) => Promise<void>;
   handleIdentity: (event: { did: Did }) => Promise<void>;
   handleAccount: (event: { did: Did; state: AccountStateDto }) => Promise<void>;
-  handleSync: (event: { did: Did }) => Promise<void>;
 }
 
 export interface IIngesterClient {
@@ -118,13 +117,6 @@ export const ingesterClientFactory = ({
           "アカウントの状態の更新に失敗しました",
         );
         return;
-      case "sync":
-        handle(
-          event,
-          () => ingesterService.handleSync({ did }),
-          "リポジトリの同期に失敗しました",
-        );
-        return;
     }
   };
 
@@ -153,7 +145,7 @@ export const ingesterClientFactory = ({
       const events = jetstream.live({
         raw: true,
         collections: ["blue.linkat.board", "app.bsky.actor.profile"],
-        kinds: ["commit", "identity", "account", "sync"],
+        kinds: ["commit", "identity", "account"],
         cursor: cursorRepository,
         onError: (error) =>
           log.warn("Jetstreamのイベントを読み飛ばしました", { error }),

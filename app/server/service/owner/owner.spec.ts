@@ -155,43 +155,6 @@ describe("ownerService", () => {
     });
   });
 
-  describe("resyncOwner", () => {
-    test("写しがあれば、ハンドルを解決しプロフィールを取得して更新する", async () => {
-      // arrange
-      const owner = await OwnerFactory.create({
-        handle: "old.example.com",
-        displayName: "Old",
-      });
-      mockIdentity(owner.did, "alice.example.com");
-      server.use(
-        http.get(getRecordUrl, () =>
-          HttpResponse.json({
-            uri: `at://${owner.did}/app.bsky.actor.profile/self`,
-            cid: "bafyreidfayvfuwqa7qlnopdjiqrxzs6blmoeu4rujcjtnci5beludirz2a",
-            value: { $type: "app.bsky.actor.profile", displayName: "Alice" },
-          }),
-        ),
-      );
-      // act
-      const actual = await ownerService.resyncOwner(asDid(owner.did));
-      // assert
-      expect(actual).toMatchObject({
-        handle: "alice.example.com",
-        displayName: "Alice",
-      });
-    });
-    test("写しが無ければ、ハンドルを解決せずnullを返す", async () => {
-      // arrange
-      const did = asDid("did:plc:resyncunknown");
-      // act
-      const actual = await ownerService.resyncOwner(did);
-      // assert
-      expect(actual).toBeNull();
-      expect(identityResolver.resolve).not.toHaveBeenCalled();
-      expect(await ownerRepository.findByDid(did)).toBeNull();
-    });
-  });
-
   describe("updateProfile", () => {
     const avatarCid =
       "bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku";
