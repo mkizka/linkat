@@ -80,7 +80,7 @@
     "reauth-sample-blog": "Blog",
     "reauth-preview-note": "Up to 10 links can be shown under your profile",
     "reauth-permission-title": "Permission is required to export",
-    "reauth-permission-description": "Allow writing to your Bluesky profile",
+    "reauth-permission-description": "Log in again and allow writing to your Bluesky profile",
     "reauth-button": "Log in again to allow",
     "notice-link": "Notes",
     "notice-max": "You can export up to 10 cards",
@@ -88,6 +88,7 @@
     "notice-no-sync": "Changes to your board in Linkat are not synced to Bluesky automatically. Export again to update them",
     "notice-format": "Each card's text becomes the link title. Icons are chosen from the URL, and card emojis are not used",
     "notice-no-url": "Cards without a URL cannot be exported",
+    "notice-bsky-rules": "Exported cards may not be shown due to Bluesky's rules",
     "notice-close": "Close"
   },
   "sync": {

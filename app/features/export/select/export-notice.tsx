@@ -7,6 +7,7 @@ const items = [
   "export.notice-no-sync",
   "export.notice-format",
   "export.notice-no-url",
+  "export.notice-bsky-rules",
 ] as const;
 
 type Props = {
