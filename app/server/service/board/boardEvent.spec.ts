@@ -165,6 +165,68 @@ describe("boardEventService", () => {
     });
   });
 
+  describe("handleBoardSync", () => {
+    const getRecordUrl =
+      "https://pds.example.com/xrpc/com.atproto.repo.getRecord";
+
+    test("持ち主の写しが無ければ何もしない", async () => {
+      // arrange
+      const did = asDid("did:plc:syncunknown");
+      ownerService.resyncOwner.mockResolvedValue(null);
+      // act
+      const actual = await boardEventService.handleBoardSync(did);
+      // assert
+      expect(actual).toBe(false);
+      expect(await boardRepository.find(did)).toBeNull();
+    });
+    test("持ち主の写しがあり、PDSにボードがあればボードの写しを書く", async () => {
+      // arrange
+      const did = asDid((await OwnerFactory.create()).did);
+      ownerService.resyncOwner.mockResolvedValue(
+        await ownerRepository.findByDid(did),
+      );
+      server.use(
+        http.get(getRecordUrl, () =>
+          HttpResponse.json({
+            uri: `at://${did}/blue.linkat.board/self`,
+            value: { $type: "blue.linkat.board", cards: dummyCards },
+          }),
+        ),
+      );
+      // act
+      const actual = await boardEventService.handleBoardSync(did);
+      // assert
+      expect(actual).toBe(true);
+      expect(ownerService.resyncOwner).toHaveBeenCalledWith(did);
+      expect(await boardRepository.find(did)).toEqual({
+        ownerDid: did,
+        cards: dummyCards,
+      });
+    });
+    test("持ち主の写しがあり、PDSにボードが無ければボードの写しだけ削除する", async () => {
+      // arrange
+      const board = await BoardFactory.create();
+      const did = asDid(board.ownerDid);
+      ownerService.resyncOwner.mockResolvedValue(
+        await ownerRepository.findByDid(did),
+      );
+      server.use(
+        http.get(getRecordUrl, () =>
+          HttpResponse.json(
+            { error: "RecordNotFound", message: "Could not locate record" },
+            { status: 400 },
+          ),
+        ),
+      );
+      // act
+      const actual = await boardEventService.handleBoardSync(did);
+      // assert
+      expect(actual).toBe(true);
+      expect(await boardRepository.find(did)).toBeNull();
+      expect(await ownerRepository.findByDid(did)).not.toBeNull();
+    });
+  });
+
   describe("handleBoardDeleteCommit", () => {
     test("ボードの写しだけ削除し、持ち主の写しは残す", async () => {
       // arrange

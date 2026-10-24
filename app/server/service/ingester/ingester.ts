@@ -72,5 +72,11 @@ export const ingesterServiceFactory = ({
       await ownerService.updateAccountState(did, state);
       log.debug("アカウントの状態を受け取りました", { did, ...state });
     },
+    async handleSync({ did }) {
+      const synced = await boardEventService.handleBoardSync(did);
+      if (synced) {
+        log.info("PDSからボードと持ち主を同期し直しました", { ownerDid: did });
+      }
+    },
   };
 };
