@@ -23,11 +23,13 @@ export function EditorMenu({ handle, hasBoard }: Props) {
             to: `/${handle}`,
             icon: EyeIcon,
             label: t("_index.view-board-link"),
+            umamiEvent: "click-view-board-link",
           },
           {
             to: "/edit",
             icon: PencilSquareIcon,
             label: t("_index.edit-link"),
+            umamiEvent: "click-edit-link",
             testId: "index__edit-link",
           },
           {
@@ -43,10 +45,16 @@ export function EditorMenu({ handle, hasBoard }: Props) {
             to: "/edit",
             icon: PlusIcon,
             label: t("_index.create-board-link"),
+            umamiEvent: "click-create-board-link",
             testId: "index__edit-link",
           },
         ]),
-    { to: "/settings", icon: Cog6ToothIcon, label: t("_index.settings-link") },
+    {
+      to: "/settings",
+      icon: Cog6ToothIcon,
+      label: t("_index.settings-link"),
+      umamiEvent: "click-settings-link",
+    },
   ];
   return (
     <nav className="grid grid-cols-2 gap-2">
