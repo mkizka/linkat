@@ -36,7 +36,6 @@ export function RecentBoards({ owners }: { owners: OwnerView[] }) {
             className="@max-[330px]:nth-[n+7]:hidden"
             title={owner.displayName ?? owner.displayHandle ?? ""}
             aria-label={owner.displayName ?? owner.displayHandle ?? ""}
-            data-umami-event="click-recent-board"
           >
             <OwnerAvatar owner={owner} />
           </Link>

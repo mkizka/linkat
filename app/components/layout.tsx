@@ -121,11 +121,7 @@ export function Footer() {
           </div>
         </div>
         <div className="flex items-center gap-4">
-          <Link
-            to="/about"
-            className="underline"
-            data-umami-event="click-footer-about-link"
-          >
+          <Link to="/about" className="underline">
             {t("layout.about-link")}
           </Link>
           <LanguageMenu />

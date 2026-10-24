@@ -19,7 +19,6 @@ export function SampleBoardPreview() {
         to="/sample"
         className="absolute inset-0"
         aria-label={t("_index.sample-link")}
-        data-umami-event="click-sample-preview"
       />
     </div>
   );
