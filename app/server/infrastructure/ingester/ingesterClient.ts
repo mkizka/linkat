@@ -1,5 +1,3 @@
-import { setTimeout } from "node:timers/promises";
-
 import type { Did } from "@atproto/did";
 import { Jetstream, LexIndexer, websocketTransport } from "@bsky/jetstream";
 import { trace } from "@opentelemetry/api";
@@ -13,8 +11,6 @@ import type { AccountStateDto } from "~/server/infrastructure/owner/ownerDto";
 import { env } from "~/utils/env";
 
 const LAG_REPORT_INTERVAL_MS = 10_000;
-
-const RESTART_DELAY_MS = 60_000;
 
 export interface IIngesterHandler {
   handleBoardCommit: (event: { did: Did; record: unknown }) => Promise<void>;
@@ -122,28 +118,20 @@ export const ingesterClientFactory = ({
       }, LAG_REPORT_INTERVAL_MS).unref();
 
       const runner = new Jetstream(env.JETSTREAM_SERVICE_URL).runner(indexer);
-      for (;;) {
-        log.info(
-          `Jetstream subscription started to ${env.JETSTREAM_SERVICE_URL}`,
-        );
-        try {
-          await runner.live({
-            cursor: cursorRepository,
-            onError: (error) =>
-              log.warn("Jetstreamのイベントを読み飛ばしました", { error }),
-            onInfo: (info) =>
-              log.warn("Jetstreamから通知を受け取りました", info),
-            liveTransport: websocketTransport({
-              onReconnect: (error, { attempt }) =>
-                log.warn("Jetstreamに再接続します", { error, attempt }),
-            }),
-          });
-          log.error("Jetstreamの購読が終了しました");
-        } catch (error) {
-          log.error("Jetstreamの購読が停止しました", { error });
-        }
-        await setTimeout(RESTART_DELAY_MS);
-      }
+      log.info(
+        `Jetstream subscription started to ${env.JETSTREAM_SERVICE_URL}`,
+      );
+      await runner.live({
+        cursor: cursorRepository,
+        onError: (error) =>
+          log.warn("Jetstreamのイベントを読み飛ばしました", { error }),
+        onInfo: (info) => log.warn("Jetstreamから通知を受け取りました", info),
+        liveTransport: websocketTransport({
+          onReconnect: (error, { attempt }) =>
+            log.warn("Jetstreamに再接続します", { error, attempt }),
+        }),
+      });
+      throw new Error("Jetstream subscription ended");
     },
   };
 };
