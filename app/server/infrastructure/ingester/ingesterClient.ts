@@ -56,19 +56,15 @@ export const ingesterClientFactory = ({
   };
 
   const indexer = new LexIndexer()
-    .commit({
-      collection: board,
-      validateRecord: false,
-      handlers: {
-        put: (e) =>
-          handle("commit", () =>
-            ingesterService.handleBoardCommit({ did: e.did, record: e.record }),
-          ),
-        del: (e) =>
-          handle("commit", () =>
-            ingesterService.handleBoardDelete({ did: e.did }),
-          ),
-      },
+    .commit(board, {
+      put: (e) =>
+        handle("commit", () =>
+          ingesterService.handleBoardCommit({ did: e.did, record: e.record }),
+        ),
+      del: (e) =>
+        handle("commit", () =>
+          ingesterService.handleBoardDelete({ did: e.did }),
+        ),
     })
     .commit(profile, {
       put: (e) =>

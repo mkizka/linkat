@@ -31,12 +31,7 @@ export const ingesterServiceFactory = ({
 
   return {
     async handleBoardCommit({ did, record }) {
-      const parsed = boardSchema.safeParse(record);
-      if (!parsed.success) {
-        log.warn("ボードのパースに失敗しました", { record });
-        return;
-      }
-      const board = { ownerDid: did, cards: parsed.data.cards };
+      const board = { ownerDid: did, cards: boardSchema.parse(record).cards };
       await boardEventService.handleBoardCommit(board);
       log.info("ボードを更新しました", {
         ownerDid: board.ownerDid,
