@@ -45,10 +45,9 @@ export const WithInvalidCards: Story = {
   args: {
     cards: [
       { text: "URLの無いカード", emoji: "📝" },
-      ...links(5),
+      ...links(2),
       { url: "https://example.com", text: "あ".repeat(41) },
-      ...links(6),
     ],
-    selected: [1, 2, 3, 4, 5, 7, 8, 9, 10, 11],
+    selected: [1, 2],
   },
 };
