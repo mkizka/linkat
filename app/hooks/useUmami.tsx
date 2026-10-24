@@ -54,41 +54,6 @@ export function UmamiProvider({ children }: { children: ReactNode }) {
     return () => clearInterval(checkInterval);
   }, []);
 
-  useEffect(() => {
-    const onClick = (event: MouseEvent) => {
-      if (!(event.target instanceof Element)) return;
-      const anchor = event.target.closest("a[data-umami-event]");
-      if (!(anchor instanceof HTMLAnchorElement)) return;
-      const eventName = anchor.getAttribute("data-umami-event");
-      if (
-        !eventName ||
-        anchor.target === "_blank" ||
-        anchor.origin !== location.origin ||
-        event.ctrlKey ||
-        event.shiftKey ||
-        event.metaKey ||
-        event.button === 1
-      ) {
-        return;
-      }
-      const eventData = Object.fromEntries(
-        anchor
-          .getAttributeNames()
-          .filter((name) => name.startsWith("data-umami-event-"))
-          .map((name) => [
-            name.slice("data-umami-event-".length),
-            anchor.getAttribute(name),
-          ]),
-      );
-      track(eventName, eventData);
-      anchor.removeAttribute("data-umami-event");
-      // eslint-disable-next-line @eslint-react/web-api-no-leaked-timeout
-      setTimeout(() => anchor.setAttribute("data-umami-event", eventName));
-    };
-    window.addEventListener("click", onClick, true);
-    return () => window.removeEventListener("click", onClick, true);
-  }, [track]);
-
   return (
     <UmamiContext.Provider value={{ track }}>{children}</UmamiContext.Provider>
   );
