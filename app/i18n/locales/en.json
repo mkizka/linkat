@@ -77,7 +77,7 @@
     "export-error-message": "Failed to export to Bluesky. Your profile links have not changed",
     "conflict-error-message": "Your Bluesky profile was changed during the export. Please try again",
     "cleanup-warning-message": "Links were exported, but some old links could not be removed",
-    "reauth-title": "Copy the links you set in Linkat\nto Bluesky",
+    "reauth-title": "Export the links you set in Linkat\nto Bluesky",
     "reauth-sample-blog": "Blog",
     "reauth-icon-note": "Icons are chosen from each URL (card emojis are not used)",
     "reauth-step-allow": "Allow writing to your profile",

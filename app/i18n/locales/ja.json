@@ -77,7 +77,7 @@
     "export-error-message": "Blueskyへの書き出しに失敗しました。プロフィールのリンクは変わっていません",
     "conflict-error-message": "書き出し中にBlueskyのプロフィールが変更されました。もう一度お試しください",
     "cleanup-warning-message": "リンクは書き出しましたが、古いリンクの一部を削除できませんでした",
-    "reauth-title": "Linkatに設定したリンクを\nBlueskyにコピーできます",
+    "reauth-title": "Linkatに設定したリンクを\nBlueskyに書き出せます",
     "reauth-sample-blog": "ブログ",
     "reauth-icon-note": "アイコンはURLから決まります（絵文字は使いません）",
     "reauth-step-allow": "プロフィールへの書き込みを許可する",
