@@ -55,7 +55,6 @@ export default defineRailway((ctx) => {
       ADMIN_DIDS: preserve(),
       COOKIE_SECRET: preserve(),
       DATABASE_URL: postgres.env.DATABASE_URL,
-      JETSTREAM_URL: preserve(),
       OTEL_LOGS_EXPORTER: preserve(),
       OTEL_METRICS_EXPORTER: preserve(),
       PRIVATE_KEY_ES256_B64: preserve(),

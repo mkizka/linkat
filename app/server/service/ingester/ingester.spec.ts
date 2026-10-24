@@ -1,4 +1,5 @@
 import { asDid } from "@atproto/did";
+import { lexParse } from "@atproto/lex";
 import { http, HttpResponse } from "msw";
 import { Pool } from "pg";
 import { mock, mockReset } from "vitest-mock-extended";
@@ -59,17 +60,19 @@ const boardRecord = {
 
 const avatarCid = "bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku";
 
-const profileRecord = {
-  $type: "app.bsky.actor.profile",
-  displayName: "新しい名前",
-  description: "新しい説明",
-  avatar: {
-    $type: "blob",
-    ref: { $link: avatarCid },
-    mimeType: "image/jpeg",
-    size: 1000,
-  },
-};
+const profileRecord = lexParse(
+  JSON.stringify({
+    $type: "app.bsky.actor.profile",
+    displayName: "新しい名前",
+    description: "新しい説明",
+    avatar: {
+      $type: "blob",
+      ref: { $link: avatarCid },
+      mimeType: "image/jpeg",
+      size: 1000,
+    },
+  }),
+);
 
 const found = (did: string, handle: string | null) => ({
   did: asDid(did),
