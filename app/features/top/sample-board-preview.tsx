@@ -4,9 +4,11 @@ import { Link } from "react-router";
 import { BoardViewer } from "~/features/board/board-viewer";
 import { FeedFetcherContext } from "~/features/board/card/bluesky-feed";
 import { useSampleBoard } from "~/features/sample/use-sample-board";
+import { useUmami } from "~/hooks/useUmami";
 
 export function SampleBoardPreview() {
   const { t } = useTranslation();
+  const umami = useUmami();
   const { owner, cards, fetchFeed } = useSampleBoard(
     t("_index.sample-owner-name"),
   );
@@ -19,7 +21,7 @@ export function SampleBoardPreview() {
         to="/sample"
         className="absolute inset-0"
         aria-label={t("_index.sample-link")}
-        data-umami-event="click-sample-preview"
+        onClick={() => umami.track("click-sample-preview")}
       />
     </div>
   );

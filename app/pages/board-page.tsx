@@ -10,6 +10,7 @@ import {
   ModerationBanner,
   ModerationDialog,
 } from "~/features/board/moderation";
+import { useUmami } from "~/hooks/useUmami";
 import type { BoardCard } from "~/schemas/board";
 import type { ModerationLevelDto } from "~/server/infrastructure/moderation/moderationDto";
 import type { OwnerView } from "~/server/service/owner/ownerView";
@@ -32,6 +33,7 @@ export function BoardPage({
   admin,
 }: Props) {
   const { t } = useTranslation();
+  const umami = useUmami();
   const moderationRef = useRef<HTMLDialogElement>(null);
   const openModeration = () => moderationRef.current?.showModal();
   return (
@@ -67,7 +69,7 @@ export function BoardPage({
           <Link
             to="/"
             className="btn mt-auto"
-            data-umami-event="click-create-link"
+            onClick={() => umami.track("click-create-link")}
           >
             {t("board-footer.create-link")}
           </Link>

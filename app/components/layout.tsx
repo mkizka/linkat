@@ -4,6 +4,7 @@ import GitHubButton from "react-github-btn";
 import { useTranslation } from "react-i18next";
 import { Form, Link } from "react-router";
 
+import { useUmami } from "~/hooks/useUmami";
 import { cn } from "~/utils/cn";
 
 import { BlueskyIcon } from "./icons/bluesky";
@@ -83,6 +84,7 @@ export function Main({ className, children }: MainProps) {
 
 export function Footer() {
   const { t } = useTranslation();
+  const umami = useUmami();
   return (
     <footer className="mx-auto w-full max-w-screen-sm bg-base-200 px-4">
       <nav className="flex flex-col items-center gap-2 border-t border-base-300 pb-8 pt-4 text-sm text-base-content/70">
@@ -124,7 +126,7 @@ export function Footer() {
           <Link
             to="/about"
             className="underline"
-            data-umami-event="click-footer-about-link"
+            onClick={() => umami.track("click-footer-about-link")}
           >
             {t("layout.about-link")}
           </Link>
