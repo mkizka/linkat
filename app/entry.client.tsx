@@ -12,6 +12,10 @@ Sentry.init({
   dsn: window.publicEnv.SENTRY_DSN,
   environment: window.publicEnv.SENTRY_ENVIRONMENT,
   enabled: !navigator.userAgent.includes("HeadlessChrome"),
+  ignoreErrors: [
+    /^AbortError: (signal is aborted without reason|Fetch is aborted)$/,
+    /^TypeError: Load failed$/,
+  ],
   integrations: [
     Sentry.reactRouterTracingIntegration(),
     Sentry.replayIntegration(),
