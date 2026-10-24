@@ -14,7 +14,6 @@
     "view-board-link": "View Board",
     "create-board-link": "Create Board",
     "export-link": "Export to Bluesky",
-    "preparing": "Coming soon",
     "settings-link": "Settings"
   },
   "recent-boards": {
@@ -190,9 +189,5 @@
     "change-button": "Change",
     "banner-unlisted": "Unlisted",
     "banner-hidden": "Hidden"
-  },
-  "experimental": {
-    "enabled-message": "Experimental features enabled",
-    "disabled-message": "Experimental features disabled"
   }
 }

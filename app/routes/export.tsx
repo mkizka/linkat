@@ -11,7 +11,6 @@ import {
   BskyLinkExportError,
   BskyLinkInvalidError,
 } from "~/server/infrastructure/bskyLink/bskyLinkPdsRepository";
-import { requireExperimental } from "~/server/middleware/requireExperimental";
 import {
   editorDidContext,
   requireLogin,
@@ -21,10 +20,7 @@ import { tryCatch } from "~/utils/tryCatch";
 
 import type { Route } from "./+types/export";
 
-export const middleware: Route.MiddlewareFunction[] = [
-  requireLogin,
-  requireExperimental,
-];
+export const middleware: Route.MiddlewareFunction[] = [requireLogin];
 
 export async function action({ request, context }: Route.ActionArgs) {
   const logger = di.logger.child("export");

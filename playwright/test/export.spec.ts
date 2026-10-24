@@ -72,12 +72,8 @@ test.describe("Blueskyへの書き出し", () => {
       );
     });
 
-    await test.step("ログインしてから試験機能を有効にする", async () => {
+    await test.step("ログインする", async () => {
       await login();
-      await page.goto("/export");
-      await expect(page).toHaveURL((url) => url.pathname === "/");
-      await page.goto("/experimental");
-      await expect(page.getByTestId("index__export-link")).toBeVisible();
     });
 
     await test.step("書き出し画面を開く", async () => {
