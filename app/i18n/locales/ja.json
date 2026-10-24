@@ -77,9 +77,12 @@
     "export-error-message": "Blueskyへの書き出しに失敗しました。プロフィールのリンクは変わっていません",
     "conflict-error-message": "書き出し中にBlueskyのプロフィールが変更されました。もう一度お試しください",
     "cleanup-warning-message": "リンクは書き出しましたが、古いリンクの一部を削除できませんでした",
-    "reauth-title": "書き出しには追加の許可が必要です",
-    "reauth-description": "このサービスにプロフィールへの書き込みを許可してください。以下のボタンから再ログインするだけです",
-    "reauth-button": "再ログインする"
+    "reauth-title": "Linkatに設定したリンクを\nBlueskyに書き出せます",
+    "reauth-sample-blog": "ブログ",
+    "reauth-preview-note": "最大10個までプロフィールの下に並べられます",
+    "reauth-permission-title": "書き出しには権限が必要です",
+    "reauth-permission-description": "Blueskyのプロフィールへの書き込みを許可してください",
+    "reauth-button": "再ログインして許可する"
   },
   "sync": {
     "loading-message": "PDSからデータを読み込んでいます",
