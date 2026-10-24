@@ -64,11 +64,7 @@ export function BoardPage({
           />
         )}
         {!isLogin && !isMine && (
-          <Link
-            to="/"
-            className="btn mt-auto"
-            data-umami-event="click-create-link"
-          >
+          <Link to="/" className="btn mt-auto">
             {t("board-footer.create-link")}
           </Link>
         )}
