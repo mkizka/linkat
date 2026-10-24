@@ -33,6 +33,7 @@ export interface IIngesterHandler {
   handleProfileDelete: (event: { did: Did; rkey: string }) => Promise<void>;
   handleIdentity: (event: { did: Did }) => Promise<void>;
   handleAccount: (event: { did: Did; state: AccountStateDto }) => Promise<void>;
+  handleSync: (event: { did: Did }) => Promise<void>;
 }
 
 export interface IIngesterClient {
@@ -107,6 +108,9 @@ export const ingesterClientFactory = ({
           }),
         e.time,
       ),
+    )
+    .sync((e) =>
+      handle("sync", () => ingesterService.handleSync({ did: e.did }), e.time),
     )
     .onValidationError((e) =>
       log.warn("レコードの検証に失敗しました", { uri: e.uri, error: e.error }),
