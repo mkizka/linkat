@@ -12,6 +12,16 @@ import { env } from "~/utils/env";
 
 const LAG_REPORT_INTERVAL_MS = 10_000;
 
+const OLDEST_TIMESTAMP_CURSOR = 1e15;
+
+const errorMessages = (error: unknown): string[] =>
+  error instanceof Error ? [error.message, ...errorMessages(error.cause)] : [];
+
+const isCursorTooOld = (error: unknown) =>
+  errorMessages(error).some((message) =>
+    message.includes("Unexpected server response: 400"),
+  );
+
 export interface IIngesterHandler {
   handleBoardCommit: (event: { did: Did; record: unknown }) => Promise<void>;
   handleBoardDelete: (event: { did: Did }) => Promise<void>;
@@ -114,19 +124,35 @@ export const ingesterClientFactory = ({
       }, LAG_REPORT_INTERVAL_MS).unref();
 
       const runner = new Jetstream(env.JETSTREAM_SERVICE_URL).runner(indexer);
+      const live = () =>
+        runner.live({
+          cursor: cursorRepository,
+          onError: (error) =>
+            log.warn("Jetstreamから読み取れないフレームを受け取りました", {
+              error,
+            }),
+          onInfo: (info) => log.warn("Jetstreamから通知を受け取りました", info),
+          liveTransport: websocketTransport({
+            onReconnect: (error, { attempt }) =>
+              log.warn("Jetstreamに再接続します", { error, attempt }),
+          }),
+        });
       log.info(
         `Jetstream subscription started to ${env.JETSTREAM_SERVICE_URL}`,
       );
-      await runner.live({
-        cursor: cursorRepository,
-        onError: (error) =>
-          log.warn("Jetstreamのイベントを読み飛ばしました", { error }),
-        onInfo: (info) => log.warn("Jetstreamから通知を受け取りました", info),
-        liveTransport: websocketTransport({
-          onReconnect: (error, { attempt }) =>
-            log.warn("Jetstreamに再接続します", { error, attempt }),
-        }),
-      });
+      try {
+        await live();
+      } catch (error) {
+        if (!isCursorTooOld(error)) {
+          throw error;
+        }
+        log.error(
+          "cursorが保持期間より古いため、残っている最古のイベントから購読し直します",
+          { error },
+        );
+        await cursorRepository.save(OLDEST_TIMESTAMP_CURSOR);
+        await live();
+      }
       throw new Error("Jetstream subscription ended");
     },
   };
