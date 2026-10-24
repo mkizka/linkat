@@ -1,14 +1,9 @@
-import { lexParse } from "@atproto/lex";
-
 import { boardSchema } from "~/schemas/board";
 import type { IIngesterHandler } from "~/server/infrastructure/ingester/ingesterClient";
 import type { ILogger } from "~/server/infrastructure/logger/logger";
 import type { IProfileRecordParser } from "~/server/infrastructure/owner/profileRecordParser";
 import type { IBoardEventService } from "~/server/service/board/boardEvent";
 import type { IOwnerService } from "~/server/service/owner/owner";
-import { tryCatch } from "~/utils/tryCatch";
-
-const jsonToLex = tryCatch((json: unknown) => lexParse(JSON.stringify(json)));
 
 const PROFILE_RKEY = "self";
 
@@ -24,11 +19,6 @@ export const ingesterServiceFactory = ({
   logger: ILogger;
 }): IIngesterHandler => {
   const log = logger.child("ingester");
-
-  const parseProfile = async (json: unknown) => {
-    const record = await jsonToLex(json);
-    return record instanceof Error ? null : profileRecordParser.parse(record);
-  };
 
   const updateProfile = async (
     ...args: Parameters<IOwnerService["updateProfile"]>
@@ -61,7 +51,7 @@ export const ingesterServiceFactory = ({
       if (rkey !== PROFILE_RKEY) {
         return;
       }
-      const profile = await parseProfile(record);
+      const profile = profileRecordParser.parse(record);
       if (!profile) {
         log.warn("プロフィールのパースに失敗しました", { did, record });
         return;
