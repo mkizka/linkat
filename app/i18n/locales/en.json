@@ -79,7 +79,7 @@
     "cleanup-warning-message": "Links were exported, but some old links could not be removed",
     "reauth-title": "Export the links you set in Linkat\nto Bluesky",
     "reauth-sample-blog": "Blog",
-    "reauth-icon-note": "Icons are chosen from each URL (card emojis are not used)",
+    "reauth-preview-note": "Up to 10 links can be shown under your profile",
     "reauth-permission-title": "Permission is required to export",
     "reauth-permission-description": "Allow writing to your Bluesky profile",
     "reauth-button": "Log in again to allow"

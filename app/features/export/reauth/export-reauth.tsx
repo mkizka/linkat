@@ -59,7 +59,7 @@ export function ExportReauth() {
         <div className="flex flex-col gap-1.5">
           <ProfilePreview />
           <p className="text-xs text-base-content/60">
-            {t("export.reauth-icon-note")}
+            {t("export.reauth-preview-note")}
           </p>
         </div>
         <div className="flex items-start gap-3 rounded-lg bg-base-200 p-3">

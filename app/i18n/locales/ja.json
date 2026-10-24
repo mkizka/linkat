@@ -79,7 +79,7 @@
     "cleanup-warning-message": "リンクは書き出しましたが、古いリンクの一部を削除できませんでした",
     "reauth-title": "Linkatに設定したリンクを\nBlueskyに書き出せます",
     "reauth-sample-blog": "ブログ",
-    "reauth-icon-note": "アイコンはURLから決まります（絵文字は使いません）",
+    "reauth-preview-note": "最大10個までプロフィールの下に並べられます",
     "reauth-permission-title": "書き出しには権限が必要です",
     "reauth-permission-description": "Blueskyのプロフィールへの書き込みを許可してください",
     "reauth-button": "再ログインして許可する"
