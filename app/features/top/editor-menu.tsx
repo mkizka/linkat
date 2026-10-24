@@ -35,6 +35,7 @@ export function EditorMenu({ handle, hasBoard }: Props) {
             icon: BlueskyIcon,
             label: t("_index.export-link"),
             testId: "index__export-link",
+            umamiEvent: "click-export-link",
           },
         ]
       : [
@@ -49,12 +50,13 @@ export function EditorMenu({ handle, hasBoard }: Props) {
   ];
   return (
     <nav className="grid grid-cols-2 gap-2">
-      {tiles.map(({ to, icon: Icon, label, testId }) => (
+      {tiles.map(({ to, icon: Icon, label, testId, umamiEvent }) => (
         <Link
           key={to}
           to={to}
           className="card items-center gap-1 bg-base-100 py-3 text-sm font-bold shadow-sm"
           data-testid={testId}
+          data-umami-event={umamiEvent}
         >
           <Icon className="size-6" />
           {label}

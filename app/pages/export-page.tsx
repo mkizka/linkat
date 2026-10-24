@@ -13,6 +13,7 @@ import { isBskyLinkCard } from "~/features/export/select/bsky-link";
 import { ExportBar } from "~/features/export/select/export-bar";
 import { ExportNotice } from "~/features/export/select/export-notice";
 import { SelectCardList } from "~/features/export/select/select-card-list";
+import { useUmami } from "~/hooks/useUmami";
 import type { BoardCard } from "~/schemas/board";
 
 const MAX_LINKS = 10;
@@ -27,6 +28,7 @@ type Props = {
 export function ExportPage({ handle, cards, needsReauth, exported }: Props) {
   const { t } = useTranslation();
   const navigation = useNavigation();
+  const umami = useUmami();
   const [selected, setSelected] = useState(() =>
     cards
       .flatMap((card, index) => (isBskyLinkCard(card) ? [index] : []))
@@ -74,6 +76,8 @@ export function ExportPage({ handle, cards, needsReauth, exported }: Props) {
             loading={isExporting}
             onClick={() => setConfirming(true)}
             data-testid="export__submit"
+            data-umami-event="click-export-button"
+            data-umami-event-cards={selected.length}
           >
             {t("export.submit-button")}
           </Button>
@@ -90,6 +94,7 @@ export function ExportPage({ handle, cards, needsReauth, exported }: Props) {
               className="link inline-flex items-center gap-0.5 text-base-content/70"
               onClick={() => noticeRef.current?.showModal()}
               data-testid="export__notice-link"
+              data-umami-event="click-export-notice-link"
             >
               <InformationCircleIcon className="size-4" />
               {t("export.notice-link")}
@@ -120,9 +125,19 @@ export function ExportPage({ handle, cards, needsReauth, exported }: Props) {
         cancelLabel={t("export.confirm-cancel")}
         confirmLabel={t("export.confirm-confirm")}
         confirmClassName="btn-primary"
-        onCancel={() => setConfirming(false)}
+        onCancel={() => {
+          setConfirming(false);
+          umami.track("handle-export", {
+            action: "cancel",
+            cards: selected.length,
+          });
+        }}
         onConfirm={() => {
           setConfirming(false);
+          umami.track("handle-export", {
+            action: "confirm",
+            cards: selected.length,
+          });
           formRef.current?.requestSubmit();
         }}
       />
