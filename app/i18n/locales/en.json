@@ -61,7 +61,7 @@
     "title": "Export to Bluesky",
     "cancel-button": "Cancel",
     "submit-button": "Export",
-    "select-description": "Choose the cards to show on your profile",
+    "select-description": "Choose the cards to export to your profile",
     "no-url-badge": "No URL",
     "invalid-badge": "Not exportable",
     "confirm-title": "Caution!",
