@@ -1,3 +1,4 @@
+import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/solid";
 import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -10,6 +11,7 @@ import { ExportDone } from "~/features/export/done/export-done";
 import { ExportReauth } from "~/features/export/reauth/export-reauth";
 import { isBskyLinkCard } from "~/features/export/select/bsky-link";
 import { ExportBar } from "~/features/export/select/export-bar";
+import { ExportNotice } from "~/features/export/select/export-notice";
 import { SelectCardList } from "~/features/export/select/select-card-list";
 import type { BoardCard } from "~/schemas/board";
 
@@ -32,6 +34,7 @@ export function ExportPage({ handle, cards, needsReauth, exported }: Props) {
   );
   const [confirming, setConfirming] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
+  const noticeRef = useRef<HTMLDialogElement>(null);
   const isExporting = navigation.formData !== undefined;
 
   if (needsReauth) {
@@ -76,24 +79,33 @@ export function ExportPage({ handle, cards, needsReauth, exported }: Props) {
           </Button>
         }
       />
-      <Main className="flex flex-col gap-2 py-4">
-        <div className="flex items-baseline gap-2 text-sm">
-          <p className="flex-1 text-base-content/70">
+      <Main className="flex flex-col gap-4 py-4">
+        <div className="flex flex-col gap-1 text-sm">
+          <p className="text-base-content/70">
             {t("export.select-description")}
           </p>
-          <b className="text-primary" data-testid="export__count">
-            {selected.length} / {MAX_LINKS}
-          </b>
+          <div className="flex items-center justify-between gap-2">
+            <button
+              type="button"
+              className="link inline-flex items-center gap-0.5 text-base-content/70"
+              onClick={() => noticeRef.current?.showModal()}
+              data-testid="export__notice-link"
+            >
+              <InformationCircleIcon className="size-4" />
+              {t("export.notice-link")}
+            </button>
+            <b className="text-primary" data-testid="export__count">
+              {selected.length} / {MAX_LINKS}
+            </b>
+          </div>
         </div>
         <SelectCardList
           cards={cards}
           selected={selected}
           onChange={setSelected}
         />
-        <p className="text-xs text-base-content/70">
-          {t("export.unselectable-note")}
-        </p>
       </Main>
+      <ExportNotice ref={noticeRef} />
       <ConfirmDialog
         open={confirming}
         title={

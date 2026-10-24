@@ -61,10 +61,9 @@
     "title": "Blueskyに書き出す",
     "cancel-button": "キャンセル",
     "submit-button": "書き出す",
-    "select-description": "プロフィールに出すカードを選んでください",
+    "select-description": "プロフィールに書き出すカードを選んでください",
     "no-url-badge": "URLなし",
     "invalid-badge": "書き出し不可",
-    "unselectable-note": "テキストだけのカードは、Blueskyのリンクにできないので選べません。",
     "confirm-title": "注意！",
     "confirm-description": "Blueskyのプロフィールにリンクがあれば全て削除され、選んだ{{count}}個のカードに置き換わります。",
     "confirm-cancel": "やめる",
@@ -82,7 +81,14 @@
     "reauth-preview-note": "最大10個までプロフィールの下に並べられます",
     "reauth-permission-title": "書き出しには権限が必要です",
     "reauth-permission-description": "Blueskyのプロフィールへの書き込みを許可してください",
-    "reauth-button": "再ログインして許可する"
+    "reauth-button": "再ログインして許可する",
+    "notice-link": "注意事項",
+    "notice-max": "書き出せるカードは最大10枚です",
+    "notice-replace": "Blueskyのプロフィールにあるリンクは全て削除され、選んだカードに置き換わります。元には戻せません",
+    "notice-no-sync": "Linkatでボードを変更しても、Blueskyには自動で反映されません。反映させたいときはもう一度書き出してください",
+    "notice-format": "カードのテキストがリンクのタイトルになります。アイコンはURLから決まり、カードの絵文字は使いません",
+    "notice-no-url": "URLの無いカードは書き出せません",
+    "notice-close": "閉じる"
   },
   "sync": {
     "loading-message": "PDSからデータを読み込んでいます",

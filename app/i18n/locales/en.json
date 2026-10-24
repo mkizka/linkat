@@ -61,10 +61,9 @@
     "title": "Export to Bluesky",
     "cancel-button": "Cancel",
     "submit-button": "Export",
-    "select-description": "Choose the cards to show on your profile",
+    "select-description": "Choose the cards to export to your profile",
     "no-url-badge": "No URL",
     "invalid-badge": "Not exportable",
-    "unselectable-note": "Text-only cards can't become Bluesky links, so they can't be selected.",
     "confirm-title": "Caution!",
     "confirm-description": "Any links currently on your Bluesky profile will be deleted and replaced with the cards you selected.",
     "confirm-cancel": "Cancel",
@@ -82,7 +81,14 @@
     "reauth-preview-note": "Up to 10 links can be shown under your profile",
     "reauth-permission-title": "Permission is required to export",
     "reauth-permission-description": "Allow writing to your Bluesky profile",
-    "reauth-button": "Log in again to allow"
+    "reauth-button": "Log in again to allow",
+    "notice-link": "Notes",
+    "notice-max": "You can export up to 10 cards",
+    "notice-replace": "All links on your Bluesky profile will be removed and replaced with the selected cards. This cannot be undone",
+    "notice-no-sync": "Changes to your board in Linkat are not synced to Bluesky automatically. Export again to update them",
+    "notice-format": "Each card's text becomes the link title. Icons are chosen from the URL, and card emojis are not used",
+    "notice-no-url": "Cards without a URL cannot be exported",
+    "notice-close": "Close"
   },
   "sync": {
     "loading-message": "Loading your data from your PDS",
