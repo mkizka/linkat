@@ -77,6 +77,7 @@ export function ExportReauth() {
       <Button
         className="btn-primary"
         loading={isSubmitting}
+        data-umami-event="click-export-reauth-button"
         data-testid="export-reauth__submit"
       >
         {t("export.reauth-button")}

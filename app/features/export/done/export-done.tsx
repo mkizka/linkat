@@ -28,6 +28,7 @@ export function ExportDone({ handle }: Props) {
           target="_blank"
           rel="noreferrer"
           className="btn btn-primary"
+          data-umami-event="click-export-done-bsky-link"
         >
           {t("export.view-on-bluesky-link")}
         </a>
