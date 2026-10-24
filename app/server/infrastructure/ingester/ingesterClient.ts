@@ -127,11 +127,11 @@ export const ingesterClientFactory = ({
       const live = () =>
         runner.live({
           cursor: cursorRepository,
+          onInfo: (info) => log.warn("Jetstreamから通知を受け取りました", info),
           onError: (error) =>
-            log.warn("Jetstreamから読み取れないフレームを受け取りました", {
+            log.error("Jetstreamから読み取れないフレームを受け取りました", {
               error,
             }),
-          onInfo: (info) => log.warn("Jetstreamから通知を受け取りました", info),
           liveTransport: websocketTransport({
             onReconnect: (error, { attempt }) =>
               log.warn("Jetstreamに再接続します", { error, attempt }),
