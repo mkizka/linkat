@@ -80,7 +80,7 @@
     "reauth-sample-blog": "ブログ",
     "reauth-preview-note": "最大10個までプロフィールの下に並べられます",
     "reauth-permission-title": "書き出しには権限が必要です",
-    "reauth-permission-description": "Blueskyのプロフィールへの書き込みを許可してください",
+    "reauth-permission-description": "再ログインして、Blueskyのプロフィールへの書き込みを許可してください",
     "reauth-button": "再ログインして許可する",
     "notice-link": "注意事項",
     "notice-max": "書き出せるカードは最大10枚です",
@@ -88,6 +88,7 @@
     "notice-no-sync": "Linkatでボードを変更しても、Blueskyには自動で反映されません。反映させたいときはもう一度書き出してください",
     "notice-format": "カードのテキストがリンクのタイトルになります。アイコンはURLから決まり、カードの絵文字は使いません",
     "notice-no-url": "URLの無いカードは書き出せません",
+    "notice-bsky-rules": "書き出したカードはBluesky側のルールによって表示されない場合があります",
     "notice-close": "閉じる"
   },
   "sync": {
