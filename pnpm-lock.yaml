@@ -268,6 +268,9 @@ importers:
       icojs:
         specifier: 1.0.1
         version: 1.0.1(supports-color@8.1.1)
+      import-in-the-middle:
+        specifier: 3.5.1
+        version: 3.5.1
       isbot:
         specifier: 5.2.2
         version: 5.2.2
