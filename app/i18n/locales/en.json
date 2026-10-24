@@ -83,7 +83,6 @@
     "reauth-permission-description": "Allow writing to your Bluesky profile",
     "reauth-button": "Log in again to allow",
     "notice-link": "Notes",
-    "notice-title": "Before you export",
     "notice-max": "You can export up to 10 cards",
     "notice-replace": "All links on your Bluesky profile will be removed and replaced with the selected cards. This cannot be undone",
     "notice-no-sync": "Changes to your board in Linkat are not synced to Bluesky automatically. Export again to update them",

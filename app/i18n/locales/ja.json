@@ -83,7 +83,6 @@
     "reauth-permission-description": "Blueskyのプロフィールへの書き込みを許可してください",
     "reauth-button": "再ログインして許可する",
     "notice-link": "注意事項",
-    "notice-title": "書き出しの注意事項",
     "notice-max": "書き出せるカードは最大10枚です",
     "notice-replace": "Blueskyのプロフィールにあるリンクは全て削除され、選んだカードに置き換わります。元には戻せません",
     "notice-no-sync": "Linkatでボードを変更しても、Blueskyには自動で反映されません。反映させたいときはもう一度書き出してください",

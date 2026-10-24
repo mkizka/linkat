@@ -18,7 +18,7 @@ export function ExportNotice({ ref }: Props) {
   return (
     <dialog className="modal" ref={ref} data-testid="export-notice">
       <div className="modal-box">
-        <h3 className="text-lg font-bold">{t("export.notice-title")}</h3>
+        <h3 className="text-lg font-bold">{t("export.notice-link")}</h3>
         <ul className="list-disc space-y-2 pt-3 pl-5 text-sm">
           {items.map((item) => (
             <li key={item}>{t(item)}</li>

@@ -87,7 +87,7 @@ export function ExportPage({ handle, cards, needsReauth, exported }: Props) {
           <div className="flex items-center justify-between gap-2">
             <button
               type="button"
-              className="link inline-flex items-center gap-0.5 link-primary"
+              className="link inline-flex items-center gap-0.5 text-base-content/70"
               onClick={() => noticeRef.current?.showModal()}
               data-testid="export__notice-link"
             >
