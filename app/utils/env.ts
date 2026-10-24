@@ -41,7 +41,7 @@ const server = {
     .transform((val) => val.split(",").filter(Boolean).map(asDid)),
   ATPROTO_PLC_URL: z.url().default("https://plc.directory"),
   ATPROTO_HANDLE_RESOLVER_URL: z.url().optional(),
-  UMAMI_SCRIPT_URL: z.string().optional(),
+  UMAMI_URL: z.url().optional(),
   UMAMI_WEBSITE_ID: z.string().optional(),
   SENTRY_DSN: z.string().optional(),
   SENTRY_ENVIRONMENT: z.string().default("production"),

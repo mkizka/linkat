@@ -9,8 +9,8 @@ import { HydratedRouter } from "react-router/dom";
 import { i18nConfig } from "./i18n/config";
 
 Sentry.init({
-  dsn: window.ENV.SENTRY_DSN,
-  environment: window.ENV.SENTRY_ENVIRONMENT,
+  dsn: window.publicEnv.SENTRY_DSN,
+  environment: window.publicEnv.SENTRY_ENVIRONMENT,
   enabled: !navigator.userAgent.includes("HeadlessChrome"),
   integrations: [
     Sentry.reactRouterTracingIntegration(),

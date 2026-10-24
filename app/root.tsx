@@ -56,11 +56,9 @@ export async function loader({ context }: LoaderFunctionArgs) {
     {
       locale,
       toast: getToast(context),
-      umami: {
-        scriptUrl: env.UMAMI_SCRIPT_URL,
-        websiteId: env.UMAMI_WEBSITE_ID,
-      },
-      ENV: {
+      publicEnv: {
+        UMAMI_URL: env.UMAMI_URL,
+        UMAMI_WEBSITE_ID: env.UMAMI_WEBSITE_ID,
         SENTRY_DSN: env.SENTRY_DSN,
         SENTRY_ENVIRONMENT: env.SENTRY_ENVIRONMENT,
       },
@@ -74,13 +72,21 @@ export function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang={loaderData?.locale ?? "en"}>
       <head>
-        {loaderData?.umami.scriptUrl && loaderData.umami.websiteId && (
-          <script
-            defer
-            src={loaderData.umami.scriptUrl}
-            data-website-id={loaderData.umami.websiteId}
-          />
-        )}
+        {loaderData?.publicEnv.UMAMI_URL &&
+          loaderData.publicEnv.UMAMI_WEBSITE_ID && (
+            <>
+              <script
+                defer
+                src={`${loaderData.publicEnv.UMAMI_URL}/script.js`}
+                data-website-id={loaderData.publicEnv.UMAMI_WEBSITE_ID}
+              />
+              <script
+                defer
+                src={`${loaderData.publicEnv.UMAMI_URL}/recorder.js`}
+                data-website-id={loaderData.publicEnv.UMAMI_WEBSITE_ID}
+              />
+            </>
+          )}
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link
@@ -104,7 +110,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <ScrollRestoration />
         <script
           dangerouslySetInnerHTML={{
-            __html: `window.ENV = ${JSON.stringify(loaderData?.ENV)}`,
+            __html: `window.publicEnv = ${JSON.stringify(loaderData?.publicEnv)}`,
           }}
         />
         <Scripts />

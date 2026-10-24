@@ -61,7 +61,7 @@ export default defineRailway((ctx) => {
       SENTRY_DSN: preserve(),
       SENTRY_ORG: preserve(),
       SENTRY_PROJECT: preserve(),
-      UMAMI_SCRIPT_URL: preserve(),
+      UMAMI_URL: preserve(),
       UMAMI_WEBSITE_ID: preserve(),
     },
   });
