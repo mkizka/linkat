@@ -79,7 +79,7 @@ export function ExportPage({ handle, cards, needsReauth, exported }: Props) {
           </Button>
         }
       />
-      <Main className="flex flex-col gap-2 py-4">
+      <Main className="flex flex-col gap-4 py-4">
         <div className="flex flex-col gap-1 text-sm">
           <p className="text-base-content/70">
             {t("export.select-description")}
