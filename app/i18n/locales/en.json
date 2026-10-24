@@ -80,9 +80,8 @@
     "reauth-title": "Export the links you set in Linkat\nto Bluesky",
     "reauth-sample-blog": "Blog",
     "reauth-icon-note": "Icons are chosen from each URL (card emojis are not used)",
-    "reauth-step-allow": "Allow writing to your profile",
-    "reauth-step-select": "Pick cards from your board",
-    "reauth-step-show": "They appear as links on your profile",
+    "reauth-permission-title": "Permission is required to export",
+    "reauth-permission-description": "Allow writing to your Bluesky profile",
     "reauth-button": "Log in again to allow"
   },
   "sync": {

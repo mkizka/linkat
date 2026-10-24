@@ -80,9 +80,8 @@
     "reauth-title": "Linkatに設定したリンクを\nBlueskyに書き出せます",
     "reauth-sample-blog": "ブログ",
     "reauth-icon-note": "アイコンはURLから決まります（絵文字は使いません）",
-    "reauth-step-allow": "プロフィールへの書き込みを許可する",
-    "reauth-step-select": "ボードからカードを選ぶ",
-    "reauth-step-show": "プロフィールにリンクが並ぶ",
+    "reauth-permission-title": "書き出しには権限が必要です",
+    "reauth-permission-description": "Blueskyのプロフィールへの書き込みを許可してください",
     "reauth-button": "再ログインして許可する"
   },
   "sync": {

@@ -1,4 +1,8 @@
-import { ArrowUpRightIcon, GlobeAltIcon } from "@heroicons/react/24/outline";
+import {
+  ArrowUpRightIcon,
+  GlobeAltIcon,
+  LockClosedIcon,
+} from "@heroicons/react/24/outline";
 import { useTranslation } from "react-i18next";
 import { Form, useNavigation } from "react-router";
 
@@ -38,11 +42,6 @@ export function ExportReauth() {
   const { t } = useTranslation();
   const navigation = useNavigation();
   const isSubmitting = navigation.formData !== undefined;
-  const steps = [
-    t("export.reauth-step-allow"),
-    t("export.reauth-step-select"),
-    t("export.reauth-step-show"),
-  ];
   return (
     <Form
       method="post"
@@ -63,16 +62,17 @@ export function ExportReauth() {
             {t("export.reauth-icon-note")}
           </p>
         </div>
-        <ol className="flex flex-col gap-2 text-sm">
-          {steps.map((step, index) => (
-            <li key={step} className="flex items-center gap-2">
-              <span className="grid size-6 shrink-0 place-items-center rounded-full bg-primary text-xs font-bold text-primary-content">
-                {index + 1}
-              </span>
-              {step}
-            </li>
-          ))}
-        </ol>
+        <div className="flex items-start gap-3 rounded-lg bg-base-200 p-3">
+          <LockClosedIcon className="size-5 shrink-0 text-primary" />
+          <div className="flex flex-col gap-0.5">
+            <p className="text-sm font-bold">
+              {t("export.reauth-permission-title")}
+            </p>
+            <p className="text-xs text-base-content/70">
+              {t("export.reauth-permission-description")}
+            </p>
+          </div>
+        </div>
       </div>
       <Button
         className="btn-primary"
