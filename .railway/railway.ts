@@ -29,7 +29,6 @@ export default defineRailway((ctx) => {
   );
   postgres.networking = {
     privateNetworkEndpoint: "postgres-lbyr",
-    tcpProxies: { "5432": {} },
   };
   postgres.deploy = {
     restartPolicyType: "ALWAYS",
@@ -41,7 +40,7 @@ export default defineRailway((ctx) => {
       checkSuites: prod,
     }),
     build: {
-      builder: "DOCKERFILE",
+      builder: "NIXPACKS",
     },
     healthcheck: "/health",
     healthcheckTimeout: 60,
@@ -49,8 +48,9 @@ export default defineRailway((ctx) => {
     replicas: { "asia-southeast1-eqsg3a": 1 },
     domains: prod ? env.RAILWAY_CONFIG_DOMAINS : [],
     deploy: {
-      sleepApplication: !prod,
+      sleepApplication: prod ? undefined : true,
     },
+    tracing: { enabled: prod },
     env: {
       ADMIN_DIDS: preserve(),
       COOKIE_SECRET: preserve(),
@@ -64,7 +64,7 @@ export default defineRailway((ctx) => {
       SENTRY_DSN: preserve(),
       SENTRY_ORG: preserve(),
       SENTRY_PROJECT: preserve(),
-      UMAMI_SCRIPT_URL: preserve(),
+      UMAMI_URL: preserve(),
       UMAMI_WEBSITE_ID: preserve(),
     },
   });
