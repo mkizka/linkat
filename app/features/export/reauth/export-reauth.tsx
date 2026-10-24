@@ -1,12 +1,12 @@
-import { GlobeAltIcon } from "@heroicons/react/24/outline";
+import { ArrowUpRightIcon, GlobeAltIcon } from "@heroicons/react/24/outline";
 import { useTranslation } from "react-i18next";
 import { Form, useNavigation } from "react-router";
 
 import { Button } from "~/components/button";
 
-const SAMPLE_LINKS = ["GitHub", "YouTube", "Instagram"];
-
 function ProfilePreview() {
+  const { t } = useTranslation();
+  const sampleLinks = [t("export.reauth-sample-blog"), "YouTube", "Instagram"];
   return (
     <div
       className="overflow-hidden rounded-lg border border-base-content/10"
@@ -18,13 +18,14 @@ function ProfilePreview() {
         <div className="mt-1.5 h-2 w-16 rounded bg-base-content/30" />
         <div className="mt-1.5 h-1.5 w-3/4 rounded bg-base-content/15" />
         <div className="mt-2 flex flex-wrap gap-1.5">
-          {SAMPLE_LINKS.map((label) => (
+          {sampleLinks.map((label) => (
             <span
               key={label}
-              className="flex items-center gap-1 rounded-full bg-base-200 px-2 py-0.5 text-[10px] font-bold ring-2 ring-primary"
+              className="flex items-center gap-1 rounded-full bg-base-200 px-2 py-1 text-[10px] font-bold"
             >
               <GlobeAltIcon className="size-3" />
               {label}
+              <ArrowUpRightIcon className="size-2.5" strokeWidth={2.5} />
             </span>
           ))}
         </div>
@@ -51,12 +52,17 @@ export function ExportReauth() {
       <input type="hidden" name="from" value="/export" />
       <div className="card gap-4 bg-base-100 px-5 py-6">
         <h2
-          className="text-center text-lg font-bold"
+          className="text-center text-lg font-bold whitespace-pre-line"
           data-testid="export-reauth__title"
         >
           {t("export.reauth-title")}
         </h2>
-        <ProfilePreview />
+        <div className="flex flex-col gap-1.5">
+          <ProfilePreview />
+          <p className="text-xs text-base-content/60">
+            {t("export.reauth-icon-note")}
+          </p>
+        </div>
         <ol className="flex flex-col gap-2 text-sm">
           {steps.map((step, index) => (
             <li key={step} className="flex items-center gap-2">
