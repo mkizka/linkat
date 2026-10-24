@@ -80,11 +80,11 @@ export function ExportPage({ handle, cards, needsReauth, exported }: Props) {
         }
       />
       <Main className="flex flex-col gap-2 py-4">
-        <div className="flex items-baseline gap-2 text-sm">
-          <div className="flex flex-1 flex-col items-start gap-1">
-            <p className="text-base-content/70">
-              {t("export.select-description")}
-            </p>
+        <div className="flex flex-col gap-1 text-sm">
+          <p className="text-base-content/70">
+            {t("export.select-description")}
+          </p>
+          <div className="flex items-center justify-between gap-2">
             <button
               type="button"
               className="link inline-flex items-center gap-0.5 link-primary"
@@ -94,10 +94,10 @@ export function ExportPage({ handle, cards, needsReauth, exported }: Props) {
               <InformationCircleIcon className="size-4" />
               {t("export.notice-link")}
             </button>
+            <b className="text-primary" data-testid="export__count">
+              {selected.length} / {MAX_LINKS}
+            </b>
           </div>
-          <b className="text-primary" data-testid="export__count">
-            {selected.length} / {MAX_LINKS}
-          </b>
         </div>
         <SelectCardList
           cards={cards}
