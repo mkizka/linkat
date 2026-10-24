@@ -28,7 +28,6 @@ const oauthClient = mock<IOAuthClient>();
 const boardEventService = boardEventServiceFactory({
   boardRepository,
   boardPdsRepository: boardPdsRepositoryFactory({ oauthClient }),
-  ownerRepository,
   ownerService,
 });
 
@@ -173,16 +172,19 @@ describe("boardEventService", () => {
     test("持ち主の写しが無ければ何もしない", async () => {
       // arrange
       const did = asDid("did:plc:syncunknown");
+      ownerService.resyncOwner.mockResolvedValue(null);
       // act
       const actual = await boardEventService.handleBoardSync(did);
       // assert
       expect(actual).toBe(false);
-      expect(ownerService.syncOwner).not.toHaveBeenCalled();
+      expect(await boardRepository.find(did)).toBeNull();
     });
-    test("持ち主の写しがあり、PDSにボードがあれば持ち主とボードの写しを書く", async () => {
+    test("持ち主の写しがあり、PDSにボードがあればボードの写しを書く", async () => {
       // arrange
-      const owner = await OwnerFactory.create();
-      const did = asDid(owner.did);
+      const did = asDid((await OwnerFactory.create()).did);
+      ownerService.resyncOwner.mockResolvedValue(
+        await ownerRepository.findByDid(did),
+      );
       server.use(
         http.get(getRecordUrl, () =>
           HttpResponse.json({
@@ -195,16 +197,19 @@ describe("boardEventService", () => {
       const actual = await boardEventService.handleBoardSync(did);
       // assert
       expect(actual).toBe(true);
-      expect(ownerService.syncOwner).toHaveBeenCalledWith(did);
+      expect(ownerService.resyncOwner).toHaveBeenCalledWith(did);
       expect(await boardRepository.find(did)).toEqual({
         ownerDid: did,
         cards: dummyCards,
       });
     });
-    test("ボードの写しがあり、PDSにボードが無ければボードと持ち主の写しを削除する", async () => {
+    test("持ち主の写しがあり、PDSにボードが無ければボードの写しだけ削除する", async () => {
       // arrange
       const board = await BoardFactory.create();
       const did = asDid(board.ownerDid);
+      ownerService.resyncOwner.mockResolvedValue(
+        await ownerRepository.findByDid(did),
+      );
       server.use(
         http.get(getRecordUrl, () =>
           HttpResponse.json(
@@ -218,12 +223,12 @@ describe("boardEventService", () => {
       // assert
       expect(actual).toBe(true);
       expect(await boardRepository.find(did)).toBeNull();
-      expect(await ownerRepository.findByDid(did)).toBeNull();
+      expect(await ownerRepository.findByDid(did)).not.toBeNull();
     });
   });
 
   describe("handleBoardDeleteCommit", () => {
-    test("ボードと持ち主の写しを削除する", async () => {
+    test("ボードの写しだけ削除し、持ち主の写しは残す", async () => {
       // arrange
       const board = await BoardFactory.create();
       const other = await BoardFactory.create();
@@ -231,11 +236,10 @@ describe("boardEventService", () => {
       await boardEventService.handleBoardDeleteCommit(asDid(board.ownerDid));
       // assert
       expect(await boardRepository.find(asDid(board.ownerDid))).toBeNull();
-      expect(await ownerRepository.findByDid(asDid(board.ownerDid))).toBeNull();
-      expect(await boardRepository.find(asDid(other.ownerDid))).not.toBeNull();
       expect(
-        await ownerRepository.findByDid(asDid(other.ownerDid)),
+        await ownerRepository.findByDid(asDid(board.ownerDid)),
       ).not.toBeNull();
+      expect(await boardRepository.find(asDid(other.ownerDid))).not.toBeNull();
     });
     test("持ち主の写しが無くても、ボードを削除する", async () => {
       // arrange
@@ -252,7 +256,7 @@ describe("boardEventService", () => {
     const deleteRecordUrl =
       "https://pds.example.com/xrpc/com.atproto.repo.deleteRecord";
 
-    test("PDSから削除してからDBから削除する", async () => {
+    test("PDSから削除してからDBのボードの写しだけ削除する", async () => {
       // arrange
       const board = await BoardFactory.create();
       let deleteRecordBody: unknown;
@@ -271,7 +275,9 @@ describe("boardEventService", () => {
         rkey: "self",
       });
       expect(await boardRepository.find(asDid(board.ownerDid))).toBeNull();
-      expect(await ownerRepository.findByDid(asDid(board.ownerDid))).toBeNull();
+      expect(
+        await ownerRepository.findByDid(asDid(board.ownerDid)),
+      ).not.toBeNull();
     });
     test("PDSからの削除に失敗したらDBから削除せずBoardPdsDeleteErrorを投げる", async () => {
       // arrange

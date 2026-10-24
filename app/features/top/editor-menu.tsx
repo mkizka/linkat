@@ -35,7 +35,6 @@ export function EditorMenu({ handle, hasBoard }: Props) {
             icon: BlueskyIcon,
             label: t("_index.export-link"),
             testId: "index__export-link",
-            disabled: true,
           },
         ]
       : [
@@ -48,35 +47,19 @@ export function EditorMenu({ handle, hasBoard }: Props) {
         ]),
     { to: "/settings", icon: Cog6ToothIcon, label: t("_index.settings-link") },
   ];
-  const tileClassName = "card items-center gap-1 py-3 text-sm font-bold";
   return (
     <nav className="grid grid-cols-2 gap-2">
-      {tiles.map(({ to, icon: Icon, label, testId, disabled }) =>
-        disabled ? (
-          <div
-            key={to}
-            aria-disabled="true"
-            className={`${tileClassName} border border-dashed border-base-content/30 text-base-content/40`}
-            data-testid={testId}
-          >
-            <Icon className="size-6" />
-            {label}
-            <span className="absolute top-1.5 right-1.5 badge badge-ghost badge-xs">
-              {t("_index.preparing")}
-            </span>
-          </div>
-        ) : (
-          <Link
-            key={to}
-            to={to}
-            className={`${tileClassName} bg-base-100 shadow-sm`}
-            data-testid={testId}
-          >
-            <Icon className="size-6" />
-            {label}
-          </Link>
-        ),
-      )}
+      {tiles.map(({ to, icon: Icon, label, testId }) => (
+        <Link
+          key={to}
+          to={to}
+          className="card items-center gap-1 bg-base-100 py-3 text-sm font-bold shadow-sm"
+          data-testid={testId}
+        >
+          <Icon className="size-6" />
+          {label}
+        </Link>
+      ))}
     </nav>
   );
 }

@@ -35,7 +35,6 @@ export interface IOwnerRepository {
   ) => Promise<OwnerDto | null>;
   updateHandle: (did: Did, handle: string | null) => Promise<OwnerDto | null>;
   updateAccountState: (did: Did, state: AccountStateDto) => Promise<void>;
-  delete: (did: Did) => Promise<void>;
 }
 
 const profileColumns = (profile: ProfileDto | null) => ({
@@ -110,8 +109,5 @@ export const ownerRepositoryFactory = ({
   },
   async updateAccountState(did, state) {
     await db.update(ownerTable).set(state).where(eq(ownerTable.did, did));
-  },
-  async delete(did) {
-    await db.delete(ownerTable).where(eq(ownerTable.did, did));
   },
 });

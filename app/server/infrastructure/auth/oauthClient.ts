@@ -9,18 +9,37 @@ import type {
 import {
   atprotoLoopbackClientMetadata,
   NodeOAuthClient,
+  OAuthCallbackError,
   TokenRefreshError,
 } from "@atproto/oauth-client-node";
+import {
+  BlobPermission,
+  RepoPermission,
+  ScopePermissionsTransition,
+} from "@atproto/oauth-scopes";
+import { z } from "zod";
 
 import { env, isProduction } from "~/utils/env";
 
 const privateKey = Buffer.from(env.PRIVATE_KEY_ES256_B64, "base64").toString();
 
+const loginScope = "atproto include:blue.linkat.permissionSet";
+
+const bskyLinkPermissions = [
+  { collection: "app.bsky.actor.link", action: "create" },
+  { collection: "app.bsky.actor.link", action: "delete" },
+  { collection: "app.bsky.actor.profile", action: "create" },
+  { collection: "app.bsky.actor.profile", action: "update" },
+] as const;
+
+const bskyLinkIconPermission = { mime: "image/png" };
+
 const scope = [
-  "atproto",
-  "include:blue.linkat.permissionSet",
-  "repo:app.bsky.actor.link?action=create&action=delete",
-  "repo:app.bsky.actor.profile?action=create&action=update",
+  loginScope,
+  ...bskyLinkPermissions.map((permission) =>
+    RepoPermission.scopeNeededFor(permission),
+  ),
+  BlobPermission.scopeNeededFor(bskyLinkIconPermission),
 ].join(" ");
 
 const clientMetadata: OAuthClientMetadataInput = isProduction
@@ -49,16 +68,47 @@ const keyset = isProduction
   ? [await JoseKey.fromImportable(privateKey, "key1")]
   : undefined;
 
+const oauthStateSchema = z.object({
+  redirect: z.string().optional(),
+  from: z.string().optional(),
+});
+
+type OAuthState = z.infer<typeof oauthStateSchema>;
+
+export const parseOAuthState = (state: string | null): OAuthState => {
+  try {
+    return oauthStateSchema.parse(JSON.parse(state ?? ""));
+  } catch {
+    return {};
+  }
+};
+
 export class OAuthSessionInvalidError extends Error {
   constructor(cause: unknown) {
     super("OAuthセッションが無効です", { cause });
   }
 }
 
+export class OAuthCallbackFailedError extends Error {
+  constructor(
+    readonly from: string | undefined,
+    readonly denied: boolean,
+    cause: unknown,
+  ) {
+    super("OAuthコールバックに失敗しました", { cause });
+  }
+}
+
 export interface IOAuthClient {
-  authorize: (handle: string) => Promise<URL>;
-  callback: (params: URLSearchParams) => Promise<Did>;
+  authorize: (
+    handleOrDid: string,
+    options: OAuthState & { bskyLinks?: boolean },
+  ) => Promise<URL>;
+  callback: (
+    params: URLSearchParams,
+  ) => Promise<{ did: Did; redirect: string | undefined }>;
   restore: (did: Did) => Promise<Agent>;
+  canWriteBskyLinks: (did: Did) => Promise<boolean>;
   revoke: (did: Did) => Promise<void>;
   clientMetadata: NodeOAuthClient["clientMetadata"];
   jwks: NodeOAuthClient["jwks"];
@@ -81,21 +131,49 @@ export const oauthClientFactory = ({
     sessionStore: oauthSessionStore,
   });
 
+  const restore = async (did: Did) => {
+    try {
+      return await client.restore(did);
+    } catch (error) {
+      if (error instanceof TokenRefreshError) {
+        throw new OAuthSessionInvalidError(error);
+      }
+      throw error;
+    }
+  };
+
   return {
-    authorize: (handle) => client.authorize(handle, { scope }),
+    authorize: (handleOrDid, { bskyLinks, ...state }) =>
+      client.authorize(handleOrDid, {
+        scope: bskyLinks ? scope : loginScope,
+        state: JSON.stringify(state),
+      }),
     async callback(params) {
-      const { session } = await client.callback(params);
-      return session.did;
-    },
-    async restore(did) {
       try {
-        return await client.restore(did);
+        const { session, state } = await client.callback(params);
+        return { did: session.did, redirect: parseOAuthState(state).redirect };
       } catch (error) {
-        if (error instanceof TokenRefreshError) {
-          throw new OAuthSessionInvalidError(error);
+        if (error instanceof OAuthCallbackError && error.state) {
+          throw new OAuthCallbackFailedError(
+            parseOAuthState(error.state).from,
+            error.params.get("error") === "access_denied",
+            error,
+          );
         }
         throw error;
       }
+    },
+    restore,
+    async canWriteBskyLinks(did) {
+      const session = await restore(did);
+      const permissions = new ScopePermissionsTransition(
+        (await session.getTokenInfo()).scope,
+      );
+      return (
+        bskyLinkPermissions.every((permission) =>
+          permissions.allowsRepo(permission),
+        ) && permissions.allowsBlob(bskyLinkIconPermission)
+      );
     },
     revoke: (did) => client.revoke(did),
     get clientMetadata() {

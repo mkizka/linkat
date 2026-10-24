@@ -14,7 +14,9 @@ export async function loader({ request }: Route.LoaderArgs) {
     return redirect("/login");
   }
   try {
-    const authorizeUrl = await di.authService.authorize(handle);
+    const authorizeUrl = await di.authService.authorize(handle, {
+      from: "/login",
+    });
     logger.info("ログインを開始しました", { method: "atpassport" });
     return redirect(authorizeUrl.toString());
   } catch (error) {

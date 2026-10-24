@@ -3,7 +3,6 @@ import type { Did } from "@atproto/did";
 import type { BoardDto } from "~/server/infrastructure/board/boardDto";
 import type { IBoardPdsRepository } from "~/server/infrastructure/board/boardPdsRepository";
 import type { IBoardRepository } from "~/server/infrastructure/board/boardRepository";
-import type { IOwnerRepository } from "~/server/infrastructure/owner/ownerRepository";
 import type { IOwnerService } from "~/server/service/owner/owner";
 
 export class BoardPdsSaveError extends Error {
@@ -42,18 +41,12 @@ export interface IBoardEventService {
 export const boardEventServiceFactory = ({
   boardRepository,
   boardPdsRepository,
-  ownerRepository,
   ownerService,
 }: {
   boardRepository: IBoardRepository;
   boardPdsRepository: IBoardPdsRepository;
-  ownerRepository: IOwnerRepository;
   ownerService: IOwnerService;
 }): IBoardEventService => {
-  const deleteBoard = async (ownerDid: Did) => {
-    await ownerRepository.delete(ownerDid);
-    await boardRepository.delete(ownerDid);
-  };
   return {
     async handleBoardCommit(board) {
       await ownerService.syncOwner(board.ownerDid);
@@ -79,17 +72,18 @@ export const boardEventServiceFactory = ({
       }
       return { boardImported: !!board };
     },
-    handleBoardDeleteCommit: deleteBoard,
+    async handleBoardDeleteCommit(ownerDid) {
+      await boardRepository.delete(ownerDid);
+    },
     async handleBoardSync(ownerDid) {
-      if (!(await ownerRepository.findByDid(ownerDid))) {
+      if (!(await ownerService.resyncOwner(ownerDid))) {
         return false;
       }
-      await ownerService.syncOwner(ownerDid);
       const board = await boardPdsRepository.find(ownerDid);
       if (board) {
         await boardRepository.save(board);
-      } else if (await boardRepository.find(ownerDid)) {
-        await deleteBoard(ownerDid);
+      } else {
+        await boardRepository.delete(ownerDid);
       }
       return true;
     },
@@ -100,7 +94,7 @@ export const boardEventServiceFactory = ({
         throw new BoardPdsDeleteError(error);
       }
       try {
-        await deleteBoard(ownerDid);
+        await boardRepository.delete(ownerDid);
       } catch (error) {
         throw new BoardDbDeleteError(error);
       }

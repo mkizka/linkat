@@ -41,7 +41,6 @@ const ingesterService = ingesterServiceFactory({
   boardEventService: boardEventServiceFactory({
     boardRepository: boardRepositoryFactory({ db }),
     boardPdsRepository: mock<IBoardPdsRepository>(),
-    ownerRepository,
     ownerService,
   }),
   ownerService,

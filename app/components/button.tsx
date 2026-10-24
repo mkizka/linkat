@@ -18,7 +18,9 @@ export function Button({
       disabled={loading}
       {...buttonProps}
     >
-      {loading && <div className="loading loading-spinner absolute h-1/2" />}
+      {loading && (
+        <div className="loading loading-spinner absolute h-1/2 w-auto" />
+      )}
       <span className={cn("contents", loading && "invisible")}>{children}</span>
     </button>
   );

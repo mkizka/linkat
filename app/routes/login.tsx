@@ -8,14 +8,16 @@ import { di } from "~/server/di";
 
 import type { Route } from "./+types/login";
 
-export async function action({ request, context }: Route.ActionArgs) {
+export async function action({ request, context, url }: Route.ActionArgs) {
   const logger = di.logger.child("login");
   const i18next = getInstance(context);
   const form = await request.formData().catch(() => {
     throw data(null, { status: 400 });
   });
-  const handle = form.get("handle");
-  if (typeof handle !== "string") {
+  const sessionDid = await di.sessionService.getSessionDid(request);
+  const handleOrDid = sessionDid ?? form.get("handle");
+  const from = form.get("from");
+  if (typeof handleOrDid !== "string" || typeof from !== "string") {
     setToast(context, {
       message: i18next.t("login.unknown-error-message"),
       type: "error",
@@ -23,9 +25,13 @@ export async function action({ request, context }: Route.ActionArgs) {
     return null;
   }
   try {
-    const url = await di.authService.authorize(handle);
+    const authorizeUrl = await di.authService.authorize(handleOrDid, {
+      redirect: url.searchParams.get("redirect") ?? undefined,
+      from,
+      bskyLinks: url.searchParams.get("bskyLinks") === "1",
+    });
     logger.info("ログインを開始しました", { method: "handle" });
-    return redirect(url.toString());
+    return redirect(authorizeUrl.toString());
   } catch (error) {
     if (error instanceof OAuthResolverError) {
       logger.warn("ハンドルを解決できずOAuthログインに失敗しました", { error });

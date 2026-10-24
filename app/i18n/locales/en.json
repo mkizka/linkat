@@ -14,7 +14,6 @@
     "view-board-link": "View Board",
     "create-board-link": "Create Board",
     "export-link": "Export to Bluesky",
-    "preparing": "Coming soon",
     "settings-link": "Settings"
   },
   "recent-boards": {
@@ -23,7 +22,8 @@
   "login": {
     "unknown-error-message": "An unknown error occurred",
     "oauth-resolve-error-message": "Failed to log in (maybe the handle is incorrect)",
-    "default-error-message": "Failed to log in"
+    "default-error-message": "Failed to log in",
+    "access-denied-message": "Login was canceled"
   },
   "login-form": {
     "required-error-message": "Please enter a value",
@@ -56,6 +56,40 @@
     "confirm-leave-confirm": "Discard and leave",
     "save-board-error-message": "Failed to save the board",
     "save-delayed-warning-message": "The changes are taking a while to appear. Please wait a moment and reload."
+  },
+  "export": {
+    "title": "Export to Bluesky",
+    "cancel-button": "Cancel",
+    "submit-button": "Export",
+    "select-description": "Choose the cards to export to your profile",
+    "no-url-badge": "No URL",
+    "invalid-badge": "Not exportable",
+    "confirm-title": "Caution!",
+    "confirm-description": "Any links currently on your Bluesky profile will be deleted and replaced with the cards you selected.",
+    "confirm-cancel": "Cancel",
+    "confirm-confirm": "Export",
+    "done-title": "Exported your links",
+    "view-on-bluesky-link": "View on Bluesky",
+    "back-to-top-link": "Back to top",
+    "done-note": "Changes you make in Linkat aren't reflected on Bluesky automatically. Export again to update them.",
+    "invalid-form-error-message": "The selected cards are invalid",
+    "export-error-message": "Failed to export to Bluesky. Your profile links have not changed",
+    "conflict-error-message": "Your Bluesky profile was changed during the export. Please try again",
+    "cleanup-warning-message": "Links were exported, but some old links could not be removed",
+    "reauth-title": "Export the links you set in Linkat\nto Bluesky",
+    "reauth-sample-blog": "Blog",
+    "reauth-preview-note": "Up to 10 links can be shown under your profile",
+    "reauth-permission-title": "Permission is required to export",
+    "reauth-permission-description": "Log in again and allow writing to your Bluesky profile",
+    "reauth-button": "Log in again to allow",
+    "notice-link": "Notes",
+    "notice-max": "You can export up to 10 cards",
+    "notice-replace": "All links on your Bluesky profile will be removed and replaced with the selected cards. This cannot be undone",
+    "notice-no-sync": "Changes to your board in Linkat are not synced to Bluesky automatically. Export again to update them",
+    "notice-format": "Each card's text becomes the link title. Icons are chosen from the URL, and card emojis are not used",
+    "notice-no-url": "Cards without a URL cannot be exported",
+    "notice-bsky-rules": "Exported cards may not be shown due to Bluesky's rules",
+    "notice-close": "Close"
   },
   "sync": {
     "loading-message": "Loading your data from your PDS",

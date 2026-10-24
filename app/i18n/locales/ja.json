@@ -14,7 +14,6 @@
     "view-board-link": "ボードを見る",
     "create-board-link": "ボードを作る",
     "export-link": "Blueskyに書き出す",
-    "preparing": "準備中",
     "settings-link": "設定"
   },
   "recent-boards": {
@@ -23,7 +22,8 @@
   "login": {
     "unknown-error-message": "不明なエラーが発生しました",
     "oauth-resolve-error-message": "ログインに失敗しました(ハンドルを間違えてるかも)",
-    "default-error-message": "ログインに失敗しました"
+    "default-error-message": "ログインに失敗しました",
+    "access-denied-message": "ログインをキャンセルしました"
   },
   "login-form": {
     "required-error-message": "入力してください",
@@ -56,6 +56,40 @@
     "confirm-leave-confirm": "破棄して戻る",
     "save-board-error-message": "ボードの保存に失敗しました",
     "save-delayed-warning-message": "変更の反映に時間がかかっています。少し待ってリロードしてみてください"
+  },
+  "export": {
+    "title": "Blueskyに書き出す",
+    "cancel-button": "キャンセル",
+    "submit-button": "書き出す",
+    "select-description": "プロフィールに書き出すカードを選んでください",
+    "no-url-badge": "URLなし",
+    "invalid-badge": "書き出し不可",
+    "confirm-title": "注意！",
+    "confirm-description": "Blueskyのプロフィールにリンクがあれば全て削除され、選んだ{{count}}個のカードに置き換わります。",
+    "confirm-cancel": "やめる",
+    "confirm-confirm": "書き出す",
+    "done-title": "リンクを書き出しました",
+    "view-on-bluesky-link": "Blueskyで見る",
+    "back-to-top-link": "トップに戻る",
+    "done-note": "書き出したカードはLinkatで変更してもBlueskyには自動反映されません。反映させたい場合はもう一度書き出してください。",
+    "invalid-form-error-message": "選んだカードが無効です",
+    "export-error-message": "Blueskyへの書き出しに失敗しました。プロフィールのリンクは変わっていません",
+    "conflict-error-message": "書き出し中にBlueskyのプロフィールが変更されました。もう一度お試しください",
+    "cleanup-warning-message": "リンクは書き出しましたが、古いリンクの一部を削除できませんでした",
+    "reauth-title": "Linkatに設定したリンクを\nBlueskyに書き出せます",
+    "reauth-sample-blog": "ブログ",
+    "reauth-preview-note": "最大10個までプロフィールの下に並べられます",
+    "reauth-permission-title": "書き出しには権限が必要です",
+    "reauth-permission-description": "再ログインして、Blueskyのプロフィールへの書き込みを許可してください",
+    "reauth-button": "再ログインして許可する",
+    "notice-link": "注意事項",
+    "notice-max": "書き出せるカードは最大10枚です",
+    "notice-replace": "Blueskyのプロフィールにあるリンクは全て削除され、選んだカードに置き換わります。元には戻せません",
+    "notice-no-sync": "Linkatでボードを変更しても、Blueskyには自動で反映されません。反映させたいときはもう一度書き出してください",
+    "notice-format": "カードのテキストがリンクのタイトルになります。アイコンはURLから決まり、カードの絵文字は使いません",
+    "notice-no-url": "URLの無いカードは書き出せません",
+    "notice-bsky-rules": "書き出したカードはBluesky側のルールによって表示されない場合があります",
+    "notice-close": "閉じる"
   },
   "sync": {
     "loading-message": "PDSからデータを読み込んでいます",
