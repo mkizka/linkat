@@ -56,7 +56,11 @@ export const di = await createRegistry()
     ["oauthStateStore", "oauthSessionStore"],
     oauthClientFactory,
   )
-  .service("boardPdsRepository", ["oauthClient"], boardPdsRepositoryFactory)
+  .service(
+    "boardPdsRepository",
+    ["oauthClient", "identityResolver"],
+    boardPdsRepositoryFactory,
+  )
   .service(
     "bskyLinkPdsRepository",
     ["oauthClient"],
@@ -115,7 +119,13 @@ export const di = await createRegistry()
   )
   .service(
     "ingesterService",
-    ["boardEventService", "ownerService", "profileRecordParser", "logger"],
+    [
+      "boardEventService",
+      "ownerService",
+      "ownerRepository",
+      "profileRecordParser",
+      "logger",
+    ],
     ingesterServiceFactory,
   )
   .service(

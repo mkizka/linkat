@@ -5,6 +5,7 @@ import boardLexicon from "~/generated/blue/linkat/board";
 import { boardSchema } from "~/schemas/board";
 import type { IOAuthClient } from "~/server/infrastructure/auth/oauthClient";
 import type { BoardDto } from "~/server/infrastructure/board/boardDto";
+import type { IIdentityResolver } from "~/server/infrastructure/owner/identityResolver";
 
 export interface IBoardPdsRepository {
   find: (did: Did) => Promise<BoardDto | null>;
@@ -14,18 +15,27 @@ export interface IBoardPdsRepository {
 
 export const boardPdsRepositoryFactory = ({
   oauthClient,
+  identityResolver,
 }: {
   oauthClient: IOAuthClient;
+  identityResolver: IIdentityResolver;
 }): IBoardPdsRepository => {
   const createClient = async (did: Did) =>
     new Client(await oauthClient.restore(did));
   return {
     async find(did) {
-      const client = await createClient(did);
+      const identity = await identityResolver.resolve(did);
+      if (!identity) {
+        throw new Error("DIDを解決できませんでした");
+      }
       try {
-        const { body } = await client.getRecord(boardLexicon.$type, "self", {
-          repo: did,
-        });
+        const { body } = await new Client(identity.pds).getRecord(
+          boardLexicon.$type,
+          "self",
+          {
+            repo: did,
+          },
+        );
         return { ownerDid: did, cards: boardSchema.parse(body.value).cards };
       } catch (error) {
         if (
