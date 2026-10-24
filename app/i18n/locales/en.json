@@ -77,9 +77,11 @@
     "export-error-message": "Failed to export to Bluesky. Your profile links have not changed",
     "conflict-error-message": "Your Bluesky profile was changed during the export. Please try again",
     "cleanup-warning-message": "Links were exported, but some old links could not be removed",
-    "reauth-title": "Additional permission is needed to export",
-    "reauth-description": "Allow this service to write to your profile. Just log in again with the button below.",
-    "reauth-button": "Log in again"
+    "reauth-title": "Show links on your Bluesky profile",
+    "reauth-step-allow": "Allow writing to your profile",
+    "reauth-step-select": "Pick cards from your board",
+    "reauth-step-show": "They appear as links on your profile",
+    "reauth-button": "Log in again to allow"
   },
   "sync": {
     "loading-message": "Loading your data from your PDS",
