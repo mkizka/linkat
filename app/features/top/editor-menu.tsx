@@ -8,7 +8,6 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 
 import { BlueskyIcon } from "~/components/icons/bluesky";
-import { useUmami } from "~/hooks/useUmami";
 
 type Props = {
   handle: string;
@@ -17,7 +16,6 @@ type Props = {
 
 export function EditorMenu({ handle, hasBoard }: Props) {
   const { t } = useTranslation();
-  const umami = useUmami();
   const tiles = [
     ...(hasBoard
       ? [
@@ -66,7 +64,7 @@ export function EditorMenu({ handle, hasBoard }: Props) {
           to={to}
           className="card items-center gap-1 bg-base-100 py-3 text-sm font-bold shadow-sm"
           data-testid={testId}
-          onClick={() => umami.track(umamiEvent)}
+          data-umami-event={umamiEvent}
         >
           <Icon className="size-6" />
           {label}
