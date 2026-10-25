@@ -24,6 +24,12 @@ export class BoardPdsDeleteError extends Error {
   }
 }
 
+export class BoardPdsFetchError extends Error {
+  constructor(cause: unknown) {
+    super("PDSからのボードの取得に失敗しました", { cause });
+  }
+}
+
 export class BoardDbDeleteError extends Error {
   constructor(cause: unknown) {
     super("DBからのボードの削除に失敗しました", { cause });
@@ -34,7 +40,7 @@ export interface IBoardEventService {
   handleBoardCommit: (board: BoardDto) => Promise<void>;
   handleBoardDeleteCommit: (ownerDid: Did) => Promise<void>;
   handleEditorSave: (board: BoardDto) => Promise<void>;
-  handleSync: (editorDid: Did) => Promise<{ boardImported: boolean }>;
+  handleSync: (did: Did) => Promise<{ boardImported: boolean }>;
   handleEditorDelete: (ownerDid: Did) => Promise<void>;
 }
 
@@ -76,9 +82,16 @@ export const boardEventServiceFactory = ({
       if (!identity) {
         throw new Error("DIDを解決できませんでした");
       }
-      const board = await boardPdsRepository.find(editorDid, identity.pds);
+      let board;
+      try {
+        board = await boardPdsRepository.find(editorDid, identity.pds);
+      } catch (error) {
+        throw new BoardPdsFetchError(error);
+      }
       if (board) {
         await boardRepository.save(board);
+      } else {
+        await boardRepository.delete(editorDid);
       }
       return { boardImported: !!board };
     },
