@@ -89,7 +89,7 @@ const app = spawn(process.argv.slice(2).join(" "), {
     DATABASE_URL,
     ATPROTO_PLC_URL: `http://localhost:${PORTS.plc}`,
     ATPROTO_HANDLE_RESOLVER_URL: `http://localhost:${PORTS.pds}`,
-    JETSTREAM_URL: `ws://localhost:${PORTS.jetstream}/subscribe`,
+    JETSTREAM_SERVICE_URL: `http://localhost:${PORTS.jetstream}`,
     ADMIN_DIDS: alice.data.did,
   },
 });

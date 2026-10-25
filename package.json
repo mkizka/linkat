@@ -33,6 +33,7 @@
     "@atproto/oauth-client-node": "0.5.10",
     "@atproto/oauth-scopes": "0.5.14",
     "@atproto/syntax": "0.7.7",
+    "@bsky/jetstream": "1.0.0",
     "@conform-to/react": "1.21.2",
     "@conform-to/zod": "1.21.2",
     "@emoji-mart/data": "1.2.1",
@@ -47,7 +48,6 @@
     "@react-router/node": "8.5.0",
     "@resvg/resvg-js": "2.6.2",
     "@sentry/react-router": "11.8.0",
-    "@skyware/jetstream": "0.2.5",
     "@t3-oss/env-core": "0.13.11",
     "clsx": "2.1.1",
     "drizzle-kit": "0.31.11",
@@ -77,7 +77,6 @@
     "remix-utils": "10.0.1",
     "satori": "0.63.2",
     "tailwind-merge": "3.7.0",
-    "ws": "8.22.0",
     "zod": "4.6.7"
   },
   "devDependencies": {
@@ -97,7 +96,6 @@
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
     "@types/umami": "2.10.1",
-    "@types/ws": "8.18.2",
     "@vitest/coverage-v8": "5.0.5",
     "daisyui": "5.7.50",
     "esbuild": "0.28.2",

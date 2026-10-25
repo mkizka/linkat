@@ -1,15 +1,14 @@
 import type { Did } from "@atproto/did";
+import { Jetstream, LexIndexer, websocketTransport } from "@bsky/jetstream";
 import { trace } from "@opentelemetry/api";
-import { Jetstream } from "@skyware/jetstream";
-import WebSocket from "ws";
 
+import profile from "~/generated/app/bsky/actor/profile";
+import board from "~/generated/blue/linkat/board";
 import type { ICursorRepository } from "~/server/infrastructure/ingester/cursorRepository";
 import type { ILogger } from "~/server/infrastructure/logger/logger";
 import type { IMetrics } from "~/server/infrastructure/metrics/metrics";
 import type { AccountStateDto } from "~/server/infrastructure/owner/ownerDto";
 import { env } from "~/utils/env";
-
-const CURSOR_SAVE_INTERVAL_MS = 30_000;
 
 const LAG_REPORT_INTERVAL_MS = 10_000;
 
@@ -43,141 +42,94 @@ export const ingesterClientFactory = ({
 }): IIngesterClient => {
   const log = logger.child("jetstream");
 
-  const jetstream = new Jetstream({
-    ws: WebSocket,
-    endpoint: env.JETSTREAM_URL,
-    wantedCollections: ["blue.linkat.board", "app.bsky.actor.profile"],
-  });
-
-  const logError = (message: string) => (error: unknown) => {
-    log.error(message, { error });
-  };
-  const logBoardError = logError("ボードの更新に失敗しました");
-  const logProfileError = logError("プロフィールの更新に失敗しました");
-
   const tracer = trace.getTracer("jetstream");
 
-  const handle =
-    <E extends { kind: string }>(
-      task: (event: E) => Promise<void>,
-      onError: (error: unknown) => void,
-    ) =>
-    (event: E) => {
-      void tracer.startActiveSpan(
-        `jetstream ${event.kind}`,
-        { root: true },
-        (span) =>
-          task(event)
-            .catch(onError)
-            .finally(() => span.end()),
-      );
-    };
+  let lastEventTime: string | undefined;
 
-  jetstream.on("open", () => {
-    log.info(`Jetstream subscription started to ${env.JETSTREAM_URL}`);
-  });
-  jetstream.on("close", () => {
-    log.info(`Jetstream subscription closed`);
-  });
-  jetstream.on("error", (error) => {
-    log.error("Jetstreamでエラーが発生しました", { error });
-  });
-  jetstream.on(
-    "identity",
-    handle(
-      ({ did }) => ingesterService.handleIdentity({ did }),
-      logError("ハンドルの更新に失敗しました"),
-    ),
-  );
-  jetstream.on(
-    "account",
-    handle(
-      ({ did, account }) =>
-        ingesterService.handleAccount({
-          did,
-          state: { active: account.active, status: account.status ?? null },
-        }),
-      logError("アカウントの状態の更新に失敗しました"),
-    ),
-  );
-  jetstream.onCreate(
-    "blue.linkat.board",
-    handle(
-      ({ did, commit }) =>
-        ingesterService.handleBoardCommit({ did, record: commit.record }),
-      logBoardError,
-    ),
-  );
-  jetstream.onUpdate(
-    "blue.linkat.board",
-    handle(
-      ({ did, commit }) =>
-        ingesterService.handleBoardCommit({ did, record: commit.record }),
-      logBoardError,
-    ),
-  );
-  jetstream.onDelete(
-    "blue.linkat.board",
-    handle(
-      ({ did }) => ingesterService.handleBoardDelete({ did }),
-      logBoardError,
-    ),
-  );
-  jetstream.onCreate(
-    "app.bsky.actor.profile",
-    handle(
-      ({ did, commit }) =>
-        ingesterService.handleProfileCommit({
-          did,
-          rkey: commit.rkey,
-          record: commit.record,
-        }),
-      logProfileError,
-    ),
-  );
-  jetstream.onUpdate(
-    "app.bsky.actor.profile",
-    handle(
-      ({ did, commit }) =>
-        ingesterService.handleProfileCommit({
-          did,
-          rkey: commit.rkey,
-          record: commit.record,
-        }),
-      logProfileError,
-    ),
-  );
-  jetstream.onDelete(
-    "app.bsky.actor.profile",
-    handle(
-      ({ did, commit }) =>
-        ingesterService.handleProfileDelete({ did, rkey: commit.rkey }),
-      logProfileError,
-    ),
-  );
+  const handle = (kind: string, task: () => Promise<void>, time?: string) => {
+    if (time) {
+      lastEventTime = time;
+    }
+    return tracer.startActiveSpan(`jetstream ${kind}`, { root: true }, (span) =>
+      task().finally(() => span.end()),
+    );
+  };
+
+  const indexer = new LexIndexer()
+    .commit(board, {
+      put: (e) =>
+        handle("commit", () =>
+          ingesterService.handleBoardCommit({ did: e.did, record: e.record }),
+        ),
+      del: (e) =>
+        handle("commit", () =>
+          ingesterService.handleBoardDelete({ did: e.did }),
+        ),
+    })
+    .commit(profile, {
+      put: (e) =>
+        handle("commit", () =>
+          ingesterService.handleProfileCommit({
+            did: e.did,
+            rkey: e.rkey,
+            record: e.record,
+          }),
+        ),
+      del: (e) =>
+        handle("commit", () =>
+          ingesterService.handleProfileDelete({ did: e.did, rkey: e.rkey }),
+        ),
+    })
+    .identity((e) =>
+      handle(
+        "identity",
+        () => ingesterService.handleIdentity({ did: e.did }),
+        e.time,
+      ),
+    )
+    .account((e) =>
+      handle(
+        "account",
+        () =>
+          ingesterService.handleAccount({
+            did: e.did,
+            state: { active: e.active, status: e.status ?? null },
+          }),
+        e.time,
+      ),
+    )
+    .onValidationError((e) =>
+      log.warn("レコードの検証に失敗しました", { uri: e.uri, error: e.error }),
+    );
 
   return {
     async start() {
-      const savedCursor = await cursorRepository.load();
-      if (savedCursor !== undefined) {
-        jetstream.cursor = savedCursor;
-      }
-      jetstream.start();
       setInterval(() => {
-        if (jetstream.cursor !== undefined) {
-          cursorRepository
-            .save(jetstream.cursor)
-            .catch(logError("cursorの保存に失敗しました"));
-        }
-      }, CURSOR_SAVE_INTERVAL_MS).unref();
-      setInterval(() => {
-        if (jetstream.cursor !== undefined) {
+        if (lastEventTime) {
           metrics.setGauge(
             "jetstream_lag_seconds",
-            (Date.now() * 1000 - jetstream.cursor) / 1_000_000,
+            (Date.now() - Date.parse(lastEventTime)) / 1000,
           );
         }
       }, LAG_REPORT_INTERVAL_MS).unref();
+
+      const runner = new Jetstream(env.JETSTREAM_SERVICE_URL).runner(indexer);
+      log.info(
+        `Jetstream subscription started to ${env.JETSTREAM_SERVICE_URL}`,
+      );
+      await runner.live({
+        cursor: cursorRepository,
+        onInfo: (info) => log.warn("Jetstreamから通知を受け取りました", info),
+        onError: (error) =>
+          log.error("Jetstreamから読み取れないフレームを受け取りました", {
+            error,
+          }),
+        liveTransport: websocketTransport({
+          onReconnect: (error, { attempt }) =>
+            log.warn("Jetstreamに再接続します", { error, attempt }),
+        }),
+      });
+      throw new Error("Jetstream subscription ended");
     },
   };
 };
