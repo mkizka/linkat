@@ -52,6 +52,8 @@ export const ingesterClientFactory = ({
     );
 
   const indexer = new LexIndexer({
+    // 各イベントのtimeを記録するために処理を上書きしている
+    // 返り値はデフォルトの処理と同じ
     keyOf: (event) => {
       lastEventTime = event.time;
       return event.kind === "commit"
