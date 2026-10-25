@@ -47,7 +47,7 @@ export const ingesterClientFactory = ({
   let lastEventTime: string | undefined;
 
   const handle = (kind: string, task: () => Promise<void>) =>
-    tracer.startActiveSpan(`jetstream ${kind}`, { root: true }, (span) =>
+    tracer.startActiveSpan(`jetstream.${kind}`, { root: true }, (span) =>
       task().finally(() => span.end()),
     );
 
