@@ -47,16 +47,21 @@ export const ingesterClientFactory = ({
 
   let lastEventTime: string | undefined;
 
-  const handle = (kind: string, task: () => Promise<void>, time?: string) => {
-    if (time) {
-      lastEventTime = time;
-    }
-    return tracer.startActiveSpan(`jetstream ${kind}`, { root: true }, (span) =>
+  const handle = (kind: string, task: () => Promise<void>) =>
+    tracer.startActiveSpan(`jetstream.${kind}`, { root: true }, (span) =>
       task().finally(() => span.end()),
     );
-  };
 
-  const indexer = new LexIndexer()
+  const indexer = new LexIndexer({
+    // 各イベントのtimeを記録するために処理を上書きしている
+    // 返り値はデフォルトの処理と同じ
+    keyOf: (event) => {
+      lastEventTime = event.time;
+      return event.kind === "commit"
+        ? `${event.did}/${event.commit.collection}/${event.commit.rkey}`
+        : event.did;
+    },
+  })
     .commit(board, {
       put: (e) =>
         handle("commit", () =>
@@ -82,21 +87,14 @@ export const ingesterClientFactory = ({
         ),
     })
     .identity((e) =>
-      handle(
-        "identity",
-        () => ingesterService.handleIdentity({ did: e.did }),
-        e.time,
-      ),
+      handle("identity", () => ingesterService.handleIdentity({ did: e.did })),
     )
     .account((e) =>
-      handle(
-        "account",
-        () =>
-          ingesterService.handleAccount({
-            did: e.did,
-            state: { active: e.active, status: e.status ?? null },
-          }),
-        e.time,
+      handle("account", () =>
+        ingesterService.handleAccount({
+          did: e.did,
+          state: { active: e.active, status: e.status ?? null },
+        }),
       ),
     )
     .sync((e) =>
