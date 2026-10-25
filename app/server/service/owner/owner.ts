@@ -15,7 +15,7 @@ export type EditorView = OwnerView & { synced: boolean };
 
 export interface IOwnerService {
   findEditorView: (did: Did) => Promise<EditorView>;
-  syncOwner: (did: Did) => Promise<OwnerDto>;
+  syncOwner: (did: Did, options?: { fresh?: boolean }) => Promise<OwnerDto>;
   updateProfile: (
     did: Did,
     profile: ProfileDto | null,
@@ -39,8 +39,8 @@ export const ownerServiceFactory = ({
     const owner = await ownerRepository.findByDid(did);
     return { ...ownerViewService.toOwnerView(did, owner), synced: !!owner };
   },
-  async syncOwner(did) {
-    const identity = await identityResolver.resolve(did);
+  async syncOwner(did, options) {
+    const identity = await identityResolver.resolve(did, options);
     if (!identity) {
       return await ownerRepository.upsert(did, { handle: null });
     }
