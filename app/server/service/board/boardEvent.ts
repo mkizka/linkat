@@ -64,7 +64,7 @@ export const boardEventServiceFactory = ({
       }
     },
     async handleSync(editorDid) {
-      await ownerService.syncOwner(editorDid);
+      await ownerService.syncOwner(editorDid, { fresh: true });
       const board = await boardPdsRepository.find(editorDid);
       if (board) {
         await boardRepository.save(board);

@@ -56,7 +56,11 @@ export const di = await createRegistry()
     ["oauthStateStore", "oauthSessionStore"],
     oauthClientFactory,
   )
-  .service("boardPdsRepository", ["oauthClient"], boardPdsRepositoryFactory)
+  .service(
+    "boardPdsRepository",
+    ["oauthClient", "identityResolver"],
+    boardPdsRepositoryFactory,
+  )
   .service(
     "bskyLinkPdsRepository",
     ["oauthClient"],

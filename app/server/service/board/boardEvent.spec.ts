@@ -10,6 +10,7 @@ import type { IOAuthClient } from "~/server/infrastructure/auth/oauthClient";
 import { boardPdsRepositoryFactory } from "~/server/infrastructure/board/boardPdsRepository";
 import { boardRepositoryFactory } from "~/server/infrastructure/board/boardRepository";
 import { db } from "~/server/infrastructure/db/drizzle";
+import type { IIdentityResolver } from "~/server/infrastructure/owner/identityResolver";
 import { ownerRepositoryFactory } from "~/server/infrastructure/owner/ownerRepository";
 import type { IOwnerService } from "~/server/service/owner/owner";
 
@@ -25,15 +26,23 @@ const boardRepository = boardRepositoryFactory({ db });
 const ownerRepository = ownerRepositoryFactory({ db });
 const ownerService = mock<IOwnerService>();
 const oauthClient = mock<IOAuthClient>();
+const identityResolver = mock<IIdentityResolver>();
 const boardEventService = boardEventServiceFactory({
   boardRepository,
-  boardPdsRepository: boardPdsRepositoryFactory({ oauthClient }),
+  boardPdsRepository: boardPdsRepositoryFactory({
+    oauthClient,
+    identityResolver,
+  }),
   ownerService,
 });
 
 beforeEach(() => {
   mockReset(ownerService);
   mockReset(oauthClient);
+  mockReset(identityResolver);
+  identityResolver.resolve.mockImplementation((did) =>
+    Promise.resolve({ did, handle: null, pds: "https://pds.example.com" }),
+  );
   oauthClient.restore.mockImplementation((did) =>
     Promise.resolve(buildAgent({ did, service: "https://pds.example.com" })),
   );
@@ -139,7 +148,11 @@ describe("boardEventService", () => {
       const actual = await boardEventService.handleSync(did);
       // assert
       expect(actual).toEqual({ boardImported: true });
-      expect(ownerService.syncOwner).toHaveBeenCalledWith(did);
+      expect(ownerService.syncOwner).toHaveBeenCalledWith(did, { fresh: true });
+      expect(identityResolver.resolve).toHaveBeenCalledWith(did, {
+        fresh: true,
+      });
+      expect(oauthClient.restore).not.toHaveBeenCalled();
       expect(await boardRepository.find(did)).toEqual({
         ownerDid: did,
         cards: dummyCards,
@@ -160,7 +173,7 @@ describe("boardEventService", () => {
       const actual = await boardEventService.handleSync(did);
       // assert
       expect(actual).toEqual({ boardImported: false });
-      expect(ownerService.syncOwner).toHaveBeenCalledWith(did);
+      expect(ownerService.syncOwner).toHaveBeenCalledWith(did, { fresh: true });
       expect(await boardRepository.find(did)).toBeNull();
     });
   });
