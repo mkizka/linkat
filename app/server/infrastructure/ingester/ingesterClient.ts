@@ -98,7 +98,7 @@ export const ingesterClientFactory = ({
       ),
     )
     .sync((e) =>
-      handle("sync", () => ingesterService.handleSync({ did: e.did }), e.time),
+      handle("sync", () => ingesterService.handleSync({ did: e.did })),
     )
     .onValidationError((e) =>
       log.warn("レコードの検証に失敗しました", { uri: e.uri, error: e.error }),
