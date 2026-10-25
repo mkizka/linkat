@@ -10,6 +10,7 @@ import type { IOAuthClient } from "~/server/infrastructure/auth/oauthClient";
 import { boardPdsRepositoryFactory } from "~/server/infrastructure/board/boardPdsRepository";
 import { boardRepositoryFactory } from "~/server/infrastructure/board/boardRepository";
 import { db } from "~/server/infrastructure/db/drizzle";
+import type { IIdentityResolver } from "~/server/infrastructure/owner/identityResolver";
 import { ownerRepositoryFactory } from "~/server/infrastructure/owner/ownerRepository";
 import type { IOwnerService } from "~/server/service/owner/owner";
 
@@ -18,6 +19,7 @@ import {
   BoardDbSaveError,
   boardEventServiceFactory,
   BoardPdsDeleteError,
+  BoardPdsFetchError,
   BoardPdsSaveError,
 } from "./boardEvent";
 
@@ -25,15 +27,23 @@ const boardRepository = boardRepositoryFactory({ db });
 const ownerRepository = ownerRepositoryFactory({ db });
 const ownerService = mock<IOwnerService>();
 const oauthClient = mock<IOAuthClient>();
+const identityResolver = mock<IIdentityResolver>();
 const boardEventService = boardEventServiceFactory({
   boardRepository,
-  boardPdsRepository: boardPdsRepositoryFactory({ oauthClient }),
+  boardPdsRepository: boardPdsRepositoryFactory({
+    oauthClient,
+    identityResolver,
+  }),
   ownerService,
 });
 
 beforeEach(() => {
   mockReset(ownerService);
   mockReset(oauthClient);
+  mockReset(identityResolver);
+  identityResolver.resolve.mockImplementation((did) =>
+    Promise.resolve({ did, handle: null, pds: "https://pds.example.com" }),
+  );
   oauthClient.restore.mockImplementation((did) =>
     Promise.resolve(buildAgent({ did, service: "https://pds.example.com" })),
   );
@@ -120,7 +130,7 @@ describe("boardEventService", () => {
     });
   });
 
-  describe("handleEditorSync", () => {
+  describe("handleSync", () => {
     const getRecordUrl =
       "https://pds.example.com/xrpc/com.atproto.repo.getRecord";
 
@@ -136,18 +146,21 @@ describe("boardEventService", () => {
         ),
       );
       // act
-      const actual = await boardEventService.handleEditorSync(did);
+      const actual = await boardEventService.handleSync(did);
       // assert
       expect(actual).toEqual({ boardImported: true });
-      expect(ownerService.syncOwner).toHaveBeenCalledWith(did);
+      expect(ownerService.syncOwner).toHaveBeenCalledWith(did, { fresh: true });
+      expect(identityResolver.resolve).toHaveBeenCalledWith(did, {
+        fresh: true,
+      });
       expect(await boardRepository.find(did)).toEqual({
         ownerDid: did,
         cards: dummyCards,
       });
     });
-    test("PDSにボードが無ければボードの写しを作らない", async () => {
+    test("PDSにボードが無ければボードの写しだけ削除し、持ち主の写しは残す", async () => {
       // arrange
-      const did = asDid("did:plc:synceditornoboard");
+      const did = asDid((await BoardFactory.create()).ownerDid);
       server.use(
         http.get(getRecordUrl, () =>
           HttpResponse.json(
@@ -157,11 +170,42 @@ describe("boardEventService", () => {
         ),
       );
       // act
-      const actual = await boardEventService.handleEditorSync(did);
+      const actual = await boardEventService.handleSync(did);
       // assert
       expect(actual).toEqual({ boardImported: false });
-      expect(ownerService.syncOwner).toHaveBeenCalledWith(did);
+      expect(ownerService.syncOwner).toHaveBeenCalledWith(did, { fresh: true });
       expect(await boardRepository.find(did)).toBeNull();
+      expect(await ownerRepository.findByDid(did)).not.toBeNull();
+    });
+    test("PDSのボードがパースできなければ無いものとして扱い、ボードの写しを削除する", async () => {
+      // arrange
+      const did = asDid((await BoardFactory.create()).ownerDid);
+      server.use(
+        http.get(getRecordUrl, () =>
+          HttpResponse.json({
+            uri: `at://${did}/blue.linkat.board/self`,
+            value: { $type: "blue.linkat.board", cards: "invalid" },
+          }),
+        ),
+      );
+      // act
+      const actual = await boardEventService.handleSync(did);
+      // assert
+      expect(actual).toEqual({ boardImported: false });
+      expect(await boardRepository.find(did)).toBeNull();
+    });
+    test("PDSからボードを取得できなければBoardPdsFetchErrorを投げ、ボードの写しは変えない", async () => {
+      // arrange
+      const did = asDid((await BoardFactory.create()).ownerDid);
+      server.use(
+        http.get(getRecordUrl, () => HttpResponse.json("", { status: 500 })),
+      );
+      // act
+      const actual = boardEventService.handleSync(did);
+      // assert
+      await expect(actual).rejects.toThrow(BoardPdsFetchError);
+      expect(ownerService.syncOwner).toHaveBeenCalledWith(did, { fresh: true });
+      expect(await boardRepository.find(did)).not.toBeNull();
     });
   });
 

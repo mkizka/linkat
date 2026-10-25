@@ -17,7 +17,7 @@ export async function action({ context }: Route.ActionArgs) {
   const editorDid = context.get(editorDidContext);
   let result;
   try {
-    result = await di.boardEventService.handleEditorSync(editorDid);
+    result = await di.boardEventService.handleSync(editorDid);
   } catch (error) {
     logger.error("同期に失敗しました", { error });
     return data({ ok: false }, { status: 500 });
