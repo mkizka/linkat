@@ -23,6 +23,7 @@ import { env } from "~/utils/env";
 import { ingesterServiceFactory } from "./ingester";
 
 const identityResolver = mock<IIdentityResolver>();
+const boardPdsRepository = mock<IBoardPdsRepository>();
 const logger = loggerFactory();
 const ownerRepository = ownerRepositoryFactory({ db });
 const profileRecordParser = profileRecordParserFactory();
@@ -41,17 +42,21 @@ const ownerService = ownerServiceFactory({
 const ingesterService = ingesterServiceFactory({
   boardEventService: boardEventServiceFactory({
     boardRepository: boardRepositoryFactory({ db }),
-    boardPdsRepository: mock<IBoardPdsRepository>(),
+    boardPdsRepository,
     ownerService,
   }),
   ownerService,
+  ownerRepository,
   profileRecordParser,
   logger,
 });
 
 const pool = new Pool({ connectionString: env.DATABASE_URL });
 afterAll(() => pool.end());
-beforeEach(() => mockReset(identityResolver));
+beforeEach(() => {
+  mockReset(identityResolver);
+  mockReset(boardPdsRepository);
+});
 
 const boardRecord = {
   $type: "blue.linkat.board",
@@ -219,6 +224,56 @@ describe("ingesterService", () => {
         [board.ownerDid],
       );
       expect(rows).toHaveLength(0);
+    });
+  });
+
+  describe("handleSync", () => {
+    test("持ち主の写しが無ければ何もしない", async () => {
+      // arrange
+      const did = asDid("did:plc:syncunknown");
+      // act
+      await ingesterService.handleSync({ did });
+      // assert
+      expect(identityResolver.resolve).not.toHaveBeenCalled();
+      expect(await ownerRepository.findByDid(did)).toBeNull();
+    });
+    test("持ち主の写しがあれば、編集者の同期と同じく持ち主とボードをPDSから取り込む", async () => {
+      // arrange
+      const owner = await OwnerFactory.create({ handle: "old.example.com" });
+      const did = asDid(owner.did);
+      identityResolver.resolve.mockResolvedValue(
+        found(owner.did, "new.example.com"),
+      );
+      boardPdsRepository.find.mockResolvedValue({
+        ownerDid: did,
+        cards: boardRecord.cards,
+      });
+      // act
+      await ingesterService.handleSync({ did });
+      // assert
+      expect(await ownerRepository.findByDid(did)).toMatchObject({
+        handle: "new.example.com",
+      });
+      const { rows } = await pool.query(
+        `SELECT * FROM "Board" WHERE "ownerDid" = $1`,
+        [did],
+      );
+      expect(rows).toHaveLength(1);
+    });
+    test("PDSからボードを取得できなくても失敗にせず、持ち主だけ同期する", async () => {
+      // arrange
+      const owner = await OwnerFactory.create({ handle: "old.example.com" });
+      const did = asDid(owner.did);
+      identityResolver.resolve.mockResolvedValue(
+        found(owner.did, "new.example.com"),
+      );
+      boardPdsRepository.find.mockRejectedValue(new Error("PDS is down"));
+      // act
+      await ingesterService.handleSync({ did });
+      // assert
+      expect(await ownerRepository.findByDid(did)).toMatchObject({
+        handle: "new.example.com",
+      });
     });
   });
 

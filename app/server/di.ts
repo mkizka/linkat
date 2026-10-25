@@ -119,7 +119,13 @@ export const di = await createRegistry()
   )
   .service(
     "ingesterService",
-    ["boardEventService", "ownerService", "profileRecordParser", "logger"],
+    [
+      "boardEventService",
+      "ownerService",
+      "ownerRepository",
+      "profileRecordParser",
+      "logger",
+    ],
     ingesterServiceFactory,
   )
   .service(
