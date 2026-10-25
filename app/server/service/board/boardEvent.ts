@@ -70,7 +70,7 @@ export const boardEventServiceFactory = ({
       }
     },
     async handleSync(did) {
-      await ownerService.syncOwner(did);
+      await ownerService.syncOwner(did, { fresh: true });
       let board;
       try {
         board = await boardPdsRepository.find(did);

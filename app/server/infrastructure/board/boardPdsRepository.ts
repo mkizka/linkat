@@ -24,7 +24,7 @@ export const boardPdsRepositoryFactory = ({
     new Client(await oauthClient.restore(did));
   return {
     async find(did) {
-      const identity = await identityResolver.resolve(did);
+      const identity = await identityResolver.resolve(did, { fresh: true });
       if (!identity) {
         throw new Error("DIDを解決できませんでした");
       }
@@ -36,7 +36,10 @@ export const boardPdsRepositoryFactory = ({
             repo: did,
           },
         );
-        return { ownerDid: did, cards: boardSchema.parse(body.value).cards };
+        const parsed = boardSchema.safeParse(body.value);
+        return parsed.success
+          ? { ownerDid: did, cards: parsed.data.cards }
+          : null;
       } catch (error) {
         if (
           error instanceof XrpcResponseError &&

@@ -149,7 +149,10 @@ describe("boardEventService", () => {
       const actual = await boardEventService.handleSync(did);
       // assert
       expect(actual).toEqual({ boardImported: true });
-      expect(ownerService.syncOwner).toHaveBeenCalledWith(did);
+      expect(ownerService.syncOwner).toHaveBeenCalledWith(did, { fresh: true });
+      expect(identityResolver.resolve).toHaveBeenCalledWith(did, {
+        fresh: true,
+      });
       expect(await boardRepository.find(did)).toEqual({
         ownerDid: did,
         cards: dummyCards,
@@ -170,9 +173,26 @@ describe("boardEventService", () => {
       const actual = await boardEventService.handleSync(did);
       // assert
       expect(actual).toEqual({ boardImported: false });
-      expect(ownerService.syncOwner).toHaveBeenCalledWith(did);
+      expect(ownerService.syncOwner).toHaveBeenCalledWith(did, { fresh: true });
       expect(await boardRepository.find(did)).toBeNull();
       expect(await ownerRepository.findByDid(did)).not.toBeNull();
+    });
+    test("PDSのボードがパースできなければ無いものとして扱い、ボードの写しを削除する", async () => {
+      // arrange
+      const did = asDid((await BoardFactory.create()).ownerDid);
+      server.use(
+        http.get(getRecordUrl, () =>
+          HttpResponse.json({
+            uri: `at://${did}/blue.linkat.board/self`,
+            value: { $type: "blue.linkat.board", cards: "invalid" },
+          }),
+        ),
+      );
+      // act
+      const actual = await boardEventService.handleSync(did);
+      // assert
+      expect(actual).toEqual({ boardImported: false });
+      expect(await boardRepository.find(did)).toBeNull();
     });
     test("PDSからボードを取得できなければBoardPdsFetchErrorを投げ、ボードの写しは変えない", async () => {
       // arrange
@@ -184,7 +204,7 @@ describe("boardEventService", () => {
       const actual = boardEventService.handleSync(did);
       // assert
       await expect(actual).rejects.toThrow(BoardPdsFetchError);
-      expect(ownerService.syncOwner).toHaveBeenCalledWith(did);
+      expect(ownerService.syncOwner).toHaveBeenCalledWith(did, { fresh: true });
       expect(await boardRepository.find(did)).not.toBeNull();
     });
   });
