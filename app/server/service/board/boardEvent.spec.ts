@@ -120,7 +120,7 @@ describe("boardEventService", () => {
     });
   });
 
-  describe("handleEditorSync", () => {
+  describe("handleSync", () => {
     const getRecordUrl =
       "https://pds.example.com/xrpc/com.atproto.repo.getRecord";
 
@@ -136,7 +136,7 @@ describe("boardEventService", () => {
         ),
       );
       // act
-      const actual = await boardEventService.handleEditorSync(did);
+      const actual = await boardEventService.handleSync(did);
       // assert
       expect(actual).toEqual({ boardImported: true });
       expect(ownerService.syncOwner).toHaveBeenCalledWith(did);
@@ -157,7 +157,7 @@ describe("boardEventService", () => {
         ),
       );
       // act
-      const actual = await boardEventService.handleEditorSync(did);
+      const actual = await boardEventService.handleSync(did);
       // assert
       expect(actual).toEqual({ boardImported: false });
       expect(ownerService.syncOwner).toHaveBeenCalledWith(did);
