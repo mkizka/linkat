@@ -7,7 +7,7 @@ import type { IOAuthClient } from "~/server/infrastructure/auth/oauthClient";
 import type { BoardDto } from "~/server/infrastructure/board/boardDto";
 
 export interface IBoardPdsRepository {
-  find: (did: Did, pds: string) => Promise<BoardDto | null>;
+  find: (did: Did, pds: URL) => Promise<BoardDto | null>;
   save: (board: BoardDto) => Promise<void>;
   delete: (did: Did) => Promise<void>;
 }

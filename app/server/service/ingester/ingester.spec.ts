@@ -76,7 +76,7 @@ const profileRecord = lexParse(
 );
 
 const found = (handle: string | null) => ({
-  pds: "https://pds.example.com",
+  pds: new URL("https://pds.example.com"),
   handle,
 });
 

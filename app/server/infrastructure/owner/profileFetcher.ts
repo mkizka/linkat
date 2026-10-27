@@ -8,10 +8,10 @@ import type { IProfileRecordParser } from "~/server/infrastructure/owner/profile
 import { tryCatch } from "~/utils/tryCatch";
 
 export interface IProfileFetcher {
-  fetchProfile: (pds: string, did: Did) => Promise<ProfileDto | null | Error>;
+  fetchProfile: (pds: URL, did: Did) => Promise<ProfileDto | null | Error>;
 }
 
-const fetchProfileRecord = async (pds: string, did: Did) => {
+const fetchProfileRecord = async (pds: URL, did: Did) => {
   const { value } = await new Client(pds).get(profile, { repo: did });
   return value;
 };

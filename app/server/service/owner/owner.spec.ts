@@ -34,7 +34,7 @@ const ownerService = ownerServiceFactory({
 const getRecordUrl = "https://pds.example.com/xrpc/com.atproto.repo.getRecord";
 
 const identity = (handle: string | null) => ({
-  pds: "https://pds.example.com",
+  pds: new URL("https://pds.example.com"),
   handle,
 });
 

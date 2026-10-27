@@ -44,7 +44,7 @@ beforeEach(() => {
   );
 });
 
-const identity = { handle: null, pds: "https://pds.example.com" };
+const identity = { handle: null, pds: new URL("https://pds.example.com") };
 
 const dummyCards = [
   {

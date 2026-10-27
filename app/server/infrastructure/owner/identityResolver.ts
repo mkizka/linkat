@@ -36,7 +36,7 @@ export const identityResolverFactory = ({
         });
         return {
           handle: handle === HANDLE_INVALID ? null : handle,
-          pds: extractPdsUrl(didDoc).origin,
+          pds: new URL(extractPdsUrl(didDoc).origin),
         };
       } catch (error) {
         log.warn("DIDまたはhandleの解決に失敗しました", { error });
