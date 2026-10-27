@@ -6,13 +6,14 @@ import {
 } from "@atproto-labs/identity-resolver";
 
 import type { ILogger } from "~/server/infrastructure/logger/logger";
+import type { IdentityDto } from "~/server/infrastructure/owner/ownerDto";
 import { env, isProduction } from "~/utils/env";
 
 export interface IIdentityResolver {
   resolve: (
     did: Did,
     options?: { fresh?: boolean },
-  ) => Promise<{ did: Did; handle: string | null; pds: string } | null>;
+  ) => Promise<IdentityDto | null>;
 }
 
 export const identityResolverFactory = ({
@@ -34,7 +35,6 @@ export const identityResolverFactory = ({
           noCache: options?.fresh,
         });
         return {
-          did,
           handle: handle === HANDLE_INVALID ? null : handle,
           pds: extractPdsUrl(didDoc).origin,
         };

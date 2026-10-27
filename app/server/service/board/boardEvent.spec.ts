@@ -29,24 +29,22 @@ const oauthClient = mock<IOAuthClient>();
 const identityResolver = mock<IIdentityResolver>();
 const boardEventService = boardEventServiceFactory({
   boardRepository,
-  boardPdsRepository: boardPdsRepositoryFactory({
-    oauthClient,
-    identityResolver,
-  }),
+  boardPdsRepository: boardPdsRepositoryFactory({ oauthClient }),
   ownerService,
+  identityResolver,
 });
 
 beforeEach(() => {
   mockReset(ownerService);
   mockReset(oauthClient);
   mockReset(identityResolver);
-  identityResolver.resolve.mockImplementation((did) =>
-    Promise.resolve({ did, handle: null, pds: "https://pds.example.com" }),
-  );
+  identityResolver.resolve.mockResolvedValue(identity);
   oauthClient.restore.mockImplementation((did) =>
     Promise.resolve(buildAgent({ did, service: "https://pds.example.com" })),
   );
 });
+
+const identity = { handle: null, pds: "https://pds.example.com" };
 
 const dummyCards = [
   {
@@ -148,10 +146,10 @@ describe("boardEventService", () => {
       const actual = await boardEventService.handleSync(did);
       // assert
       expect(actual).toEqual({ boardImported: true });
-      expect(ownerService.syncOwner).toHaveBeenCalledWith(did, { fresh: true });
-      expect(identityResolver.resolve).toHaveBeenCalledWith(did, {
+      expect(identityResolver.resolve).toHaveBeenCalledExactlyOnceWith(did, {
         fresh: true,
       });
+      expect(ownerService.syncOwner).toHaveBeenCalledWith(did, identity);
       expect(oauthClient.restore).not.toHaveBeenCalled();
       expect(await boardRepository.find(did)).toEqual({
         ownerDid: did,
@@ -173,7 +171,18 @@ describe("boardEventService", () => {
       const actual = await boardEventService.handleSync(did);
       // assert
       expect(actual).toEqual({ boardImported: false });
-      expect(ownerService.syncOwner).toHaveBeenCalledWith(did, { fresh: true });
+      expect(ownerService.syncOwner).toHaveBeenCalledWith(did, identity);
+      expect(await boardRepository.find(did)).toBeNull();
+    });
+    test("DIDを解決できなければ持ち主の写しだけ同期して投げ、ボードは取得しない", async () => {
+      // arrange
+      const did = asDid("did:plc:synceditorunresolved");
+      identityResolver.resolve.mockResolvedValue(null);
+      // act
+      const actual = boardEventService.handleSync(did);
+      // assert
+      await expect(actual).rejects.toThrow("DIDを解決できませんでした");
+      expect(ownerService.syncOwner).toHaveBeenCalledWith(did, null);
       expect(await boardRepository.find(did)).toBeNull();
     });
   });
