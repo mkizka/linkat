@@ -92,13 +92,10 @@ export const ingesterServiceFactory = ({
         if (!(error instanceof BoardPdsFetchError)) {
           throw error;
         }
-        log.warn(
-          "PDSからボードを取得できなかったので、ボードの写しは変えません",
-          {
-            ownerDid: did,
-            error,
-          },
-        );
+        log.warn("PDSからのボードの取得に失敗しました", {
+          ownerDid: did,
+          error,
+        });
       }
     },
   };
