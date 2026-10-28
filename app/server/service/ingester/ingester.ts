@@ -1,8 +1,12 @@
 import { boardSchema } from "~/schemas/board";
 import type { IIngesterHandler } from "~/server/infrastructure/ingester/ingesterClient";
 import type { ILogger } from "~/server/infrastructure/logger/logger";
+import type { IOwnerRepository } from "~/server/infrastructure/owner/ownerRepository";
 import type { IProfileRecordParser } from "~/server/infrastructure/owner/profileRecordParser";
-import type { IBoardEventService } from "~/server/service/board/boardEvent";
+import {
+  BoardPdsFetchError,
+  type IBoardEventService,
+} from "~/server/service/board/boardEvent";
 import type { IOwnerService } from "~/server/service/owner/owner";
 
 const PROFILE_RKEY = "self";
@@ -10,11 +14,13 @@ const PROFILE_RKEY = "self";
 export const ingesterServiceFactory = ({
   boardEventService,
   ownerService,
+  ownerRepository,
   profileRecordParser,
   logger,
 }: {
   boardEventService: IBoardEventService;
   ownerService: IOwnerService;
+  ownerRepository: IOwnerRepository;
   profileRecordParser: IProfileRecordParser;
   logger: ILogger;
 }): IIngesterHandler => {
@@ -71,6 +77,26 @@ export const ingesterServiceFactory = ({
     async handleAccount({ did, state }) {
       await ownerService.updateAccountState(did, state);
       log.debug("アカウントの状態を受け取りました", { did, ...state });
+    },
+    async handleSync({ did }) {
+      if (!(await ownerRepository.findByDid(did))) {
+        return;
+      }
+      try {
+        const { boardImported } = await boardEventService.handleSync(did);
+        log.info("PDSから持ち主とボードを同期し直しました", {
+          ownerDid: did,
+          boardImported,
+        });
+      } catch (error) {
+        if (!(error instanceof BoardPdsFetchError)) {
+          throw error;
+        }
+        log.warn("PDSからのボードの取得に失敗しました", {
+          ownerDid: did,
+          error,
+        });
+      }
     },
   };
 };
