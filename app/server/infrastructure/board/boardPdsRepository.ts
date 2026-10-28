@@ -29,7 +29,10 @@ export const boardPdsRepositoryFactory = ({
             repo: did,
           },
         );
-        return { ownerDid: did, cards: boardSchema.parse(body.value).cards };
+        const parsed = boardSchema.safeParse(body.value);
+        return parsed.success
+          ? { ownerDid: did, cards: parsed.data.cards }
+          : null;
       } catch (error) {
         if (
           error instanceof XrpcResponseError &&

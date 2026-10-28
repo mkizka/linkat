@@ -19,6 +19,7 @@ import {
   BoardDbSaveError,
   boardEventServiceFactory,
   BoardPdsDeleteError,
+  BoardPdsFetchError,
   BoardPdsSaveError,
 } from "./boardEvent";
 
@@ -156,9 +157,9 @@ describe("boardEventService", () => {
         cards: dummyCards,
       });
     });
-    test("PDSにボードが無ければボードの写しを作らない", async () => {
+    test("PDSにボードが無ければボードの写しだけ削除し、持ち主の写しは残す", async () => {
       // arrange
-      const did = asDid("did:plc:synceditornoboard");
+      const did = asDid((await BoardFactory.create()).ownerDid);
       server.use(
         http.get(getRecordUrl, () =>
           HttpResponse.json(
@@ -173,6 +174,7 @@ describe("boardEventService", () => {
       expect(actual).toEqual({ boardImported: false });
       expect(ownerService.syncOwner).toHaveBeenCalledWith(did, identity);
       expect(await boardRepository.find(did)).toBeNull();
+      expect(await ownerRepository.findByDid(did)).not.toBeNull();
     });
     test("DIDを解決できなければ持ち主の写しだけ同期して投げ、ボードは取得しない", async () => {
       // arrange
@@ -184,6 +186,36 @@ describe("boardEventService", () => {
       await expect(actual).rejects.toThrow("DIDを解決できませんでした");
       expect(ownerService.syncOwner).toHaveBeenCalledWith(did, null);
       expect(await boardRepository.find(did)).toBeNull();
+    });
+    test("PDSのボードがパースできなければ無いものとして扱い、ボードの写しを削除する", async () => {
+      // arrange
+      const did = asDid((await BoardFactory.create()).ownerDid);
+      server.use(
+        http.get(getRecordUrl, () =>
+          HttpResponse.json({
+            uri: `at://${did}/blue.linkat.board/self`,
+            value: { $type: "blue.linkat.board", cards: "invalid" },
+          }),
+        ),
+      );
+      // act
+      const actual = await boardEventService.handleSync(did);
+      // assert
+      expect(actual).toEqual({ boardImported: false });
+      expect(await boardRepository.find(did)).toBeNull();
+    });
+    test("PDSからボードを取得できなければBoardPdsFetchErrorを投げ、ボードの写しは変えない", async () => {
+      // arrange
+      const did = asDid((await BoardFactory.create()).ownerDid);
+      server.use(
+        http.get(getRecordUrl, () => HttpResponse.json("", { status: 500 })),
+      );
+      // act
+      const actual = boardEventService.handleSync(did);
+      // assert
+      await expect(actual).rejects.toThrow(BoardPdsFetchError);
+      expect(ownerService.syncOwner).toHaveBeenCalledWith(did, identity);
+      expect(await boardRepository.find(did)).not.toBeNull();
     });
   });
 
