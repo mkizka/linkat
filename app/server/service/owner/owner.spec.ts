@@ -33,12 +33,13 @@ const ownerService = ownerServiceFactory({
 
 const getRecordUrl = "https://pds.example.com/xrpc/com.atproto.repo.getRecord";
 
-const mockIdentity = (did: string, handle: string | null) =>
-  identityResolver.resolve.mockResolvedValue({
-    did: asDid(did),
-    pds: "https://pds.example.com",
-    handle,
-  });
+const identity = (handle: string | null) => ({
+  pds: new URL("https://pds.example.com"),
+  handle,
+});
+
+const mockIdentity = (handle: string | null) =>
+  identityResolver.resolve.mockResolvedValue(identity(handle));
 
 beforeEach(() => {
   mockReset(identityResolver);
@@ -78,10 +79,9 @@ describe("ownerService", () => {
   });
 
   describe("syncOwner", () => {
-    test("写しが無ければ、ハンドルを解決しプロフィールを取得して作る", async () => {
+    test("写しが無ければ、解決結果のハンドルとPDSから取得したプロフィールで作る", async () => {
       // arrange
       const did = asDid("did:plc:owner");
-      mockIdentity(did, "alice.example.com");
       server.use(
         http.get(getRecordUrl, () =>
           HttpResponse.json({
@@ -92,7 +92,10 @@ describe("ownerService", () => {
         ),
       );
       // act
-      const actual = await ownerService.syncOwner(did);
+      const actual = await ownerService.syncOwner(
+        did,
+        identity("alice.example.com"),
+      );
       // assert
       expect(actual).toMatchObject({
         handle: "alice.example.com",
@@ -100,14 +103,14 @@ describe("ownerService", () => {
       });
       expect(await ownerRepository.findByDid(did)).toEqual(actual);
     });
-    test("DIDを解決できなければ、ハンドルをnullにして既存のプロフィールを残す", async () => {
+    test("解決結果が無ければ、ハンドルをnullにして既存のプロフィールを残す", async () => {
       // arrange
       const owner = await OwnerFactory.create({
         handle: "alice.example.com",
         displayName: "Alice",
       });
       // act
-      const actual = await ownerService.syncOwner(asDid(owner.did));
+      const actual = await ownerService.syncOwner(asDid(owner.did), null);
       // assert
       expect(actual).toMatchObject({ handle: null, displayName: "Alice" });
     });
@@ -117,14 +120,16 @@ describe("ownerService", () => {
         handle: "old.example.com",
         displayName: "Alice",
       });
-      mockIdentity(owner.did, "alice.example.com");
       server.use(
         http.get(getRecordUrl, () =>
           HttpResponse.json({ error: "InternalServerError" }, { status: 500 }),
         ),
       );
       // act
-      const actual = await ownerService.syncOwner(asDid(owner.did));
+      const actual = await ownerService.syncOwner(
+        asDid(owner.did),
+        identity("alice.example.com"),
+      );
       // assert
       expect(actual).toMatchObject({
         handle: "alice.example.com",
@@ -134,7 +139,6 @@ describe("ownerService", () => {
     test("プロフィールのレコードが無ければ、プロフィールを空にする", async () => {
       // arrange
       const owner = await OwnerFactory.create({ displayName: "Alice" });
-      mockIdentity(owner.did, "alice.example.com");
       server.use(
         http.get(getRecordUrl, () =>
           HttpResponse.json(
@@ -144,7 +148,10 @@ describe("ownerService", () => {
         ),
       );
       // act
-      const actual = await ownerService.syncOwner(asDid(owner.did));
+      const actual = await ownerService.syncOwner(
+        asDid(owner.did),
+        identity("alice.example.com"),
+      );
       // assert
       expect(actual).toMatchObject({
         handle: "alice.example.com",
@@ -170,7 +177,7 @@ describe("ownerService", () => {
         handle: "old.example.com",
         displayName: "古い名前",
       });
-      mockIdentity(owner.did, "new.example.com");
+      mockIdentity("new.example.com");
       // act
       const actual = await ownerService.updateProfile(
         asDid(owner.did),
@@ -192,7 +199,7 @@ describe("ownerService", () => {
         description: "古い説明",
         avatarCid,
       });
-      mockIdentity(owner.did, owner.handle);
+      mockIdentity(owner.handle);
       // act
       const actual = await ownerService.updateProfile(asDid(owner.did), null);
       // assert
@@ -233,7 +240,7 @@ describe("ownerService", () => {
         handle: "old.example.com",
         displayName: "Alice",
       });
-      mockIdentity(owner.did, "new.example.com");
+      mockIdentity("new.example.com");
       // act
       const actual = await ownerService.refreshHandle(asDid(owner.did));
       // assert
@@ -250,7 +257,7 @@ describe("ownerService", () => {
       // arrange
       const other = await OwnerFactory.create({ handle: "new.example.com" });
       const owner = await OwnerFactory.create({ handle: "old.example.com" });
-      mockIdentity(owner.did, "new.example.com");
+      mockIdentity("new.example.com");
       // act
       await ownerService.refreshHandle(asDid(owner.did));
       // assert
@@ -264,7 +271,7 @@ describe("ownerService", () => {
     test("ハンドルの検証に失敗したら、写しのハンドルをnullにする", async () => {
       // arrange
       const owner = await OwnerFactory.create({ handle: "old.example.com" });
-      mockIdentity(owner.did, null);
+      mockIdentity(null);
       // act
       const actual = await ownerService.refreshHandle(asDid(owner.did));
       // assert

@@ -1,5 +1,7 @@
 import type { Did } from "@atproto/did";
 
+export type IdentityDto = { handle: string | null; pds: URL };
+
 export type AccountStateDto = { active: boolean; status: string | null };
 
 export type ProfileDto = {

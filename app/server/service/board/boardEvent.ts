@@ -3,6 +3,7 @@ import type { Did } from "@atproto/did";
 import type { BoardDto } from "~/server/infrastructure/board/boardDto";
 import type { IBoardPdsRepository } from "~/server/infrastructure/board/boardPdsRepository";
 import type { IBoardRepository } from "~/server/infrastructure/board/boardRepository";
+import type { IIdentityResolver } from "~/server/infrastructure/owner/identityResolver";
 import type { IOwnerService } from "~/server/service/owner/owner";
 
 export class BoardPdsSaveError extends Error {
@@ -41,14 +42,17 @@ export const boardEventServiceFactory = ({
   boardRepository,
   boardPdsRepository,
   ownerService,
+  identityResolver,
 }: {
   boardRepository: IBoardRepository;
   boardPdsRepository: IBoardPdsRepository;
   ownerService: IOwnerService;
+  identityResolver: IIdentityResolver;
 }): IBoardEventService => {
   return {
     async handleBoardCommit(board) {
-      await ownerService.syncOwner(board.ownerDid);
+      const identity = await identityResolver.resolve(board.ownerDid);
+      await ownerService.syncOwner(board.ownerDid, identity);
       await boardRepository.save(board);
     },
     async handleEditorSave(board) {
@@ -64,8 +68,15 @@ export const boardEventServiceFactory = ({
       }
     },
     async handleSync(editorDid) {
-      await ownerService.syncOwner(editorDid);
-      const board = await boardPdsRepository.find(editorDid);
+      // PDSの移行直後でも新しいPDSを見るように、キャッシュを使わずに1回だけ解決する
+      const identity = await identityResolver.resolve(editorDid, {
+        fresh: true,
+      });
+      await ownerService.syncOwner(editorDid, identity);
+      if (!identity) {
+        throw new Error("DIDを解決できませんでした");
+      }
+      const board = await boardPdsRepository.find(editorDid, identity.pds);
       if (board) {
         await boardRepository.save(board);
       }

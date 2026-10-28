@@ -7,7 +7,7 @@ import type { IOAuthClient } from "~/server/infrastructure/auth/oauthClient";
 import type { BoardDto } from "~/server/infrastructure/board/boardDto";
 
 export interface IBoardPdsRepository {
-  find: (did: Did) => Promise<BoardDto | null>;
+  find: (did: Did, pds: URL) => Promise<BoardDto | null>;
   save: (board: BoardDto) => Promise<void>;
   delete: (did: Did) => Promise<void>;
 }
@@ -20,12 +20,15 @@ export const boardPdsRepositoryFactory = ({
   const createClient = async (did: Did) =>
     new Client(await oauthClient.restore(did));
   return {
-    async find(did) {
-      const client = await createClient(did);
+    async find(did, pds) {
       try {
-        const { body } = await client.getRecord(boardLexicon.$type, "self", {
-          repo: did,
-        });
+        const { body } = await new Client(pds).getRecord(
+          boardLexicon.$type,
+          "self",
+          {
+            repo: did,
+          },
+        );
         return { ownerDid: did, cards: boardSchema.parse(body.value).cards };
       } catch (error) {
         if (

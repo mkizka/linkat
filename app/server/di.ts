@@ -98,7 +98,12 @@ export const di = await createRegistry()
   )
   .service(
     "boardEventService",
-    ["boardRepository", "boardPdsRepository", "ownerService"],
+    [
+      "boardRepository",
+      "boardPdsRepository",
+      "ownerService",
+      "identityResolver",
+    ],
     boardEventServiceFactory,
   )
   .service(

@@ -3,6 +3,7 @@ import type { Did } from "@atproto/did";
 import type { IIdentityResolver } from "~/server/infrastructure/owner/identityResolver";
 import type {
   AccountStateDto,
+  IdentityDto,
   OwnerDto,
   ProfileDto,
 } from "~/server/infrastructure/owner/ownerDto";
@@ -15,7 +16,7 @@ export type EditorView = OwnerView & { synced: boolean };
 
 export interface IOwnerService {
   findEditorView: (did: Did) => Promise<EditorView>;
-  syncOwner: (did: Did) => Promise<OwnerDto>;
+  syncOwner: (did: Did, identity: IdentityDto | null) => Promise<OwnerDto>;
   updateProfile: (
     did: Did,
     profile: ProfileDto | null,
@@ -39,12 +40,11 @@ export const ownerServiceFactory = ({
     const owner = await ownerRepository.findByDid(did);
     return { ...ownerViewService.toOwnerView(did, owner), synced: !!owner };
   },
-  async syncOwner(did) {
-    const identity = await identityResolver.resolve(did);
+  async syncOwner(did, identity) {
     if (!identity) {
       return await ownerRepository.upsert(did, { handle: null });
     }
-    const profile = await profileFetcher.fetchProfile(identity.pds, did);
+    const profile = await profileFetcher.fetchProfile(did, identity.pds);
     if (profile instanceof Error) {
       return await ownerRepository.upsert(did, { handle: identity.handle });
     }

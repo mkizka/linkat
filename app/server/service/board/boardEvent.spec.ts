@@ -10,6 +10,7 @@ import type { IOAuthClient } from "~/server/infrastructure/auth/oauthClient";
 import { boardPdsRepositoryFactory } from "~/server/infrastructure/board/boardPdsRepository";
 import { boardRepositoryFactory } from "~/server/infrastructure/board/boardRepository";
 import { db } from "~/server/infrastructure/db/drizzle";
+import type { IIdentityResolver } from "~/server/infrastructure/owner/identityResolver";
 import { ownerRepositoryFactory } from "~/server/infrastructure/owner/ownerRepository";
 import type { IOwnerService } from "~/server/service/owner/owner";
 
@@ -25,19 +26,25 @@ const boardRepository = boardRepositoryFactory({ db });
 const ownerRepository = ownerRepositoryFactory({ db });
 const ownerService = mock<IOwnerService>();
 const oauthClient = mock<IOAuthClient>();
+const identityResolver = mock<IIdentityResolver>();
 const boardEventService = boardEventServiceFactory({
   boardRepository,
   boardPdsRepository: boardPdsRepositoryFactory({ oauthClient }),
   ownerService,
+  identityResolver,
 });
 
 beforeEach(() => {
   mockReset(ownerService);
   mockReset(oauthClient);
+  mockReset(identityResolver);
+  identityResolver.resolve.mockResolvedValue(identity);
   oauthClient.restore.mockImplementation((did) =>
     Promise.resolve(buildAgent({ did, service: "https://pds.example.com" })),
   );
 });
+
+const identity = { handle: null, pds: new URL("https://pds.example.com") };
 
 const dummyCards = [
   {
@@ -139,7 +146,11 @@ describe("boardEventService", () => {
       const actual = await boardEventService.handleSync(did);
       // assert
       expect(actual).toEqual({ boardImported: true });
-      expect(ownerService.syncOwner).toHaveBeenCalledWith(did);
+      expect(identityResolver.resolve).toHaveBeenCalledExactlyOnceWith(did, {
+        fresh: true,
+      });
+      expect(ownerService.syncOwner).toHaveBeenCalledWith(did, identity);
+      expect(oauthClient.restore).not.toHaveBeenCalled();
       expect(await boardRepository.find(did)).toEqual({
         ownerDid: did,
         cards: dummyCards,
@@ -160,7 +171,18 @@ describe("boardEventService", () => {
       const actual = await boardEventService.handleSync(did);
       // assert
       expect(actual).toEqual({ boardImported: false });
-      expect(ownerService.syncOwner).toHaveBeenCalledWith(did);
+      expect(ownerService.syncOwner).toHaveBeenCalledWith(did, identity);
+      expect(await boardRepository.find(did)).toBeNull();
+    });
+    test("DIDを解決できなければ持ち主の写しだけ同期して投げ、ボードは取得しない", async () => {
+      // arrange
+      const did = asDid("did:plc:synceditorunresolved");
+      identityResolver.resolve.mockResolvedValue(null);
+      // act
+      const actual = boardEventService.handleSync(did);
+      // assert
+      await expect(actual).rejects.toThrow("DIDを解決できませんでした");
+      expect(ownerService.syncOwner).toHaveBeenCalledWith(did, null);
       expect(await boardRepository.find(did)).toBeNull();
     });
   });

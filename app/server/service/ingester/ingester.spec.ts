@@ -43,6 +43,7 @@ const ingesterService = ingesterServiceFactory({
     boardRepository: boardRepositoryFactory({ db }),
     boardPdsRepository: mock<IBoardPdsRepository>(),
     ownerService,
+    identityResolver,
   }),
   ownerService,
   profileRecordParser,
@@ -74,9 +75,8 @@ const profileRecord = lexParse(
   }),
 );
 
-const found = (did: string, handle: string | null) => ({
-  did: asDid(did),
-  pds: "https://pds.example.com",
+const found = (handle: string | null) => ({
+  pds: new URL("https://pds.example.com"),
   handle,
 });
 
@@ -88,9 +88,7 @@ describe("ingesterService", () => {
         handle: "old.example.com",
         displayName: "古い名前",
       });
-      identityResolver.resolve.mockResolvedValue(
-        found(owner.did, "new.example.com"),
-      );
+      identityResolver.resolve.mockResolvedValue(found("new.example.com"));
       // act
       await ingesterService.handleProfileCommit({
         did: asDid(owner.did),
@@ -113,9 +111,7 @@ describe("ingesterService", () => {
         description: "古い説明",
         avatarCid,
       });
-      identityResolver.resolve.mockResolvedValue(
-        found(owner.did, owner.handle),
-      );
+      identityResolver.resolve.mockResolvedValue(found(owner.handle));
       // act
       await ingesterService.handleProfileDelete({
         did: asDid(owner.did),
@@ -185,9 +181,7 @@ describe("ingesterService", () => {
     test("持ち主の写しが新しくても、ハンドルを解決し直す", async () => {
       // arrange
       const owner = await OwnerFactory.create({ handle: "old.example.com" });
-      identityResolver.resolve.mockResolvedValue(
-        found(owner.did, "new.example.com"),
-      );
+      identityResolver.resolve.mockResolvedValue(found("new.example.com"));
       server.use(
         http.get(
           "https://pds.example.com/xrpc/com.atproto.repo.getRecord",
@@ -229,9 +223,7 @@ describe("ingesterService", () => {
         handle: "old.example.com",
         displayName: "表示名",
       });
-      identityResolver.resolve.mockResolvedValue(
-        found(owner.did, "new.example.com"),
-      );
+      identityResolver.resolve.mockResolvedValue(found("new.example.com"));
       // act
       await ingesterService.handleIdentity({ did: asDid(owner.did) });
       // assert
