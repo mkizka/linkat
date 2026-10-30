@@ -1,5 +1,5 @@
 # syntax = docker/dockerfile:1
-FROM node:24.22.1-slim AS base
+FROM node:24.22.2-slim AS base
 WORKDIR /app
 RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y ca-certificates curl openssl && \
