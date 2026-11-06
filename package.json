@@ -25,8 +25,8 @@
   },
   "dependencies": {
     "@atpassport/client": "0.2.3",
-    "@atproto-labs/handle-resolver-node": "0.2.15",
-    "@atproto-labs/identity-resolver": "0.4.11",
+    "@atproto-labs/handle-resolver-node": "0.2.16",
+    "@atproto-labs/identity-resolver": "0.4.12",
     "@atproto/did": "0.5.6",
     "@atproto/jwk-jose": "0.2.4",
     "@atproto/lex": "0.4.4",
