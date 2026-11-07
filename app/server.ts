@@ -74,8 +74,6 @@ app.use(createRequestHandler({ build }));
 app.listen(env.PORT, "0.0.0.0", () => {
   logger.info(`App listening on ${env.PUBLIC_URL}`);
   if (!env.DISABLE_JETSTREAM) {
-    di.ingesterClient.start().catch((error: unknown) => {
-      logger.error("Ingesterが停止しました", { error });
-    });
+    void di.ingesterClient.start();
   }
 });

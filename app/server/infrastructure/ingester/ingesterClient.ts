@@ -1,3 +1,5 @@
+import { setTimeout } from "node:timers/promises";
+
 import type { Did } from "@atproto/did";
 import { Jetstream, LexIndexer, websocketTransport } from "@bsky/jetstream";
 import { trace } from "@opentelemetry/api";
@@ -11,6 +13,7 @@ import type { AccountStateDto } from "~/server/infrastructure/owner/ownerDto";
 import { env } from "~/utils/env";
 
 const LAG_REPORT_INTERVAL_MS = 10_000;
+const RETRY_INTERVAL_MS = 10_000;
 
 export interface IIngesterHandler {
   handleBoardCommit: (event: { did: Did; record: unknown }) => Promise<void>;
@@ -27,7 +30,7 @@ export interface IIngesterHandler {
 }
 
 export interface IIngesterClient {
-  start: () => Promise<void>;
+  start: () => Promise<never>;
 }
 
 export const ingesterClientFactory = ({
@@ -45,7 +48,7 @@ export const ingesterClientFactory = ({
 
   const tracer = trace.getTracer("jetstream");
 
-  let lastEventTime: string | undefined;
+  let lastEventTime = new Date().toISOString();
 
   const handle = (kind: string, task: () => Promise<void>) =>
     tracer.startActiveSpan(`jetstream.${kind}`, { root: true }, (span) =>
@@ -107,31 +110,44 @@ export const ingesterClientFactory = ({
   return {
     async start() {
       setInterval(() => {
-        if (lastEventTime) {
-          metrics.setGauge(
-            "jetstream_lag_seconds",
-            (Date.now() - Date.parse(lastEventTime)) / 1000,
-          );
-        }
+        metrics.setGauge(
+          "jetstream_lag_seconds",
+          (Date.now() - Date.parse(lastEventTime)) / 1000,
+        );
       }, LAG_REPORT_INTERVAL_MS).unref();
 
-      const runner = new Jetstream(env.JETSTREAM_SERVICE_URL).runner(indexer);
-      log.info(
-        `Jetstream subscription started to ${env.JETSTREAM_SERVICE_URL}`,
-      );
-      await runner.live({
+      const runner = new Jetstream({
+        service: env.JETSTREAM_SERVICE_URL,
+        apiKey: env.JETSTREAM_API_KEY,
+      }).runner(indexer);
+      const options = {
         cursor: cursorRepository,
-        onInfo: (info) => log.warn("Jetstreamから通知を受け取りました", info),
-        onError: (error) =>
-          log.error("Jetstreamから読み取れないフレームを受け取りました", {
-            error,
-          }),
+        onInfo: (info: { name: string; message?: string }) =>
+          log.warn("Jetstreamから通知を受け取りました", info),
+        onError: (error: Error) =>
+          log.error("Jetstreamからの読み取りに失敗しました", { error }),
         liveTransport: websocketTransport({
           onReconnect: (error, { attempt }) =>
             log.warn("Jetstreamに再接続します", { error, attempt }),
         }),
-      });
-      throw new Error("Jetstream subscription ended");
+      };
+
+      for (;;) {
+        try {
+          const cursor = await cursorRepository.load();
+          if (env.JETSTREAM_API_KEY && cursor !== undefined) {
+            log.info(`Jetstreamをcursor=${cursor}から読み直します`);
+            await runner.replay(options);
+          } else {
+            log.info("Jetstreamを購読します");
+            await runner.live(options);
+          }
+          log.error("Jetstreamの購読が終了しました");
+        } catch (error) {
+          log.error("Jetstreamの購読が停止しました", { error });
+        }
+        await setTimeout(RETRY_INTERVAL_MS);
+      }
     },
   };
 };
