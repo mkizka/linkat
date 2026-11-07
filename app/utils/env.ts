@@ -33,6 +33,7 @@ const server = {
   JETSTREAM_SERVICE_URL: z
     .url()
     .default("https://jetstream.us-west.bsky.network"),
+  JETSTREAM_API_KEY: z.string().optional(),
   // PR環境などJetstreamを使わない場合に無効化出来るようにする
   DISABLE_JETSTREAM: z.coerce.boolean().default(false),
   ADMIN_DIDS: z
