@@ -115,7 +115,7 @@
     "typescript": "6.0.3",
     "vite": "8.3.5",
     "vitest": "5.1.0",
-    "vitest-mock-extended": "5.1.1"
+    "vitest-mock-extended": "6.0.0"
   },
   "lint-staged": {
     "*.{js,mjs,ts,tsx}": "eslint --cache --cache-location ./node_modules/.cache/eslint --fix",
