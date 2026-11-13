@@ -69,7 +69,7 @@
     "react": "19.3.1",
     "react-dom": "19.3.1",
     "react-github-btn": "1.4.0",
-    "react-i18next": "17.1.12",
+    "react-i18next": "18.0.1",
     "react-movable": "3.4.1",
     "react-router": "8.5.1",
     "remix-i18next": "8.0.0",
@@ -115,7 +115,7 @@
     "typescript": "6.0.3",
     "vite": "8.3.5",
     "vitest": "5.1.0",
-    "vitest-mock-extended": "5.1.1"
+    "vitest-mock-extended": "6.0.0"
   },
   "lint-staged": {
     "*.{js,mjs,ts,tsx}": "eslint --cache --cache-location ./node_modules/.cache/eslint --fix",
